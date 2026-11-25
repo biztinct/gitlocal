@@ -126,3 +126,72 @@ Local copy of `upd_p6_t_tpl` (`docstudio_pdffix_t`), `-u all -i pb_doc_studio,pb
 `-i pb_report_builder` (soft dependency the report-PDF suite needs), then `-u pb_doc_studio,pb_report_pdf
 --test-tags /pb_doc_studio,/pb_report_pdf`: **pb_doc_studio 43 tests, pb_report_pdf 21 tests, 0 failed,
 0 errors** (`test_03` skipped: no PDF engine on the Mac, as in W2).
+
+---
+
+# Phase 2 (2026-11-25) — owner ruling "Fix those first, then switch"
+
+## 9. Root cause found for "everything prints bigger / payslips spill"
+
+The engine WITHOUT patched Qt (live) **ignores `--dpi`/`--zoom`**; the patched engine honours them and,
+at the A4 setting (dpi 90, zoom 1.067), draws every page **~15% larger**. Measured on the themed payslip:
+net-pay bar top at 567–569 px (old engine, any dpi) vs 669 px (patched, dpi 90), 604 (dpi 100 at margin
+8), 572 (dpi 106). Through the real template the best match is dpi 100 (567 vs today's 569). A report
+can set its own dpi with `data_report_dpi` (`data-report-dpi`), which the old engine ignores, so a
+payslip can print at today's size on BOTH engines.
+
+## 10. Payslips — fixed (templates only; no pay logic, no data)
+
+| Payslip | Change | Today (live) | Changed, old engine | Changed, patched engine |
+|---|---|---|---|---|
+| "PaySlip" standard (`om_hr_payroll` 19.0.1.8.7) | `basic_layout` instead of the company layout (it draws its own logo); `data_report_dpi` 100 | 1 page | 1 page, identical | **1 page, logo once, net pay on page 1** |
+| "Vietnam PaySlip" (`pb_hr_payroll_vietnam` 19.0.1.2.6) | same | 2 pages | 2, identical | 2, no extra header |
+| Themed (pay run board, My Payobook, bulk print; `pb_hr_payroll_formula` 19.0.1.171.0) | header and net-pay bar as two-cell tables instead of flex; `.pb-ps-page` tables/rows/cells `border-style: none` (the patched engine drew grid lines from the report stylesheet); the component "name + amount" pair as table cells; dpi 100 | 1 page | 1 page, same look | **1 page, logo beside the name, no grid lines, net pay right-aligned, rows at today's height** |
+| Bulk print of 3 slips (themed, standard) | — | 3 / 3 pages | 3 / 3 | 3 / 3 |
+
+Proof: `pdffix/pdffix_arch_probe.py` + `pdffix_arch_run.sh` swap the CHANGED template into a server
+shell's transaction only (rolled back, nothing stored) and print real slips with each engine.
+payobook demo slips 144281/144280/144279 (pictures `q1`–`q3`); rize slips 4627–4629: same three
+results (pictures on the server only, `/odoo/backups/docstudio-pdffix-20261124T1020Z/p2-rize/`).
+sudima has no payslip. The Vietnam slip's bulk print fails TODAY on the old engine ("multiple
+documents … unpatched QT", not ours) and works with the patched engine (pages 5–6 for 3 slips).
+
+Other printed documents (every PDF report of our modules, one record each, payobook — `q5` before,
+`q7` with the fixes): payslip email attachment and My Payobook slip use the same themed report
+(covered). Fixed too: **full and final settlement** (`pb_hr_fullandfinal` 19.0.1.4.2) went 1 → 2
+pages with a doubled logo → same fix as the standard payslip, now 1 page; **training learning record,
+required-training matrix, sign-in sheet, certificate** (`pb_training` 19.0.1.14.1): the company header
+ran into the title at their 26–30 mm spacing → 52/52 like every other document. Checked, no change
+needed: payslip details (2 → 2, gains the header), pay run summary (`pb_comp_ben`, tight under a
+five-line address but no overlap), offer letter, lifecycle letter, tenant invoice, session certificate.
+Not probed (no record on payobook): budget year, conduct letter, review form, required matrix (record
+needed), shadow certificate, PayAI executive report; analytics headcount / personnel costs / statutory
+contributions fail TODAY with "template not found" (pre-existing, not ours); contribution register
+needs wizard data.
+
+Everything prints ~15% larger than today with the patched engine EXCEPT the four documents above that
+now carry dpi 100. Letters/contract documents/report PDFs were judged fine at that size (they now
+match the designer preview more closely); this is a look change the owner will notice.
+
+## 11. Space before bold/italic words — cured
+
+| Attempt (4-font × 6-size × 4-sentence sheet, en/vi/id) | squashed boundaries |
+|---|---|
+| as is (dpi 90) | 40 / 310 |
+| dpi 96, 100, 106, 120, 150, 200, 300 | 44–48 / ~320 |
+| `--disable-smart-shrinking` | 35 / 297 |
+| `font-kerning: none` / `-webkit-font-feature-settings: "kern" 0` | 40 / 310 |
+| `text-rendering: geometricPrecision` | 38 / 309 |
+| `text-rendering: optimizeSpeed` | 40 / 310 |
+| `letter-spacing: 0.001px` / `word-spacing: 0.05em` | 40 / 310 |
+| bold/italic `display: inline-block` | 37 / 285 |
+| geometricPrecision + inline-block | 27 / 266 |
+| `white-space: pre-line` | **0 / 310** |
+| **`white-space: pre-wrap`** | **0 / 310** |
+
+Kept: `pb_doc_studio` 19.0.1.3.0 — in PDF mode only the letter body is normalised (`doc_common.pdf_body`:
+one space per whitespace run, no whitespace between blocks or at block edges) and printed with
+`.pbds-pdf .pbds-body { white-space: pre-wrap }`. All 14 shipped wordings × 4 fonts × en + vi
+(112 PDFs, patched engine, live data on payobook): **15 lost/narrow spaces without the cure → 0 with
+it; page counts identical** (`q4`). Screen preview untouched. The static-font idea was not needed
+(the web fonts are already served as static TTF files).
