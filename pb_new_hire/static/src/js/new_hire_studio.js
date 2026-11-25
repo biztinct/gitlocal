@@ -69,6 +69,13 @@ const P2_KEYS = {
     // P3b — step 5's reminders switch
     remind: [true, (d) => d.remind !== false],
 };
+/** P4: changing one of these works the payslip example out again (500 ms
+ *  after the last change). */
+const EXAMPLE_INPUTS = ["name", "date_start", "department_id", "job_id", "job_title", "payroll_country", "country_id",
+    "wage", "contract_kind", "date_end", "usual", "type_id"];
+const EXAMPLE_MS = 500;
+const EXAMPLE_RETRY_MS = 450;
+const EXAMPLE_TRIES = 4;
 /** Changing one of these re-builds step 6's options and its timeline. */
 const WELCOME_INPUTS = ["name", "date_start", "work_email", "personal", "department_id", "payroll_country", "parent_id",
     "country_id", "contract_kind", "trial_on", "clock_on", "clock_code", "login_mode", "buddy_id",
@@ -129,6 +136,8 @@ export class NewHireStudio extends Component {
             welcome: null,      // step 6: welcome_options() (and its timeline)
             docs: null,         // step 5: details_options()
             files: {},          // step 5: {item key: {name, mime, size, data}} — memory only
+            example: null,      // P4: the payslip example's last answer
+            exampleBusy: false, // P4: a newer answer is being worked out
             sending: false, result: null, refusal: null,
             dialog: null, toast: null,
         });
@@ -178,6 +187,7 @@ export class NewHireStudio extends Component {
             get countryName() { return studio.countryName; },
             get scaleFound() { return studio.scaleFound; },
             get sendFiles() { return studio.sendFiles; },
+            get exampleReady() { return studio.exampleReady; },
         };
         if (asked) {
             this.props.updateActionState?.({ step: this.nh.step });
@@ -357,6 +367,50 @@ export class NewHireStudio extends Component {
         this.refreshHint();
         this.checkPerson();
         this.refreshWelcome();
+        this.refreshExample(0);
+    }
+
+    // ------------------------------------------------------------ P4: the payslip example
+    /** Name, team, country of work and a wage (typed, or the pay scale's). */
+    get exampleReady() {
+        const d = this.nh.draft;
+        return Boolean(String(d.name || "").trim() && d.date_start && d.department_id && d.payroll_country
+            && ((d.wage !== null && d.wage > 0) || this.scaleFound)
+            && (d.contract_kind !== "fixed" || (d.date_end && d.date_end > d.date_start)));
+    }
+    get exampleDraft() {
+        const s = this.sendDraft;
+        const keys = ["name", "date_start", "department_id", "job_id", "job_title", "payroll_country", "country_id",
+            "wage", "contract_kind", "date_end", "trial_on", "usual", "type_id", "late_group", "work_location_id",
+            "pb_scale_pin_reason"];
+        return Object.fromEntries(keys.map((k) => [k, s[k]]));
+    }
+    /** Ask again 500 ms after the last change; only the newest answer lands
+     *  (sequence guard); the old numbers stay, dimmed, until it does. A
+     *  "busy" answer (another example holds the calendar lock) is retried
+     *  quietly. */
+    refreshExample(delay = EXAMPLE_MS) {
+        const nh = this.nh;
+        clearTimeout(this.timers.example);
+        if (!this.exampleReady) {
+            this.seq.example = (this.seq.example || 0) + 1;     // drop a reply in flight
+            nh.example = null;
+            nh.exampleBusy = false;
+            return;
+        }
+        nh.exampleBusy = true;
+        this.seq.example = (this.seq.example || 0) + 1;         // an older reply never lands now
+        const run = (tries) => this.ask("example", "payslip_example", [this.exampleDraft], (res, err) => {
+            if (res && res.busy && tries < EXAMPLE_TRIES) {
+                this.later("example", EXAMPLE_RETRY_MS, () => run(tries + 1));
+                return;
+            }
+            nh.exampleBusy = false;
+            nh.example = err ? { ok: false, reason: errorText(err), fix: _t("The hire is not affected. Try again in a moment.") }
+                : (res && res.busy ? { ok: false, reason: _t("The example is busy for a moment."),
+                                       fix: _t("Change any answer to try again.") } : res);
+        });
+        this.later("example", delay, () => run(1));
     }
 
     /** P2 (fix c): the org chart sent a new role while an unsent hire was
@@ -654,7 +708,13 @@ export class NewHireStudio extends Component {
         }
         return this.ask("hint", "pay_hint", [d.job_id, d.date_start || false,
                                               d.wage === null ? false : d.wage, d.payroll_country || false],
-            (res) => { this.nh.hint = res || null; });
+            (res) => {
+                const had = this.scaleFound;
+                this.nh.hint = res || null;
+                if (had !== this.scaleFound && !(this.nh.draft.wage > 0)) {
+                    this.refreshExample();          // P4: the pay scale's wage arrived or left
+                }
+            });
     }
 
     checkPerson() {
@@ -724,6 +784,9 @@ export class NewHireStudio extends Component {
         }
         if (has(...WELCOME_INPUTS)) {
             this.refreshWelcome();
+        }
+        if (has(...EXAMPLE_INPUTS)) {
+            this.refreshExample();
         }
     }
 
@@ -1120,6 +1183,8 @@ export class NewHireStudio extends Component {
         nh.welcome = null;
         nh.clockCheck = null;
         nh.files = {};
+        nh.example = null;
+        nh.exampleBusy = false;
         nh.draft = Object.assign(blankDraft(nh.data.today), { payroll_country: nh.data.draft.payroll_country || "" });
         this.refreshCats();
         this.refreshSched();

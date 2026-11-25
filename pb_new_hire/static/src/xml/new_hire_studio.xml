@@ -1115,7 +1115,45 @@
       <b t-esc="paid.name"/>
       <small t-if="paid.sub" t-esc="paid.sub"/>
     </div>
-    <div class="pbnh-pvslip"><t t-out="icon('fileText', 15)"/><span>A first-payslip example appears here in a later release.</span></div>
+    <!-- P4: A month's payslip · example (POC .pvo) -->
+    <div class="pbnh-pvslot" aria-live="polite" t-ref="slip">
+      <div t-if="slip.state === 'wait'" class="pbnh-pvslip"><t t-out="icon('fileText', 15)"/><span t-esc="slip.text"/></div>
+      <div t-elif="slip.state === 'load'" class="pbnh-pvo is-load" aria-busy="true">
+        <div class="pbnh-pvo-eb">A month's payslip · example</div>
+        <span class="pbnh-pvo-sk is-m"/>
+        <div class="pbnh-pvo-rows">
+          <t t-foreach="[1, 2, 3, 4]" t-as="r" t-key="r"><span class="pbnh-pvo-sk"/><span class="pbnh-pvo-sk is-n"/></t>
+        </div>
+        <span class="pbnh-pvo-sk is-tot"/>
+        <span class="pbnh-sr">Working out the example</span>
+      </div>
+      <div t-elif="slip.state === 'no'" t-att-class="'pbnh-pvno' + (slip.busy ? ' is-stale' : '')">
+        <span class="pbnh-pvno-ic" t-out="icon('info', 15)"/>
+        <div>
+          <div class="pbnh-lab">A month's payslip · example</div>
+          <b t-esc="slip.reason"/>
+          <small t-if="slip.fix" t-esc="slip.fix"/>
+          <button t-if="slip.step" type="button" class="pbnh-link" t-on-click="() => this.goStep(slip.step)">
+            <t t-esc="slip.stepLine"/>
+          </button>
+        </div>
+      </div>
+      <div t-else="" t-att-class="'pbnh-pvo' + (slip.busy ? ' is-stale' : '')" t-att-aria-busy="slip.busy ? 'true' : 'false'">
+        <div class="pbnh-pvo-eb">A month's payslip · example</div>
+        <div class="pbnh-pvo-m" t-esc="slip.month"/>
+        <div class="pbnh-pvo-rows pbnh-num">
+          <t t-foreach="slip.lines" t-as="l" t-key="l.key">
+            <span t-att-class="l.cls" t-esc="l.name"/><span t-att-class="l.cls" t-esc="l.text"/>
+          </t>
+        </div>
+        <div t-if="slip.net" class="pbnh-pvo-tot">
+          <span>Take-home</span>
+          <b class="pbnh-num" t-key="slip.net" t-esc="slip.net"/>
+        </div>
+        <div class="pbnh-pvo-sum pbnh-num" t-esc="slip.sums"/>
+        <p t-foreach="slip.notes" t-as="note" t-key="note_index" class="pbnh-pvo-note" t-esc="note"/>
+      </div>
+    </div>
   </div>
 </t>
 

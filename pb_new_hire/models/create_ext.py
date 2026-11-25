@@ -51,6 +51,10 @@ _logger = logging.getLogger(__name__)
 #: "These are a studio hire's extras, for this one create."
 NH_CTX = 'pb_nh_hire'
 
+#: P4: "this create is the payslip example's" (`payslip_example.py`): the
+#: core only, never a welcome leg. The caller rolls everything back.
+PREVIEW_CTX = 'pb_nh_preview'
+
 #: The employee fields the studio may set at create (whitelist, §3).
 EMPLOYEE_EXTRA = ('payroll_country', 'date_of_joining', 'private_email',
                   'private_phone', 'work_location_id',
@@ -142,6 +146,10 @@ class PbOnboardWizardNewHire(models.AbstractModel):
         # P2: the welcome legs — after the core, each in its own savepoint;
         # a failed leg never undoes the hire (handover §2.2).
         contract = self.env['hr.contract'].sudo().browse(_int(res.get('contract_id'))).exists()
+        if self.env.context.get(PREVIEW_CTX):
+            # P4: the payslip example builds the person and the contract
+            # only (rolled back by its caller) — no leg ever runs for it.
+            return dict(res, legs=[], legs_summary='')
         legs, summary = self.env['pb.new.hire.legs'].run(emp, contract, values)
         return dict(res, legs=legs, legs_summary=summary)
 

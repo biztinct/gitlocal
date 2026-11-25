@@ -496,7 +496,12 @@
     .pbnh-done-b { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
 
     // ------------------------------------------------ the record so far
-    .pbnh-pv { position: sticky; top: 72px; display: flex; flex-direction: column; overflow: hidden; }
+    .pbnh-pv {
+        position: sticky; top: 72px; display: flex; flex-direction: column; overflow: hidden;
+        // P4: the payslip example makes the panel taller than a laptop screen —
+        // it scrolls on its own while it sticks
+        max-height: calc(100vh - 88px); overflow-y: auto; scrollbar-width: thin; overscroll-behavior: contain;
+    }
     .pbnh-pv-h { padding: 14px 16px; display: flex; gap: 12px; align-items: center; border-bottom: 1px solid var(--pbnh-line2); }
     .pbnh-ring {
         width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center; flex: none;
@@ -529,6 +534,50 @@
     .pbnh-pvpaid.is-warn { border-color: #F0C27A; background: var(--pbnh-warn-soft); }
     .pbnh-pvslip { color: var(--pbnh-muted); font-size: 12.5px; border: 1px dashed var(--pbnh-line); border-radius: 12px; padding: 12px; display: flex; gap: 8px; align-items: flex-start; }
     .pbnh-pvslip svg { color: var(--pbnh-faint); margin-top: 2px; }
+
+    // ------------------------------------------------ P4: the payslip example (POC .pvo)
+    .pbnh-pvslot { display: flex; flex-direction: column; }
+    .pbnh-pvo {
+        background: var(--pbnh-p-dark); color: #fff; border-radius: 12px; padding: 14px;
+        display: flex; flex-direction: column; gap: 9px; transition: opacity .25s ease;
+        animation: pbnh-fade .3s ease;
+    }
+    .pbnh-pvo.is-stale { opacity: .5; }
+    .pbnh-pvo-eb { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #BDB6E6; }
+    .pbnh-pvo-m { font-size: 12.5px; color: #D8D3F2; line-height: 1.4; overflow-wrap: anywhere; }
+    .pbnh-pvo-rows {
+        display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; font-size: 13px;
+        border-top: 1px solid rgba(255, 255, 255, .14); padding-top: 9px;
+    }
+    .pbnh-pvo-rows > span:nth-child(odd) { color: #BDB6E6; overflow-wrap: anywhere; }
+    .pbnh-pvo-rows > span:nth-child(even) { font-weight: 700; text-align: right; white-space: nowrap; }
+    .pbnh-pvo-rows > span.is-info { font-size: 12px; font-weight: 500; opacity: .75; padding-left: 10px; }
+    .pbnh-pvo-rows > span.is-info:nth-child(even) { padding-left: 0; }
+    .pbnh-pvo-tot {
+        display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap;
+        border-top: 1px solid rgba(255, 255, 255, .14); padding-top: 9px;
+    }
+    .pbnh-pvo-tot > span { color: #BDB6E6; font-size: 13px; }
+    .pbnh-pvo-tot > b { font: 800 22px var(--pbnh-display); animation: pbnh-land .35s ease; overflow-wrap: anywhere; }
+    .pbnh-pvo-sum { font-size: 12px; color: #D8D3F2; }
+    .pbnh-pvo-note { margin: 0; font-size: 11.5px; color: #BDB6E6; line-height: 1.45; }
+    .pbnh-pvo-sk {
+        display: block; height: 11px; border-radius: 6px;
+        background: linear-gradient(90deg, rgba(255, 255, 255, .08) 0%, rgba(255, 255, 255, .2) 50%, rgba(255, 255, 255, .08) 100%);
+        background-size: 200% 100%; animation: pbnh-shimmer 1.3s linear infinite;
+    }
+    .pbnh-pvo-sk.is-m { width: 70%; }
+    .pbnh-pvo-sk.is-n { width: 64px; justify-self: end; }
+    .pbnh-pvo-sk.is-tot { height: 22px; width: 55%; margin-left: auto; }
+    .pbnh-pvno {
+        display: flex; gap: 10px; align-items: flex-start; background: #F8F9FC; border: 1px solid var(--pbnh-line);
+        border-radius: 12px; padding: 12px; font-size: 12.5px; color: var(--pbnh-muted); transition: opacity .25s ease;
+    }
+    .pbnh-pvno.is-stale { opacity: .5; }
+    .pbnh-pvno-ic { color: var(--pbnh-faint); margin-top: 1px; }
+    .pbnh-pvno b { display: block; color: var(--pbnh-ink); font-weight: 600; font-size: 13px; line-height: 1.4; margin-top: 2px; }
+    .pbnh-pvno small { display: block; margin-top: 3px; line-height: 1.4; }
+    .pbnh-pvno .pbnh-link { margin-top: 6px; }
 
     // ------------------------------------------------ error / access / empty cards
     .pbnh-fail { padding: 34px 24px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
@@ -581,7 +630,7 @@
     // ------------------------------------------------ responsive (design breakpoints)
     @media (max-width: 1180px) {
         .pbnh-work { grid-template-columns: 210px minmax(0, 1fr); }
-        .pbnh-pv { position: static; grid-column: 2; }
+        .pbnh-pv { position: static; grid-column: 2; max-height: none; }
         .pbnh-toast { bottom: calc(92px + env(safe-area-inset-bottom, 0px)); }
     }
     @media (max-width: 820px) {
@@ -627,6 +676,7 @@
 @keyframes pbnh-fade { from { opacity: 0; } }
 @keyframes pbnh-turn { to { transform: rotate(360deg); } }
 @keyframes pbnh-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+@keyframes pbnh-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
 @keyframes pbnh-pop { from { transform: scale(.3); } to { transform: scale(1); } }
 @keyframes pbnh-slide { from { transform: translateX(24px); opacity: .4; } to { transform: none; opacity: 1; } }
 @keyframes pbnh-toast-in { from { transform: translate(-50%, 10px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }

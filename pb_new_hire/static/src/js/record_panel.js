@@ -5,9 +5,9 @@
  * card from the server's answer, and a quiet line where the first-payslip
  * example will be (D9) — no made-up numbers.
  */
-import { Component, useState } from "@odoo/owl";
+import { Component, useEffect, useRef, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
-import { icon, initials, fmtDay, weekNameOf, docItemsOf, docChoiceOf, docTallyOf } from "./studio_util";
+import { icon, initials, fmtDay, money, weekNameOf, docItemsOf, docChoiceOf, docTallyOf } from "./studio_util";
 
 export class RecordPanel extends Component {
     static template = "pb_new_hire.RecordPanel";
@@ -16,6 +16,21 @@ export class RecordPanel extends Component {
     setup() {
         this.icon = icon;
         this.nh = useState(this.props.api.nh);
+        this.slipRef = useRef("slip");
+        // P4: the first example to land while the wage is being typed is
+        // brought into view inside the panel (the panel scrolls, not the page)
+        useEffect((ok) => {
+            const el = this.slipRef.el;
+            const panel = el && el.closest(".pbnh-pv");
+            if (!ok || !panel || this.nh.step !== "pay" || panel.scrollHeight <= panel.clientHeight) {
+                return;
+            }
+            const below = el.getBoundingClientRect().bottom - panel.getBoundingClientRect().bottom;
+            if (below > 0) {
+                const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+                panel.scrollBy({ top: below + 12, behavior: reduce ? "auto" : "smooth" });
+            }
+        }, () => [Boolean(this.nh.example && this.nh.example.ok)]);
     }
 
     get api() { return this.props.api; }
@@ -96,6 +111,49 @@ export class RecordPanel extends Component {
             themLine: _t("%(first)s %(n)s", { first: this.api.first, n: t.ask }),
             otherLine: _t("Manager and IT %s", other),
         };
+    }
+    /** P4: the payslip example, in one of four states. */
+    get slip() {
+        const nh = this.nh;
+        const res = nh.example;
+        if (!this.api.exampleReady) {
+            return { state: "wait", text: _t("A month's payslip appears here once the name, team, country of work and wage are in.") };
+        }
+        if (!res) {
+            return { state: "load" };
+        }
+        if (!res.ok) {
+            const meta = res.step && res.step !== nh.step ? this.api.stepMeta(res.step) : null;
+            return {
+                state: "no", busy: nh.exampleBusy, reason: res.reason || "", fix: res.fix || "",
+                step: meta ? meta.key : false,
+                stepLine: meta ? _t("Go to step %(n)s, %(title)s", { n: meta.n, title: meta.title }) : "",
+            };
+        }
+        const cur = res.currency;
+        const lines = (res.lines || []).map((l, i) => ({
+            key: `${i}-${l.name}`,
+            name: l.name,
+            cls: l.band === "deduction" ? "is-ded" : l.band === "info" ? "is-info" : "",
+            text: l.band === "deduction" ? `− ${money(l.amount, cur)}` : money(l.amount, cur),
+        }));
+        const bits = [_t("Gross %s", money(res.gross, cur)), _t("Taken off %s", money(res.deductions, cur))];
+        if (res.employer_cost) {
+            bits.push(_t("Employer cost %s", money(res.employer_cost, cur)));
+        }
+        return {
+            state: "ok", busy: nh.exampleBusy,
+            month: _t("%(month)s · %(scheme)s", { month: res.month_label, scheme: res.scheme }),
+            lines,
+            net: res.net === null || res.net === undefined ? "" : money(res.net, cur),
+            sums: bits.join(" · "),
+            notes: res.notes || [],
+        };
+    }
+    goStep(key) {
+        if (key) {
+            this.api.go(key);
+        }
     }
     get paid() {
         const dec = this.dec;
