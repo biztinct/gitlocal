@@ -650,7 +650,7 @@ check("an unknown kind is compared as text",
    screen each belongs to. The generator checks this too; here it is checked
    against the RENDERED html rather than against the source. */
 RT.lang = "en";
-const anchorScreens = { "rep-impfix": "importwizard", "rep-newemp-name": "employees" };
+const anchorScreens = { "rep-impfix": "importwizard", "rep-newemp-name": "employees", "rep-newemp-wage": "employees" };
 for (const [anchor, screen] of Object.entries(anchorScreens)) {
     const html = SCREENS[screen]();
     check("the replica draws a real input at " + anchor,

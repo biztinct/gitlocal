@@ -83,7 +83,7 @@
     </div>
 
     <div t-else="" class="pbnh-work">
-      <nav class="pbnh-steps" aria-label="Steps">
+      <nav class="pbnh-steps" aria-label="Steps" data-coach="nh-rail">
         <t t-foreach="steps" t-as="step" t-key="step.key">
           <h3 t-if="step.n === 1">Required</h3>
           <h3 t-if="step.n === 4">Optional, with defaults</h3>
@@ -122,7 +122,7 @@
         </div>
       </main>
 
-      <aside class="pbnh-card pbnh-pv" aria-label="The record so far">
+      <aside class="pbnh-card pbnh-pv" aria-label="The record so far" data-coach="nh-record">
         <RecordPanel api="api"/>
       </aside>
     </div>
@@ -165,7 +165,7 @@
 
 <!-- ============================================================ step 1 -->
 <t t-name="pb_new_hire.StepWho">
-  <div class="pbnh-step-in">
+  <div class="pbnh-step-in" data-coach="nh-step-who">
     <div class="pbnh-q">
       <div class="pbnh-q-t">
         <div class="pbnh-eyebrow">Step 1 of 7 · required</div>
@@ -174,7 +174,7 @@
       </div>
     </div>
     <!-- P4: three ways to start (POC vWho) -->
-    <div t-if="showWays" class="pbnh-ways" role="group" aria-label="How this person comes in">
+    <div t-if="showWays" class="pbnh-ways" role="group" aria-label="How this person comes in" data-coach="nh-sources">
       <button type="button" t-att-class="wayClass('type')" t-att-aria-pressed="nh.source === 'type' ? 'true' : 'false'" t-on-click="() => this.pick('type')">
         <span class="pbnh-tile" t-out="icon('pencil', 17)"/>
         <span><b>Type it in</b><small>Someone hired outside Hiring</small></span>
@@ -267,7 +267,7 @@
 
 <!-- ============================================================ step 2 -->
 <t t-name="pb_new_hire.StepRole">
-  <div class="pbnh-step-in">
+  <div class="pbnh-step-in" data-coach="nh-step-role">
     <div class="pbnh-q">
       <div class="pbnh-q-t">
         <div class="pbnh-eyebrow">Step 2 of 7 · required</div>
@@ -402,7 +402,7 @@
 
 <!-- ============================================================ step 3 -->
 <t t-name="pb_new_hire.StepPay">
-  <div class="pbnh-step-in">
+  <div class="pbnh-step-in" data-coach="nh-step-pay">
     <div class="pbnh-q">
       <div class="pbnh-q-t">
         <div class="pbnh-eyebrow">Step 3 of 7 · required</div>
@@ -572,7 +572,7 @@
 
 <!-- ============================================================ step 4 -->
 <t t-name="pb_new_hire.StepSched">
-  <div class="pbnh-step-in">
+  <div class="pbnh-step-in" data-coach="nh-step-sched">
     <div class="pbnh-q">
       <div class="pbnh-q-t">
         <div class="pbnh-eyebrow">Step 4 of 7 · optional</div>
@@ -749,7 +749,7 @@
 </t>
 
 <t t-name="pb_new_hire.StepDocs">
-  <div class="pbnh-step-in" t-ref="root">
+  <div class="pbnh-step-in" data-coach="nh-step-docs" t-ref="root">
     <div class="pbnh-q">
       <div class="pbnh-q-t">
         <div class="pbnh-eyebrow">Step 5 of 7 · optional</div>
@@ -871,7 +871,7 @@
 
 <!-- ============================================================ step 6 -->
 <t t-name="pb_new_hire.StepWelcome">
-  <div class="pbnh-step-in">
+  <div class="pbnh-step-in" data-coach="nh-step-welcome">
     <div class="pbnh-q">
       <div class="pbnh-q-t">
         <div class="pbnh-eyebrow">Step 6 of 7 · optional</div>
@@ -1023,7 +1023,7 @@
 
 <!-- ============================================================ step 7 -->
 <t t-name="pb_new_hire.StepCheck">
-  <div class="pbnh-step-in">
+  <div class="pbnh-step-in" data-coach="nh-step-check">
     <!-- after Send -->
     <t t-if="result">
       <div class="pbnh-card pbnh-done" role="status">
@@ -1118,7 +1118,7 @@
       <div t-att-class="'pbnh-card pbnh-launch' + (approval.problem ? ' is-blocked' : '')">
         <div class="pbnh-launch-t"><h2 t-esc="launchTitle"/><p t-esc="launchLine"/></div>
         <button type="button" class="pbnh-btn pbnh-btn--pri pbnh-btn--big" t-att-disabled="!canSend" t-att-aria-busy="nh.sending ? 'true' : 'false'"
-                t-on-click="() => this.api.send()">
+                data-coach="nh-send" t-on-click="() => this.api.send()">
           <span t-if="nh.sending" class="pbnh-spin" aria-hidden="true"/><t t-else="" t-out="icon('send', 16)"/>
           <t t-if="nh.sending">Sending…</t><t t-else="" t-esc="sendLabel"/>
         </button>
@@ -1172,7 +1172,7 @@
       <small t-if="paid.sub" t-esc="paid.sub"/>
     </div>
     <!-- P4: A month's payslip · example (POC .pvo) -->
-    <div class="pbnh-pvslot" aria-live="polite" t-ref="slip">
+    <div class="pbnh-pvslot" aria-live="polite" t-ref="slip" data-coach="nh-example">
       <div t-if="slip.state === 'wait'" class="pbnh-pvslip"><t t-out="icon('fileText', 15)"/><span t-esc="slip.text"/></div>
       <div t-elif="slip.state === 'load'" class="pbnh-pvo is-load" aria-busy="true">
         <div class="pbnh-pvo-eb">A month's payslip · example</div>

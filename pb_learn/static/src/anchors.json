@@ -587,7 +587,7 @@
     "pe-head": {
       "screen": "employees",
       "file": "pb_people/static/src/xml/people.xml",
-      "desc": "The Employees header and its two actions: Select, which turns on bulk mode, and Add employee. The Add employee button opens the three-step onboarding wizard (pb_people_advanced), which is what the `addperson` intent points at."
+      "desc": "The Employees header and its two actions: Select, which turns on bulk mode, and Add employee. Add employee opens the guided Add employee screen (pb_new_hire): seven steps, three of them required, the rest already filled in with sensible answers, and the hire is sent for a second person to approve. Where that module is not installed it opens the older three-step window (pb_people_advanced). The `addperson` intent points here."
     },
     "pe-bulk": {
       "screen": "employees",
@@ -2192,6 +2192,78 @@
       "screen": "formbuilder",
       "file": "pb_form_studio_reach/static/src/xml/learn_anchors.xml",
       "desc": "The line under the Field library: payslips, payslip lines and government returns cannot take custom fields."
+    },
+    "nh-rail": {
+      "screen": "newhire",
+      "file": "pb_new_hire/static/src/xml/new_hire_studio.xml",
+      "desc": "The Add employee screen's step rail: Required (Who is joining, Role and place, Contract and pay), Optional, with defaults (Schedule and time off, Details and documents, Welcome and first day) and Finish (Check and add). Each step says under its name whether it is done, suggested or still needs something.",
+      "reserved": true
+    },
+    "nh-sources": {
+      "screen": "newhire",
+      "file": "pb_new_hire/static/src/xml/new_hire_studio.xml",
+      "desc": "Step 1's three ways in: Type it in, From Hiring (signed offers waiting to join, brought across with what the candidate already sent) and Many at once (the new-employee sheet in Updates). Drawn only where Hiring or Updates is there to offer.",
+      "reserved": true
+    },
+    "nh-step-who": {
+      "screen": "newhire",
+      "file": "pb_new_hire/static/src/xml/new_hire_studio.xml",
+      "desc": "Step 1, Who is joining: full name, first day, work email and a personal email or phone. Four things are enough to begin.",
+      "reserved": true
+    },
+    "nh-step-role": {
+      "screen": "newhire",
+      "file": "pb_new_hire/static/src/xml/new_hire_studio.xml",
+      "desc": "Step 2, Role and place: the team, the job, the manager and the country of work. The team decides the pay scheme; the country is checked against it, and the currency and the trial period follow it.",
+      "reserved": true
+    },
+    "nh-step-pay": {
+      "screen": "newhire",
+      "file": "pb_new_hire/static/src/xml/new_hire_studio.xml",
+      "desc": "Step 3, Contract and pay: the kind of contract, the monthly wage in the scheme's money, the trial period and the scheme's usual answers for this person.",
+      "reserved": true
+    },
+    "nh-step-sched": {
+      "screen": "newhire",
+      "file": "pb_new_hire/static/src/xml/new_hire_studio.xml",
+      "desc": "Step 4, Schedule and time off: the working week, the late rule group, the clock number, the leave they start with and the company's holiday list. Already filled in with the team's usual answers.",
+      "reserved": true
+    },
+    "nh-step-docs": {
+      "screen": "newhire",
+      "file": "pb_new_hire/static/src/xml/new_hire_studio.xml",
+      "desc": "Step 5, Details and documents: for each detail and paper the country of work needs, I have it, Ask the person (one welcome link that works on a phone) or Not needed.",
+      "reserved": true
+    },
+    "nh-step-welcome": {
+      "screen": "newhire",
+      "file": "pb_new_hire/static/src/xml/new_hire_studio.xml",
+      "desc": "Step 6, Welcome and first day: the sign-in, the joining checklist, the buddy, equipment and the contract letter, with a timeline of what happens before and after day one.",
+      "reserved": true
+    },
+    "nh-step-check": {
+      "screen": "newhire",
+      "file": "pb_new_hire/static/src/xml/new_hire_studio.xml",
+      "desc": "Step 7, Check and add: everything on one page, what is still missing with a way to fix it, and Send. Nothing is written before Send.",
+      "reserved": true
+    },
+    "nh-record": {
+      "screen": "newhire",
+      "file": "pb_new_hire/static/src/xml/new_hire_studio.xml",
+      "desc": "The record so far, on the right of every step: the person, the pay scheme that pays them, payroll-ready, who does what and the month's payslip example.",
+      "reserved": true
+    },
+    "nh-example": {
+      "screen": "newhire",
+      "file": "pb_new_hire/static/src/xml/new_hire_studio.xml",
+      "desc": "A month's payslip, example: worked out by the person's real pay scheme from its usual values once the name, first day, team and wage are in. Nothing is saved; take-home is the large figure.",
+      "reserved": true
+    },
+    "nh-send": {
+      "screen": "newhire",
+      "file": "pb_new_hire/static/src/xml/new_hire_studio.xml",
+      "desc": "Check and add's Send button. Where a second person approves new people it sends the hire for approval and nothing is created until they approve; otherwise it adds the person at once.",
+      "reserved": true
     }
   },
   "pattern": {
@@ -2221,10 +2293,11 @@
     "rep-settings": "The practice company's Settings page of categories. The product draws the same categories; only the four with practice screens open anything here.",
     "rep-impfix": "The import wizard's one repairable cell — the overtime amount on the row whose figure could not be read. A real input; the value a learner types is checked loosely against the step's own value, thousands marks and all.",
     "rep-impmatch": "The Match button on that same row. Practice-only because the product's importer offers its fixes differently; here it is what 'accept this row' looks like.",
-    "rep-newemp-open": "The Add employee button on the Employees replica. In the product it opens a form view; here it is the step that takes the learner down to the practice form.",
-    "rep-newemp-name": "The practice employee form's name field. A real input, declared in INPUT_ANCHORS as text, so tone marks are optional when it is checked.",
-    "rep-newemp-div": "The practice employee form's division picker. A click target, not an input: choosing the division is choosing which formula configuration will pay this person.",
-    "rep-newemp-save": "The practice employee form's Save button. It saves nothing — there is no server behind the replica — and the step that presses it is guarded for the same reason the real one would be.",
+    "rep-newemp-open": "The Add employee button on the Employees replica. In the product it opens the guided Add employee screen (pb_new_hire); here it is the step that takes the learner down to the practice copy of that screen.",
+    "rep-newemp-name": "The practice Add employee screen's Full name box (step 1, Who is joining). A real input, declared in INPUT_ANCHORS as text, so tone marks are optional when it is checked.",
+    "rep-newemp-team": "The practice Add employee screen's Team list (step 2, Role and place). A click target, not an input: choosing the team is choosing which pay scheme pays this person, as in the product.",
+    "rep-newemp-wage": "The practice Add employee screen's Monthly wage box (step 3, Contract and pay). A real input, declared in INPUT_ANCHORS as a number, so the reader's own thousands mark is accepted.",
+    "rep-newemp-send": "The practice Add employee screen's Send button (step 7, Check and add). It sends nothing — there is no server behind the replica — and the step that presses it is guarded for the same reason the real one would be.",
     "rep-watermark": "The practice-mode watermark. Says on every free-roam screen that none of this is real. Drawn unconditionally by the practice view builder; no product screen has one.",
     "rep-bp-rules": "The guided setup's Pay rules list on the practice company, each component as a sentence with its formula.",
     "rep-bp-added": "The component being added in the Pay rules replica (Allowances). The lesson's tick moment happens beside it.",
@@ -2359,7 +2432,8 @@
       "pb_hiring/static/src/xml/hiring_p6.xml",
       "pb_hiring/static/src/xml/hiring_setup.xml",
       "pb_hiring/static/src/xml/hiring_numbers.xml",
-      "pb_form_studio_reach/static/src/xml/learn_anchors.xml"
+      "pb_form_studio_reach/static/src/xml/learn_anchors.xml",
+      "pb_new_hire/static/src/xml/new_hire_studio.xml"
     ],
     "replica": [
       "pb_learn/static/src/engine/screens.js",

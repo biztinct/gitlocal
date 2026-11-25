@@ -5828,8 +5828,8 @@
       "blocks": [
         {
           "body": {
-            "en": "Add employee, at the top of the Employees screen. It opens a three-step wizard rather than a bare form: the person, then their role, then their contract.",
-            "vi": "Nút Thêm nhân viên, ở phía trên màn hình Nhân sự. Nó mở một trình hướng dẫn ba bước thay vì một biểu mẫu trống: thông tin cá nhân, rồi vị trí công việc, rồi hợp đồng."
+            "en": "Add employee, at the top of the Employees screen. It opens a guided screen of seven steps. Only the first three are required: who is joining, their role and place, and their contract and pay.",
+            "vi": "Nút Thêm nhân viên, ở phía trên màn hình Nhân viên. Nút này mở một màn hình có hướng dẫn gồm bảy bước. Chỉ ba bước đầu là bắt buộc: ai sắp vào làm, vị trí và nơi làm việc, rồi hợp đồng và lương."
           },
           "capability": "any",
           "kind": "p",
@@ -5838,8 +5838,8 @@
         },
         {
           "body": {
-            "en": "The third step is the one payroll depends on. A person with no running contract computes nothing at all, so they simply do not appear in the run.",
-            "vi": "Bước thứ ba mới là bước hệ thống lương phụ thuộc vào. Người chưa có hợp đồng đang hiệu lực thì không được tính gì cả, nên đơn giản là họ không xuất hiện trong đợt lương."
+            "en": "The team you pick decides the pay scheme, and the currency and the trial period follow from it. The other four steps already hold sensible answers, so you only change what is different.",
+            "vi": "Nhóm bạn chọn quyết định chương trình lương, rồi tiền tệ và thời gian thử việc đi theo đó. Bốn bước còn lại đã có sẵn câu trả lời hợp lý, nên bạn chỉ sửa những gì khác."
           },
           "capability": "any",
           "kind": "p",
@@ -5848,8 +5848,18 @@
         },
         {
           "body": {
-            "en": "Bank details are the other half and they are not on that wizard. Somebody with a contract and no account computes perfectly and is still not paid on {{payDay}}.",
-            "vi": "Thông tin ngân hàng là nửa còn lại và nó không nằm trong trình hướng dẫn đó. Người có hợp đồng mà chưa có tài khoản vẫn được tính lương hoàn hảo và vẫn không nhận được tiền vào {{payDay}}."
+            "en": "Check and add ends with Send. Where your company asks for it, a second person approves the hire first, and nothing is created until they do.",
+            "vi": "Bước Kiểm tra và thêm kết thúc bằng nút Gửi. Nếu công ty bạn yêu cầu, một người thứ hai sẽ duyệt trước, và chưa có gì được tạo cho đến khi họ duyệt."
+          },
+          "capability": "any",
+          "kind": "p",
+          "live_fallback": "",
+          "steps": []
+        },
+        {
+          "body": {
+            "en": "Bank details are the other half. If you choose to ask the person, they give the account in their welcome link. Until a second person approves it, they compute perfectly and are still not paid on {{payDay}}.",
+            "vi": "Thông tin ngân hàng là nửa còn lại. Nếu bạn chọn hỏi người đó, họ sẽ tự nhập tài khoản qua đường dẫn chào mừng. Khi người thứ hai chưa duyệt, họ vẫn được tính lương đầy đủ nhưng vẫn không nhận được tiền vào {{payDay}}."
           },
           "capability": "any",
           "kind": "warn",
@@ -5865,8 +5875,8 @@
             {
               "anchor": "pe-head",
               "text": {
-                "en": "Add employee — person, role, contract",
-                "vi": "Thêm nhân viên — thông tin cá nhân, vị trí, hợp đồng"
+                "en": "Add employee — who, role and place, contract and pay, then Send",
+                "vi": "Thêm nhân viên — ai, vị trí và nơi làm việc, hợp đồng và lương, rồi Gửi"
               }
             },
             {
@@ -5887,8 +5897,8 @@
         },
         {
           "body": {
-            "en": "The Add employee wizard's three steps, and the payroll-ready mark on the roster.",
-            "vi": "Ba bước của trình hướng dẫn Thêm nhân viên, và dấu sẵn sàng tính lương trên danh sách."
+            "en": "The Add employee screen's seven steps, and the payroll-ready mark on the roster.",
+            "vi": "Bảy bước của màn hình Thêm nhân viên, và dấu sẵn sàng tính lương trên danh sách."
           },
           "capability": "any",
           "kind": "source",
@@ -15248,8 +15258,8 @@
         {
           "act": "click",
           "affects": {
-            "en": "In the practice company the form is drawn under the roster instead, so read it there.",
-            "vi": "Trong công ty thực hành, biểu mẫu được vẽ ngay dưới danh sách, nên hãy đọc ở đó."
+            "en": "In the practice company the screen is drawn under the roster instead, so read it there.",
+            "vi": "Trong công ty thực hành, màn hình này được vẽ ngay dưới danh sách, nên hãy đọc ở đó."
           },
           "anchor": "rep-newemp-open",
           "body": "",
@@ -15260,12 +15270,12 @@
             "vi": "Bước 1"
           },
           "look": {
-            "en": "Add employee, at the top of the list. Pressing it opens the form.",
-            "vi": "Thêm nhân viên, ở đầu danh sách. Bấm vào sẽ mở biểu mẫu."
+            "en": "Add employee, at the top of the list. It opens a guided screen of seven steps.",
+            "vi": "Thêm nhân viên, ở đầu danh sách. Nút này mở một màn hình có hướng dẫn gồm bảy bước."
           },
           "means": {
-            "en": "Everybody who is paid starts here. In Payobook this opens a form of its own.",
-            "vi": "Mọi người được trả lương đều bắt đầu từ đây. Trong Payobook, nút này mở ra một biểu mẫu riêng."
+            "en": "Only the first three steps are required. The other four already hold sensible answers you can change.",
+            "vi": "Chỉ ba bước đầu là bắt buộc. Bốn bước còn lại đã có sẵn câu trả lời hợp lý mà bạn có thể sửa."
           },
           "modes": [
             "try"
@@ -15275,8 +15285,8 @@
           "timeout": 0,
           "tip": "",
           "title": {
-            "en": "Find the new employee form",
-            "vi": "Tìm biểu mẫu nhân viên mới"
+            "en": "Find where new people start",
+            "vi": "Tìm nơi bắt đầu cho người mới"
           },
           "value": ""
         },
@@ -15295,8 +15305,8 @@
             "vi": "Bước 2"
           },
           "look": {
-            "en": "The Full name box. Type the name and press Enter.",
-            "vi": "Ô Họ và tên. Gõ tên vào rồi bấm Enter."
+            "en": "Step 1, Who is joining. Type the full name in the Full name box and press Enter.",
+            "vi": "Bước 1, Ai sắp vào làm. Gõ họ và tên vào ô Họ và tên rồi bấm Enter."
           },
           "means": {
             "en": "The name is what everybody after you will search for.",
@@ -15313,8 +15323,8 @@
             "vi": "Ở đây bạn gõ có dấu hay không đều được. Công ty thực hành không chấm chính tả của bạn."
           },
           "title": {
-            "en": "Type the person's name",
-            "vi": "Nhập tên người đó"
+            "en": "Type who is joining",
+            "vi": "Nhập người sắp vào làm"
           },
           "value": {
             "en": "Nguyễn Văn An",
@@ -15324,24 +15334,24 @@
         {
           "act": "click",
           "affects": {
-            "en": "The division you pick decides the rules that work out every payslip this person gets.",
-            "vi": "Bộ phận bạn chọn quyết định bộ quy tắc tính mọi phiếu lương của người này về sau."
+            "en": "The currency and the trial period follow from it, and Paid by on the right shows the scheme.",
+            "vi": "Tiền tệ và thời gian thử việc đi theo đó, và mục Trả lương theo ở bên phải cho thấy chương trình lương."
           },
-          "anchor": "rep-newemp-div",
+          "anchor": "rep-newemp-team",
           "body": "",
           "guard": false,
-          "key": "division",
+          "key": "team",
           "kicker": {
             "en": "Step 3",
             "vi": "Bước 3"
           },
           "look": {
-            "en": "The Division list, under the name. Open it and pick one.",
-            "vi": "Danh sách Bộ phận, dưới ô tên. Mở ra và chọn một bộ phận."
+            "en": "Step 2, Role and place. Open the Team list and pick one.",
+            "vi": "Bước 2, Vị trí và nơi làm việc. Mở danh sách Nhóm và chọn một nhóm."
           },
           "means": {
-            "en": "This is the decision on this form. Each division carries its own pay rules.",
-            "vi": "Đây là quyết định quan trọng nhất trên biểu mẫu này. Mỗi bộ phận có bộ quy tắc lương riêng."
+            "en": "This is the decision on this screen. The team decides which pay scheme pays this person.",
+            "vi": "Đây là quyết định quan trọng nhất trên màn hình này. Nhóm quyết định chương trình lương nào trả lương cho người này."
           },
           "modes": [
             "try"
@@ -15351,32 +15361,32 @@
           "timeout": 0,
           "tip": "",
           "title": {
-            "en": "Pick the division",
-            "vi": "Chọn bộ phận"
+            "en": "Pick the team",
+            "vi": "Chọn nhóm"
           },
           "value": ""
         },
         {
-          "act": "click",
+          "act": "input",
           "affects": {
-            "en": "Here it writes nothing at all. There is no server behind the practice company.",
-            "vi": "Ở đây nó không ghi gì cả. Không có máy chủ nào phía sau công ty thực hành."
+            "en": "That example is worked out by the real pay scheme, and nothing is saved while you look at it.",
+            "vi": "Phiếu mẫu đó do chính chương trình lương tính ra, và không có gì được lưu khi bạn xem."
           },
-          "anchor": "rep-newemp-save",
+          "anchor": "rep-newemp-wage",
           "body": "",
-          "guard": true,
-          "key": "save",
+          "guard": false,
+          "key": "wage",
           "kicker": {
             "en": "Step 4",
             "vi": "Bước 4"
           },
           "look": {
-            "en": "Save, under the form. Pressing it is the last step.",
-            "vi": "Lưu, dưới biểu mẫu. Bấm vào là bước cuối cùng."
+            "en": "Step 3, Contract and pay. Type 9,500,000 in the Monthly wage box and press Enter.",
+            "vi": "Bước 3, Hợp đồng và lương. Gõ 9.500.000 vào ô Lương tháng rồi bấm Enter."
           },
           "means": {
-            "en": "On your own Payobook this writes a record other people can see.",
-            "vi": "Trên Payobook của chính bạn, thao tác này ghi một bản ghi mà người khác cũng nhìn thấy."
+            "en": "The wage is in the pay scheme's own money. On your own Payobook a month's payslip example appears on the right.",
+            "vi": "Lương tính bằng đồng tiền của chương trình lương. Trên Payobook của chính bạn, một phiếu lương mẫu của một tháng sẽ hiện ở bên phải."
           },
           "modes": [
             "try"
@@ -15386,8 +15396,46 @@
           "timeout": 0,
           "tip": "",
           "title": {
-            "en": "Save the person",
-            "vi": "Lưu người này"
+            "en": "Type the monthly wage",
+            "vi": "Nhập lương tháng"
+          },
+          "value": {
+            "en": "9500000",
+            "vi": "9500000"
+          }
+        },
+        {
+          "act": "click",
+          "affects": {
+            "en": "Here it sends nothing at all. There is no server behind the practice company.",
+            "vi": "Ở đây nó không gửi gì cả. Không có máy chủ nào phía sau công ty thực hành."
+          },
+          "anchor": "rep-newemp-send",
+          "body": "",
+          "guard": true,
+          "key": "send",
+          "kicker": {
+            "en": "Step 5",
+            "vi": "Bước 5"
+          },
+          "look": {
+            "en": "Check and add, the last step. Send is the button at the bottom.",
+            "vi": "Kiểm tra và thêm, bước cuối cùng. Gửi là nút ở cuối màn hình."
+          },
+          "means": {
+            "en": "Where your company asks for it, a second person approves the hire. Nothing is created until they do.",
+            "vi": "Nếu công ty bạn yêu cầu, một người thứ hai sẽ duyệt người mới này. Chưa có gì được tạo cho đến khi họ duyệt."
+          },
+          "modes": [
+            "try"
+          ],
+          "nav": "",
+          "screen": "employees",
+          "timeout": 0,
+          "tip": "",
+          "title": {
+            "en": "Check and send",
+            "vi": "Kiểm tra và gửi"
           },
           "value": ""
         },
@@ -15402,8 +15450,8 @@
           "guard": false,
           "key": "roster",
           "kicker": {
-            "en": "Step 5",
-            "vi": "Bước 5"
+            "en": "Step 6",
+            "vi": "Bước 6"
           },
           "look": {
             "en": "The last row of the roster, and the warning at its end.",
@@ -15431,8 +15479,8 @@
         }
       ],
       "tagline": {
-        "en": "Name, division, save — and the one thing that still stands between a new person and their pay.",
-        "vi": "Tên, bộ phận, lưu — và điều duy nhất còn ngăn giữa một người mới và tiền lương của họ."
+        "en": "Name, team, wage, Send — and the one thing that still stands between a new person and their pay.",
+        "vi": "Tên, nhóm, lương, Gửi — và điều duy nhất còn ngăn giữa một người mới và tiền lương của họ."
       }
     },
     {
@@ -42106,5 +42154,5 @@
       }
     }
   ],
-  "version": "cf927ef9da8c"
+  "version": "980761a98311"
 }

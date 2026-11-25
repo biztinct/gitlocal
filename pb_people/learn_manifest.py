@@ -189,7 +189,9 @@ MANIFESTS = {
         ],
         # The screen's buttons (Contract, Select, Add employee, Bulk update) act
         # in the browser or open other screens; none calls a server method of
-        # its own, so there is nothing to list here.
+        # its own, so there is nothing to list here. Add employee opens the
+        # guided Add employee screen (pb_new_hire, seven steps) where that
+        # module is installed, else the older three-step window.
         'actions': [],
         'right_now': None,
         'station': 'employees',
