@@ -241,3 +241,37 @@ Owner approved the design and the phased build on 2026-11-25.
 - **NH60** (P4) Locally `pb.hiring.offer.action_send_to_candidate` fails without wkhtmltopdf (the letter PDF). Walk seeds
   write `state='signed'`, `join_status='pending'` directly (scratch `seed_hiring_p4.py`); tests try the real flow first.
 
+- **NH61** (P5a) Chrome's own page translation rewrites a Vietnamese / Indonesian screen back into English in the automation
+  browser (mixed lines like "AI LÀM GÌ" give it away; `<font>` nodes appear). Right after every reload set
+  `document.documentElement.setAttribute('translate','no')` and check `document.querySelectorAll('font').length === 0`
+  before reading any wording.
+- **NH62** (P5a) After a `.po` change the browser keeps the old screen wording: web translations are cached in the IndexedDB
+  database `localization` (and per server process). Restart the server AND `indexedDB.deleteDatabase('localization')`
+  before judging a translation fix; the server's `/web/webclient/translations` answer is the truth.
+- **NH63** (P5a) On the walk DB a shell write of `res.users.lang` did not show in the session; the top-bar language switch
+  (EN / ID / VI) is what changes the user's language — use it in walks. Learn has its own content switch (Tiếng Việt).
+- **NH64** (P5a) `with_user(u)` does not put the user's language in the context: `_()` then guesses it from the uid while
+  translated FIELDS read the context's (none = English), so a test mixes both. Call like the browser does:
+  `.with_user(u).with_context(lang=u.lang)`.
+- **NH65** (P5a) A test class attribute named `id` (e.g. `cls.id = {...}`) shadows `TestCase.id()`: the runner dies in
+  `result.stopTest` with "'dict' object is not callable" and reports 0 tests. Never name a fixture `id`.
+- **NH66** (P5a) The local disk filled up (466 GB, ~0 free) during DB copies: every tool stops (the shell cannot create its
+  output file, Write cannot write, Postgres refuses connections). Each walk/test DB copy costs ~0.5 GB (DB + filestore);
+  keep ≥ 3 GB free before parallel suites, drop superseded copies, and use a slim "before" snapshot (only the modules a
+  phase changes, placed FIRST in `addons_path`) instead of a full `git archive` (1.1 GB).
+- **NH67** (P5a) The recipe base `upd_p6_t_tpl` has an inactive admin and inconsistent modules (`pb_govt_reports` not
+  loaded): a server on a copy times out (`virtual real time limit`). For "a database without pb_new_hire" walks, uninstall
+  the module on a copy of `nh3_base` (`button_immediate_uninstall`) instead.
+- **NH68** (P5a) `mail.template.body_html` exports as ONE msgid (the whole HTML, `translate=True`), not one per text node:
+  its translation must keep every tag, attribute and `t-out` byte-identical (the P5a checker compares the tag lists).
+- **NH69** (P5a) The Learn generator's guard rule reads a click step's KEY, ANCHOR and English TITLE: a `guard: false`
+  step whose title has a write verb ("Open Add employee") is refused ("…whose name says it add"). Title it by what the
+  learner does ("Find where new people start").
+- **NH70** (P5a) Learn content is English + Vietnamese only (bilingual leaves). An Indonesian user sees English lesson text
+  with other modules' Indonesian words mixed in through the global screen translation table (a pre-existing odd id_ID
+  msgstr shows in the "Your turn" box). Walk lessons in en and vi.
+- **NH71** (P5a) An upgrade loads a `.po`'s model terms into `noupdate` rows when that language key is missing (the
+  non-overwrite merge `noupdate || update || stored`): the shipped paper labels got vi/id on a plain `-u`; a label someone
+  already wrote in that language is never overwritten. Proven on the walk DB (`label->>'vi_VN'`).
+- **NH72** (P5a) The website layout titles a `/my` page with the TEMPLATE's own name ("Welcome (new joiner)") unless the
+  controller passes `additional_title` — and template names are never translated. Pass a `_()` title.
