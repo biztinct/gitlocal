@@ -39,4 +39,22 @@ class EngineTest(unittest.TestCase):
  def test_missing_punch(self):
   t=datetime(2026,11,18,7,30,tzinfo=TZ)
   self.assertIn('error',engine.calculate([t],t,t+timedelta(hours=9),t+timedelta(hours=13),[],BANDS,'worker'))
+ def test_paid_grace_preserves_actual_punches_and_threshold(self):
+  start=datetime(2026,11,18,7,30,tzinfo=TZ);end=start+timedelta(hours=9)
+  bands=[dict(b, confirmed=True, pay_late_minutes=(b['maximum'] is not None and b['maximum'] <=10)) for b in BANDS]
+  for category,penalty in [('worker',4),('manager',1)]:
+   for minutes in [0,.5,1,9,9.99,10,60]:
+    first=start+timedelta(minutes=minutes)
+    result=engine.calculate([first,end],start,end,end,[(start+timedelta(hours=4),start+timedelta(hours=5))],bands,category)
+    self.assertEqual(result['first'],first.isoformat())
+    self.assertAlmostEqual(result['worked_hours'],8-minutes/60)
+    self.assertAlmostEqual(result['late_minutes'],minutes)
+    self.assertAlmostEqual(result['normal_hours'],8 if minutes<10 else 8-minutes/60-penalty)
+ def test_long_shift_two_breaks_and_partial_checkout(self):
+  start=datetime(2026,11,18,7,30,tzinfo=TZ);end=start+timedelta(hours=20.5)
+  breaks=[(start+timedelta(hours=a),start+timedelta(hours=b)) for a,b in [(4,5),(16,17)]]
+  result=engine.calculate([start,end],start,start+timedelta(hours=9),end,breaks,BANDS,'worker')
+  self.assertEqual((result['normal_hours'],result['overtime_hours'],result['break_hours']),(8,10.5,2))
+  partial=engine.calculate([start,start+timedelta(hours=16.5)],start,start+timedelta(hours=9),end,breaks,BANDS,'worker')
+  self.assertEqual((partial['normal_hours'],partial['overtime_hours'],partial['break_hours']),(8,7,1.5))
 if __name__=='__main__':unittest.main()

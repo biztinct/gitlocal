@@ -1,4 +1,5 @@
 import json
+import math
 from datetime import datetime, time, timedelta
 
 import pytz
@@ -136,6 +137,8 @@ class Band(models.Model):
     maximum = fields.Float(string='To minutes (exclusive)')
     open_ended = fields.Boolean(string='No upper limit')
     hours = fields.Float(string='Additional hours deducted')
+    pay_late_minutes = fields.Boolean(string='Pay the missed minutes', default=False,
+        help='Retain actual punches and lateness, but credit the missed start time for this band.')
     confirmed = fields.Boolean(string='Confirmed', default=False)
     note = fields.Char()
 
@@ -157,20 +160,31 @@ class ShiftRule(models.Model):
     normal_end_offset = fields.Float(string='Normal window ends after (elapsed hours)', required=True, default=9.)
     break_start_offset = fields.Float(string='Unpaid break starts after (elapsed hours)', required=True, default=4.)
     break_hours = fields.Float(string='Unpaid break hours', required=True, default=1.)
+    second_break_start_offset = fields.Float(string='Second break starts after (elapsed hours)', default=0.)
+    second_break_hours = fields.Float(string='Second unpaid break hours', default=0.)
     normal_hours = fields.Float(string='Planned normal hours', compute='_normal')
     note = fields.Char(string='Source / inference')
     _unique = models.Constraint('UNIQUE(policy_id,template_id)', 'Each shift needs one calculation rule per policy.')
 
-    @api.depends('normal_end_offset', 'break_start_offset', 'break_hours')
+    def _break_offsets(self):
+        self.ensure_one()
+        return [(self.break_start_offset, self.break_hours)] + ([(self.second_break_start_offset, self.second_break_hours)] if self.second_break_hours else [])
+
+    @api.depends('normal_end_offset', 'break_start_offset', 'break_hours', 'second_break_start_offset', 'second_break_hours')
     def _normal(self):
         for r in self:
-            r.normal_hours = r.normal_end_offset - max(0, min(r.break_hours, r.normal_end_offset-r.break_start_offset))
+            r.normal_hours = r.normal_end_offset - sum(max(0, min(hours, r.normal_end_offset-offset)) for offset, hours in r._break_offsets())
 
-    @api.constrains('normal_end_offset', 'break_start_offset', 'break_hours', 'template_id')
+    @api.constrains('normal_end_offset', 'break_start_offset', 'break_hours', 'second_break_start_offset', 'second_break_hours', 'template_id')
     def _check_rule(self):
         for r in self:
             t = r.template_id
             span = (t.end_hour-t.start_hour) + (24 if t.is_overnight else 0)
+            if not all(math.isfinite(v) for v in (r.normal_end_offset, r.break_start_offset, r.break_hours, r.second_break_start_offset, r.second_break_hours)):
+                raise ValidationError(_('Break and shift hours must be finite numbers.'))
+            intervals = [(offset, offset+hours) for offset, hours in r._break_offsets() if hours]
+            if r.second_break_hours < 0 or any(a < 0 or b > span for a,b in intervals) or (len(intervals) == 2 and max(intervals[0][0], intervals[1][0]) < min(intervals[0][1], intervals[1][1])):
+                raise ValidationError(_('Unpaid breaks must fit inside the shift and must not overlap.'))
             if not 0 < r.normal_end_offset <= span or r.break_start_offset < 0 or r.break_hours < 0 or r.break_start_offset+r.break_hours > span:
                 raise ValidationError(_('Normal hours and the unpaid break must fit inside the shift.'))
 
@@ -333,9 +347,9 @@ class Roster(models.Model):
                 return {'error': 'Approved correction is outside this shift capture window. Review the roster.'}
         if high.astimezone(pytz.utc).replace(tzinfo=None) > fields.Datetime.now():
             return {'error': 'This shift capture window has not finished yet.'}
-        breaks = [(start+timedelta(hours=rule.break_start_offset), start+timedelta(hours=rule.break_start_offset+rule.break_hours))]
+        breaks = [(start+timedelta(hours=offset), start+timedelta(hours=offset+hours)) for offset, hours in rule._break_offsets()]
         bands = [{'category': b.category, 'minimum': b.minimum,
-                  'maximum': None if b.open_ended else b.maximum, 'hours': b.hours, 'confirmed': b.confirmed} for b in policy.band_ids]
+                  'maximum': None if b.open_ended else b.maximum, 'hours': b.hours, 'confirmed': b.confirmed, 'pay_late_minutes': b.pay_late_minutes} for b in policy.band_ids]
         night_intervals = []
         if policy.night_premium:
             for offset in (-1, 0, 1, 2):
