@@ -101,7 +101,7 @@ spacing issue is addressed.
    patched Qt has an older page layout without the modern box layout the themed slip uses). Both
    on rize. Owner decision needed: fix those two payslip layouts first (their owners), or accept.
 3. Space before bold words in Clean/Friendly/Modern (§4) — not fixed.
-4. Local test run of the two suites: see §8 (run on a copy of `upd_p6_t_tpl`).
+4. Local suites: green (§8).
 5. Browser walk on payobook.com: not done (nothing changed live).
 6. sudima payslip: none exists to test.
 
@@ -122,4 +122,7 @@ picks up the new engine at its next PDF.
 
 ## 8. Local tests
 
-(filled in below when the run ends)
+Local copy of `upd_p6_t_tpl` (`docstudio_pdffix_t`), `-u all -i pb_doc_studio,pb_report_pdf`, then
+`-i pb_report_builder` (soft dependency the report-PDF suite needs), then `-u pb_doc_studio,pb_report_pdf
+--test-tags /pb_doc_studio,/pb_report_pdf`: **pb_doc_studio 43 tests, pb_report_pdf 21 tests, 0 failed,
+0 errors** (`test_03` skipped: no PDF engine on the Mac, as in W2).
