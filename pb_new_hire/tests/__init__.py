@@ -2,3 +2,4 @@
 from . import test_new_hire
 from . import test_static
 from . import test_welcome
+from . import test_docs

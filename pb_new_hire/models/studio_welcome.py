@@ -147,27 +147,15 @@ class PbNewHireWelcome(models.AbstractModel):
 
     @api.model
     def _letter_for_me(self, code, approval_needs):
-        """The letter as step 6 offers it. A contract letter prints the pay,
-        and `pb_doc_contracts` lets only someone who may see pay make it
-        (`_cd_unmask_wage`: payroll manager). In the fast lane the person on
-        the screen is the one it runs as, so the toggle says so up front;
-        with an approval, whoever approves needs that right (said in the sub)."""
-        info = self._letter_info(code) if code else {
-            'available': False, 'reason': _("Choose the country of work in step 2 first.")}
-        if not info.get('available') or 'pb.contracts' not in self.env:
-            return info
-        try:
-            may = bool(self.env['pb.contracts']._cd_unmask_wage())
-        except Exception:                       # noqa: BLE001 — a hint, never a gate
-            may = True
-        if not may and not approval_needs:
-            return dict(info, available=False, reason=_(
-                "The letter shows the pay, and only someone who may see pay can prepare it. "
-                "Print it from the contract panel later, or ask payroll."))
-        if not approval_needs:
-            return info
-        return dict(info, approver_note=_("Whoever approves needs to be allowed to see pay, "
-                                          "or the letter is left for payroll."))
+        """The letter as step 6 offers it. P3a (architect decision): the
+        letter prints the pay, and whoever approves the hire has just
+        approved that very wage — so the letter leg makes it for them
+        whatever their pay right (`LETTER_CTX`, docs_legs.py). P2's fast-lane
+        switch-off and the approver warning are gone; a real failure (no PDF
+        tool, no wording) is still an amber leg on the done card."""
+        if not code:
+            return {'available': False, 'reason': _("Choose the country of work in step 2 first.")}
+        return self._letter_info(code)
 
     # ===================================================== step 4
     @api.model
@@ -534,10 +522,12 @@ class PbNewHireWelcome(models.AbstractModel):
         first = ctx['first']
         out = []
 
-        def add(key, when, title, who, sub, order):
+        def add(key, when, title, who, sub, order, role=''):
             kind = 'day' if when == start else ('before' if when < start else 'after')
             out.append({'id': key, 'when': self._iso(when), 'title': title, 'who': who or '',
-                        'sub': sub or '', 'kind': kind, 'past': when <= today, 'order': order})
+                        'sub': sub or '', 'kind': kind, 'past': when <= today, 'order': order,
+                        # P3a: whose step it is, for the "Who does what" bar
+                        'role': role})
 
         add('day', start, _("First day"), first, _("%s starts.", first), -1)
         if template and ctx['open_case']:
@@ -548,7 +538,7 @@ class PbNewHireWelcome(models.AbstractModel):
                 base = opened if step.anchor == 'case_open' else start
                 when = base + timedelta(days=step.offset_days or 0)
                 add('step-%s' % step.id, when, line[0], self._owner_words(step.assignee_rule, step, ctx),
-                    line[1], step.sequence)
+                    line[1], step.sequence, role=step.assignee_rule or '')
             for mark, offset in self._checkin_marks():
                 when = start + timedelta(days=offset)
                 if mark == 'pulse':

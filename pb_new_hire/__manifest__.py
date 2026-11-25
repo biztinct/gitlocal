@@ -13,7 +13,10 @@ One client action (`pb_new_hire_studio`, xmlid
 centre and "The record so far" on the right. P1 ships the three required
 steps (who is joining, role and place, contract and pay) and "Check and
 add"; P2 adds step 4 (schedule and time off) and step 6 (welcome and first
-day) and the welcome legs that run after approval (`models/welcome_legs.py`).
+day) and the welcome legs that run after approval (`models/welcome_legs.py`);
+P3a adds step 5 (details and documents): the papers needed per country of
+work (`pb.new.hire.paper`), HR's "I have it" entry, and the record of what
+the new person will be asked (`pb.new.hire.ask`, sent in P3b).
 
 Nothing is written before Send. Send builds ONE values dict and proposes it
 through the existing new-hire approval (`pb.newhire.proposal`, kind
@@ -25,7 +28,7 @@ Callers that do not send them are untouched.
 The old door (`pb_onboard_wizard` tag) opens this studio wherever this module
 is installed (`static/src/js/takeover.js`).
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -47,8 +50,18 @@ is installed (`static/src/js/takeover.js`).
         'pb_form_studio_people',    # your own fields (Form builder)
         'biz_access',               # employee-number sign-ins
         'pb_clock',                 # the clock number
+        # P3a — step 5, details and documents (all on every live database)
+        'pb_employee_vault',        # document categories, the side panel's upload
+        'pb_me_portal',             # /my/profile, self-uploadable papers
+        'pb_me_details',            # /my/details: ID paper, bank
+        'pb_me_tax',                # tax kinds per country, their fields and checks
+        'pb_bank_ocr',              # the bank change path a second person approves
+        'pb_employee_bank_panel',   # bank on record (Payroll-ready)
     ],
     'data': [
+        'security/ir.model.access.csv',
+        'security/rules.xml',
+        'data/papers.xml',
         'views/studio_action.xml',
     ],
     'assets': {
@@ -59,6 +72,7 @@ is installed (`static/src/js/takeover.js`).
             'pb_new_hire/static/src/js/step_role.js',
             'pb_new_hire/static/src/js/step_pay.js',
             'pb_new_hire/static/src/js/step_soon.js',
+            'pb_new_hire/static/src/js/step_docs.js',
             'pb_new_hire/static/src/js/step_sched.js',
             'pb_new_hire/static/src/js/step_welcome.js',
             'pb_new_hire/static/src/js/step_check.js',

@@ -38,6 +38,9 @@ from odoo.addons.pb_probation.models.probation_common import add_months
 
 _logger = logging.getLogger(__name__)
 
+#: P3a: the papers HR attached, handed to the fast-lane apply for ONE call.
+FILES_CTX = 'pb_nh_files'
+
 #: Caps on what a caller controls (reachable over JSON-RPC).
 MAX_TEAMS = 500
 MAX_JOBS = 1000
@@ -57,6 +60,8 @@ DRAFT_KEYS = (
     # P2 — step 3's category, step 4 and step 6
     'type_id', 'week_id', 'late_group', 'clock_on', 'clock_code', 'login_mode',
     'buddy_id', 'equipment', 'letter', 'open_case', 'own',
+    # P3a — step 5: {item key: ask|have|skip|later} and the typed values
+    'items', 'have',
 )
 
 _EMAIL = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
@@ -409,6 +414,7 @@ class PbNewHire(models.AbstractModel):
                 out['trial_none'] = _("No trial period rule for %(country)s.",
                                       country=self._country_label(code))
             out['letter'] = self._letter_info(code)     # P2: the Contract letter tile
+            out['papers'] = self._papers_tile(code)     # P3a: the Papers needed tile
         return out
 
     # ======================================================= usual answers
@@ -684,26 +690,35 @@ class PbNewHire(models.AbstractModel):
         return vals, decided
 
     @api.model
-    def send(self, draft):
+    def send(self, draft, files=None):
         """Validate, build the values and propose ONE new hire. Nothing else
         is written. A user mistake comes back as `{ok: False, step, field,
-        message}`; the answer otherwise is the proposal's own `answer()`."""
+        message}`; the answer otherwise is the proposal's own `answer()`.
+
+        P3a: `files` = `[{key, name, mime, data (base64), issue_date,
+        expiry_date}]`, the papers HR attached in step 5. They are checked
+        here (the side panel's rules), never put in the payload: a waiting
+        hire holds them as attachments of its proposal; the fast lane hands
+        them to the papers leg through a context key for this call only."""
         self._gate()
         d = {k: v for k, v in (draft or {}).items() if k in DRAFT_KEYS} \
             if isinstance(draft, dict) else {}
-        refused = self._validate(d)
+        refused = self._validate(d) or self._validate_docs(d, files)
         if refused:
             return refused
         vals, decided = self._values(d)
+        self._values_docs(d, vals, files)
+        held = self._held_files(vals, files)
         amount = vals['wage'] or self._scale_amount(d)
         currency = (decided.get('currency') or {}).get('name') or self._company_currency()['name']
         try:
-            proposal = self.env['pb.newhire.proposal'].propose(
+            proposal = self.env['pb.newhire.proposal'].with_context(**{FILES_CTX: held}).propose(
                 'employee',
                 _("Add %s to the payroll", vals['name']),
                 payload={'values': vals},
                 facts={'wage': {'value': float(amount or 0.0), 'unit': currency},
-                       'has_bank': {'value': False, 'unit': ''},
+                       # P3a: the bank goes with the hire, as in the old window
+                       'has_bank': {'value': bool(vals.get('account_number')), 'unit': ''},
                        'contract_type': {'value': _("Fixed term") if vals['contract_kind'] == 'fixed'
                                          else _("Permanent"), 'unit': ''}},
                 amount=float(amount or 0.0),
@@ -712,6 +727,9 @@ class PbNewHire(models.AbstractModel):
             message = exc.args[0] if exc.args else ''
             return {'ok': False, 'step': 'check', 'field': False,
                     'message': message or _("The hire could not be sent. Try again in a moment.")}
+        if held and proposal.state == 'pending' and not proposal.applied:
+            proposal._pb_nh_hold_files(held)
+        proposal = proposal.with_context(**{FILES_CTX: False})
         answer = proposal.answer()
         result = answer.get('result') or {}
         return dict(answer,

@@ -46,8 +46,11 @@ _logger = logging.getLogger(__name__)
 
 #: The fixed order (handover §2.2). `case` after `login` so the day-one
 #: "sign-in details" step finds a login; buddy and equipment need the case.
-LEG_ORDER = ('clock', 'week', 'own_fields', 'login', 'case', 'buddy',
-             'equipment', 'letter')
+LEG_ORDER = ('clock', 'week', 'own_fields',
+             # P3a (docs_legs.py): what HR typed, the papers HR attached and
+             # what the new person will be asked — before the sign-in
+             'details', 'papers', 'asks',
+             'login', 'case', 'buddy', 'equipment', 'letter')
 
 #: Tests set this to see a leg's programming error instead of a failed leg.
 RAISE_CTX = 'pb_nh_legs_raise'
@@ -55,6 +58,9 @@ RAISE_CTX = 'pb_nh_legs_raise'
 #: "Not needed" for this one person: the joining checklist must not fill in
 #: the trial end the person's HR switched off (read by `pb.journey.case`).
 NO_TRIAL_CTX = 'pb_nh_no_trial_employee_id'
+
+#: P3a: the studio's contract letter may print the pay of this contract id.
+LETTER_CTX = 'pb_nh_letter_contract_id'
 
 
 def _int(value):
@@ -122,6 +128,12 @@ class PbNewHireLegs(models.AbstractModel):
             'week': _("The working week could not be set: %s Set it from Workforce."),
             'own_fields': _("Your own fields could not be saved: %s Fill them in on the "
                             "employee record."),
+            'details': _("The details you typed could not be saved: %s Type them on the "
+                         "employee record."),
+            'papers': _("The papers could not be filed: %s Add them from the employee's side "
+                        "panel, Documents."),
+            'asks': _("What to ask the new person for could not be noted: %s Ask them "
+                      "yourself for now."),
             'login': _("The sign-in could not be made: %s Make it from Access."),
             'case': _("The joining checklist could not be started: %s Start it from New "
                       "joiners."),
@@ -356,7 +368,14 @@ class PbNewHireLegs(models.AbstractModel):
         contract = state.get('contract')
         if not values.get('letter') or not contract or 'pb.contracts' not in self.env:
             return False
-        answer = self.env['pb.contracts'].contract_document_save(contract.id)
+        # P3a (architect decision): whoever approved the hire has just
+        # approved this very wage, so the letter that prints it is made for
+        # them. `sudo` cannot do that here — the pay gate reads `has_group`
+        # and then reads the wage as the real user (NH23, NH32) — so the
+        # gate is opened for THIS contract only, by a context key that
+        # `pb.contracts._cd_unmask_wage` reads (docs_legs.py).
+        answer = self.env['pb.contracts'].with_context(**{LETTER_CTX: contract.id}) \
+            .contract_document_save(contract.id)
         if not answer or not answer.get('ok'):
             raise LegFailed((answer or {}).get('msg') or _("the letter could not be made."))
         return _("the contract letter")

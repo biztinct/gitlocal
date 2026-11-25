@@ -452,13 +452,14 @@ class TestStepSix(WelcomeCommon):
         self.assertEqual(doc.employee_id, emp)
         self.assertTrue(self.legs(out)['letter']['ok'])
 
-    def test_w10c_letter_needs_pay_right(self):
+    def test_w10c_letter_without_pay_right(self):
+        # P3a (architect decision, NEWHIRE_P3A_HANDOVER §1.6): the letter is
+        # made for whoever added / approved the hire, pay right or not.
         self.fast_lane()
         letter = self.studio().welcome_options(self.welcome_draft())['letter']
-        self.assertFalse(letter['available'], 'the person on screen may not see pay')
-        self.assertIn('only someone who may see pay', letter['reason'])
+        self.assertTrue(letter['available'], 'no fast-lane switch-off any more')
         out = self.studio().send(self.welcome_draft(login_mode='none', open_case=False, letter=True))
-        self.assertNotIn('letter', self.legs(out), 'not asked, so not tried')
+        self.assertTrue(self.legs(out)['letter']['ok'], self.legs(out))
 
     def test_w10b_letter_failure(self):
         self.pay_manager(self.maker)
