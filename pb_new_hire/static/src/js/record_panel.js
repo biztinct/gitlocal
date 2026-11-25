@@ -90,6 +90,9 @@ export class RecordPanel extends Component {
         if (c === "ask") {
             return { cls: "is-p", icon: "send", text: _t("Bank account: %s will be asked", first) };
         }
+        if (c === "hiring") {
+            return { cls: "is-w", icon: "shield", text: _t("Bank account: from the Hiring paper, then a second approval") };
+        }
         return { cls: "is-w", icon: "alert", text: _t("Bank account: not asked yet") };
     }
     /** "Who does what": you (typed here + your own fields), the new person

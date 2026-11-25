@@ -535,6 +535,38 @@
     .pbnh-pvslip { color: var(--pbnh-muted); font-size: 12.5px; border: 1px dashed var(--pbnh-line); border-radius: 12px; padding: 12px; display: flex; gap: 8px; align-items: flex-start; }
     .pbnh-pvslip svg { color: var(--pbnh-faint); margin-top: 2px; }
 
+    // ------------------------------------------------ P4: step 1's ways in (POC .ways / .cand)
+    .pbnh-ways { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+    .pbnh-way {
+        display: flex; gap: 12px; align-items: flex-start; text-align: left; border: 1.5px solid var(--pbnh-line);
+        background: var(--pbnh-card); border-radius: var(--pbnh-r); padding: 13px 14px; color: var(--pbnh-ink);
+        transition: border-color .15s ease, background .15s ease, transform .15s ease;
+    }
+    .pbnh-way:hover { border-color: var(--pbnh-p-light); transform: translateY(-1px); }
+    .pbnh-way.is-on { border-color: var(--pbnh-p); background: var(--pbnh-p-soft); }
+    .pbnh-way.is-on .pbnh-tile { background: var(--pbnh-p); color: #fff; }
+    .pbnh-way b { display: block; font-weight: 600; }
+    .pbnh-way small { color: var(--pbnh-muted); font-size: 12.5px; line-height: 1.35; display: block; }
+    .pbnh-offers { animation: pbnh-open .25s ease; overflow: hidden; }
+    .pbnh-cand {
+        display: flex; gap: 12px; align-items: center; padding: 11px 18px; border-top: 1px solid var(--pbnh-line2);
+        flex-wrap: wrap; transition: background .2s ease;
+    }
+    .pbnh-cand.is-on { background: var(--pbnh-p-soft); }
+    .pbnh-cand-who { flex: 1; min-width: 160px; }
+    .pbnh-cand-who b { font-weight: 600; overflow-wrap: anywhere; }
+    .pbnh-av {
+        width: 34px; height: 34px; border-radius: 50%; background: var(--pbnh-p-soft); color: var(--pbnh-p);
+        display: grid; place-items: center; font-weight: 700; font-size: 12px; flex: none;
+    }
+    .pbnh-cand-chips { flex-basis: 100%; display: flex; gap: 6px; flex-wrap: wrap; padding-left: 46px; }
+    .pbnh-cand-chips .pbnh-chip { display: inline-flex; gap: 4px; align-items: center; }
+    .pbnh-cand-bgv {
+        flex-basis: 100%; display: flex; gap: 6px; align-items: flex-start; padding-left: 46px;
+        color: var(--pbnh-warn); font-size: 12.5px; line-height: 1.4;
+    }
+    .pbnh-cand-bgv svg { flex: none; margin-top: 2px; }
+
     // ------------------------------------------------ P4: the payslip example (POC .pvo)
     .pbnh-pvslot { display: flex; flex-direction: column; }
     .pbnh-pvo {
@@ -646,6 +678,7 @@
         .pbnh-nav-k { display: none; }
     }
     @media (max-width: 600px) {
+        .pbnh-cand-chips, .pbnh-cand-bgv { padding-left: 0; }
         .pbnh-launch { flex-direction: column; align-items: stretch; }
         .pbnh-launch .pbnh-btn--big { justify-content: center; }
         .pbnh-check { padding: 11px 12px; gap: 10px; }

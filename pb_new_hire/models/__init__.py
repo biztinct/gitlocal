@@ -11,3 +11,4 @@ from . import invite
 from . import my_welcome
 from . import joiners
 from . import payslip_example
+from . import hiring

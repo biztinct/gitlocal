@@ -20,7 +20,12 @@ the new person will be asked (`pb.new.hire.ask`). P3b sends it: the welcome
 message with the standard sign-up link (`models/invite.py`), the page it
 lands on (`/my/welcome`, `controllers/welcome.py`), the row on the My
 Payobook home, reminders inside the one lifecycle job, and what each person
-was asked on the New joiners board (`models/joiners.py`).
+was asked on the New joiners board (`models/joiners.py`). P4 adds the
+payslip example in the right panel (`models/payslip_example.py`: real records
+in a rolled-back savepoint), step 1's From Hiring and Many at once tiles, the
+files a candidate sent through Hiring and Hiring's own "Confirm they joined"
+run for the studio's employee (`models/hiring.py`), and Hiring's "Confirm
+they joined" opening this studio (`static/src/js/hiring_patch.js`).
 
 Nothing is written before Send. Send builds ONE values dict and proposes it
 through the existing new-hire approval (`pb.newhire.proposal`, kind
@@ -32,7 +37,7 @@ Callers that do not send them are untouched.
 The old door (`pb_onboard_wizard` tag) opens this studio wherever this module
 is installed (`static/src/js/takeover.js`).
 """,
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -63,6 +68,10 @@ is installed (`static/src/js/takeover.js`).
         'pb_employee_bank_panel',   # bank on record (Payroll-ready)
         # P3b — the welcome link is the standard sign-up invitation
         'auth_signup',
+        # P4 — From Hiring / "Confirm they joined" and Many at once (both on
+        # all five live databases, FACTS_ONBOARD §M3)
+        'pb_hiring',
+        'pb_updates',
     ],
     'data': [
         'security/ir.model.access.csv',
@@ -92,6 +101,9 @@ is installed (`static/src/js/takeover.js`).
             'pb_new_hire/static/src/scss/joiners_board.scss',
             'pb_new_hire/static/src/js/joiners_board.js',
             'pb_new_hire/static/src/xml/joiners_board.xml',
+            # P4 — Hiring's "Confirm they joined" opens the studio (patched)
+            'pb_new_hire/static/src/js/hiring_patch.js',
+            'pb_new_hire/static/src/xml/hiring_patch.xml',
         ],
         'web.assets_frontend': [
             'pb_new_hire/static/src/scss/welcome_page.scss',

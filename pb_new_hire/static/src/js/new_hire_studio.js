@@ -68,14 +68,16 @@ const P2_KEYS = {
     file_meta: [{}, null],
     // P3b — step 5's reminders switch
     remind: [true, (d) => d.remind !== false],
+    // P4 — the signed offer brought across from Hiring
+    offer_id: [false, (d) => d.offer_id || false],
 };
 /** P4: changing one of these works the payslip example out again (500 ms
  *  after the last change). */
 const EXAMPLE_INPUTS = ["name", "date_start", "department_id", "job_id", "job_title", "payroll_country", "country_id",
     "wage", "contract_kind", "date_end", "usual", "type_id"];
 const EXAMPLE_MS = 500;
-const EXAMPLE_RETRY_MS = 450;
-const EXAMPLE_TRIES = 4;
+const EXAMPLE_RETRY_MS = 600;
+const EXAMPLE_TRIES = 8;
 /** Changing one of these re-builds step 6's options and its timeline. */
 const WELCOME_INPUTS = ["name", "date_start", "work_email", "personal", "department_id", "payroll_country", "parent_id",
     "country_id", "contract_kind", "trial_on", "clock_on", "clock_code", "login_mode", "buddy_id",
@@ -136,6 +138,10 @@ export class NewHireStudio extends Component {
             welcome: null,      // step 6: welcome_options() (and its timeline)
             docs: null,         // step 5: details_options()
             files: {},          // step 5: {item key: {name, mime, size, data}} — memory only
+            source: "type",     // P4: step 1's tile — type | hire
+            offers: null,       // P4: hiring_offers() rows
+            offersBusy: false,
+            offer: null,        // P4: the offer brought across (its row)
             example: null,      // P4: the payslip example's last answer
             exampleBusy: false, // P4: a newer answer is being worked out
             sending: false, result: null, refusal: null,
@@ -188,13 +194,19 @@ export class NewHireStudio extends Component {
             get scaleFound() { return studio.scaleFound; },
             get sendFiles() { return studio.sendFiles; },
             get exampleReady() { return studio.exampleReady; },
+            // P4 — step 1's tiles
+            setSource: (src) => this.setSource(src),
+            loadOffers: () => this.loadOffers(),
+            bringAcross: (id) => this.bringAcross(id),
+            dropOffer: () => this.dropOffer(),
+            manyAtOnce: () => this.manyAtOnce(),
         };
         if (asked) {
             this.props.updateActionState?.({ step: this.nh.step });
         }
         useSetupAction({ beforeLeave: (opts) => this.beforeLeave(opts) });
         onWillStart(() => this.load());
-        onMounted(() => this.askPrefill());
+        onMounted(() => this.askPrefill().then(() => this.openOfferDoor()));
 
         useExternalListener(window, "keydown", (ev) => this.onKey(ev), { capture: true });
         // first run (mount): the first empty field; after that, on every step
@@ -230,6 +242,12 @@ export class NewHireStudio extends Component {
     get prefill() {
         const a = this.props.action || {};
         return (a.params && a.params.prefill) || (a.context && a.context.pb_nh_prefill) || null;
+    }
+    /** P4: Hiring's "Confirm they joined" opens the studio with its offer. */
+    get offerDoor() {
+        const a = this.props.action || {};
+        const id = (a.params && a.params.offer_id) || (a.context && a.context.pb_nh_offer_id);
+        return Number(id) || 0;
     }
 
     // ------------------------------------------------------------ storage
@@ -327,6 +345,10 @@ export class NewHireStudio extends Component {
             this.refreshSched();
             this.checkClock();
             this.refreshDocs();
+            if (draft.offer_id && !this.offerDoor) {
+                nh.source = "hire";
+                this.restoreOffer(draft.offer_id);
+            }
         } catch (e) {
             if (isAccessError(e)) {
                 nh.denied = errorText(e);
@@ -385,32 +407,186 @@ export class NewHireStudio extends Component {
             "pb_scale_pin_reason"];
         return Object.fromEntries(keys.map((k) => [k, s[k]]));
     }
-    /** Ask again 500 ms after the last change; only the newest answer lands
-     *  (sequence guard); the old numbers stay, dimmed, until it does. A
-     *  "busy" answer (another example holds the calendar lock) is retried
-     *  quietly. */
+    /** Ask again 500 ms after the last change. ONE request at a time from
+     *  this screen: a change made while one is on its way is sent when it
+     *  comes back, and an answer for a draft that has changed since is never
+     *  shown (the old numbers stay, dimmed, until the right ones land). A
+     *  "busy" answer (somebody else's example holds the calendar lock) is
+     *  retried quietly. */
     refreshExample(delay = EXAMPLE_MS) {
         const nh = this.nh;
         clearTimeout(this.timers.example);
         if (!this.exampleReady) {
-            this.seq.example = (this.seq.example || 0) + 1;     // drop a reply in flight
+            this.exampleToken = (this.exampleToken || 0) + 1;   // drop a reply in flight
+            this.exampleKey = "";
             nh.example = null;
             nh.exampleBusy = false;
             return;
         }
         nh.exampleBusy = true;
-        this.seq.example = (this.seq.example || 0) + 1;         // an older reply never lands now
-        const run = (tries) => this.ask("example", "payslip_example", [this.exampleDraft], (res, err) => {
-            if (res && res.busy && tries < EXAMPLE_TRIES) {
-                this.later("example", EXAMPLE_RETRY_MS, () => run(tries + 1));
+        this.later("example", delay, () => this.runExample(1));
+    }
+    async runExample(tries) {
+        const nh = this.nh;
+        if (this.exampleInFlight) {
+            this.examplePending = true;
+            return;
+        }
+        if (!this.exampleReady) {
+            return;
+        }
+        const draft = this.exampleDraft;
+        const key = JSON.stringify(draft);
+        if (key === this.exampleKey && nh.example && tries === 1) {
+            nh.exampleBusy = false;                             // nothing changed
+            return;
+        }
+        const token = (this.exampleToken = (this.exampleToken || 0) + 1);
+        this.exampleInFlight = true;
+        this.examplePending = false;
+        let res = null;
+        let err = null;
+        try {
+            res = await this.orm.silent.call(MODEL, "payslip_example", [draft]);
+        } catch (e) {
+            err = e;
+        }
+        this.exampleInFlight = false;
+        if (token !== this.exampleToken) {
+            return;                                             // started again meanwhile
+        }
+        if (this.examplePending || key !== JSON.stringify(this.exampleDraft)) {
+            this.examplePending = false;
+            return this.runExample(1);                          // the draft moved on
+        }
+        if (res && res.busy && tries < EXAMPLE_TRIES) {
+            this.later("example", EXAMPLE_RETRY_MS, () => this.runExample(tries + 1));
+            return;
+        }
+        this.exampleKey = key;
+        nh.exampleBusy = false;
+        nh.example = err ? { ok: false, reason: errorText(err), fix: _t("The hire is not affected. Try again in a moment.") }
+            : (res && res.busy ? { ok: false, reason: _t("The example is busy for a moment."),
+                                   fix: _t("Change any answer to try again.") } : res);
+    }
+
+    // ------------------------------------------------------------ P4: From Hiring
+    setSource(src) {
+        const nh = this.nh;
+        nh.source = src === "hire" ? "hire" : "type";
+        if (nh.source === "hire" && nh.offers === null) {
+            this.loadOffers();
+        }
+    }
+    async loadOffers() {
+        const nh = this.nh;
+        nh.offersBusy = true;
+        try {
+            const res = await this.orm.call(MODEL, "hiring_offers", []);
+            nh.offers = (res && res.rows) || [];
+            if (nh.data && nh.data.hiring) {
+                nh.data.hiring.count = nh.offers.length;
+            }
+        } catch (e) {
+            nh.offers = [];
+            this.toast(errorText(e), { kind: "error" });
+        } finally {
+            nh.offersBusy = false;
+        }
+        return nh.offers;
+    }
+    /** After a reload: the offer row of a draft that was brought across. */
+    async restoreOffer(id) {
+        const rows = await this.loadOffers();
+        const row = rows.find((r) => r.offer_id === id);
+        if (row) {
+            this.nh.offer = row;
+        } else {
+            this.patch({ offer_id: false });
+            this.toast(_t("The offer you brought across is no longer waiting to join, so it was let go. The rest is kept."), { kind: "info" });
+        }
+    }
+    /** "Bring across": the offer fills the draft as if the person typed it
+     *  (touched — never overwritten by a team's suggestion). */
+    async bringAcross(id) {
+        const nh = this.nh;
+        let res;
+        try {
+            res = await this.orm.call(MODEL, "offer_draft", [id]);
+        } catch (e) {
+            this.toast(errorText(e), { kind: "error" });
+            return false;
+        }
+        if (!res || !res.ok) {
+            this.toast((res && res.message) || _t("That offer could not be brought across."), { kind: "error" });
+            this.loadOffers();
+            return false;
+        }
+        const take = { ...res.draft };
+        const name = take.parent_name;
+        delete take.parent_name;
+        const buddyName = take.buddy_name;
+        delete take.buddy_name;
+        if (!("wage" in take)) {
+            take.wage = null;
+        }
+        this.setSource("hire");
+        nh.offer = res.offer;
+        this.patch(take);
+        if (name) {
+            nh.draft.parent_name = name;
+        }
+        if (buddyName) {
+            nh.draft.buddy_name = buddyName;
+        }
+        this.persist();
+        if (take.department_id) {
+            await this.pickTeam(take.department_id, { initial: true });
+        }
+        this.toast(res.wage_note || _t("%s was brought across from Hiring. Check each step, then send.", res.offer.name),
+                   { kind: res.wage_note ? "info" : "ok" });
+        return true;
+    }
+    dropOffer() {
+        this.nh.offer = null;
+        this.patch({ offer_id: false });
+    }
+    /** The Hiring door: bring its offer across once the screen is up. */
+    async openOfferDoor() {
+        const id = this.offerDoor;
+        if (!id || this.offerDoorDone || !this.nh.data) {
+            return;
+        }
+        this.offerDoorDone = true;
+        const kept = String(this.nh.draft.name || "").trim();
+        if (kept && this.nh.draft.offer_id !== id) {
+            const start = await this.ask_({
+                title: _t("Carry on with %s?", kept),
+                body: _t("You have an unsent hire for %s. Carry on with it, or start the person from Hiring instead.", kept),
+                ok: _t("Start from Hiring"),
+                cancel: _t("Carry on with %s", kept),
+            });
+            if (!start) {
                 return;
             }
-            nh.exampleBusy = false;
-            nh.example = err ? { ok: false, reason: errorText(err), fix: _t("The hire is not affected. Try again in a moment.") }
-                : (res && res.busy ? { ok: false, reason: _t("The example is busy for a moment."),
-                                       fix: _t("Change any answer to try again.") } : res);
-        });
-        this.later("example", delay, () => run(1));
+            this.again();
+        }
+        if (this.nh.draft.offer_id !== id) {
+            await this.bringAcross(id);
+        }
+        this.setSource("hire");
+    }
+    async manyAtOnce() {
+        try {
+            const res = await this.orm.call(MODEL, "many_at_once", []);
+            if (!res.ok) {
+                this.toast(res.message, { kind: "info", ms: 10000 });
+                return;
+            }
+            await this.action.doAction(res.action, { additionalContext: res.context || {} });
+        } catch (e) {
+            this.toast(errorText(e), { kind: "error" });
+        }
     }
 
     /** P2 (fix c): the org chart sent a new role while an unsent hire was
@@ -544,7 +720,7 @@ export class NewHireStudio extends Component {
             return;
         }
         this.later("docs", 150, () => this.ask("docs", "details_options",
-            [{ payroll_country: d.payroll_country, name: d.name || "" }], (res) => {
+            [{ payroll_country: d.payroll_country, name: d.name || "", offer_id: d.offer_id || false }], (res) => {
                 if (res) {
                     this.nh.docs = res;
                 }
@@ -776,7 +952,7 @@ export class NewHireStudio extends Component {
         if (has("department_id", "payroll_country", "date_start", "name")) {
             this.refreshSched();
         }
-        if (has("payroll_country", "name")) {
+        if (has("payroll_country", "name", "offer_id")) {
             this.refreshDocs();
         }
         if (has("clock_on", "clock_code")) {
@@ -1183,8 +1359,12 @@ export class NewHireStudio extends Component {
         nh.welcome = null;
         nh.clockCheck = null;
         nh.files = {};
+        nh.offer = null;
+        nh.source = "type";
         nh.example = null;
         nh.exampleBusy = false;
+        this.exampleToken = (this.exampleToken || 0) + 1;
+        this.exampleKey = "";
         nh.draft = Object.assign(blankDraft(nh.data.today), { payroll_country: nh.data.draft.payroll_country || "" });
         this.refreshCats();
         this.refreshSched();

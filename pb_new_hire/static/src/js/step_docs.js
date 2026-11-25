@@ -101,6 +101,25 @@ export class StepDocs extends Component {
     options(item) {
         const skip = { key: "skip", label: _t("Not needed"), on: item.can_skip,
                        why: item.can_skip ? "" : _t("Needed before the first pay, so it cannot be left out.") };
+        if (item.received) {
+            // P4: the candidate sent it through Hiring — only what is still open
+            if (item.can_hiring) {
+                return [
+                    { key: "hiring", label: _t("Use the Hiring paper"), on: true, why: "" },
+                    { key: "ask", label: _t("Ask %s", this.first), on: item.can_ask, why: item.ask_why_not },
+                    { key: "have", label: _t("I have it"), on: item.can_have, why: "" },
+                ];
+            }
+            if (item.ask_label) {
+                const out = [
+                    { key: "ask", label: _t("Ask for the number"), on: item.can_ask, why: item.ask_why_not },
+                    { key: "have", label: _t("I have the number"), on: item.can_have, why: "" },
+                ];
+                return item.can_skip ? [...out, skip] : out;
+            }
+            const came = { key: "have", label: _t("Came across"), on: true, why: "" };
+            return item.can_skip ? [came, skip] : [came];
+        }
         if (item.can_number) {
             // P3b (answer a): the card and its number — three answers
             const out = [
@@ -163,6 +182,22 @@ export class StepDocs extends Component {
     }
     rowSub(item) {
         const c = this.choice(item);
+        if (item.received) {
+            const line = item.received.line;
+            if (c === "hiring") {
+                return _t("%s. It is read, then a second person approves the account.", line);
+            }
+            if (c === "ask" && item.ask_label) {
+                return _t("%(line)s. %(first)s is asked for the %(what)s only.",
+                          { line, first: this.first, what: item.ask_label });
+            }
+            if (c === "have" && !item.ask_label && item.key !== "bank") {
+                return _t("%s. It is filed in their documents.", line);
+            }
+            if (c === "skip") {
+                return _t("%s. Not filed.", line);
+            }
+        }
         if (c === "ask") {
             return item.ask_note || _t("%s gives it on My Payobook after the hire is approved.", this.first);
         }
@@ -193,7 +228,11 @@ export class StepDocs extends Component {
         const gap = docGapOf(this.nh, item);
         return `pbnh-row pbnh-doc is-${c}${gap ? " is-gap" : ""}${gap === "again" ? " is-again" : ""}`;
     }
-    isOpen(item) { const c = this.choice(item); return c === "have" || c === "number"; }
+    isOpen(item) {
+        const c = this.choice(item);
+        // P4: a paper that came across from Hiring has nothing left to fill in
+        return (c === "have" || c === "number") && Boolean(item.fields.length || item.upload);
+    }
     showUpload(item) { return Boolean(item.upload) && this.choice(item) === "have"; }
 
     // ------------------------------------------------------------ presets

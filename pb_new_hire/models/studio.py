@@ -64,6 +64,8 @@ DRAFT_KEYS = (
     'items', 'have',
     # P3b — step 5's reminders switch
     'remind',
+    # P4 — the signed offer brought across from Hiring
+    'offer_id',
 )
 
 _EMAIL = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')

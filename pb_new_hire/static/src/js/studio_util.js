@@ -180,7 +180,7 @@ export function ownMissingOf(nh) {
  * NH27). The list itself is the server's (`details_options`); these only
  * read the choices and what was typed.
  */
-export const DOC_CHOICES = ["ask", "have", "skip", "later", "number"];
+export const DOC_CHOICES = ["ask", "have", "skip", "later", "number", "hiring"];
 export const FILE_MIMES = ["image/png", "image/jpeg", "application/pdf"];
 export const FILE_MAX = 10 * 1024 * 1024;
 export const FILES_MAX = 50 * 1024 * 1024;
@@ -192,7 +192,7 @@ export function docChoiceOf(nh, item) {
     const c = (nh.draft.items || {})[item.key];
     if (!DOC_CHOICES.includes(c) || (c === "ask" && !item.can_ask) || (c === "later" && item.can_ask)
             || (c === "skip" && !item.can_skip) || (c === "have" && !item.can_have)
-            || (c === "number" && !item.can_number)) {
+            || (c === "number" && !item.can_number) || (c === "hiring" && !item.can_hiring)) {
         return item.default;
     }
     return c;
@@ -249,6 +249,8 @@ export function docTallyOf(nh) {
         if (c === "number") {
             out.ask += 1;
             out.have += 1;
+        } else if (c === "hiring") {
+            out.have += 1;              // P4: the paper sent in Hiring
         } else {
             out[c] += 1;
         }
@@ -262,7 +264,8 @@ export function docAskedOf(nh) {
     for (const item of docItemsOf(nh)) {
         const c = docChoiceOf(nh, item);
         if (c === "ask") {
-            out.push({ key: item.key, label: item.label, need: item.need, icon: item.icon });
+            // P4: a card that came across from Hiring — only its number is asked
+            out.push({ key: item.key, label: item.ask_label || item.label, need: item.need, icon: item.icon });
         } else if (c === "number") {
             out.push({ key: item.key, label: item.upload.label, need: item.need, icon: item.icon });
         }

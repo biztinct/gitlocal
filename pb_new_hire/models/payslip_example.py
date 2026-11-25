@@ -125,8 +125,9 @@ class PbNewHireExample(models.AbstractModel):
             out = self._no(_("An example cannot be shown right now."),
                            _("The hire is not affected. Try again in a moment."))
         out['took_ms'] = int((time.perf_counter() - started) * 1000)
-        _logger.info('new hire: payslip example in %s ms (ok=%s, scheme=%s)',
-                     out['took_ms'], out.get('ok'), out.get('scheme_id') or '-')
+        _logger.info('new hire: payslip example in %s ms (ok=%s, cached=%s, busy=%s, scheme=%s)',
+                     out['took_ms'], out.get('ok'), bool(out.get('cached')), bool(out.get('busy')),
+                     out.get('scheme_id') or '-')
         return out
 
     @api.model

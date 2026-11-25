@@ -5,8 +5,8 @@ The person and the contract are the CORE (P1, `create_ext.py`): a failure
 there rolls the whole approval back. Everything here is a WELCOME LEG and
 runs AFTER the core, each in its own savepoint, in this fixed order:
 
-    clock → week → own_fields → details → papers → asks → login → case →
-    buddy → equipment → letter → invite
+    clock → week → own_fields → details → papers → hiring → asks → login →
+    case → buddy → equipment → hiring_close → letter → invite
 
 (the late and overtime rule is not a leg: it rides on the ONE employee
 create through the P1 create hook, `pb_attendance_category`.)
@@ -50,8 +50,15 @@ _logger = logging.getLogger(__name__)
 LEG_ORDER = ('clock', 'week', 'own_fields',
              # P3a (docs_legs.py): what HR typed, the papers HR attached and
              # what the new person will be asked — before the sign-in
-             'details', 'papers', 'asks',
-             'login', 'case', 'buddy', 'equipment', 'letter',
+             'details', 'papers',
+             # P4 (hiring.py): the files the candidate sent through Hiring
+             'hiring',
+             'asks',
+             'login', 'case', 'buddy', 'equipment',
+             # P4: Hiring's own "Confirm they joined", after the sign-in and
+             # the checklist so it links them instead of making its own
+             'hiring_close',
+             'letter',
              # P3b (invite.py): the welcome message — last, it needs the
              # sign-in and the asks (not the checklist)
              'invite')
@@ -110,11 +117,28 @@ class PbNewHireLegs(models.AbstractModel):
                                   key, employee.id)
                 legs.append(self._failed(employee, key, self._reason(exc)))
                 continue
-            if message:
+            if isinstance(message, dict) and message.get('amber'):
+                # P4: done, but something needs a person (the work is kept)
+                legs.append(self._amber(employee, key, message))
+            elif message:
                 legs.append({'key': key, 'ok': True, 'message': message})
         done = [leg['message'] for leg in legs if leg['ok']]
         summary = _("Ready: %s.", ', '.join(done)) if done else ''
         return legs, summary
+
+    @api.model
+    def _amber(self, employee, key, answer):
+        """A leg that did its work but needs a person to finish one part:
+        the work stands (no rollback), the row is amber, the record says why."""
+        message = answer.get('message') or ''
+        if answer.get('done'):
+            message = _("%(done)s. %(rest)s", done=answer['done'][:1].upper() + answer['done'][1:],
+                        rest=message)
+        try:
+            employee.message_post(body=message)
+        except Exception:                       # noqa: BLE001 — the note is a courtesy
+            _logger.warning('new hire: could not note leg %s on %s', key, employee.id, exc_info=True)
+        return {'key': key, 'ok': False, 'message': message}
 
     @api.model
     def _reason(self, exc):

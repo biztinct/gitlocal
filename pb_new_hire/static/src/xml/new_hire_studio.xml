@@ -173,6 +173,56 @@
         <p>Four things are enough to begin. The team you pick next works out the pay scheme, the currency and the trial period for you.</p>
       </div>
     </div>
+    <!-- P4: three ways to start (POC vWho) -->
+    <div t-if="showWays" class="pbnh-ways" role="group" aria-label="How this person comes in">
+      <button type="button" t-att-class="wayClass('type')" t-att-aria-pressed="nh.source === 'type' ? 'true' : 'false'" t-on-click="() => this.pick('type')">
+        <span class="pbnh-tile" t-out="icon('pencil', 17)"/>
+        <span><b>Type it in</b><small>Someone hired outside Hiring</small></span>
+      </button>
+      <button t-if="hiring.on" type="button" t-att-class="wayClass('hire')" t-att-aria-pressed="nh.source === 'hire' ? 'true' : 'false'" t-on-click="() => this.pick('hire')">
+        <span class="pbnh-tile" t-out="icon('briefcase', 17)"/>
+        <span><b>From Hiring</b><small t-esc="hiringSub"/></span>
+      </button>
+      <button t-if="many" type="button" class="pbnh-way" t-on-click="() => this.props.api.manyAtOnce()">
+        <span class="pbnh-tile" t-out="icon('fileSpreadsheet', 17)"/>
+        <span><b>Many at once</b><small>Fill a sheet for a whole intake, in Updates</small></span>
+      </button>
+    </div>
+    <div t-if="nh.source === 'hire'" class="pbnh-card pbnh-offers">
+      <div class="pbnh-cardh"><h3>Signed offers</h3><span class="pbnh-sub">Pick one to bring across</span></div>
+      <div t-if="nh.offersBusy and !nh.offers" class="pbnh-cand" aria-busy="true">
+        <span class="pbnh-skel pbnh-skel-dot"/><span class="pbnh-skel pbnh-skel-line"/>
+      </div>
+      <div t-elif="nh.offers and !nh.offers.length" class="pbnh-row">
+        <span class="pbnh-tile" t-out="icon('inbox', 17)"/>
+        <div class="pbnh-row-t"><b>No signed offers are waiting</b><small>When a candidate signs in Hiring, they appear here. Type this person in instead.</small></div>
+      </div>
+      <t t-else="">
+        <div t-foreach="nh.offers or []" t-as="row" t-key="row.offer_id" t-att-class="'pbnh-cand' + (isBrought(row) ? ' is-on' : '')">
+          <span class="pbnh-av" t-esc="initials(row.name)"/>
+          <div class="pbnh-cand-who">
+            <b t-esc="row.name"/>
+            <div class="pbnh-sub" t-esc="offerLine(row)"/>
+            <div t-if="offerStart(row)" class="pbnh-sub pbnh-num" t-esc="offerStart(row)"/>
+          </div>
+          <button type="button" t-att-class="'pbnh-btn pbnh-btn--sm ' + (isBrought(row) ? 'pbnh-btn--out' : 'pbnh-btn--pri')" t-on-click="() => this.bring(row)">
+            <t t-if="isBrought(row)"><t t-out="icon('check', 14)"/>Brought across</t>
+            <t t-else=""><t t-out="icon('arrowRight', 14)"/>Bring across</t>
+          </button>
+          <div class="pbnh-cand-chips">
+            <span t-foreach="row.received" t-as="chip" t-key="'r' + chip_index" class="pbnh-chip pbnh-chip--ok"><t t-out="icon('check', 12)"/><t t-esc="chip.label"/></span>
+            <span t-foreach="row.missing" t-as="chip" t-key="'m' + chip_index" class="pbnh-chip" t-esc="missingLine(chip)"/>
+            <span t-if="!row.received.length and !row.missing.length" class="pbnh-chip">No papers were asked for in Hiring</span>
+          </div>
+          <div t-if="!row.bgv.ok" class="pbnh-cand-bgv"><t t-out="icon('alert', 14)"/><span t-esc="row.bgv.sentence"/></div>
+        </div>
+      </t>
+      <div class="pbnh-row">
+        <span class="pbnh-tile" t-out="icon('info', 17)"/>
+        <div class="pbnh-row-t"><b>Nothing the candidate sent is typed twice</b><small t-esc="acrossInfo"/></div>
+        <button t-if="nh.offer" type="button" class="pbnh-link" t-on-click="() => this.props.api.dropOffer()">Do not use this offer</button>
+      </div>
+    </div>
     <div class="pbnh-card pbnh-pad">
       <div class="pbnh-grid">
         <label t-att-class="'pbnh-f' + (err('name') ? ' is-bad' : '')">
