@@ -535,3 +535,17 @@ honest but needs set-up per scheme.
 - MRO on the local DB after install (top first): `pb.people.onboard.wizard` pb_new_hire → pb_pay_scales → pb_orgchart →
   pb_people_advanced; `pb.people.contract.wizard` pb_new_hire → pb_pay_scales → pb_people_advanced. The studio path is written to
   work in either order (extras ride in the context key `pb_nh_hire`, read by the `hr.employee` / `hr.contract` create overrides).
+
+## Corrections and additions found in P2 (2026-11-25)
+- §H `assign_week` has no post-gate helper to reuse: `_assign_plan` (which also refuses a past date and, for a
+  multi-week rotation, may need a NEW team) plus inline creation. `save_pattern` replaces a whole pattern. Both gate on
+  `has_group`, which sudo does not bypass (ledger NH23). The studio's week leg creates the one
+  `pb.shift.pattern.member {pattern, Team A (lowest sequence), employee, date_from = first day}` row with sudo; the
+  model's `_check_member` judges overlaps. The day strip reads `_pb_slot_map` + `_pb_cycle_index` for Team A's offset,
+  as `pb.workforce.setup.people()` does.
+- §H the employee's leave country is `pb_policy_country_id`; `country_id` on a leave type follows the company (NH22).
+- §H public holidays: `pb.holidays._column(company, first, last, today)` returns `{rows:[{date, days, name…}], next}`.
+- `hr.contract.type` on this build: `name, code, sequence, country_id, is_payroll_enabled, payroll_schedule,
+  wage_calculation` (no kind field). `hr.contract` has BOTH `type_id` ("Employee Category", om_hr_payroll, the one the
+  contract panel shows) and `contract_type_id` ("Contract Type", hr_contract); the studio writes `type_id`.
+- `pb.people._pay_symbol` read only "Paid by" (refreshed overnight), not the contract: fixed in P2 (NH29).

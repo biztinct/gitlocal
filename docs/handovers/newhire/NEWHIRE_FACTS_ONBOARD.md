@@ -1238,3 +1238,20 @@ be installed everywhere. **Do not** depend on pb_workforce_setup: it is installe
    onboarding mails are off, so the welcome link's reminders cannot be shown working there. Test them on a copy.
 10. **Leftover database `_test_sudima_policy_20261119` on the live server.** Every database answers on the
     internet. Flag it to the owner. Do not drop it without asking.
+
+## Corrections and additions found in P2 (2026-11-25)
+- §F3 `_open_case` picks the template by `employee.country_id` (nationality), not the Country of Work (NH19).
+- §F4 `case_open` steps are dated `fields.Date.today()` (UTC) — NH26.
+- §F5 buddy: `pb.onboarding.buddy_choose` = `open_for` + `choose` behind the lifecycle-manager gate; Hiring's
+  `_hand_over_buddy` calls `pb.buddy.nomination.sudo().open_for(...).choose(...)` directly — the studio does the same.
+  `choose` sends the buddy mails (`P_BUDDY_MAIL`); only the joiner's goes when the buddy has no work email.
+  `check_candidate(False, person)` works without a joiner record (location rule skipped): the studio shows its verdict.
+- §F7 `pb_probation.auto_trigger` is OFF by default (NH25); check-ins d30/d60/d90 and pulses 7/30/60 are always planned
+  by `setup_onboarding`.
+- §G `create_worker_logins` needs the access-manager role (`_require_manage`), sudo does not help (NH23). No employee code
+  is generated; the sign-in code is barcode → clock number → identification number (NH24). Slips print only at creation.
+- §H `pb.asset.request.action_cancel` works from draft under sudo; `pb.asset.category.icon` names are mostly in the
+  shared Lucide registry (unknown ones fall back to `package` in the studio).
+- §I the letter needs the payroll-manager right to file (NH20); templates in the walk DB are shared (company empty).
+- New joiners board: `pb_onboarding.action_pb_onboarding_board` (tag `pb_onboarding_board`), gate `_can_read`
+  (Lifecycle roles or admin) — NH30.

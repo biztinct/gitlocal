@@ -124,3 +124,40 @@ Owner approved the design and the phased build on 2026-11-25.
 - **NH18** (P1) Screens we do not own still read the company currency: People › Employees shows a studio hire's IDR wage as
   "₫9.0M", and the contract panel's "Employee category" is the first `hr.contract.type` ("Vietnam Permanent Monthly") for an
   Indonesian hire (`create_contract` never sets `type_id`, FACTS §A.3). Not fixed in P1 — open questions in the P1 report.
+- **NH19** (P2) `pb.zoho.pipeline._open_case` picks the joining checklist by the employee's NATIONALITY (`country_id`), not
+  the Country of Work. The studio previews with the same country (nationality, defaulting to the country of work), so a
+  hire whose nationality differs gets that country's checklist — say so if a country-specific checklist ever surprises.
+- **NH20** (P2) A contract letter prints the pay, and `pb_doc_contracts` only lets a **payroll manager** make it
+  (`pb.contracts._cd_unmask_wage`, checked in `pb_doc_contracts/models/doc_studio.py:_pbdc_pay`, which overrides the
+  pb_doc_studio branch). An HR manager without it gets "This contract shows pay…". Step 6 switches the letter off up
+  front in the fast lane and warns in the approval route. Locally there is no wkhtmltopdf, so a real save fails with
+  "The PDF could not be made right now" outside test mode (tests render HTML).
+- **NH21** (P2) Opening a joining checklist fills an EMPTY trial end from the policy (`pb_probation` `_set_trial_end`),
+  so a trial period HR switched off came back. `pb_new_hire` overrides `pb.journey.case._set_trial_end` behind the
+  context key `pb_nh_no_trial_employee_id` (that one employee only).
+- **NH22** (P2) `hr.leave.type.country_id` follows the company; the leave's country is `pb_policy_country_id`
+  (`pb.timeoff._type_country` reads that first). Seed leave types with `pb_policy_country_id`.
+- **NH23** (P2) `assign_week` / `save_pattern`, `create_worker_logins`, `pb.onboarding.buddy_choose` and the New joiners
+  board all gate on `user.has_group(...)`, which **sudo does not bypass**. The legs write the product's own row shapes
+  with sudo (week member, buddy nomination as Hiring's `_hand_over_buddy` does) or ask for the right
+  (`create_worker_logins` only when the applier manages access; otherwise a failed leg pointing at Access).
+- **NH24** (P2) No employee code is made at creation. `_pb_sign_in_code` is barcode → clock number → identification
+  number, so the studio's "Employee number" sign-in is the clock number typed in step 4. A worker's first-password slip
+  can only be printed at creation (Access › Logins for workers); afterwards only "Set a new password" exists.
+- **NH25** (P2) `pb_probation.auto_trigger` defaults to OFF: "the trial review opens" is only true when it is on. The
+  timeline shows "Trial period ends" (HR opens the review) otherwise.
+- **NH26** (P2) Steps due "when the journey opens" are dated with `fields.Date.today()` (server, UTC): in Sydney the
+  buddy step of a checklist opened before 11:00 is dated yesterday and shows "1 overdue" on New joiners. Product
+  behaviour, not ours; the preview uses the same date so they match (W9).
+- **NH27** (P2) OWL: a child component that reads state through ANOTHER component's reactive (`api.someGetter` →
+  `studio.nh`) does not re-render when it changes. Shared answers are plain functions taking the caller's own `nh`
+  (`weekNameOf`, `siteNameOf`, `ownMissingOf` in studio_util.js).
+- **NH28** (P2) OWL: never await a dialog inside `onWillStart` — the component is not mounted, so the dialog never shows
+  and the screen hangs. Decide in `load()`, ask in `onMounted` (the org-chart "Carry on?" question).
+- **NH29** (P2) "Paid by" (`pb_paid_by_id`) is refreshed overnight and empty for a person added today; screens that
+  need the money of a new hire must read the contract (`pb_people._pay_symbol` now does).
+- **NH30** (P2) The New joiners board needs a Lifecycle role; HR managers without it see a lock card. The done card
+  shows "See new joiners" only when `pb.onboarding._can_read()`. Lifecycle users also see only some cases (record
+  rules), so a hire added by someone else may not be on their board.
+- **NH31** (P2) A server started with `--test-enable` (even with no tests) shuts down after "post tests". Don't use it
+  to get HTML reports on a walk server.
