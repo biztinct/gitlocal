@@ -275,3 +275,19 @@ Owner approved the design and the phased build on 2026-11-25.
   already wrote in that language is never overwritten. Proven on the walk DB (`label->>'vi_VN'`).
 - **NH72** (P5a) The website layout titles a `/my` page with the TEMPLATE's own name ("Welcome (new joiner)") unless the
   controller passes `additional_title` — and template names are never translated. Pass a `_()` title.
+
+- **NH73** (P5b) Suites run on a server rehearsal copy with the staged trees first fail for the ENVIRONMENT, not the code:
+  the static tests read sibling modules next to `pb_new_hire` (`pb_import_kit`, `pb_orgchart`, `pb_people_advanced`,
+  `pb_pay_scales`, `pb_updates`), which the six-module staging dir does not hold; and the web-page tests get 404 because
+  the live conf's `dbfilter = ^%d$` finds no database for host 127.0.0.1. `p5b/nh_rh_tests2.sh` re-runs with links to the
+  siblings and an empty dbfilter (15/15).
+- **NH74** (P5b) A rehearsal copy served by its own process keeps a user's groups cached after an `odoo-bin shell` write
+  (a new role did not show, even after signing in again): restart the copy's service unit.
+- **NH75** (P5b) In a probe, `bool(Cfg and ...)` with `Cfg = env['model'].sudo()` is always False — an EMPTY recordset is
+  falsy. Test the model's presence (`'model' in env`), not the recordset.
+- **NH76** (P5b) The automation Chrome may be signed in to payobook.com as the OWNER's admin. Never test as the owner, and
+  the release engineer does not type the QA password into a public site: walk on the rehearsal copy through a tunnel
+  (throwaway logins on the copy) and prove live with server checks; ask the owner for the live look.
+- **NH77** (P5b) payobook (demo) has no Indonesian team (every scheme is Vietnamese) and no approval route for new hires
+  (the studio adds the person at once). The Indonesian path and the "second person approves" path cannot be shown there
+  without new demo data.

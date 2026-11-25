@@ -11,7 +11,8 @@ installed = env['ir.module.module'].sudo().search_count([('name', '=', 'pb_new_h
 Cfg = env['payroll.ai.config'].sudo() if 'payroll.ai.config' in env else None
 readers = {}
 for c in env['res.company'].sudo().search([]):
-    readers[c.id] = bool(Cfg and Cfg.with_company(c).get_config_for_purpose('doc_ocr'))
+    # an EMPTY recordset is falsy: test the model, not `Cfg` (P5b probe bug, ledger NH75)
+    readers[c.id] = bool(Cfg is not None and Cfg.with_company(c).get_config_for_purpose('doc_ocr'))
 print('PROBE bundle files', len(b.javascripts),
       'pb_new_hire installed', bool(installed),
       'studio', 'pb_new_hire_studio' in js,
