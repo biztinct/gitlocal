@@ -301,6 +301,9 @@ class TestStepSix(WelcomeCommon):
         self.assertTrue(emp.user_id.share)
         self.assertEqual(emp.user_id.login, 'demo.nh.sari@example.com')
         new = self.env['mail.mail'].sudo().search([('id', 'not in', mails)])
+        # P3b: the welcome message with the asks may go now (where the site
+        # sends email); the sign-in details still wait for the first day
+        new = new.filtered(lambda m: 'a few things before' not in (m.subject or ''))
         self.assertFalse(new, 'no mail at apply: %s' % new.mapped('subject'))
 
     def test_w05b_login_employee_number(self):

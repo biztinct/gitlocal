@@ -179,7 +179,7 @@ class TestInvite(InviteMixin, DocsCommon):
         self.assertIn('Welcome message sent to %s.' % PRIVATE, ' '.join(emp.message_ids.mapped('body')))
 
     def test_v03b_no_mail_server(self):
-        self.server.active = False
+        self.env['ir.mail_server'].sudo().search([]).active = False
         self.fast_lane()
         before = self.mail_ids()
         out = self.studio().send(self.invite_draft())
@@ -228,6 +228,8 @@ class TestInvite(InviteMixin, DocsCommon):
 
     # ------------------------------------------------------------ V4 never stored
     def test_v04_link_never_persisted(self):
+        self.env.cr.execute("SELECT COALESCE(max(id), 0) FROM mail_message")
+        floor = self.env.cr.fetchone()[0]
         out = self.studio().send(self.invite_draft())
         self.approve(out)
         emp = self.hires()
@@ -239,7 +241,8 @@ class TestInvite(InviteMixin, DocsCommon):
         self.assertTrue(queued, 'the welcome message waits in the queue')
         allowed = set(queued.mapped('mail_message_id').ids)
         self.env.flush_all()
-        self.env.cr.execute("SELECT id, body FROM mail_message WHERE body ~* %s", [r'/web/signup\?|token='])
+        self.env.cr.execute("SELECT id, body FROM mail_message WHERE id > %s AND body ~* %s",
+                            [floor, r'/web/signup\?|token='])
         stray = [row for row in self.env.cr.fetchall() if row[0] not in allowed]
         self.assertFalse(stray, 'the link appears only in the outgoing mail itself: %s' % stray)
         proposal = self.env['pb.newhire.proposal'].sudo().browse(out['proposal_id'])
@@ -323,18 +326,24 @@ class TestInvite(InviteMixin, DocsCommon):
         day0 = date(2026, 11, 20)
         emp.nh_reminded_on = day0 - timedelta(days=2)
         before = self.mail_ids()
-        self.assertEqual(Invite._nh_remind_asks(today=day0)['reminded'], 1)
+        Invite._nh_remind_asks(today=day0)
         self.assertEqual(emp.nh_reminded_on, day0)
-        reminder = self.queued(before)
+        reminder = self.queued(before).filtered(lambda m: m.email_to == PRIVATE)
         self.assertEqual(len(reminder), 1)
         self.assertIn('A quick reminder', reminder.body_html)
-        self.assertEqual(Invite._nh_remind_asks(today=day0)['reminded'], 0, 'once')
-        self.assertEqual(Invite._nh_remind_asks(today=day0 + timedelta(days=1))['reminded'], 0)
-        self.assertEqual(Invite._nh_remind_asks(today=day0 + timedelta(days=2))['reminded'], 1, '2 days on')
+        mine = lambda: self.env['mail.mail'].sudo().search_count([('email_to', '=', PRIVATE)])  # noqa: E731
+        n = mine()
+        Invite._nh_remind_asks(today=day0)
+        Invite._nh_remind_asks(today=day0 + timedelta(days=1))
+        self.assertEqual(mine(), n, 'once, then not the next day')
+        Invite._nh_remind_asks(today=day0 + timedelta(days=2))
+        self.assertEqual(mine(), n + 1, '2 days on')
+        self.assertEqual(emp.nh_reminded_on, day0 + timedelta(days=2))
         # everything done: it stops by itself
         self.env['pb.new.hire.ask'].sudo().search([('employee_id', '=', emp.id)]).write({'state': 'done'})
         with patch.object(type(self.env['pb.new.hire.ask']), 'refresh', lambda self: True):
-            self.assertEqual(Invite._nh_remind_asks(today=day0 + timedelta(days=4)).get('reminded', 0), 0)
+            Invite._nh_remind_asks(today=day0 + timedelta(days=4))
+        self.assertEqual(mine(), n + 1, 'stops by itself when everything is done')
 
     def test_v09b_switches(self):
         emp, Invite = self._remind_world()
@@ -347,13 +356,17 @@ class TestInvite(InviteMixin, DocsCommon):
         self.assertEqual(Invite._nh_remind_asks(today=day0), {'off': True})
         Param.set_param('pb_lifecycle.reminders_enabled', '1')
         emp.nh_remind = False
-        self.assertEqual(Invite._nh_remind_asks(today=day0)['reminded'], 0)
+        last = emp.nh_reminded_on
+        Invite._nh_remind_asks(today=day0)
+        self.assertEqual(emp.nh_reminded_on, last, 'switched off for this person')
         emp.nh_remind = True
         # the site's mail lock: nothing sent, nothing written
-        self.server.active = False
+        self.env['ir.mail_server'].sudo().search([]).active = False
         last = emp.nh_reminded_on
+        before = self.mail_ids()
         self.assertEqual(Invite._nh_remind_asks(today=day0 + timedelta(days=9))['reminded'], 0)
         self.assertEqual(emp.nh_reminded_on, last)
+        self.assertFalse(self.queued(before))
         # and the one lifecycle job runs the piece
         self.server.active = True
         counts = self.env['pb.journey.case'].sudo()._cron_lifecycle_reminders()
@@ -362,16 +375,19 @@ class TestInvite(InviteMixin, DocsCommon):
     def test_v09c_hr_nudge_once(self):
         emp, Invite = self._remind_world()
         first = date(2026, 12, 7)
-        acts = self.env['mail.activity'].sudo().search([]).ids
-        self.assertEqual(Invite._nh_remind_asks(today=first - timedelta(days=4))['nudged'], 0, 'too early')
-        self.assertEqual(Invite._nh_remind_asks(today=first - timedelta(days=3))['nudged'], 1)
-        new = self.env['mail.activity'].sudo().search([('id', 'not in', acts)])
+        mine = [('res_model', '=', 'hr.employee'), ('res_id', '=', emp.id)]
+        Act = self.env['mail.activity'].sudo()
+        Invite._nh_remind_asks(today=first - timedelta(days=4))
+        self.assertFalse(Act.search(mine), 'too early')
+        Invite._nh_remind_asks(today=first - timedelta(days=3))
+        new = Act.search(mine)
         self.assertEqual(len(new), 1)
         self.assertEqual(new.res_model, 'hr.employee')
         self.assertEqual(new.user_id, self.maker, 'the person who proposed the hire')
         self.assertRegex(new.note or '', r'DEMO NH Sari Wulandari starts on .+ and \d+ things? needed '
                                          r'for the first pay (is|are) still missing\.')
-        self.assertEqual(Invite._nh_remind_asks(today=first - timedelta(days=2))['nudged'], 0, 'once')
+        Invite._nh_remind_asks(today=first - timedelta(days=2))
+        self.assertEqual(len(Act.search(mine)), 1, 'once')
 
     # ------------------------------------------------------------ V10 the board
     def test_v10_board_shape_batching_gates(self):
@@ -551,6 +567,15 @@ class TestWelcomePage(HttpCase):
                 Ask.create({'employee_id': emp.id, 'key': key, 'label': label, 'url': url,
                             'need': 'first_pay' if key == 'bank' else 'optional', 'sequence': n,
                             'category_id': cat, 'company_id': cls.company.id})
+
+    def setUp(self):
+        super().setUp()
+        if 'pb.privacy.consent' in self.env and self._testMethodName != 'test_v06_first_visit_keeps_next':
+            # the page, not the privacy gate (V6 walks the gate)
+            patcher = patch.object(type(self.env['pb.privacy.consent']), '_pb_pending',
+                                   lambda self, user: (None, None))
+            patcher.start()
+            self.addCleanup(patcher.stop)
 
     def test_v05_own_asks_states_and_finish(self):
         self.authenticate(self.sari_user.login, self.sari_user.login)
