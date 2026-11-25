@@ -39,10 +39,12 @@ The private identity plan and deployment receipt contain employee-level evidence
   blanket truncation of genuine night punches. Screenshot's separate cash
   1.5h payment route remains unconfigured until confirmed.
 - Employee list marks 11 people left employment but gives no leaving dates.
-- The separate WFSETUP P10a proposal describes clock-to-pay sourcing from
-  1 December; it is not implementation evidence. Live scheme and contracts
-  must be checked before claiming payroll readiness. Do not revive the
-  deferred Actual Pay extra-bonus logic.
+- The newer combined branch includes deployed WFSETUP P10b. Live scheme
+  7844 has clock-to-pay sourcing from 1 December, but the scheme and all
+  650 contracts are still drafts; all six connectors have attendance
+  publication off. Rules and rosters are drafts, with no attendance rows.
+  Do not revive the deferred Actual Pay extra-bonus logic or exceed-limit
+  payment workstream (owner ruling R14: paid OT stays within the limits).
 
 ## UI equivalents
 
