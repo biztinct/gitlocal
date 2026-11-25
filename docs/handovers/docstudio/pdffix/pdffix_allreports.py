@@ -4,6 +4,16 @@ import os, io
 from PyPDF2 import PdfReader
 OUT = os.environ['OUT']; os.makedirs(OUT, exist_ok=True)
 SKIP = {'pb_report_pdf.report_table', 'pb_doc_studio.report_doc_letter'}   # proven in phase 1
+from lxml import etree
+for item in filter(None, (os.environ.get('ARCH') or '').split(';')):
+    xmlid, path = item.split('=', 1)
+    node = next(t for t in etree.parse(path).getroot().iter('template') if t.get('id') == xmlid.split('.', 1)[1])
+    arch = etree.Element('t', {'t-name': xmlid}); arch.text = node.text
+    for child in node:
+        arch.append(child)
+    env.ref(xmlid).sudo().with_context(lang=None).write({'arch_db': etree.tostring(arch, encoding='unicode')})
+    print('PROBE arch swapped', xmlid, flush=True)
+env.registry.clear_cache('templates')
 R = env['ir.actions.report'].sudo()
 reps = R.search([('report_type', '=', 'qweb-pdf')])
 for rep in reps:
