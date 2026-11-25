@@ -192,6 +192,13 @@ MARGINS = list(zip(['normal', 'narrow', 'wide'],
                    [_lt('Normal'), _lt('Narrow'), _lt('Wide')],
                    [(40, 28, 20, 20), (32, 22, 12, 12), (46, 32, 30, 30)]))
 MARGIN_KEYS = [m[0] for m in MARGINS]
+#: Extra room (mm) above the letter when the company letterhead prints. The
+#: PDF engine with patched Qt (the only build that prints a header at all)
+#: keeps the text `header_spacing` mm below the top of the company header: a
+#: logo plus a five-line address is ~39 mm, so 35 mm ran the address into the
+#: date and the heading (DOCSTUDIO PDFFIX). Normal margins + this room =
+#: 52/52, the A4 setting of the company's other documents.
+LETTERHEAD_ROOM = 12
 
 #: Fonts that exist on the printing server WITH Vietnamese letters: Roboto,
 #: Open Sans and Montserrat ship with the web client (`web/static/fonts/
