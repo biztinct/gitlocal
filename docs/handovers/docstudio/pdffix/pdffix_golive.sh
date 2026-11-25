@@ -20,7 +20,7 @@ ORDER="payobook_template p0clone sudima rize payobook"
 MODS=$(cat /tmp/pdffix_mods.txt)
 UPG=$(echo $MODS | tr ' ' ',')
 TAG="Claude DOCSTUDIO PDFFIX"
-mkdir -p $EV $BK; chmod 750 $EV
+mkdir -p $EV $BK; chown odoo:odoo $EV; chmod 750 $EV   # the upgrade runs as odoo and reads its conf here
 log() { echo "$(date -u +%T) $*" | tee -a $EV/steps.log; }
 result() { echo "$1" > $EV/golive.result; }
 rm -f $EV/golive.result
@@ -81,6 +81,8 @@ log "backups: $(for db in $ORDER; do echo -n "$db $(stat -c %s $BK/$db.dump) "; 
 tar -C $ADD -czf $BK/previous-trees.tgz $MODS
 quiet || { log "activity started during the backups - not stopping"; result ACTIVE; exit 0; }
 notes_ok || { log "deploy notes just before the stop: $(cat $EV/notes-check.txt) - refused"; result REFUSED-NOTES; exit 0; }
+touch $EV/probe-readable && chown odoo $EV/probe-readable
+sudo -u odoo test -r $EV/probe-readable || { log "the service user cannot read $EV - refused, nothing changed"; result REFUSED-ENGINE; exit 0; }
 log "stop service"; T0=$(date +%s)
 service odoo-server stop
 for i in $(seq 1 60); do [ "$(ps -eo cmd | grep -c '[o]doo-bin -c /etc/odoo-server.conf$')" = 0 ] && break; sleep 1; done
