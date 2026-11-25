@@ -102,7 +102,9 @@ class PbSettings(models.AbstractModel):
         for xmlid in (xmlids or [])[:_MAX_PROBE]:
             if not isinstance(xmlid, str) or '.' not in xmlid:
                 continue
-            out[xmlid] = bool(self.env.ref(xmlid, raise_if_not_found=False))
+            record = self.env.ref(xmlid, raise_if_not_found=False)
+            out[xmlid] = bool(record) and (record._name != 'ir.ui.view' or (
+                self.env.user.has_group(SYSTEM_GROUP) and record.active))
         return out
 
     # =========================================================== Rail C
@@ -259,3 +261,41 @@ class PbSettings(models.AbstractModel):
             return self.env.user.has_group(xmlid)
         except (ValueError, KeyError):
             return True
+
+    @api.model
+    def workspace_access(self, workspace):
+        """Use the same screen record and audience calculation as Access Studio."""
+        entries = {
+            'expenses': 'pb_expenses_hub.item_expenses',
+            'workforce': 'pb_mission.item_workforce',
+            'insights': 'pb_insights_hub.item_insights',
+            'compliance': 'pb_compliance_hub.item_compliance',
+            'talent': 'pb_talent_hub.item_talent',
+            'learning': 'pb_learning_hub.item_learning',
+        }
+        item = self.env.ref(entries[workspace], raise_if_not_found=False) if workspace in entries else None
+        if not item or 'pb.access' not in self.env:
+            return False
+        return self.env['pb.access'].screen_detail(item.id)
+
+    @api.model
+    def application_settings(self):
+        """The installed native settings paths available to a platform administrator."""
+        if not self.env.user.has_group(SYSTEM_GROUP):
+            return []
+        import re
+        menu_model = self.env['ir.ui.menu']
+        visible = menu_model.browse(menu_model._visible_menu_ids(debug=True)).filtered('active')
+        labels = {m.id: m.name for m in visible}
+        english = visible.with_context(lang='en_US')
+        settings = {m.id for m in english if re.search(
+            r'\b(?:configurations?|configurators?|set[ -]?up|settings)\b', m.name or '', re.I)}
+        result = []
+        for menu in visible:
+            if not menu.action:
+                continue
+            path = [int(part) for part in menu.parent_path.split('/') if part]
+            if settings.intersection(path) and all(part in labels for part in path):
+                result.append({'id': menu.id, 'action': menu.action.id,
+                               'app': labels[path[0]], 'path': ' › '.join(labels[i] for i in path)})
+        return sorted(result, key=lambda row: row['path'])

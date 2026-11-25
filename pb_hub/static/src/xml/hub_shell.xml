@@ -98,9 +98,11 @@
           <!-- ONE class attribute: a static `class` plus `t-att-class` is the
                documented-safe pair; t-att-class and t-attf-class both compile
                to `class` and the last one written wins (W23). -->
+          <div class="pbhub-rail__work" t-att-class="{'is-scrollable': scrollWorkScreens}">
           <t t-foreach="mainLenses" t-as="l" t-key="l.key">
             <t t-call="pb_hub.HubRailButton"/>
           </t>
+          </div>
           <div t-if="hasFoot or pinnedLenses.length" class="pbhub-rail__foot"
                t-att-class="{ 'is-empty': !hasFoot }">
             <t t-foreach="pinnedLenses" t-as="l" t-key="l.key">

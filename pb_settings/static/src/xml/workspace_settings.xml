@@ -1,0 +1,37 @@
+<templates xml:space="preserve">
+ <t t-name="pb_settings.WorkspaceSettings">
+  <main class="pbim pbst pbst-workspace">
+   <div class="pbst-main">
+    <h1 class="pbst-h"><t t-esc="props.label"/> <span>settings</span></h1>
+    <input type="search" class="form-control mb-3" placeholder="Find a setting" aria-label="Find a setting" t-model="state.search"/>
+    <section class="pbst-sec" t-foreach="sections" t-as="section" t-key="section.name">
+    <h2 class="pbst-sec__h" t-esc="section.name"/>
+    <div class="pbst-cards">
+     <div t-foreach="section.cards" t-as="card" t-key="card.id" class="pbst-card">
+      <span class="pbst-card__ic" t-out="ic(card.icon)"/>
+      <span class="pbst-card__tx"><strong class="pbst-card__l" t-esc="card.label"/><span class="pbst-card__s" t-esc="card.sub"/></span>
+      <button type="button" class="pbim-btn primary pbst-go" t-att-title="card.label" t-on-click="() => this.open(card)">Open</button>
+     </div>
+    </div>
+    </section>
+    <p t-if="!visibleCards.length" class="text-muted">No matching settings.</p>
+   </div>
+  </main>
+ </t>
+ <t t-name="pb_settings.WorkspaceAccess">
+  <main class="pbim pbst"><div class="pbst-main">
+   <t t-if="screen">
+    <h1 class="pbst-h"><t t-esc="screen.label"/> <span>access</span></h1>
+    <p t-if="screen.everyone">Everyone with an internal login can see this menu.</p>
+    <t t-else=""><h2 class="h5">Roles and permissions</h2>
+     <ul><li t-foreach="screen.gates" t-as="gate" t-key="gate.id" t-esc="gate.name"/>
+      <li t-foreach="screen.legacy.roles" t-as="name" t-key="name" t-esc="name"/></ul>
+     <p t-if="screen.legacy.loose"><t t-esc="screen.legacy.loose"/> additional permission groups grant access.</p>
+    </t>
+    <p t-if="screen.restricted" t-esc="screen.restriction_reason"/>
+    <button t-if="screen.can_manage" type="button" class="pbim-btn primary" t-on-click="manage">Manage menu access</button>
+   </t>
+   <p t-else="">This menu has no active access configuration.</p>
+  </div></main>
+ </t>
+</templates>
