@@ -1,0 +1,84 @@
+// =====================================================================
+//  NEWHIRE P3b — /my/welcome (the page the welcome link lands on).
+//  A thin layer over pb_me_portal's `.pbme` kit (--pbim-* tokens, cards,
+//  buttons). Mobile first: the person usually opens the link on a phone.
+//  Motion: the ring fills, the cards rise in turn; all off under reduced
+//  motion. Flat fills only.
+// =====================================================================
+
+.pbme.pbnhw {
+    max-width: 720px;
+    margin: 0 auto;
+    padding-bottom: 32px;
+
+    .pbnhw-hero {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 18px;
+        align-items: center;
+        padding: 22px;
+        margin-bottom: 18px;
+    }
+    .pbnhw-hero-t { min-width: 0; }
+    .pbnhw-hero .pbme-h1 { margin: 2px 0 0; }
+    .pbnhw-go { white-space: nowrap; display: inline-flex; align-items: center; gap: 8px; }
+
+    // the progress ring
+    .pbnhw-ring {
+        --pbnhw-deg: 0deg;
+        width: 76px; height: 76px; border-radius: 50%; flex: none;
+        background: conic-gradient(var(--pbim-primary) var(--pbnhw-deg), var(--pbim-line) 0);
+        display: grid; place-items: center;
+        animation: pbnhw-fill .7s ease-out;
+    }
+    .pbnhw-ring-in {
+        width: 60px; height: 60px; border-radius: 50%; background: var(--pbim-surface);
+        display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.05;
+        b { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
+        small { font-size: 10px; color: var(--pbim-muted); font-weight: 600; }
+    }
+    .pbnhw-hero.is-done .pbnhw-ring { background: var(--pbim-green); }
+    .pbnhw-hero.is-done .pbnhw-ring-in { color: var(--pbim-green); }
+
+    .pbnhw-h2 { font-size: 15px; font-weight: 800; margin: 0 0 10px; }
+    .pbnhw-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+    .pbnhw-item { animation: pbnhw-rise .3s ease-out both; }
+    .pbnhw-card {
+        display: flex; gap: 14px; align-items: center; padding: 14px 16px;
+        color: var(--pbim-text); text-decoration: none;
+        transition: box-shadow .15s, transform .15s, border-color .15s;
+    }
+    a.pbnhw-card:hover { box-shadow: var(--pbim-sh-lg); transform: translateY(-1px); border-color: var(--pbim-primary-light); color: var(--pbim-text); }
+    a.pbnhw-card:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+    .pbnhw-tile {
+        width: 40px; height: 40px; border-radius: 11px; flex: none; display: grid; place-items: center;
+        background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary-strong, #5A4BB0);
+    }
+    .pbnhw-card-t { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+    .pbnhw-card-t b { font-size: 14.5px; font-weight: 700; }
+    .pbnhw-card-t small { color: var(--pbim-muted); font-size: 12.5px; }
+    .pbnhw-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 3px; }
+    .pbnhw-chip { font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: var(--pbim-slate-soft); color: var(--pbim-slate); }
+    .pbnhw-chip.is-open { background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary-strong, #5A4BB0); }
+    .pbnhw-chip.is-waiting { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+    .pbnhw-chip.is-done { background: var(--pbim-green-soft); color: var(--pbim-green); }
+    .pbnhw-chip.is-pay { background: var(--pbim-rose-soft); color: var(--pbim-rose); }
+    .pbnhw-chev { color: var(--pbim-muted); flex: none; }
+    .pbnhw-item.is-done .pbnhw-tile { background: var(--pbim-green-soft); color: var(--pbim-green); }
+    .pbnhw-item.is-done .pbnhw-card-t b { color: var(--pbim-muted); }
+    .pbnhw-foot { display: flex; gap: 8px; align-items: flex-start; margin-top: 14px; }
+    .pbnhw-foot svg { flex: none; margin-top: 2px; color: var(--pbim-primary-strong, #5A4BB0); }
+
+    @media (max-width: 600px) {
+        .pbnhw-hero { grid-template-columns: auto minmax(0, 1fr); padding: 18px; gap: 14px; }
+        .pbnhw-go { grid-column: 1 / -1; justify-content: center; }
+        .pbnhw-card { padding: 12px 13px; gap: 12px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .pbnhw-ring, .pbnhw-item { animation: none; }
+        .pbnhw-card { transition: none; }
+    }
+}
+
+@keyframes pbnhw-fill { from { transform: scale(.85) rotate(-40deg); opacity: .3; } }
+@keyframes pbnhw-rise { from { transform: translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }

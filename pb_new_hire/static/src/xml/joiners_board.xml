@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- NEWHIRE P3b: what each new person was asked, on the New joiners
+       board (template inheritance only; pb_onboarding is not edited).
+       Loop names: items `it`. -->
+  <t t-name="pb_new_hire.PbOnboardingBoard" t-inherit="pb_onboarding.PbOnboardingBoard" t-inherit-mode="extension">
+
+    <!-- the card: one quiet chip -->
+    <xpath expr="//div[hasclass('obb-card')]//div[hasclass('obb-facts')]" position="after">
+      <div t-if="row.asked" class="obb-nh" t-on-click="() => this.openJoiner(row.id)">
+        <span class="obb-nh-l" t-esc="nhTitle(row.asked)"/>
+        <span t-attf-class="pbim-badge obb-nh-b {{ nhChipCls(row.asked) }}" t-esc="row.asked.chip"/>
+      </div>
+    </xpath>
+
+    <!-- the drawer: the list, and the two buttons -->
+    <xpath expr="//div[hasclass('obb-drawer-people')]" position="after">
+      <t t-set="nhA" t-value="state.drawer.joiner.asked"/>
+      <t t-if="nhA">
+        <h3 class="obb-drawer-h3 obb-nh-h3">
+          <span t-esc="nhTitle(nhA)"/>
+          <span t-attf-class="pbim-badge obb-nh-b {{ nhChipCls(nhA) }}" t-esc="nhA.chip"/>
+        </h3>
+        <div t-foreach="nhA.items" t-as="it" t-key="it.key" class="obb-task">
+          <div class="obb-task-l">
+            <b t-esc="it.label"/>
+            <span t-attf-class="pbim-badge obb-nh-b {{ nhStateCls(it) }}" t-esc="nhStateText(it, nhA)"/>
+          </div>
+          <div t-if="it.need === 'first_pay' and it.state !== 'done'" class="obb-task-m"><span>Needed for the first pay</span></div>
+        </div>
+        <p t-if="nhNote(nhA)" class="obb-nh-note"><t t-out="ic('info',13)"/> <t t-esc="nhNote(nhA)"/></p>
+        <div t-if="nhA.can_send or nhA.can_copy" class="obb-nh-act">
+          <button t-if="nhA.can_send" class="pbim-btn outline pbim-btn-sm" t-att-disabled="nhUi.busy"
+                  t-on-click="() => this.nhSend(state.drawer.joiner)">
+            <t t-out="ic('send',13)"/> Send again
+          </button>
+          <button t-if="nhA.can_copy" class="pbim-btn ghost pbim-btn-sm" t-att-disabled="nhUi.busy"
+                  t-on-click="() => this.nhCopy(state.drawer.joiner)">
+            <t t-out="ic('copy',13)"/> Copy the welcome link
+          </button>
+        </div>
+        <p t-if="nhUi.msg and nhUi.forId === state.drawer.joiner.employee_id" t-attf-class="obb-nh-msg is-{{ nhUi.msgKind }}" role="status" t-esc="nhUi.msg"/>
+        <div t-if="nhUi.link and nhUi.forId === state.drawer.joiner.employee_id" class="obb-nh-link">
+          <label>Copy this link and send it to <t t-esc="nhA.first"/>
+            <input type="text" readonly="readonly" t-att-value="nhUi.link" t-on-focus="nhSelect" t-on-click="nhSelect"/>
+          </label>
+          <small t-esc="nhUi.hint"/>
+        </div>
+      </t>
+    </xpath>
+  </t>
+
+</templates>

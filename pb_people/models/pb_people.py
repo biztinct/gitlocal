@@ -48,16 +48,22 @@ class PbPeople(models.AbstractModel):
             return default
 
     @api.model
-    def _pay_symbol(self, e, cache=None):
+    def _pay_symbol(self, e, cache=None, contract=None):
         """The money sign for this person's wage: their pay scheme's currency.
 
-        A Singapore-paid person's wage is in S$, not the company's dong. The
-        scheme comes from the stored "Paid by" (`pb_paid_by_id`, GROUP P2);
-        a database without it, or a person nobody pays yet, gets the
-        company's money as before. `cache` (scheme id -> sign) keeps a roster
-        page to one lookup per scheme.
+        A Singapore-paid person's wage is in S$, not the company's dong. A
+        contract that carries its own Country of Work is written in that
+        country's money (the contract's currency follows it), so its sign
+        wins: "Paid by" is refreshed overnight and is still empty for a person
+        added today (NEWHIRE NH18). Otherwise the scheme comes from the stored
+        "Paid by" (`pb_paid_by_id`, GROUP P2); a database without it, or a
+        person nobody pays yet, gets the company's money as before. `cache`
+        (scheme id -> sign) keeps a roster page to one lookup per scheme.
         """
         company_sign = (e.company_id or self.env.company).currency_id.symbol or ''
+        c = e.contract_id if contract is None else contract
+        if c and 'payroll_country' in c._fields and c.payroll_country and c.currency_id:
+            return c.currency_id.symbol or c.currency_id.name or company_sign
         scheme = e.pb_paid_by_id if 'pb_paid_by_id' in e._fields else False
         if not scheme or not hasattr(scheme, 'scheme_currency'):
             return company_sign
@@ -82,7 +88,7 @@ class PbPeople(models.AbstractModel):
         """
         signs, sums = {}, {}
         for c in self.env['hr.contract'].search(contract_domain):
-            sign = self._pay_symbol(c.employee_id, signs)
+            sign = self._pay_symbol(c.employee_id, signs, contract=c)
             amount, count = sums.get(sign, (0.0, 0))
             sums[sign] = (amount + (c.wage or 0.0), count + 1)
         return sorted(

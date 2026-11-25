@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- NEWHIRE P4 A.4: Hiring's own confirm stays reachable as a quiet second
+     button wherever "Confirm they joined" now opens the studio (HR only —
+     for everybody else the main button is still Hiring's own dialog). -->
+<templates xml:space="preserve">
+
+<t t-inherit="pb_hiring.P6DrawerJoining" t-inherit-mode="extension">
+  <xpath expr="//button[contains(@t-on-click, 'p6OpenConfirm()')]" position="after">
+    <button t-if="pbnhHR" type="button" class="pbim-btn ghost pbnh-plain" title="Hiring's one-press confirm: makes the record and contract without the Add employee form"
+            t-on-click="() =&gt; this.p6OpenConfirmPlain()"><t t-out="ic('check',14)"/> Confirm without the form</button>
+  </xpath>
+</t>
+
+<t t-inherit="pb_hiring.RoleDetails" t-inherit-mode="extension">
+  <xpath expr="//button[@t-on-click='closeOffer']" position="after">
+    <button t-if="pbnhHR and state.canRecruit and offer.state === 'signed'" class="pbim-btn ghost pbnh-plain"
+            t-on-click="() =&gt; this.p6FromOfferPlain(offer)"><t t-out="ic('check',14)"/> Confirm without the form</button>
+  </xpath>
+</t>
+
+</templates>

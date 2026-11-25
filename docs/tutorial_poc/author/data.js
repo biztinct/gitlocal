@@ -11606,19 +11606,25 @@ const QA = [
     // of exactly this task on the practice company (handover §5.6).
     try: "sc_people",
     blocks: [
-      { k: "p", v: B("Add employee, at the top of the Employees screen. It opens a three-step wizard rather than a bare form: the person, then their role, then their contract.",
-                     "Nút Thêm nhân viên, ở phía trên màn hình Nhân sự. Nó mở một trình hướng dẫn ba bước thay vì một biểu mẫu trống: thông tin cá nhân, rồi vị trí công việc, rồi hợp đồng.") },
-      { k: "p", v: B("The third step is the one payroll depends on. A person with no running contract computes nothing at all, so they simply do not appear in the run.",
-                     "Bước thứ ba mới là bước hệ thống lương phụ thuộc vào. Người chưa có hợp đồng đang hiệu lực thì không được tính gì cả, nên đơn giản là họ không xuất hiện trong đợt lương.") },
-      { k: "warn", v: B("Bank details are the other half and they are not on that wizard. Somebody with a contract and no account computes perfectly and is still not paid on {{payDay}}.",
-                        "Thông tin ngân hàng là nửa còn lại và nó không nằm trong trình hướng dẫn đó. Người có hợp đồng mà chưa có tài khoản vẫn được tính lương hoàn hảo và vẫn không nhận được tiền vào {{payDay}}.") },
+      /* NEWHIRE P5a — the guided Add employee screen (pb_new_hire) replaced
+         the three-step window: seven steps, three required, the other four
+         already answered, and a second person approves where the company
+         asks for it. */
+      { k: "p", v: B("Add employee, at the top of the Employees screen. It opens a guided screen of seven steps. Only the first three are required: who is joining, their role and place, and their contract and pay.",
+                     "Nút Thêm nhân viên, ở phía trên màn hình Nhân viên. Nút này mở một màn hình có hướng dẫn gồm bảy bước. Chỉ ba bước đầu là bắt buộc: ai sắp vào làm, vị trí và nơi làm việc, rồi hợp đồng và lương.") },
+      { k: "p", v: B("The team you pick decides the pay scheme, and the currency and the trial period follow from it. The other four steps already hold sensible answers, so you only change what is different.",
+                     "Nhóm bạn chọn quyết định chương trình lương, rồi tiền tệ và thời gian thử việc đi theo đó. Bốn bước còn lại đã có sẵn câu trả lời hợp lý, nên bạn chỉ sửa những gì khác.") },
+      { k: "p", v: B("Check and add ends with Send. Where your company asks for it, a second person approves the hire first, and nothing is created until they do.",
+                     "Bước Kiểm tra và thêm kết thúc bằng nút Gửi. Nếu công ty bạn yêu cầu, một người thứ hai sẽ duyệt trước, và chưa có gì được tạo cho đến khi họ duyệt.") },
+      { k: "warn", v: B("Bank details are the other half. If you choose to ask the person, they give the account in their welcome link. Until a second person approves it, they compute perfectly and are still not paid on {{payDay}}.",
+                        "Thông tin ngân hàng là nửa còn lại. Nếu bạn chọn hỏi người đó, họ sẽ tự nhập tài khoản qua đường dẫn chào mừng. Khi người thứ hai chưa duyệt, họ vẫn được tính lương đầy đủ nhưng vẫn không nhận được tiền vào {{payDay}}.") },
       { k: "steps", v: [
-        { t: B("Add employee — person, role, contract", "Thêm nhân viên — thông tin cá nhân, vị trí, hợp đồng"), a: "pe-head" },
+        { t: B("Add employee — who, role and place, contract and pay, then Send", "Thêm nhân viên — ai, vị trí và nơi làm việc, hợp đồng và lương, rồi Gửi"), a: "pe-head" },
         { t: B("Check the contract start date against the period you are about to run", "Đối chiếu ngày bắt đầu hợp đồng với kỳ lương bạn sắp chạy"), a: "ct-roster" },
         { t: B("Filter the roster to the people who are not payroll-ready and clear the new name off it", "Lọc danh sách theo những người chưa sẵn sàng tính lương và xử lý cho tên vừa thêm rời khỏi đó"), a: "pe-kpis" },
       ] },
-      { k: "src", v: B("The Add employee wizard's three steps, and the payroll-ready mark on the roster.",
-                       "Ba bước của trình hướng dẫn Thêm nhân viên, và dấu sẵn sàng tính lương trên danh sách.") },
+      { k: "src", v: B("The Add employee screen's seven steps, and the payroll-ready mark on the roster.",
+                       "Bảy bước của màn hình Thêm nhân viên, và dấu sẵn sàng tính lương trên danh sách.") },
     ],
   },
 
@@ -12687,10 +12693,11 @@ const PRACTICE_ANCHORS = {
      cell its own way and the real employee form is a form view. */
   "rep-impfix": "The import wizard's one repairable cell — the overtime amount on the row whose figure could not be read. A real input; the value a learner types is checked loosely against the step's own value, thousands marks and all.",
   "rep-impmatch": "The Match button on that same row. Practice-only because the product's importer offers its fixes differently; here it is what 'accept this row' looks like.",
-  "rep-newemp-open": "The Add employee button on the Employees replica. In the product it opens a form view; here it is the step that takes the learner down to the practice form.",
-  "rep-newemp-name": "The practice employee form's name field. A real input, declared in INPUT_ANCHORS as text, so tone marks are optional when it is checked.",
-  "rep-newemp-div": "The practice employee form's division picker. A click target, not an input: choosing the division is choosing which formula configuration will pay this person.",
-  "rep-newemp-save": "The practice employee form's Save button. It saves nothing — there is no server behind the replica — and the step that presses it is guarded for the same reason the real one would be.",
+  "rep-newemp-open": "The Add employee button on the Employees replica. In the product it opens the guided Add employee screen (pb_new_hire); here it is the step that takes the learner down to the practice copy of that screen.",
+  "rep-newemp-name": "The practice Add employee screen's Full name box (step 1, Who is joining). A real input, declared in INPUT_ANCHORS as text, so tone marks are optional when it is checked.",
+  "rep-newemp-team": "The practice Add employee screen's Team list (step 2, Role and place). A click target, not an input: choosing the team is choosing which pay scheme pays this person, as in the product.",
+  "rep-newemp-wage": "The practice Add employee screen's Monthly wage box (step 3, Contract and pay). A real input, declared in INPUT_ANCHORS as a number, so the reader's own thousands mark is accepted.",
+  "rep-newemp-send": "The practice Add employee screen's Send button (step 7, Check and add). It sends nothing — there is no server behind the replica — and the step that presses it is guarded for the same reason the real one would be.",
   "rep-watermark": "The practice-mode watermark. Says on every free-roam screen that none of this is real. Drawn unconditionally by the practice view builder; no product screen has one.",
   /* LEARN REFRESH step 3 — the payroll-setup replicas' own controls. */
   "rep-bp-rules": "The guided setup's Pay rules list on the practice company, each component as a sentence with its formula.",
@@ -13538,11 +13545,17 @@ const SCENARIOS = [
      TRY ONLY, and the reason is the same one that makes it worth writing. The
      activation checklist's second item asks a brand-new tenant to add their
      first person, and the two ways to teach that are both bad on their own: a
-     Watch of the real form would be a walkthrough of an empty database with
+     Watch of the real screen would be a walkthrough of an empty database with
      nobody in it, and a Do would have somebody's first act in their own
      Payobook be one a tutorial talked them through. Try is the third answer —
-     the same five steps, on a company that is not theirs — so that when they
-     do it for real they have done it before.
+     the same steps, on a company that is not theirs — so that when they do it
+     for real they have done it before.
+
+     NEWHIRE P5a: the product's Add employee is now the guided seven-step
+     screen (pb_new_hire). The replica draws its first three steps — the only
+     required ones — and Check and add, in that order: name, team, wage, Send.
+     The other four steps already hold the company's usual answers, which the
+     open step says rather than draws.
 
      THE LAST STEP DOES NOT SHOW THE ROW APPEARING, and that is deliberate. The
      replica has no server, so a roster that grew by one would be a lie the
@@ -13559,37 +13572,38 @@ const SCENARIOS = [
     /* ONECHAT OC1 — what "let me practise …" is matched against: English,
        Vietnamese with marks, Vietnamese without. Never on two scenarios. */
     match: ["add an employee", "add a new employee", "add employee", "add a person", "add staff", "new employee", "create an employee", "thêm nhân viên", "thêm người mới", "tạo nhân viên", "tạo hồ sơ nhân viên", "them nhan vien", "them nguoi moi", "tao nhan vien", "tao ho so nhan vien", "thêm một nhân viên", "tạo nhân viên mới", "them mot nhan vien", "tao nhan vien moi"],
-    tagline: B("Name, division, save — and the one thing that still stands between a new person and their pay.",
-               "Tên, bộ phận, lưu — và điều duy nhất còn ngăn giữa một người mới và tiền lương của họ."),
+    tagline: B("Name, team, wage, Send — and the one thing that still stands between a new person and their pay.",
+               "Tên, nhóm, lương, Gửi — và điều duy nhất còn ngăn giữa một người mới và tiền lương của họ."),
     entry: { screen: "employees" },
-    /* LEARNREV P5b — four lines a step. Steps 1–4 act on the practice
-       copy's form (rep-newemp-*), so the action sits in the look line and
-       no step carries a press. */
+    /* LEARNREV P5b — four lines a step. Steps 1–5 act on the practice
+       copy of the Add employee screen (rep-newemp-*), so the action sits in
+       the look line and no step carries a press. */
     steps: [
       {
         key: "open", anchor: "rep-newemp-open", screen: "employees",
         act: "click", guard: false,
         say: {
-          /* source: pb_learn/static/src/engine/screens.js:596 · pb_people/static/src/xml/people.xml:27 */
+          /* source: pb_learn/static/src/engine/screens.js · pb_people/static/src/xml/people.xml:27 ·
+             pb_new_hire/static/src/xml/new_hire_studio.xml (the step rail) */
           kicker: B("Step 1", "Bước 1"),
-          title: B("Find the new employee form", "Tìm biểu mẫu nhân viên mới"),
-          look: B("Add employee, at the top of the list. Pressing it opens the form.",
-                  "Thêm nhân viên, ở đầu danh sách. Bấm vào sẽ mở biểu mẫu."),
-          means: B("Everybody who is paid starts here. In Payobook this opens a form of its own.",
-                   "Mọi người được trả lương đều bắt đầu từ đây. Trong Payobook, nút này mở ra một biểu mẫu riêng."),
-          affects: B("In the practice company the form is drawn under the roster instead, so read it there.",
-                     "Trong công ty thực hành, biểu mẫu được vẽ ngay dưới danh sách, nên hãy đọc ở đó."),
+          title: B("Find where new people start", "Tìm nơi bắt đầu cho người mới"),
+          look: B("Add employee, at the top of the list. It opens a guided screen of seven steps.",
+                  "Thêm nhân viên, ở đầu danh sách. Nút này mở một màn hình có hướng dẫn gồm bảy bước."),
+          means: B("Only the first three steps are required. The other four already hold sensible answers you can change.",
+                   "Chỉ ba bước đầu là bắt buộc. Bốn bước còn lại đã có sẵn câu trả lời hợp lý mà bạn có thể sửa."),
+          affects: B("In the practice company the screen is drawn under the roster instead, so read it there.",
+                     "Trong công ty thực hành, màn hình này được vẽ ngay dưới danh sách, nên hãy đọc ở đó."),
         },
       },
       {
         key: "name", anchor: "rep-newemp-name", screen: "employees",
         act: "input", value: B("Nguyễn Văn An", "Nguyễn Văn An"),
         say: {
-          /* source: pb_learn/static/src/engine/screens.js:346 */
+          /* source: pb_learn/static/src/engine/screens.js · pb_new_hire step 1 (Who is joining) */
           kicker: B("Step 2", "Bước 2"),
-          title: B("Type the person's name", "Nhập tên người đó"),
-          look: B("The Full name box. Type the name and press Enter.",
-                  "Ô Họ và tên. Gõ tên vào rồi bấm Enter."),
+          title: B("Type who is joining", "Nhập người sắp vào làm"),
+          look: B("Step 1, Who is joining. Type the full name in the Full name box and press Enter.",
+                  "Bước 1, Ai sắp vào làm. Gõ họ và tên vào ô Họ và tên rồi bấm Enter."),
           means: B("The name is what everybody after you will search for.",
                    "Cái tên là thứ những người sau bạn sẽ dùng để tìm."),
           affects: B("Write it the way their contract writes it, so payslips and reports match.",
@@ -13599,33 +13613,48 @@ const SCENARIOS = [
         },
       },
       {
-        key: "division", anchor: "rep-newemp-div", screen: "employees",
+        key: "team", anchor: "rep-newemp-team", screen: "employees",
         act: "click", guard: false,
         say: {
-          /* source: pb_learn/static/src/engine/screens.js:349 */
+          /* source: pb_learn/static/src/engine/screens.js · pb_new_hire step 2 (Role and place) */
           kicker: B("Step 3", "Bước 3"),
-          title: B("Pick the division", "Chọn bộ phận"),
-          look: B("The Division list, under the name. Open it and pick one.",
-                  "Danh sách Bộ phận, dưới ô tên. Mở ra và chọn một bộ phận."),
-          means: B("This is the decision on this form. Each division carries its own pay rules.",
-                   "Đây là quyết định quan trọng nhất trên biểu mẫu này. Mỗi bộ phận có bộ quy tắc lương riêng."),
-          affects: B("The division you pick decides the rules that work out every payslip this person gets.",
-                     "Bộ phận bạn chọn quyết định bộ quy tắc tính mọi phiếu lương của người này về sau."),
+          title: B("Pick the team", "Chọn nhóm"),
+          look: B("Step 2, Role and place. Open the Team list and pick one.",
+                  "Bước 2, Vị trí và nơi làm việc. Mở danh sách Nhóm và chọn một nhóm."),
+          means: B("This is the decision on this screen. The team decides which pay scheme pays this person.",
+                   "Đây là quyết định quan trọng nhất trên màn hình này. Nhóm quyết định chương trình lương nào trả lương cho người này."),
+          affects: B("The currency and the trial period follow from it, and Paid by on the right shows the scheme.",
+                     "Tiền tệ và thời gian thử việc đi theo đó, và mục Trả lương theo ở bên phải cho thấy chương trình lương."),
         },
       },
       {
-        key: "save", anchor: "rep-newemp-save", screen: "employees",
+        key: "wage", anchor: "rep-newemp-wage", screen: "employees",
+        act: "input", value: B("9500000", "9500000"),
+        say: {
+          /* source: pb_learn/static/src/engine/screens.js · pb_new_hire step 3 (Contract and pay) */
+          kicker: B("Step 4", "Bước 4"),
+          title: B("Type the monthly wage", "Nhập lương tháng"),
+          look: B("Step 3, Contract and pay. Type 9,500,000 in the Monthly wage box and press Enter.",
+                  "Bước 3, Hợp đồng và lương. Gõ 9.500.000 vào ô Lương tháng rồi bấm Enter."),
+          means: B("The wage is in the pay scheme's own money. On your own Payobook a month's payslip example appears on the right.",
+                   "Lương tính bằng đồng tiền của chương trình lương. Trên Payobook của chính bạn, một phiếu lương mẫu của một tháng sẽ hiện ở bên phải."),
+          affects: B("That example is worked out by the real pay scheme, and nothing is saved while you look at it.",
+                     "Phiếu mẫu đó do chính chương trình lương tính ra, và không có gì được lưu khi bạn xem."),
+        },
+      },
+      {
+        key: "send", anchor: "rep-newemp-send", screen: "employees",
         act: "click", guard: true,
         say: {
-          /* source: pb_learn/static/src/engine/screens.js:356 */
-          kicker: B("Step 4", "Bước 4"),
-          title: B("Save the person", "Lưu người này"),
-          look: B("Save, under the form. Pressing it is the last step.",
-                  "Lưu, dưới biểu mẫu. Bấm vào là bước cuối cùng."),
-          means: B("On your own Payobook this writes a record other people can see.",
-                   "Trên Payobook của chính bạn, thao tác này ghi một bản ghi mà người khác cũng nhìn thấy."),
-          affects: B("Here it writes nothing at all. There is no server behind the practice company.",
-                     "Ở đây nó không ghi gì cả. Không có máy chủ nào phía sau công ty thực hành."),
+          /* source: pb_learn/static/src/engine/screens.js · pb_new_hire step 7 (Check and add) */
+          kicker: B("Step 5", "Bước 5"),
+          title: B("Check and send", "Kiểm tra và gửi"),
+          look: B("Check and add, the last step. Send is the button at the bottom.",
+                  "Kiểm tra và thêm, bước cuối cùng. Gửi là nút ở cuối màn hình."),
+          means: B("Where your company asks for it, a second person approves the hire. Nothing is created until they do.",
+                   "Nếu công ty bạn yêu cầu, một người thứ hai sẽ duyệt người mới này. Chưa có gì được tạo cho đến khi họ duyệt."),
+          affects: B("Here it sends nothing at all. There is no server behind the practice company.",
+                     "Ở đây nó không gửi gì cả. Không có máy chủ nào phía sau công ty thực hành."),
         },
       },
       {
@@ -13633,7 +13662,7 @@ const SCENARIOS = [
         act: "observe",
         say: {
           /* source: pb_people/static/src/xml/people.xml:110 */
-          kicker: B("Step 5", "Bước 5"),
+          kicker: B("Step 6", "Bước 6"),
           title: B("On the roster is not the same as paid", "Có trong danh sách chưa phải là được trả lương"),
           look: B("The last row of the roster, and the warning at its end.",
                   "Dòng cuối cùng của danh sách, và dấu cảnh báo ở cuối dòng."),

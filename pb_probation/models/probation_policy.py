@@ -106,6 +106,23 @@ class PbProbationPolicy(models.Model):
             return self.browse()
         country = self._employee_country(employee)
         company_id = (employee.company_id or self.env.company).id
+        return self.policy_for_country(country, company_id)
+
+    @api.model
+    def policy_for_country(self, country, company=None):
+        """The policy for people working in `country` at `company` — the
+        search `policy_for` runs after its country ladder, for a screen that
+        knows the country of work before any employee exists (NEWHIRE P1).
+
+        `country` / `company` are records or ids. Same answer as `policy_for`
+        for a person whose ladder yields that country: the first row for the
+        country, else the country-less row, else an empty recordset.
+        """
+        if isinstance(country, models.BaseModel):
+            country = country[:1].id
+        if isinstance(company, models.BaseModel):
+            company = company[:1].id
+        company_id = int(company or 0) or self.env.company.id
         base = [('active', '=', True),
                 ('company_id', 'in', [False, company_id])]
         for extra in ([('country_id', '=', country)] if country else [],
