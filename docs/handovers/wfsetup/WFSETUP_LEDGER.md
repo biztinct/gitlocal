@@ -28,6 +28,7 @@ action; every record opens the generic premium record form; no visual of a shift
 | P6 | Honest clocks (step 6 states + "Switch clock-ins on", step 7 / finish wording), every Undo redraws the step | LIVE 2026-11-24 21:16 UTC on sudima + payobook (19.0.1.5.0), 109 s down (report WFSETUP_P6_REPORT.md) |
 | P10a | Study: how clock hours feed Sudima's pay from 1 Dec (proposal) | done 2026-11-25 (WFSETUP_P10A_PROPOSAL.md) |
 | P10b | Hours from the clocks into pay (scheme date, provider, pre-run check, stamp), leading zeros, extra hours On/Off; rehearsal; go live | LIVE 2026-11-25 05:04 UTC x5 (92f9af278), 619 s down; sudima: 2027 holidays, extra hours off, scheme 7844 clock date 1 Dec (report WFSETUP_P10B_REPORT.md) |
+| P10c | "From the clocks" labels: pay data template marks clock columns (B5), component editor chip (B6) | LIVE 2026-11-25 12:17 UTC x5 (d1c4dbf5c), 755 s down; pb_hr_payroll_formula 19.0.1.173.0, pb_formula_studio 19.0.1.216.0 (report WFSETUP_P10C_REPORT.md) |
 | P8 | Sudima clock-ins into attendance: rehearsal on a hidden copy, then live on Go | NO-GO 2026-11-24 23:21 UTC after the rehearsal (90.3 % matched < 95 %; rules refuse days that already have clock rows); live untouched (report WFSETUP_P8_REPORT.md) |
 
 ## Standing rules every handover repeats
@@ -136,3 +137,8 @@ action; every record opens the generic premium record form; no visual of a shift
 - **WS73** (P10b) Putting scheme 7844 live goes through the scheme approval ("Propose for approval"); `action_activate` raises for everybody else. Rehearsal set the state by SQL on the copy only.
 - **WS74** (P10b) Clock-answered inputs stay `is_required` on Sudima's scheme; in a clock month the file row validator skips them (`payroll_import_line.validate_line`), before the date they are still required.
 - **WS75** (P10b) The clock facts are NOT in `declared_sources()`: a leading kind there moves the record splice of `_declared_source_plan` and changes pre-clock-date months. Display surfaces add the clock themselves.
+
+- **WS76** (P10c) The pay data template's HEADINGS are the keys the resolver matches on re-import (`ExcelConnector.template_slot_for`): never put words into a heading. A clock-answered column is marked by its cell note (first lines) and a grey heading; `generate_template(clock_notes={rule_id: text})`, `{}` = the old workbook byte for byte (only `docProps/core.xml`, the creation stamp, differs between two builds).
+- **WS77** (P10c) The component editor renders the "Where this value comes from" card twice in Full mode (two editor bodies, `studio.xml`, ledger S14 of SOURCING) — pre-existing; any chip added to the card goes into BOTH bodies (`pb_formula_studio.SrcClockChip` is t-called from each).
+- **WS78** (P10c) Peer sessions ship `pb_hr_payroll_formula` too (Codex "Attendance Rules" 19.0.1.172.0 landed while P10c was being built). Fetch + rebase right before committing, bump from origin's version, and compare the live tree hash to origin's before staging: a scoped `rsync --delete` of a stale tree would silently undo the peer's release.
+- **WS79** (P10c) The clock key "Late working days (for allowance rules)" (Codex, `clock.late_days`) has no vi_VN / id_ID msgstr yet — owner's peer stream; not added by P10c to avoid a duplicate msgid race.
