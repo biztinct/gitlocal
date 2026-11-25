@@ -459,3 +459,24 @@ class TestLetterAndRows(DocsCommon):
         blob = json.dumps(prop.payload()) + (prop.result_json or '') + (prop.facts_json or '')
         self.assertNotIn(PDF, blob)
         self.assertNotIn('data', json.dumps(prop.payload().get('values', {}).get('pb_nh_papers')))
+
+
+@tagged('post_install', '-at_install', 'newhire')
+class TestDocsStatic(DocsCommon):
+
+    def test_d11_server_icons_exist(self):
+        """The item icons come from the server: every one is in the shared
+        Lucide registry (an unknown name renders a tick)."""
+        import os
+        import re
+        here = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        with open(os.path.join(here, 'pb_import_kit', 'static', 'src', 'js', 'import_icons.js'),
+                  encoding='utf-8') as f:
+            body = f.read().split('export const IC = {', 1)[1].split('\n};', 1)[0]
+        known = set(re.findall(r'^\s{4}([A-Za-z0-9]+):', body, flags=re.M))
+        self.Paper.create({'category_id': self.cat_permit.id, 'country_code': 'VN', 'need': 'joining',
+                           'company_id': self.company.id})
+        for code in ('ID', 'VN', 'IN', 'SG', 'MY'):
+            items, _o = self.items(code)
+            missing = {i['icon'] for i in items.values()} - known
+            self.assertFalse(missing, '%s: %s' % (code, missing))
