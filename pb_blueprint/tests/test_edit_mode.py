@@ -276,6 +276,8 @@ class TestSchemeCtxP3EditMode(TransactionCase):
             'payroll_journal_id': False,
             'debit_account_id': False,
             'credit_account_id': False,
+            # WFSETUP P10b — the Connect step's clock card date
+            'pb_clock_from': False,
         }
         bases = dict(config._fields['proration_basis'].selection)
         if samples['proration_basis'] not in bases:

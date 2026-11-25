@@ -262,9 +262,10 @@ class TestGoLive(GoLiveFixture, TransactionCase):
         self.assertEqual(again['added'], 0)
         self.assertIn('already on the calendar', again['summary'])
         self.assertFalse(self.facade().holidays(2027)['suggestions']['missing'])
-        # 2026 comes from the reference rows pb_timeoff ships (conflicts left out)
+        # 2026 is our own list since WFSETUP P10b: the reference rows' Christmas
+        # Day is not a Vietnamese public holiday (11 days, Labour Code art. 112)
         s26 = self.facade().holidays(2026)['suggestions']
-        self.assertTrue(s26 and s26['count'] == 12, s26)
+        self.assertTrue(s26 and s26['count'] == 11, s26)
         # a country with no list: no card
         fr = self.env['res.company'].create({'name': 'French go live', 'country_id': self.env.ref('base.fr').id})
         self.manager.company_ids = [(4, fr.id)]

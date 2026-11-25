@@ -1,6 +1,19 @@
 {
-  "_comment": "Suggested public holidays for step 5 of Workforce setup, keyed by country code then year. One row per day off. Tet and Hung Kings follow the lunar calendar: the 2027 dates were computed twice (Vietnamese lunar calendar at UTC+7 and the macOS Chinese calendar) and agree (Lunar New Year 6 Feb 2027, 10th day of the 3rd month 16 Apr 2027). The government confirms the Tet days off and the extra National Day holiday each year. 2026 rows come from pb_timeoff/data/holiday_reference.json at run time.",
+  "_comment": "Suggested public holidays for step 5 of Workforce setup, keyed by country code then year. One row per day off. Tet and Hung Kings follow the lunar calendar: the 2027 dates were computed twice (Vietnamese lunar calendar at UTC+7 and the macOS Chinese calendar) and agree (Lunar New Year 6 Feb 2027, 10th day of the 3rd month 16 Apr 2027). The government confirms the Tet days off and the extra National Day holiday each year. VN 2026 is our own list too (WFSETUP P10b): the reference list carries Christmas Day, which is not a public holiday in Vietnam (Labour Code 2019 art. 112), and a disputed 24 Nov row; both are left out.",
   "VN": {
+    "2026": [
+      {"date": "2026-01-01", "name": "New Year"},
+      {"date": "2026-02-16", "name": "Tet holiday"},
+      {"date": "2026-02-17", "name": "Tet (Lunar New Year)"},
+      {"date": "2026-02-18", "name": "Tet holiday"},
+      {"date": "2026-02-19", "name": "Tet holiday"},
+      {"date": "2026-02-20", "name": "Tet holiday"},
+      {"date": "2026-04-27", "name": "Hung Kings Day"},
+      {"date": "2026-04-30", "name": "Reunification Day"},
+      {"date": "2026-05-01", "name": "Labour Day"},
+      {"date": "2026-09-01", "name": "National Day"},
+      {"date": "2026-09-02", "name": "National Day"}
+    ],
     "2027": [
       {"date": "2027-01-01", "name": "New Year"},
       {"date": "2027-02-05", "name": "Tet holiday"},

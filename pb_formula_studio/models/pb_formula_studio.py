@@ -7286,6 +7286,10 @@ class PbFormulaStudio(models.AbstractModel):
         'overtime_request': 'wired',
         'business_trip': 'wired',
         'timesheet_packet': 'wired',
+        # WDGAP S5-B confirmed late minutes, and WFSETUP P10b the clocks: both
+        # a declared, person-level source, so wired.
+        'late_minutes': 'wired',
+        'clock': 'wired',
         'binding_empty': 'fallback',
         'fallback': 'fallback',
         'employee_mapping': 'fallback',
