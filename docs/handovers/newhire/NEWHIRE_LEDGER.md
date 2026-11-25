@@ -161,3 +161,27 @@ Owner approved the design and the phased build on 2026-11-25.
   rules), so a hire added by someone else may not be on their board.
 - **NH31** (P2) A server started with `--test-enable` (even with no tests) shuts down after "post tests". Don't use it
   to get HTML reports on a walk server.
+- **NH32** (P3a) The contract letter's pay gate is NOT opened by sudo: `pb_doc_contracts._pbdc_pay` asks
+  `pb.contracts._cd_unmask_wage()` (`has_group`, NH23) and then reads the wage with `env(su=False)`. The studio's letter leg
+  opens it with the context key `pb_nh_letter_contract_id`, read by a `_cd_unmask_wage` override in `pb_new_hire` — for that
+  one call only.
+- **NH33** (P3a) SCSS: a modifier class with the same specificity loses to a base rule written LATER in the file
+  (`.pbnh-scrim` is defined after the step 5 block) — the drawer kept the dialog's 16 px padding. Use
+  `.pbnh-scrim.pbnh-scrim--side`.
+- **NH34** (P3a) Focus after an OWL state change: `requestAnimationFrame` can run before OWL patches the DOM (the opened form
+  was still `inert`, focus stayed on the button). Wait ~60 ms (`StepDocs.later`) or focus in `onPatched`.
+- **NH35** (P3a) Unstored computed answers (`hr.employee.pb_bank_on_record`) stay cached inside one transaction after the
+  fields they read change; `pb.new.hire.ask.refresh()` invalidates the employee before reading.
+- **NH36** (P3a) `pb.people.vault_upload_batch` checks the base64 length (14 MB) before the decoded size: a 10.0–10.5 MB file
+  gets "Choose a non-empty file up to 10 MB.", not "Each file must be 10 MB or smaller." The studio mirrors that order.
+- **NH37** (P3a) `/my/tax` offers tax kinds by the PAY SCHEME's country (`_pbtx_country`), not the Country of Work: when the
+  team's scheme is of another country (D3 mismatch), a tax ask url may be refused on that page.
+- **NH38** (P3a) A company row of `pb.new.hire.paper` without its own label shows the usual row's label
+  (`display_label`), else the category name. Vault category names are English product words ("ID Document",
+  "Degree / Certificate"): rows that print them have no seeded label (SG/VN/IN/MY certificate).
+- **NH39** (P3a) Locally, `odoo-bin --test-enable --stop-after-init` hangs after "post-tests" ("Hit CTRL-C again"); and
+  post_install tests run only for the modules being `-u`'d (a `-u pb_new_hire` run with `/pb_people_advanced` tags ran none
+  of its tests). Use the scratch `runt.sh` pattern: `-u` every module whose tests you want, kill after "post-tests".
+- **NH40** (P3a) Files of a waiting hire are private `ir.attachment` rows of its proposal listed in
+  `pb.newhire.proposal.pb_nh_files` (never in the payload); the fast lane applies inside `propose`, so `send` passes them by
+  the context key `pb_nh_files` for that one call. `_approval_withdraw/_reject/_return` and the apply drop them.

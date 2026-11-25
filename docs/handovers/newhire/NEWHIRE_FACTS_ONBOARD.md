@@ -1255,3 +1255,18 @@ be installed everywhere. **Do not** depend on pb_workforce_setup: it is installe
 - §I the letter needs the payroll-manager right to file (NH20); templates in the walk DB are shared (company empty).
 - New joiners board: `pb_onboarding.action_pb_onboarding_board` (tag `pb_onboarding_board`), gate `_can_read`
   (Lifecycle roles or admin) — NH30.
+
+## Corrections and additions found in P3a (2026-11-25)
+- §C6 the proposal was built differently (D10): the table is `pb.new.hire.paper` in `pb_new_hire` (country as a Selection
+  code, label per country, company rows override, inactive company row = "not needed here"); no reverse O2M on the category;
+  the editor is a drawer in step 5 for HR managers, not the category form.
+- §C4 `vault_upload_batch` checks the base64 length (> 14 MB) before the decoded size (NH36); it returns the whole
+  `get_employee_360` answer (heavy, but the side panel's own call).
+- §A3 `pb.me.detail.request._pb_check('tax_number', …)` can be called with no employee (`pbtx_employee=0`) and
+  `attachment=True` to get the number sentence; `/my/tax` kinds follow the scheme's country (NH37).
+- §I the letter's pay right: `_pbdc_pay` reads the wage with `env(su=False)` after `_cd_unmask_wage()` — sudo does not help
+  (NH32).
+- §E `singapore_nric_fin` exists only with `pb_hr_payroll_singapore` installed (not on the local walk DB); the studio writes
+  it only when the field exists.
+- §D the studio's bank goes through FS-16 unchanged; the request is proposed by the maker (`self.user_id`), so the HR lead
+  who approved the hire may approve the bank change too (walk: BCR/2026/0013).
