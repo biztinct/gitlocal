@@ -1282,3 +1282,23 @@ be installed everywhere. **Do not** depend on pb_workforce_setup: it is installe
   chatter (sent with the template's model/res_id, NH42).
 - §F2 `pb_onboarding.step_rize_data` ("Finish your own details") is now ticked by `pb_new_hire` when every ask is done.
 - §G `_auto_create_login` stays work-email only; `pb_new_hire` makes the personal-email login itself (`_login_private`).
+
+## Corrections and additions found in P4 (2026-11-25)
+- §K1 what `action_confirm_joined` reuses when the person already exists (proved by test H5/H5b):
+  `_ensure_employee` returns `offer.employee_id` when set (so linking = writing `offer.employee_id`, Hiring's own link);
+  `_ensure_contract` returns `offer.contract_id`, else REUSES the person's first contract found by search (it never makes
+  a second); `_ensure_package` makes a draft `pb.employee.comp` unless one exists; `_ensure_benefits` is idempotent;
+  `_ensure_login` would make a WORK-EMAIL portal login whatever the studio chose (only reuses `pb_portal_user_id`);
+  `_ensure_case` calls `_open_case`, idempotent by state, but OPENS a checklist when HR chose none. Every leg runs inside
+  `hiring_common.leg()`, which swallows any failure with a log warning only. `pb_new_hire` overrides `_ensure_login`,
+  `_ensure_case` (and `_ensure_contract` as a guard) under the context key `pb_nh_joining_employee_id` to LINK only.
+- §K2 as built: `state = signed`, `join_status in (pending, changed, empty)`, company-scoped, searched in the user's own
+  rights (base users read only "offers about me"; recruiters read all).
+- §K3 the `ID Document` vault category has `requires_expiry`; Hiring never collects a valid-until date, so a copied ID
+  card cannot be filed there without inventing one (NH56).
+- §K3 `pb.bank.ocr.create_from_upload` needs create on `pb.bank.change.request`, which HR approvers lack (NH57).
+- §B4 matching by name works on the six seeded lines (`pb_hiring.doc_*`, `translate=True` names, compared in every
+  installed language); a company's own line with another name comes across as "Other papers".
+- Hiring's screens: every "Confirm they joined" (drawer door, Next box `confirm_open`, offer panel `closeOffer` →
+  `p6FromOffer`) calls `PbHiringBoard.p6OpenConfirm` (`pb_hiring/static/src/js/hiring_p6.js`) — one patch point (NH59).
+- Locally `action_send_to_candidate` needs wkhtmltopdf (the letter PDF); walk seeds write the signed state (NH60).

@@ -549,3 +549,22 @@ honest but needs set-up per scheme.
   wage_calculation` (no kind field). `hr.contract` has BOTH `type_id` ("Employee Category", om_hr_payroll, the one the
   contract panel shows) and `contract_type_id` ("Contract Type", hr_contract); the studio writes `type_id`.
 - `pb.people._pay_symbol` read only "Paid by" (refreshed overnight), not the contract: fixed in P2 (NH29).
+
+## Corrections and additions found in P4 (2026-11-25)
+- §F (verdict as built): `pb.new.hire.payslip_example` in `pb_new_hire/models/payslip_example.py`. The preview create is
+  the studio's own path (`_values` → `create_employee` under `NEWHIRE_WRITE` + `pb_nh_preview`, which skips every leg).
+  Measured cost is the CREATE (17 `hr.employee` create overrides, ~0.8 s), not the evaluation: ~1.0 s on a 11-rule
+  scheme, ~1.5 s on a 300-rule scheme (median of 10, quiet laptop), ~2.0 s with three test servers running.
+- §F risk (a) confirmed and handled: `pg_advisory_xact_lock` in `_pb_in_work_timezone` is held until the END of the
+  transaction (a savepoint rollback does not release it) — the example try-locks first and answers "busy" (NH54).
+- §F risk (b) more precisely: `cr.savepoint()` (flush=True) RUNS the caller's pending precommit hooks on entry and its
+  rollback calls `cr.clear()`, which drops every precommit hook (NH50). Postcommit hooks survive; none is left by the
+  example (test P1).
+- §F new risk found: a stock side effect that no rollback undoes — `hr_holidays` adds a manager who signs in to the
+  time-off approvers group on employee create, and a group write signals `clear_cache('stable')` to every worker (NH51).
+- §F "evaluation errors": `formula_program._evaluate` swallows every formula exception and returns 0.0 (as the real
+  payslip does), so the sample kernel's `errors=` is almost never filled (NH52).
+- §F the provenance on the batch-free path never says "pay data file": inputs that DECLARE an `excel` / `feed` source
+  (`declared_sources()`) and were not read from it are the ones noted.
+- A real send at the plan's employee limit: the request is approved, then held with `block_reason` (engine `_run_apply`)
+  until `retry_apply` from Approvals once a place is free (test P4b).

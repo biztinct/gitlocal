@@ -214,3 +214,30 @@ Owner approved the design and the phased build on 2026-11-25.
   mail server (switch them ALL off when testing "no email"), no other joiner with open asks (judge one person's mail /
   activity, not a job's totals), no other queued mail (scan only rows made by the test) or no published privacy notice
   (the `/my` gate redirects every page test; patch `pb.privacy.consent._pb_pending` except in the test of the gate).
+- **NH50** (P4) `cr.savepoint()` (flush=True) RUNS the caller's pending precommit hooks on entry (mail tracking of earlier
+  writes) and its rollback calls `cr.clear()`, dropping every precommit hook registered so far. Postcommit hooks survive.
+  In a test that counts rows around a savepoint, `self.env.cr.flush()` first, or the fixtures' tracking "appears".
+- **NH51** (P4) Some side effects are NOT undone by a savepoint rollback: creating an employee whose manager signs in makes
+  the stock `hr_holidays` create write `res.groups`, which signals `registry.clear_cache('stable')` to every worker. The
+  payslip example leaves the manager out (it changes nothing on a payslip). Assert `registry.cache_invalidated` is empty.
+- **NH52** (P4) The formula kernel swallows every formula exception and answers 0.0 (`formula_program._evaluate`), like the
+  real payslip; `errors=` is almost never filled. A broken formula shows as a 0 line, not as an error.
+- **NH53** (P4) Inside one transaction `write_date` does not move (NOW() is the transaction's time): a cache keyed on rule
+  write dates misses a change made in the same transaction (tests). Hash the rules' content too.
+- **NH54** (P4) `pg_advisory_xact_lock` (the calendar copy in `_pb_in_work_timezone`) is held to the END of the transaction,
+  not the savepoint: two previews in one company serialise. Try the lock first (`pg_try_advisory_xact_lock`) and answer busy.
+- **NH55** (P4) One screen can fire two examples back to back (bring-across, then the contract category picked by itself):
+  the second meets the first's lock. The client runs ONE example request at a time and re-sends when the draft moved on.
+- **NH56** (P4) The vault's `ID Document` category requires an expiry date; Hiring never asks for one. The hiring leg holds
+  that paper (amber, "needs a valid-until date") instead of inventing a date; the file stays on the offer.
+- **NH57** (P4) HR approvers cannot create `pb.bank.change.request` through `pb.bank.ocr.create_from_upload`. The hiring leg
+  creates it AS the hire's sender with sudo (FS-16's `_pb_hold_new_hire` precedent: the creator counts as a preparer, so
+  the second approval is truly someone else's).
+- **NH58** (P4) Hiring's `action_confirm_joined` would make a work-email login and open a checklist whatever the studio
+  chose; its legs swallow every failure (`hiring_common.leg`, warning log only) — check results on the records, not on a
+  return value.
+- **NH59** (P4) Every "Confirm they joined" in Hiring funnels into `PbHiringBoard.p6OpenConfirm`; patch that one method.
+  `user.hasGroup` is async: read it in `onWillStart` of the patched `setup`.
+- **NH60** (P4) Locally `pb.hiring.offer.action_send_to_candidate` fails without wkhtmltopdf (the letter PDF). Walk seeds
+  write `state='signed'`, `join_status='pending'` directly (scratch `seed_hiring_p4.py`); tests try the real flow first.
+
