@@ -42,9 +42,13 @@ PAPER_MM = {'A4': (210, 297), 'A3': (297, 420)}
 MARGIN_SIDE = 12
 MARGIN_BOTTOM = 22
 MARGIN_TOP = 16
-MARGIN_TOP_LETTERHEAD = 40
+#: With the letterhead: the company's own A4 setting (52/52). The PDF engine
+#: keeps the table `header_spacing` mm below the top of the company header;
+#: a logo plus a five-line address is ~39 mm, so 35 mm ran the address into
+#: the title (DOCSTUDIO PDFFIX, the first engine build that prints a header).
+MARGIN_TOP_LETTERHEAD = 52
 HEADER_SPACING = 8
-HEADER_SPACING_LETTERHEAD = 35
+HEADER_SPACING_LETTERHEAD = 52
 PX_MM = 0.2646
 NUMERIC = ('number', 'money')
 _SENTINEL = object()

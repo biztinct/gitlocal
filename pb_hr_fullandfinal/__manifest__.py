@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Payroll Full and Final',
-    'version': '19.0.1.4.1',
+    'version': '19.0.1.4.2',
     'category': 'Human Resources',
     'summary': 'Full and final settlement list and report',
     'description': """

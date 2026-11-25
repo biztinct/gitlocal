@@ -293,12 +293,24 @@ class TestDocStudio(DocStudioCase):
         self.assertIn('DEMO Director', html)
         self.assertIn('data:image/png;base64', html)
         self.assertNotIn('o_report_layout', html, 'no letterhead')
+        self.assertNotIn('data-report-margin-top', html, 'plain paper keeps the paper format')
         # with a letterhead the company layout is used
         self.save(self.tmpl, page=dict(self.tmpl.pbds_page, letterhead=True, sign='text'))
         letter2 = self.letter(self.emp_vn)
         letter2.action_generate()
         html2 = base64.b64decode(letter2.attachment_id.datas).decode('utf-8', 'ignore')
         self.assertIn('header', html2)
+        # ... with room above the letter for the company header (PDFFIX):
+        # narrow 32 mm + 12 mm, header spacing the same
+        self.assertIn('data-report-margin-top="44"', html2)
+        self.assertIn('data-report-header-spacing="44"', html2)
+        for margins, top in (('normal', 52), ('wide', 58)):
+            self.save(self.tmpl, page=dict(self.tmpl.pbds_page, margins=margins))
+            res = self.Studio.sample_pdf(self.tmpl.id, {}, self.emp_vn.id, 'en_US')
+            self.assertTrue(res['ok'], res)
+            sample = base64.b64decode(res['data']).decode('utf-8', 'ignore')
+            self.assertIn('data-report-margin-top="%d"' % top, sample, margins)
+            self.assertIn('data-report-header-spacing="%d"' % top, sample, margins)
         # contract C3
         styles = {s['key'] for s in self.Studio.page_styles()}
         self.assertEqual(styles, {'letterhead', 'margins', 'font', 'size', 'sign', 'sign_name', 'sign_title'})

@@ -192,6 +192,13 @@ MARGINS = list(zip(['normal', 'narrow', 'wide'],
                    [_lt('Normal'), _lt('Narrow'), _lt('Wide')],
                    [(40, 28, 20, 20), (32, 22, 12, 12), (46, 32, 30, 30)]))
 MARGIN_KEYS = [m[0] for m in MARGINS]
+#: Extra room (mm) above the letter when the company letterhead prints. The
+#: PDF engine with patched Qt (the only build that prints a header at all)
+#: keeps the text `header_spacing` mm below the top of the company header: a
+#: logo plus a five-line address is ~39 mm, so 35 mm ran the address into the
+#: date and the heading (DOCSTUDIO PDFFIX). Normal margins + this room =
+#: 52/52, the A4 setting of the company's other documents.
+LETTERHEAD_ROOM = 12
 
 #: Fonts that exist on the printing server WITH Vietnamese letters: Roboto,
 #: Open Sans and Montserrat ship with the web client (`web/static/fonts/
@@ -233,3 +240,64 @@ MAX_BODY = 600 * 1024
 IMAGE_MIMES = ('image/png', 'image/jpeg', 'image/webp', 'image/gif')
 IMAGE_MAX = 4 * 1024 * 1024
 IMAGE_MARKER = 'pb_doc_studio:image'
+
+
+# ------------------------------------------------------------------ PDF text
+#: Block-level tags of a letter body: whitespace that only separates them is
+#: not text.
+PDF_BLOCKS = frozenset((
+    'p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'table',
+    'thead', 'tbody', 'tfoot', 'tr', 'td', 'th', 'blockquote', 'section', 'hr',
+    'pre', 'figure', 'header', 'footer'))
+_PDF_WS = None
+
+
+def pdf_body(body):
+    """The letter body as the PDF engine must get it (DOCSTUDIO PDFFIX).
+
+    The PDF engine with patched Qt drops the width of the space just before
+    a bold/italic word in ~15% of cases, in every font (measured on a 4-font
+    x 6-size sheet). Under `white-space: pre-wrap` (see `PAGE_CSS`,
+    `.pbds-pdf .pbds-body`) that space is kept: 0 lost. Pre-wrap would also
+    keep line breaks and indentation of the source, so here every run of
+    whitespace becomes one space and whitespace that only separates block
+    elements is dropped — the page then reads exactly as before."""
+    global _PDF_WS
+    if not body or not str(body).strip():
+        return body
+    import re
+    import lxml.html
+    from markupsafe import Markup, escape
+    if _PDF_WS is None:
+        _PDF_WS = re.compile(r'[ \t\r\n\f]+')
+    try:
+        root = lxml.html.fragment_fromstring(str(body), create_parent='div')
+    except Exception:                                  # noqa: BLE001
+        return body
+
+    def is_block(node):
+        return isinstance(node.tag, str) and node.tag.lower() in PDF_BLOCKS
+
+    for el in root.iter():
+        if el.text:
+            el.text = _PDF_WS.sub(' ', el.text)
+        if el is not root and el.tail:
+            el.tail = _PDF_WS.sub(' ', el.tail)
+    for el in root.iter():
+        if not isinstance(el.tag, str):
+            continue
+        kids = list(el)
+        if kids and el.text is not None and not el.text.strip() and is_block(kids[0]):
+            el.text = None
+        if el.text and is_block(el):
+            el.text = (el.text.strip(' ') if not kids else el.text.lstrip(' ')) or None
+        if kids and is_block(el) and kids[-1].tail:
+            kids[-1].tail = kids[-1].tail.rstrip(' ') or None
+        for i, kid in enumerate(kids):
+            nxt = kids[i + 1] if i + 1 < len(kids) else None
+            if kid.tail is not None and not kid.tail.strip() and (
+                    is_block(kid) or nxt is None and is_block(el) or (nxt is not None and is_block(nxt))):
+                kid.tail = None
+    out = escape(root.text or '') + Markup(''.join(
+        lxml.html.tostring(kid, encoding='unicode', with_tail=True) for kid in root))
+    return Markup(out)
