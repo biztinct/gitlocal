@@ -1234,7 +1234,38 @@ class PbFormulaStudio(models.AbstractModel):
                 'adj': entry.get('adj') or [],
                 'run': actual_run,
             }
+        clock = self._source_clock_chip(rule)
+        if clock:
+            block['clock'] = clock
         return block
+
+    @api.model
+    def _source_clock_chip(self, rule):
+        """WFSETUP P10c (B6) — "From the clocks — from 1 Dec 2026".
+
+        Display only. The clocks are deliberately not one of the declared
+        sources (ledger WS75: a leading kind there would move pre-clock-date
+        months), so the editor's source card is told separately: an input the
+        clocks answer, on a scheme that has a clock date. Anything else —
+        no key, no date, not an input — gets nothing and the card is
+        unchanged."""
+        if 'pb_clock_key' not in rule._fields or rule.column_type != 'input' \
+                or not rule.pb_clock_key:
+            return None
+        config = rule.config_id
+        if not config or not config.pb_clock_from:
+            return None
+        day = config._pb_clock_from_label()
+        fact = config._pb_clock_label(rule.pb_clock_key)
+        return {
+            'key': rule.pb_clock_key,
+            'from': fields.Date.to_string(config.pb_clock_from),
+            'label': _("From the clocks — from %s") % day,
+            'hint': _("Answered by the clocks: %(fact)s. Pay periods from "
+                      "%(day)s take this value from the clocks, not the pay "
+                      "data file; earlier pay periods read it as before.",
+                      fact=fact, day=day),
+        }
 
     @api.model
     def get_studio_data(self, config_id=None):

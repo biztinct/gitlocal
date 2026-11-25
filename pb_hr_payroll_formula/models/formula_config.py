@@ -1716,6 +1716,9 @@ class HrFormulaConfig(models.Model):
             self.rule_ids.sorted(key=lambda r: r.sequence),
             pk_header=self._pay_template_pk_header(),
             sheet_title=_('Pay Data'),
+            # WFSETUP P10c (B5) — columns the clocks answer say so ({} when
+            # the scheme has no clock date: the workbook is unchanged).
+            clock_notes=self._pb_clock_template_notes(),
         )
         stem = (self.code or self.name or 'scheme').strip().replace(' ', '_')
         return content, '%s_pay_data_template.xlsx' % stem

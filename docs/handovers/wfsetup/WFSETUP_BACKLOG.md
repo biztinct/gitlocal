@@ -8,7 +8,7 @@
 - **B2** 25 clock numbers (304 punch records, Sep–Nov) match nobody at Sudima — Sudima to identify them.
 - **B3** Sudima's job-board connection password can't be read (Hiring settings errors 24 Nov 22:57–22:59 UTC).
 - **B4** payobook_template has 40 active jobs although meant to be all off (pre-existing, P7 report).
-- **B5** (P10b) Pay data template: say "From the clocks — leave blank" on clock-answered columns of a clock month.
-- **B6** (P10b) Component editor source card: show "From the clocks — from <date>" as a chip.
+- ~~**B5**~~ DONE (P10c, 2026-11-25) Pay data template: say "From the clocks — leave blank" on clock-answered columns of a clock month.
+- ~~**B6**~~ DONE (P10c, 2026-11-25) Component editor source card: show "From the clocks — from <date>" as a chip.
 - **B7** (P10b, owner question) A worked public holiday is paid as holiday overtime only (R13 as written); the law adds
   the holiday's own pay for daily-paid workers. Owner 2026-11-25: ask Sudima HR first (R17); keep 300% until then; settle before 1 Jan.

@@ -1426,6 +1426,9 @@
     .ce-srcchip.s-bank_account       { background: #E7EEF3;           color: #35617A; }
     .ce-srcchip.s-calculated         { background: var(--i-soft2);    color: var(--i-deep); }
     .ce-srcchip.src-diff { box-shadow: 0 0 0 1.5px var(--amber); }
+    // WFSETUP P10c — time-based, so the pay period's violet family; the ring
+    // keeps it apart from a "Pay period" chip at a glance.
+    .ce-srcchip.s-clock              { background: #F3ECFB; color: #6B3FA0; box-shadow: inset 0 0 0 1px #DCCBF2; cursor: help; }
     .ce-srckey {
         font-family: "SFMono-Regular", ui-monospace, monospace; font-size: 11.5px;
         color: var(--ink); background: var(--bg); border: 1px solid var(--line-soft);

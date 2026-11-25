@@ -1,0 +1,27 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_formula_studio
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: id_ID\n"
+"Plural-Forms: \n"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "From the clocks — from %s"
+msgstr "Dari mesin absensi — mulai %s"
+
+#. module: pb_formula_studio
+#. odoo-python
+#: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
+msgid "Answered by the clocks: %(fact)s. Pay periods from %(day)s take this value from the clocks, not the pay data file; earlier pay periods read it as before."
+msgstr "Dijawab oleh mesin absensi: %(fact)s. Periode gaji mulai %(day)s mengambil nilai ini dari mesin absensi, bukan dari file data gaji; periode gaji sebelumnya dibaca seperti sebelumnya."

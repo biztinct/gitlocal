@@ -2,7 +2,7 @@
 {
     'name': 'Excel Formula Payroll Calculator',
     # 19.0.1.169.0 — WDGAP S5-B: provenance via `late_minutes` (input_provenance VIAS).
-    'version': '19.0.1.172.0',
+    'version': '19.0.1.173.0',
     # RD49 — put the monthly fetch on the 5th at 02:00 (see hooks.py).
     'post_init_hook': 'rd49_schedule_monthly_fetch',
     'category': 'Human Resources/Payroll',
