@@ -143,3 +143,8 @@ from . import contract_fill_in
 # Extends hr.formula.config, hr.payslip and hr.payroll.import.batch; loads
 # after all three.
 from . import advance_once
+
+# WFSETUP P10b — "From the clocks": a scheme date from which clock-answered
+# inputs replace the pay data file (proposal WFSETUP_P10A §2.2/§3). Extends
+# hr.formula.config / hr.formula.rule / hr.payslip; loads after all three.
+from . import clock_source

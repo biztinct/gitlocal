@@ -4955,3 +4955,91 @@ msgstr "1 máy chấm công đang tạm ngưng"
 #: code:addons/pb_workforce_setup/models/clocks.py:0
 msgid "%s clocks disabled"
 msgstr "%s máy chấm công đang tạm ngưng"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ". Overtime comes from your rules."
+msgstr ". Giờ làm thêm lấy từ quy tắc của bạn."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ". The attendance screens also work out extra hours of their own. Pay never reads them — overtime comes from your rules."
+msgstr ". Các màn hình chấm công cũng tự tính giờ làm thêm riêng. Lương không bao giờ đọc chúng — giờ làm thêm lấy từ quy tắc của bạn."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are already off."
+msgstr "Giờ làm thêm tích hợp đã tắt rồi."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are off: %s rules removed. Overtime comes from your rules."
+msgstr "Đã tắt giờ làm thêm tích hợp: đã bỏ %s quy tắc. Giờ làm thêm lấy từ quy tắc của bạn."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are off: 1 rule removed. Overtime comes from your rules."
+msgstr "Đã tắt giờ làm thêm tích hợp: đã bỏ 1 quy tắc. Giờ làm thêm lấy từ quy tắc của bạn."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are on again: %s rules put back."
+msgstr "Đã bật lại giờ làm thêm tích hợp: đã khôi phục %s quy tắc."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are on again: 1 rule put back."
+msgstr "Đã bật lại giờ làm thêm tích hợp: đã khôi phục 1 quy tắc."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Built-in extra hours count:"
+msgstr "Tính giờ làm thêm tích hợp:"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_res_company__pb_wfs_extra_hours_saved
+msgid "Built-in extra hours rules (saved while switched off)"
+msgstr "Quy tắc giờ làm thêm tích hợp (lưu khi đang tắt)"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "On"
+msgstr "Bật"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Switch it off"
+msgstr "Tắt đi"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Switch it on again"
+msgstr "Bật lại"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "The attendance app's extra hours are not installed here."
+msgstr "Ở đây chưa cài giờ làm thêm của ứng dụng chấm công."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "There are no saved extra-hours rules to put back. Add them on the attendance settings screen."
+msgstr "Không có quy tắc giờ làm thêm đã lưu để khôi phục. Hãy thêm trên màn hình cài đặt chấm công."
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,help:pb_workforce_setup.field_res_company__pb_wfs_extra_hours_saved
+msgid "Written by Workforce setup when the built-in extra hours count is switched off, so switching it on again restores the same rules."
+msgstr "Do Thiết lập nhân sự ghi khi tắt tính giờ làm thêm tích hợp, để bật lại sẽ khôi phục đúng các quy tắc đó."

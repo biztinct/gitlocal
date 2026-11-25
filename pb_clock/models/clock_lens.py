@@ -445,11 +445,24 @@ class PbClockLens(models.AbstractModel):
             groupby=['user_code'], aggregates=['__count'])}
         codes = [g[0] for g in groups]
         sugg = self._suggest(self.env.company, codes) if codes else {}
+        # WFSETUP P10b (R8): a number that, without its leading zeros, is two
+        # people's number is never matched — say whose it is instead.
+        detail = {}
+        if codes:
+            self.env['pb.clock.pairing']._code_index(self.env.company, codes, detail)
+        shared = detail.get('shared') or {}
+        names = {}
+        if shared:
+            ids = sorted({i for v in shared.values() for i in v})
+            Emp = self.env['hr.employee'].sudo().with_context(active_test=False)
+            names = {e.id: e.name for e in Emp.browse(ids)}
         focus = {str(c) for c in focus}
         rows = [{
             'code': code, 'first_seen': self._dt(first), 'last_seen': self._dt(last),
             'punches': n, 'this_week': code in week_codes,
-            'focus': code in focus, 'suggestion': sugg.get(code) or False,
+            'focus': code in focus,
+            'suggestion': (False if code in shared else sugg.get(code)) or False,
+            'shared': [names.get(i, '') for i in shared.get(code, [])],
         } for code, first, last, n in groups]
         # newest first, then the numbers asked about and this week's on top
         rows.sort(key=lambda r: r['last_seen'], reverse=True)
@@ -648,6 +661,16 @@ class PbClockLens(models.AbstractModel):
                       (e.identification_id or '').strip()}:
                 if v in codes:
                     hits.setdefault(v, set()).add(e.id)
+        # WFSETUP P10b (R8): a number nobody holds exactly is compared with
+        # its leading zeros ignored — one person only, never a guess.
+        detail = {}
+        loose = self.env['pb.clock.pairing']._code_index_zero_free(
+            company, [c for c in codes if c not in hits and c.strip().isdigit()], detail)
+        for code, emp in loose.items():
+            if emp.active:
+                hits[code] = {emp.id}
+        for code in (detail.get('shared') or {}):
+            hits[code] = set(detail['shared'][code])
         assigned, ambiguous = 0, []
         for code in codes:
             ids = hits.get(code) or set()

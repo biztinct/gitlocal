@@ -7,6 +7,7 @@ from odoo import api, fields, models, _
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.addons.base.models.res_partner import _tz_get
 from odoo.addons.pb_attendance_flow.models.hr_attendance import PB_ATT_CORRECTION_CTX, _CORR_TOKEN
+from odoo.addons.pb_clock.models import clock_code
 from ..engine import calculate
 
 _STATE_TOKEN = object()
@@ -261,6 +262,27 @@ class Roster(models.Model):
             raise UserError(_('A roster with generated attendance must be retained for audit.'))
         return super().unlink()
 
+    def _pb_clock_codes(self, code):
+        """The numbers a clock may have sent for this person, or None.
+
+        WFSETUP P10b (owner ruling R8): the identity convention of the clock
+        matcher itself (`pb.clock.pairing._code_index`) — exact number first,
+        then leading zeros ignored when exactly one person holds that
+        zero-free number. A number whose zero-free form two people share, or
+        whose exact spelling is somebody else's, is ambiguous (None): the
+        calculation refuses rather than take another person's punches. Every
+        spelling that resolves to this person is searched, so a clock that
+        drops zeros ("12" for badge "012") and one that adds them are both read.
+        """
+        if not code.isdigit():
+            return {code}
+        candidates = sorted(clock_code.variants(code))
+        detail = {}
+        index = self.env['pb.clock.pairing']._code_index(self.company_id, candidates, detail)
+        if detail.get('shared') or index.get(code) != self.employee_id:
+            return None
+        return {v for v in candidates if index.get(v) == self.employee_id}
+
     def _policy_calculate(self):
         self.ensure_one()
         policy = self.pb_policy_id
@@ -286,15 +308,9 @@ class Roster(models.Model):
         code = (self.employee_id.pb_clock_code or self.employee_id.barcode or '').strip()
         if not code:
             return {'error': 'Employee has no clock number or badge ID.'}
-        # Match the identity convention used by the clock matcher: exact code
-        # first, then unambiguous numeric code without leading zeros.
-        codes = {code}
-        if code.isdigit():
-            peers = self.env['hr.employee'].with_context(active_test=False).search([('company_id', '=', self.company_id.id)])
-            same = peers.filtered(lambda e: (e.pb_clock_code or e.barcode or '').lstrip('0') == code.lstrip('0'))
-            if len(same) != 1:
-                return {'error': 'Clock number is ambiguous. Set a unique clock number.'}
-            codes.add(code.lstrip('0') or '0')
+        codes = self._pb_clock_codes(code)
+        if codes is None:
+            return {'error': 'Clock number is ambiguous. Set a unique clock number.'}
         events = self.env['pb.clock.connector.event'].search([
             ('company_id', '=', self.company_id.id), ('user_code', 'in', list(codes)),
             ('state', 'in', ['ready', 'posted', 'duplicate']),

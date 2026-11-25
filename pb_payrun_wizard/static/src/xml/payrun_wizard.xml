@@ -312,6 +312,39 @@
                         <p class="pw-hint" t-elif="!applicationEnabled">Application payroll is not enabled for this scheme. Configure the calculation basis and source mappings to use it.</p>
                         <p class="pw-hint" t-else="">A spreadsheet is selected. Remove it to review application data, or continue with this file.</p>
                     </section>
+                    <!-- WFSETUP P10b — hours from the clocks (only for a scheme
+                         with a clock date and a period on or after it). -->
+                    <section class="pw-clock" t-if="state.clock and state.clock.active">
+                        <div class="pw-clock-head">
+                            <span class="pw-clock-ic"><t t-out="ic('clock',18)"/></span>
+                            <div class="pw-clock-t">
+                                <h4>Hours from the clocks</h4>
+                                <p class="pw-muted">From <b t-esc="state.clock.clock_from"/>, paid days and overtime come from the clocks and the late and overtime rules. Leave those columns empty in the pay data file — a number typed there is shown beside the clock value and not used.</p>
+                            </div>
+                            <div class="pw-clock-n" t-if="state.clock.total">
+                                <b t-esc="state.clock.ready"/><span> of </span><b t-esc="state.clock.total"/>
+                                <span class="pw-muted"> people ready</span>
+                            </div>
+                        </div>
+                        <div class="pw-err" t-if="state.clock.error" t-esc="state.clock.error"/>
+                        <ul class="pw-clock-issues" t-if="state.clock.scheme_issues and state.clock.scheme_issues.length">
+                            <li t-foreach="state.clock.scheme_issues" t-as="issue" t-key="issue_index"><t t-out="ic('alert',14)"/> <t t-esc="issue"/></li>
+                        </ul>
+                        <t t-if="state.clock.attention">
+                            <p class="pw-clock-warn"><t t-out="ic('alert',14)"/> <b t-esc="state.clock.attention"/> people need attention before this run can be worked out.</p>
+                            <details class="pw-clock-g" t-foreach="clockGroups" t-as="g" t-key="g.code">
+                                <summary><span t-esc="g.label"/> <span class="pw-clock-c" t-esc="g.count"/></summary>
+                                <ul>
+                                    <li t-foreach="g.people" t-as="p" t-key="p.id"><b t-esc="p.name"/> <span class="pw-muted" t-esc="p.dates.join(', ')"/></li>
+                                </ul>
+                            </details>
+                        </t>
+                        <p class="pw-clock-ok" t-elif="state.clock.total"><t t-out="ic('check',14)"/> Everyone's hours are ready.</p>
+                        <div class="pw-clock-foot">
+                            <span class="pw-hint">Do not put lateness into any money column of the file — the late rules already take it off.</span>
+                            <button class="pw-btn ghost" t-on-click="loadClock"><t t-out="ic('refresh',14)"/> Check again</button>
+                        </div>
+                    </section>
                     <div class="pw-grid2 pw-datagrid" data-coach="pw-paydata">
                         <div class="pw-sec">
                             <h4>This month's pay data</h4>

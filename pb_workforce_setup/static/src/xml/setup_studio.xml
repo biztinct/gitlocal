@@ -869,6 +869,13 @@
       <span>Shifts on a public holiday or on a person's day off are marked for the holiday or rest-day rate by themselves. A shift someone changed by hand keeps its choice.</span>
       <button t-if="canManage" type="button" class="pbws-link" t-att-disabled="state.busy" t-on-click="remark"><t t-out="icon('refresh', 14)"/>Re-check holiday and rest-day shifts</button>
     </div>
+    <div t-if="r.extra_hours" t-attf-class="pbws-hint pbws-hint--extra {{ r.extra_hours.on ? 'is-on' : 'is-off' }}">
+      <t t-out="icon('clock', 18)"/>
+      <span t-if="r.extra_hours.on">Built-in extra hours count: <b>On</b>. The attendance screens also work out extra hours of their own. Pay never reads them — overtime comes from your rules.</span>
+      <span t-else="">Built-in extra hours count: <b>Off</b>. Overtime comes from your rules.</span>
+      <button t-if="canManage and r.extra_hours.on" type="button" class="pbws-link" t-att-disabled="state.busy" t-on-click="extraHoursOff"><t t-out="icon('x', 14)"/>Switch it off</button>
+      <button t-elif="canManage and r.extra_hours.saved" type="button" class="pbws-link" t-att-disabled="state.busy" t-on-click="extraHoursOn"><t t-out="icon('undo', 14)"/>Switch it on again</button>
+    </div>
     <p t-if="canManage and r.state !== 'advanced'" class="pbws-foot-link">
       <button type="button" class="pbws-link" t-on-click="openAdvanced"><t t-out="icon('sliders', 14)"/>Advanced rules screen</button>
     </p>

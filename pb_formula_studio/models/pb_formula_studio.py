@@ -13551,6 +13551,9 @@ class PbFormulaStudio(models.AbstractModel):
         # what order. The generic get/save loop carries them for free.
         'source_api_enabled', 'source_excel_enabled', 'source_records_enabled',
         'source_priority',
+        # WFSETUP P10b — "Hours from the clocks from" (the Connect step's
+        # clock card). A plain date: the generic loop carries it.
+        'pb_clock_from',
     )
     _CFG_M2O = ('structure_id', 'connector_id', 'payroll_journal_id', 'debit_account_id',
                 'credit_account_id', 'company_id', 'retro_component_id')
@@ -13611,6 +13614,8 @@ class PbFormulaStudio(models.AbstractModel):
             # currently take values from each lane, so switching one off can
             # say what falls through instead of asking for blind faith.
             'source_lane_counts': self._source_lane_counts(c),
+            # WFSETUP P10b — the clock card: which input each clock fact answers.
+            'clock': c.pb_clock_meta() if hasattr(c, 'pb_clock_meta') else False,
         }
 
     @api.model

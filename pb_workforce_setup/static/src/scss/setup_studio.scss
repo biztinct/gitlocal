@@ -568,6 +568,8 @@
     .pbws-rule-people svg { margin-top: 2px; color: var(--pbws-p); }
     .pbws-hint--days { align-items: center; flex-wrap: wrap; }
     .pbws-hint--days > span { flex: 1; min-width: 220px; }
+    .pbws-hint--extra { align-items: center; flex-wrap: wrap; }
+    .pbws-hint--extra > span { flex: 1; min-width: 220px; }
     .pbws-hint .pbws-link { display: inline-flex; gap: 6px; align-items: center; }
     .pbws-link:disabled { opacity: .5; cursor: default; }
 

@@ -153,6 +153,9 @@
         border: 1px solid transparent; border-radius: 999px; padding: 3px 10px; font: inherit;
         font-size: 12px; font-weight: 600;
         &:hover { border-color: var(--pbim-green, #2E7D4F); } }
+    .pbck-shared { display: inline-flex; gap: 6px; align-items: center;
+        background: var(--pbim-amber-soft, #FDF3E1); color: var(--pbim-amber, #9A6408);
+        border-radius: 999px; padding: 3px 10px; font-size: 12px; font-weight: 600; }
 
     // the assign typeahead
     .pbck-ta { position: relative; display: inline-flex; align-items: center; gap: 4px; width: 100%; }

@@ -3028,3 +3028,9 @@ msgstr "Chỉ có thể tạm ngưng một máy tính đã kết nối. Máy nà
 #: code:addons/pb_clock/models/clock_connector.py:0
 msgid "Only a disabled PC can be enabled."
 msgstr "Chỉ có thể bật lại một máy tính đang tạm ngưng."
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "Same number for two people"
+msgstr "Cùng một mã cho hai người"

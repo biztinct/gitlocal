@@ -75,6 +75,9 @@ VIAS = (
     # and a reader who could not tell them apart would go to the wrong screen.
     'timesheet_packet',
     'late_minutes',       # WDGAP S5-B: confirmed late/early minutes (pb_time_pay)
+    # WFSETUP P10b — the clocks and the late / overtime rules answered it
+    # (src 'employee_field': the person's own shifts, overtime and time off).
+    'clock',
     'constant',           # it is a fixed value
     'pay_period',         # the run's own dates answered it
     # The three adjustments, as the reason a code EXISTS at all. An adjustment that

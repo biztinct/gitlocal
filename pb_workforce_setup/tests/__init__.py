@@ -8,3 +8,4 @@ from . import test_p5a
 from . import test_p5c
 from . import test_p6
 from . import test_p9
+from . import test_p10b

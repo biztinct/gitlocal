@@ -609,3 +609,22 @@ $pw-lock-bd: #A7E3D5;
 }
 @keyframes pwExtraIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .pw-root .pw-extrafile { animation: none; } }
+
+// WFSETUP P10b — "Hours from the clocks" on the data step.
+.pw-root .pw-clock {
+    background: #fff; border: 1px solid var(--pw-border); border-radius: 14px; padding: 16px 18px; margin-bottom: 16px;
+    .pw-clock-head { display: flex; gap: 12px; align-items: flex-start; }
+    .pw-clock-ic { width: 34px; height: 34px; border-radius: 10px; background: var(--pw-soft); color: var(--pw-brand);
+        display: inline-flex; align-items: center; justify-content: center; flex: none; }
+    .pw-clock-t { flex: 1; min-width: 0; h4 { font-size: 14px; font-weight: 700; margin: 0 0 4px; } p { margin: 0; } }
+    .pw-clock-n { flex: none; font-size: 13px; text-align: right; b { font-size: 18px; } }
+    .pw-clock-warn, .pw-clock-ok { margin: 12px 0 6px; display: flex; gap: 6px; align-items: center; font-size: 13px; }
+    .pw-clock-warn { color: #9A6408; }
+    .pw-clock-ok { color: #2E7D4F; }
+    .pw-clock-issues { margin: 10px 0 0; padding: 0; list-style: none; li { color: #9A6408; font-size: 13px; } }
+    .pw-clock-g { border-top: 1px solid var(--pw-border); padding: 6px 0;
+        summary { cursor: pointer; font-size: 13px; font-weight: 600; display: flex; gap: 8px; align-items: center; }
+        ul { margin: 6px 0 0 18px; padding: 0; font-size: 12.5px; max-height: 180px; overflow: auto; } }
+    .pw-clock-c { background: var(--pw-soft); color: var(--pw-brand); border-radius: 999px; padding: 0 8px; font-size: 12px; }
+    .pw-clock-foot { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-top: 10px; }
+}

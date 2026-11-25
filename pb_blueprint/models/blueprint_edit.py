@@ -28,7 +28,7 @@ adds nothing to it. Recorded as rule **8a**.
 import logging
 
 from odoo import _, api, fields, models
-from odoo.exceptions import AccessError
+from odoo.exceptions import AccessError, UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -359,6 +359,25 @@ class PbBlueprintStudioEdit(models.AbstractModel):
             'currency': config.currency_id.name or '',
             'country_code': config.country_code or '',
         }
+
+    @api.model
+    def bp_clock_bind(self, config_id, key, rule_id):
+        """WFSETUP P10b — the Connect step's "Hours from the clocks" card:
+        which input a clock fact answers (`hr.formula.config.pb_clock_bind`).
+        A setting like the source lanes (rule 8a), not pay logic: no formula
+        changes. All or nothing (a savepoint), refusals in plain words."""
+        config, _blueprint, err = self._guard(config_id, require_blueprint=False)
+        if err:
+            return err
+        if not hasattr(config, 'pb_clock_bind'):
+            return {'ok': False, 'reason': _("Hours from the clocks are not available here.")}
+        try:
+            with self.env.cr.savepoint():
+                meta = config.pb_clock_bind(key, rule_id)
+        except (AccessError, UserError, ValidationError) as e:
+            self.env.invalidate_all()
+            return {'ok': False, 'reason': str(e.args[0] if e.args else e)}
+        return {'ok': True, 'clock': meta}
 
     def _settings_echo(self, config, fieldnames):
         Studio = self.env['pb.formula.studio']

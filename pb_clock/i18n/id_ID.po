@@ -65,3 +65,9 @@ msgstr "Hanya PC yang terhubung yang dapat dinonaktifkan. PC ini belum dipasangk
 #: code:addons/pb_clock/models/clock_connector.py:0
 msgid "Only a disabled PC can be enabled."
 msgstr "Hanya PC yang dinonaktifkan yang dapat diaktifkan."
+
+#. module: pb_clock
+#. odoo-javascript
+#: code:addons/pb_clock/static/src/xml/clock_lens.xml:0
+msgid "Same number for two people"
+msgstr "Nomor sama untuk dua orang"

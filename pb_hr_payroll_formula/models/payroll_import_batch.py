@@ -4912,6 +4912,14 @@ class HrPayrollImportBatch(models.Model):
                 prov[code] = input_provenance.entry(
                     'period', key=code, via=pay_period.PERIOD_VIA)
 
+        # WFSETUP P10b — hours from the clocks. From the scheme's clock date a
+        # clock-answered input takes the clock value whatever the file says
+        # (the file's number is kept beside it in the provenance); any doubt
+        # refuses this row by name. Before the date this returns at once and
+        # nothing here changes (proposal §3.3).
+        config._pb_clock_apply(employee, self.date_from, self.date_to,
+                               input_values, prov)
+
         # Add constant values
         for rule in config.rule_ids.filtered(lambda r: r.column_type == 'constant'):
             input_values[rule.code] = rule.constant_value

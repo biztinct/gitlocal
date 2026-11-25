@@ -3680,6 +3680,22 @@ body.pb-coach-absent:has(.payai-floating-pill) .pbim.pbbp {
         font-size: 10.5px; font-weight: 800; opacity: .7;
     }
 
+    // ---- WFSETUP P10b: hours from the clocks ------------------------
+    .pbbp-clock-rows { display: flex; flex-direction: column; gap: 6px; margin: 10px 0 4px; }
+    .pbbp-clock-row {
+        display: flex; align-items: center; gap: 12px; padding: 8px 12px;
+        border: 1px solid var(--bp-line, #E8E9F3); border-radius: 12px; background: #fff;
+        select { flex: 0 0 46%; min-width: 0; }
+    }
+    .pbbp-clock-l {
+        flex: 1; min-width: 0; display: flex; flex-direction: column;
+        b { font-size: 13px; }
+        small { color: var(--bp-muted, #6B7280); font-size: 11.5px; }
+    }
+    @media (max-width: 720px) {
+        .pbbp-clock-row { flex-wrap: wrap; select { flex: 1 1 100%; } }
+    }
+
     // ---- the source lanes -------------------------------------------
     .pbbp-lane {
         display: flex; align-items: center; gap: 12px;

@@ -4955,3 +4955,91 @@ msgstr "1 mesin absensi dinonaktifkan"
 #: code:addons/pb_workforce_setup/models/clocks.py:0
 msgid "%s clocks disabled"
 msgstr "%s mesin absensi dinonaktifkan"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ". Overtime comes from your rules."
+msgstr ". Lembur berasal dari aturan Anda."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ". The attendance screens also work out extra hours of their own. Pay never reads them — overtime comes from your rules."
+msgstr ". Layar absensi juga menghitung jam ekstra sendiri. Gaji tidak pernah membacanya — lembur berasal dari aturan Anda."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are already off."
+msgstr "Jam ekstra bawaan sudah mati."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are off: %s rules removed. Overtime comes from your rules."
+msgstr "Jam ekstra bawaan dimatikan: %s aturan dihapus. Lembur berasal dari aturan Anda."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are off: 1 rule removed. Overtime comes from your rules."
+msgstr "Jam ekstra bawaan dimatikan: 1 aturan dihapus. Lembur berasal dari aturan Anda."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are on again: %s rules put back."
+msgstr "Jam ekstra bawaan menyala lagi: %s aturan dipulihkan."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are on again: 1 rule put back."
+msgstr "Jam ekstra bawaan menyala lagi: 1 aturan dipulihkan."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Built-in extra hours count:"
+msgstr "Hitungan jam ekstra bawaan:"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_res_company__pb_wfs_extra_hours_saved
+msgid "Built-in extra hours rules (saved while switched off)"
+msgstr "Aturan jam ekstra bawaan (disimpan selama dimatikan)"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "On"
+msgstr "Nyala"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Switch it off"
+msgstr "Matikan"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Switch it on again"
+msgstr "Nyalakan lagi"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "The attendance app's extra hours are not installed here."
+msgstr "Jam ekstra aplikasi absensi tidak terpasang di sini."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "There are no saved extra-hours rules to put back. Add them on the attendance settings screen."
+msgstr "Tidak ada aturan jam ekstra tersimpan untuk dipulihkan. Tambahkan di layar pengaturan absensi."
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,help:pb_workforce_setup.field_res_company__pb_wfs_extra_hours_saved
+msgid "Written by Workforce setup when the built-in extra hours count is switched off, so switching it on again restores the same rules."
+msgstr "Ditulis oleh Pengaturan tenaga kerja saat hitungan jam ekstra bawaan dimatikan, agar saat dinyalakan lagi aturan yang sama dipulihkan."

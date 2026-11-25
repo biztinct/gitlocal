@@ -110,6 +110,7 @@ export function settingLabel(field) {
         source_records_enabled: _t("Payobook records as a source"),
         source_priority: _t("Which source wins"),
         effective_from: _t("Effective from"),
+        pb_clock_from: _t("Hours from the clocks from"),
     }[field] || field;
 }
 
@@ -126,18 +127,53 @@ export class SettingsCards extends Component {
         error: { type: String, optional: true },
         onSet: { type: Function },
         onCommit: { type: Function },
+        // WFSETUP P10b — (key, ruleId | "new" | false) => Promise<{ok, clock, reason}>
+        onClockBind: { type: Function, optional: true },
     };
 
     setup() {
         // Open on arrival when somebody came here to CHANGE settings; folded
         // when they came here to build a payroll and these are extras.
-        this.state = useState({ open: this.props.mode === "edit" });
+        this.state = useState({ open: this.props.mode === "edit", clockBusy: false, clockError: "" });
     }
 
     ic(name, size = 16) { return ic(name, size); }
 
     get v() { return this.props.values || {}; }
     get meta() { return this.props.meta || {}; }
+
+    // ==================================================================
+    // WFSETUP P10b — hours from the clocks
+    // ==================================================================
+    get clock() { return this.meta.clock || null; }
+
+    /** The inputs a clock fact may answer: an information fact only an
+     * information column (never a paid one). */
+    clockInputs(k) {
+        const rows = (this.clock && this.clock.inputs) || [];
+        return k.use === "info" ? rows.filter((r) => r.info) : rows;
+    }
+
+    onClockFrom(ev) {
+        this.set("pb_clock_from", ev.target.value || false);
+        this.commit(["pb_clock_from"]);
+    }
+
+    async onClockPick(key, ev) {
+        if (!this.props.onClockBind) { return; }
+        const raw = ev.target.value;
+        const value = raw === "new" ? "new" : (raw ? Number(raw) : false);
+        this.state.clockBusy = true;
+        this.state.clockError = "";
+        try {
+            const res = await this.props.onClockBind(key, value);
+            if (!res || !res.ok) {
+                this.state.clockError = (res && res.reason) || _t("That could not be saved.");
+            }
+        } finally {
+            this.state.clockBusy = false;
+        }
+    }
     get open() { return this.state.open; }
 
     toggleOpen() { this.state.open = !this.state.open; }

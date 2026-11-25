@@ -234,7 +234,8 @@
                            busy="state.settingsBusy"
                            error="state.settingsError"
                            onSet.bind="onSetting"
-                           onCommit.bind="commitSettings"/>
+                           onCommit.bind="commitSettings"
+                           onClockBind.bind="clockBind"/>
           </div>
 
           <!-- footer: where you are, and the one thing to press next -->
