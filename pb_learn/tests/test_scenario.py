@@ -503,8 +503,10 @@ class TestScenarioEngine(TransactionCase):
         'sc_people': [
             ('open', 'rep-newemp-open', 'click', False, ['try']),
             ('name', 'rep-newemp-name', 'input', False, ['try']),
-            ('division', 'rep-newemp-div', 'click', False, ['try']),
-            ('save', 'rep-newemp-save', 'click', True, ['try']),
+            # NEWHIRE P5a: the guided Add employee screen — name, team, wage, Send
+            ('team', 'rep-newemp-team', 'click', False, ['try']),
+            ('wage', 'rep-newemp-wage', 'input', False, ['try']),
+            ('send', 'rep-newemp-send', 'click', True, ['try']),
             ('roster', 'pe-roster', 'observe', False, ['try']),
         ],
     }

@@ -2427,9 +2427,11 @@ const INPUT_ANCHORS = {
      own thousands mark has to be accepted: the same step is played by somebody
      typing 1,200,000 and by somebody typing 1.200.000. */
   "rep-impfix": { kind: "number" },
-  /* The practice employee form's name field. A NAME, so tone marks are
+  /* The practice Add employee screen's name field. A NAME, so tone marks are
      optional — the keyboard a learner has is not part of the lesson. */
   "rep-newemp-name": { kind: "text" },
+  /* NEWHIRE P5a — its Monthly wage box. A MONEY figure, like rep-impfix. */
+  "rep-newemp-wage": { kind: "number" },
 };
 
 /* The import wizard is a FLOW, not a destination — it has no sidebar leaf, so

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- NEWHIRE P3a: the usual papers a new person is asked for, per country of
+     work (handover §2.2). Existing categories only. noupdate: a company
+     changes its own list from step 5, never these rows. P3b: every row has
+     its own plain label, so no stock category name ("Degree / Certificate")
+     reaches a screen; databases that already hold the rows get the labels
+     from migrations/19.0.1.3.0. -->
+<odoo>
+    <data noupdate="1">
+        <!-- Indonesia -->
+        <record id="paper_id_ktp" model="pb.new.hire.paper">
+            <field name="category_id" ref="pb_employee_vault.cat_id_document"/>
+            <field name="country_code">ID</field><field name="need">first_pay</field>
+            <field name="label">KTP (identity card)</field><field name="sequence">10</field>
+        </record>
+        <record id="paper_id_npwp" model="pb.new.hire.paper">
+            <field name="category_id" ref="pb_me_tax.cat_tax_paper"/>
+            <field name="country_code">ID</field><field name="need">joining</field>
+            <field name="label">NPWP card</field><field name="sequence">20</field>
+        </record>
+        <record id="paper_id_kk" model="pb.new.hire.paper">
+            <field name="category_id" ref="pb_employee_vault.cat_other"/>
+            <field name="country_code">ID</field><field name="need">optional</field>
+            <field name="label">Family card (Kartu Keluarga)</field><field name="sequence">30</field>
+        </record>
+        <record id="paper_id_cert" model="pb.new.hire.paper">
+            <field name="category_id" ref="pb_employee_vault.cat_certificate"/>
+            <field name="country_code">ID</field><field name="need">optional</field>
+            <field name="label">Highest certificate</field><field name="sequence">40</field>
+        </record>
+        <!-- Vietnam -->
+        <record id="paper_vn_cccd" model="pb.new.hire.paper">
+            <field name="category_id" ref="pb_employee_vault.cat_id_document"/>
+            <field name="country_code">VN</field><field name="need">first_pay</field>
+            <field name="label">Citizen ID card</field><field name="sequence">10</field>
+        </record>
+        <record id="paper_vn_health" model="pb.new.hire.paper">
+            <field name="category_id" ref="pb_employee_vault.cat_health_check"/>
+            <field name="country_code">VN</field><field name="need">joining</field>
+            <field name="label">Health check</field><field name="sequence">20</field>
+        </record>
+        <record id="paper_vn_cert" model="pb.new.hire.paper">
+            <field name="category_id" ref="pb_employee_vault.cat_certificate"/>
+            <field name="country_code">VN</field><field name="need">optional</field>
+            <field name="label">Highest certificate</field>
+            <field name="sequence">30</field>
+        </record>
+        <!-- India -->
+        <record id="paper_in_aadhaar" model="pb.new.hire.paper">
+            <field name="category_id" ref="pb_employee_vault.cat_id_document"/>
+            <field name="country_code">IN</field><field name="need">first_pay</field>
+            <field name="label">Aadhaar card</field><field name="sequence">10</field>
+        </record>
+        <record id="paper_in_pan" model="pb.new.hire.paper">
+            <field name="category_id" ref="pb_me_tax.cat_tax_paper"/>
+            <field name="country_code">IN</field><field name="need">first_pay</field>
+            <field name="label">PAN card</field><field name="sequence">20</field>
+        </record>
+        <record id="paper_in_cert" model="pb.new.hire.paper">
+            <field name="category_id" ref="pb_employee_vault.cat_certificate"/>
+            <field name="country_code">IN</field><field name="need">optional</field>
+            <field name="label">Highest certificate</field>
+            <field name="sequence">30</field>
+        </record>
+        <!-- Singapore -->
+        <record id="paper_sg_nric" model="pb.new.hire.paper">
+            <field name="category_id" ref="pb_employee_vault.cat_id_document"/>
+            <field name="country_code">SG</field><field name="need">first_pay</field>
+            <field name="label">NRIC or work pass</field><field name="sequence">10</field>
+        </record>
+        <record id="paper_sg_cert" model="pb.new.hire.paper">
+            <field name="category_id" ref="pb_employee_vault.cat_certificate"/>
+            <field name="country_code">SG</field><field name="need">optional</field>
+            <field name="label">Highest certificate</field>
+            <field name="sequence">20</field>
+        </record>
+        <!-- Malaysia -->
+        <record id="paper_my_mykad" model="pb.new.hire.paper">
+            <field name="category_id" ref="pb_employee_vault.cat_id_document"/>
+            <field name="country_code">MY</field><field name="need">first_pay</field>
+            <field name="label">MyKad or passport</field><field name="sequence">10</field>
+        </record>
+        <record id="paper_my_cert" model="pb.new.hire.paper">
+            <field name="category_id" ref="pb_employee_vault.cat_certificate"/>
+            <field name="country_code">MY</field><field name="need">optional</field>
+            <field name="label">Highest certificate</field>
+            <field name="sequence">20</field>
+        </record>
+    </data>
+</odoo>

@@ -1282,17 +1282,21 @@
       "expect": [
         "inputRow(\"rep-impfix\"",
         "inputRow(\"rep-newemp-name\"",
+        "inputRow(\"rep-newemp-wage\"",
         "\"rep-impfix\": { kind: \"number\" }",
         "\"rep-newemp-name\": { kind: \"text\" }",
+        "\"rep-newemp-wage\": { kind: \"number\" }",
         "\"rep-impfix\":",
-        "\"rep-newemp-name\":"
+        "\"rep-newemp-name\":",
+        "\"rep-newemp-wage\":"
       ],
       "fixture": [
         "INPUT_ANCHORS"
       ],
       "taughtIn": [
         "sc_import step fixcell",
-        "sc_people step name"
+        "sc_people step name",
+        "sc_people step wage"
       ]
     },
     {

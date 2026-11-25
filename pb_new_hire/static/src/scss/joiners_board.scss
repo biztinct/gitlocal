@@ -1,0 +1,19 @@
+// NEWHIRE P3b — the asked chip and list on the New joiners board (kit tokens).
+.obb {
+    .obb-nh {
+        display: flex; align-items: center; justify-content: space-between; gap: 8px;
+        padding: 8px 0 2px; border-top: 1px dashed var(--pbim-line); margin-top: 6px; cursor: pointer;
+        font-size: 12.5px;
+    }
+    .obb-nh-l { color: var(--pbim-muted); font-weight: 600; }
+    .obb-nh-b { text-transform: none; }
+    .obb-nh-h3 { display: flex; align-items: center; gap: 8px; }
+    .obb-nh-note { display: flex; gap: 6px; align-items: flex-start; color: var(--pbim-muted); font-size: 12.5px; margin: 6px 0 0; }
+    .obb-nh-act { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .obb-nh-msg { margin: 8px 0 0; font-size: 12.5px; padding: 6px 10px; border-radius: 8px; background: var(--pbim-green-soft); color: var(--pbim-green); }
+    .obb-nh-msg.is-warn { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+    .obb-nh-link { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; font-size: 12.5px; }
+    .obb-nh-link label { display: flex; flex-direction: column; gap: 4px; font-weight: 600; }
+    .obb-nh-link input { width: 100%; border: 1px solid var(--pbim-line); border-radius: 8px; padding: 6px 8px; font: inherit; font-weight: 400; }
+    .obb-nh-link small { color: var(--pbim-muted); }
+}
