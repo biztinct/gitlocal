@@ -398,6 +398,10 @@ function newEmployeeHTML() {
                        B("Full name", "Họ và tên"),
                        B("Type the person's full name", "Nhập họ và tên của người đó"))}
             ${step(2, B("Role and place", "Vị trí và nơi làm việc"))}
+            <label class="lrn-flabel">${esc(tx(B("Country of work", "Quốc gia làm việc")))}</label>
+            <select class="lrn-in" disabled="disabled">
+                <option>${esc(tx(B("Vietnam", "Việt Nam")))}</option>
+            </select>
             <label class="lrn-flabel">${esc(tx(B("Team", "Nhóm")))}</label>
             <select class="lrn-in" data-coach="rep-newemp-team">
                 <option>${esc(tx(RUN.division))}</option>
@@ -405,7 +409,7 @@ function newEmployeeHTML() {
                 <option>${esc(tx(B("IT Services", "Dịch vụ CNTT")))}</option>
             </select>
             <p class="lrn-note">${esc(tx(B("Paid by", "Trả lương theo")))}:${SP}<b>${esc(RUN.scheme)}</b>${DOT}${esc(tx(B(
-                "Country of work: Vietnam, paid in ₫", "Quốc gia làm việc: Việt Nam, trả bằng ₫")))}</p>
+                "Paid in ₫, the money of the country of work", "Trả bằng ₫, đồng tiền của quốc gia làm việc")))}</p>
             ${step(3, B("Contract and pay", "Hợp đồng và lương"))}
             ${inputRow("rep-newemp-wage",
                        B("Monthly wage, ₫", "Lương tháng, ₫"),

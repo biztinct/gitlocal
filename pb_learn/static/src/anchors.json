@@ -2211,10 +2211,16 @@
       "desc": "Step 1, Who is joining: full name, first day, work email and a personal email or phone. Four things are enough to begin.",
       "reserved": true
     },
+    "nh-country": {
+      "screen": "newhire",
+      "file": "pb_new_hire/static/src/xml/new_hire_studio.xml",
+      "desc": "Step 2's Country of work, the first box: picking it puts that country's teams and jobs first and moves the currency, trial period, letter and papers at once. Changing it clears a team of another country, with Undo.",
+      "reserved": true
+    },
     "nh-step-role": {
       "screen": "newhire",
       "file": "pb_new_hire/static/src/xml/new_hire_studio.xml",
-      "desc": "Step 2, Role and place: the team, the job, the manager and the country of work. The team decides the pay scheme; the country is checked against it, and the currency and the trial period follow it.",
+      "desc": "Step 2, Role and place: the country of work first, then the team, the job, the manager and the work site. The country leads: its teams and jobs come first in their lists, and the currency, the trial period, the letter and the papers follow it. The team decides the pay scheme; the country is checked against it.",
       "reserved": true
     },
     "nh-step-pay": {

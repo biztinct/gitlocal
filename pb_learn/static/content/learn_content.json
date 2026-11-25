@@ -15334,8 +15334,8 @@
         {
           "act": "click",
           "affects": {
-            "en": "The currency and the trial period follow from it, and Paid by on the right shows the scheme.",
-            "vi": "Tiền tệ và thời gian thử việc đi theo đó, và mục Trả lương theo ở bên phải cho thấy chương trình lương."
+            "en": "The currency, the trial period, the contract letter and the papers follow the country, and Paid by on the right shows the scheme.",
+            "vi": "Tiền tệ, thời gian thử việc, thư hợp đồng và giấy tờ đi theo quốc gia, và mục Trả lương theo ở bên phải cho thấy chương trình lương."
           },
           "anchor": "rep-newemp-team",
           "body": "",
@@ -15346,12 +15346,12 @@
             "vi": "Bước 3"
           },
           "look": {
-            "en": "Step 2, Role and place. Open the Team list and pick one.",
-            "vi": "Bước 2, Vị trí và nơi làm việc. Mở danh sách Nhóm và chọn một nhóm."
+            "en": "Step 2, Role and place. The Country of work comes first and already says Vietnam. Open the Team list below it and pick one.",
+            "vi": "Bước 2, Vị trí và nơi làm việc. Quốc gia làm việc đứng đầu và đã chọn sẵn Việt Nam. Mở danh sách Nhóm ở dưới và chọn một nhóm."
           },
           "means": {
-            "en": "This is the decision on this screen. The team decides which pay scheme pays this person.",
-            "vi": "Đây là quyết định quan trọng nhất trên màn hình này. Nhóm quyết định chương trình lương nào trả lương cho người này."
+            "en": "The country of work leads: the teams and jobs of that country come first in their lists. The team you pick then decides which pay scheme pays this person.",
+            "vi": "Quốc gia làm việc đi trước: các nhóm và công việc của quốc gia đó đứng đầu danh sách. Nhóm bạn chọn sau đó quyết định chương trình lương nào trả lương cho người này."
           },
           "modes": [
             "try"
@@ -42154,5 +42154,5 @@
       }
     }
   ],
-  "version": "980761a98311"
+  "version": "0d526aab7465"
 }

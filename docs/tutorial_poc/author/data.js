@@ -13619,12 +13619,12 @@ const SCENARIOS = [
           /* source: pb_learn/static/src/engine/screens.js · pb_new_hire step 2 (Role and place) */
           kicker: B("Step 3", "Bước 3"),
           title: B("Pick the team", "Chọn nhóm"),
-          look: B("Step 2, Role and place. Open the Team list and pick one.",
-                  "Bước 2, Vị trí và nơi làm việc. Mở danh sách Nhóm và chọn một nhóm."),
-          means: B("This is the decision on this screen. The team decides which pay scheme pays this person.",
-                   "Đây là quyết định quan trọng nhất trên màn hình này. Nhóm quyết định chương trình lương nào trả lương cho người này."),
-          affects: B("The currency and the trial period follow from it, and Paid by on the right shows the scheme.",
-                     "Tiền tệ và thời gian thử việc đi theo đó, và mục Trả lương theo ở bên phải cho thấy chương trình lương."),
+          look: B("Step 2, Role and place. The Country of work comes first and already says Vietnam. Open the Team list below it and pick one.",
+                  "Bước 2, Vị trí và nơi làm việc. Quốc gia làm việc đứng đầu và đã chọn sẵn Việt Nam. Mở danh sách Nhóm ở dưới và chọn một nhóm."),
+          means: B("The country of work leads: the teams and jobs of that country come first in their lists. The team you pick then decides which pay scheme pays this person.",
+                   "Quốc gia làm việc đi trước: các nhóm và công việc của quốc gia đó đứng đầu danh sách. Nhóm bạn chọn sau đó quyết định chương trình lương nào trả lương cho người này."),
+          affects: B("The currency, the trial period, the contract letter and the papers follow the country, and Paid by on the right shows the scheme.",
+                     "Tiền tệ, thời gian thử việc, thư hợp đồng và giấy tờ đi theo quốc gia, và mục Trả lương theo ở bên phải cho thấy chương trình lương."),
         },
       },
       {
