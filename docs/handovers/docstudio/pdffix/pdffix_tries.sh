@@ -8,6 +8,36 @@ TAG="Claude DOCSTUDIO PDFFIX"
 MODS=$(cat /tmp/pdffix_mods.txt)
 note() { echo "$(date -u '+%Y-%m-%d %H:%M UTC') | $TAG | $1" >> /opt/deploy-notes.md; }
 ROLLBACK="rollback: sudo service odoo-server stop; sudo rm /usr/bin/wkhtmltopdf; sudo dpkg-divert --local --rename --remove /usr/bin/wkhtmltopdf; sudo service odoo-server start (old engine back; templates are engine-proof)"
+others_open() {
+  python3 - "$TAG" <<'PY'
+import re, sys, datetime
+tag = sys.argv[1]
+lines = open('/opt/deploy-notes.md', encoding='utf-8', errors='replace').read().splitlines()
+today = datetime.datetime.utcnow().strftime('%Y-%m-%d')
+base = lambda s: s.split('(')[0].strip().lower()
+opens = {}
+for l in [x for x in lines if x[:10] == today]:
+    parts = [p.strip() for p in l.split('|')]
+    if len(parts) < 3 or tag in parts[1]:
+        continue
+    who, what = parts[1], parts[2].upper()
+    if what == 'START':
+        opens[who] = l
+    elif what.startswith(('DONE', 'FAILED', 'VERIFIED', 'ABORTED', 'CANCELLED', 'COMPLETE', 'CALLED OFF')):
+        for k in list(opens):
+            if k == who or base(k) == base(who):
+                opens.pop(k)
+print(list(opens)[-1] if opens else '')
+PY
+}
+mkdir -p $EV
+for w in $(seq 1 48); do
+  O=$(others_open)
+  if [ -z "$O" ] && flock -n /tmp/payobook-studio-deploy.lock true; then break; fi
+  echo "$(date -u +%T) waiting: open START '$O' / lock" >> $EV/tries.log
+  sleep 300
+done
+[ -n "$(others_open)" ] && { echo "$(date -u +%T) gave up waiting for another deployer" >> $EV/tries.log; echo FINISHED > $EV/tries.done; exit 0; }
 note "START | -u $MODS (om_hr_payroll 19.0.1.8.7, pb_hr_payroll_formula 19.0.1.171.0, pb_hr_payroll_vietnam 19.0.1.2.6, pb_hr_fullandfinal 19.0.1.4.2, pb_training 19.0.1.14.1, pb_doc_studio 19.0.1.3.0, pb_report_pdf 19.0.1.1.0) + PDF engine switch to wkhtmltopdf 0.12.6.1 with patched Qt (dpkg-divert, Ubuntu package kept) | payobook,payobook_template,p0clone,rize,sudima | restart + per-DB upgrade | $COMMIT (origin/19.1 + DOCSTUDIO PDFFIX; also carries NEWHIRE P1's contract_fill_in refactor already on 19.1). PDFs print the company letterhead, footer and page numbers and real text; payslips unchanged in look. Backups x5 right before the stop, 15 min quiet on rize/payobook/sudima, lock /tmp/payobook-studio-deploy.lock. $ROLLBACK. ABM untouched."
 R=""
 for i in $(seq 1 $N); do
@@ -16,7 +46,7 @@ for i in $(seq 1 $N); do
   echo "$(date -u +%T) try $i: $R" >> $EV/tries.log
   case "$R" in
     DONE|FAILED*) break;;
-    REFUSED-NOTES|REFUSED-BACKUP|REFUSED-ENGINE) break;;
+    REFUSED-BACKUP|REFUSED-ENGINE) break;;
   esac
   sleep 300
 done
