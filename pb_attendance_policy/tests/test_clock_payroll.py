@@ -385,3 +385,15 @@ class TestClockPayroll(TransactionCase):
         self.leave_type.write({'pb_pay_treatment': 'unconfigured', 'pb_pay_funding': 'unconfigured'})
         with self.assertRaisesRegex(UserError, 'Time off type not set as paid or unpaid'):
             self._transform(self.monday, self.sunday)
+
+    def test_late_day_source_counts_days_not_minutes(self):
+        self._decide()
+        self._clock()
+        facts=self.env['pb.clock.payroll'].facts_many(self.employee,self.monday,self.sunday,live=True)
+        self.assertEqual(facts[self.employee.id]['facts']['clock.late_days']['value'],1)
+        self.assertEqual(clock_source.CLOCK_USE['clock.late_days'],'pay')
+        rule=self.env['hr.formula.rule'].create({'config_id':self.config.id,'name':'Late days for allowance',
+            'code':'LATEDAYS','column_type':'input','net_role':'info','appears_on_payslip':False})
+        self.config.pb_clock_bind('clock.late_days',rule.id)
+        values,_=self._transform(self.monday,self.sunday)
+        self.assertEqual(values['LATEDAYS'],1)

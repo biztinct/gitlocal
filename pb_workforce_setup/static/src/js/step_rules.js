@@ -158,6 +158,18 @@ export class StepRules extends Component {
         if ((brk - start + 1440) % 1440 + (line.break_minutes || 0) > span) {
             return _t("The unpaid break must start after the shift starts and end before it ends.");
         }
+        const second = Number(line.second_break_minutes || 0);
+        if (!Number.isFinite(second) || second < 0 || second > (line.total_break_minutes || 0)) {
+            return _t("The second break must fit within the total unpaid break set in Shifts.");
+        }
+        if (second) {
+            const s2 = toMin(line.second_break_start);
+            const at = s2 === null ? -1 : (s2 - start + 1440) % 1440;
+            const firstAt = (brk - start + 1440) % 1440;
+            if (at < 0 || at + second > span || Math.max(firstAt, at) < Math.min(firstAt + line.break_minutes, at + second)) {
+                return _t("Unpaid breaks must fit inside the shift and must not overlap.");
+            }
+        }
         return "";
     }
     rateProblem(key) {
@@ -276,6 +288,10 @@ export class StepRules extends Component {
         this.lines[i].hours = v;
         this.edited();
     }
+    onPaidGrace(i, ev) {
+        this.lines[i].pay_late_minutes = ev.target.checked;
+        this.edited();
+    }
     addLine() {
         const lines = this.lines;
         if (!lines.length) {
@@ -302,8 +318,17 @@ export class StepRules extends Component {
         this.clearDrafting();
         this.edited();
     }
+    addSecondBreak(line) {
+        line.second_break_minutes = Math.min(60, line.total_break_minutes || 0);
+        line.break_minutes = (line.total_break_minutes || 0) - line.second_break_minutes;
+        line.touched = true;
+        this.edited();
+    }
     onShiftTime(line, key, ev) {
-        line[key] = ev.target.value;
+        line[key] = key === "second_break_minutes" ? Number(ev.target.value) : ev.target.value;
+        if (key === "second_break_minutes") {
+            line.break_minutes = (line.total_break_minutes || 0) - line.second_break_minutes;
+        }
         line.touched = true;
         this.edited();
     }

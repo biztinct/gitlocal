@@ -243,6 +243,9 @@ export class PreviewPanel extends Component {
         out.push(rich(_t("%(name)s clocks in at %(in)s and out at %(out)s on %(day)s (%(shift)s)."),
             { name: r.first_name || r.name, in: r.clock_in, out: r.clock_out }, { day: r.day_label, shift: r.shift_name }));
         const rule = r.group === "manager" ? _t("Manager") : _t("Worker");
+        if (r.grace_hours > 0) {
+            out.push(rich(_t("Paid grace credits %(hours)s. Actual punch times and lateness are retained."), { hours: hoursText(r.grace_hours) }));
+        }
         if (r.late_minutes > 0) {
             out.push(r.taken_off_hours > 0
                 ? rich(_t("That is %(late)s, so %(off)s comes off (%(rule)s rule)."),

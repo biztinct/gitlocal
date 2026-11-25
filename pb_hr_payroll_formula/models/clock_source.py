@@ -54,6 +54,7 @@ CLOCK_KEYS = (
     ('clock.over_limit_hours', "Overtime above the legal limit", 'info'),
     ('clock.actual_hours', "Actual hours (from punches)", 'info'),
     ('clock.late_minutes', "Late minutes", 'info'),
+    ('clock.late_days', "Late working days (for allowance rules)", 'pay'),
     ('clock.deduction_hours', "Hours taken off for lateness", 'info'),
     ('clock.empty', "Left empty (paid through the clocks)", 'empty'),
 )
@@ -92,6 +93,7 @@ def _clock_labels(self):
         'clock.over_limit_hours': _("Overtime above the legal limit"),
         'clock.actual_hours': _("Actual hours (from punches)"),
         'clock.late_minutes': _("Late minutes"),
+        'clock.late_days': _("Late working days (for allowance rules)"),
         'clock.deduction_hours': _("Hours taken off for lateness"),
         'clock.empty': _("Left empty (paid through the clocks)"),
     }
@@ -261,7 +263,7 @@ class ClockFormulaConfig(models.Model):
         'clock.paid_normal_hours': 'CLKPAIDHOURS', 'clock.ot_hours': 'CLKOTHOURS',
         'clock.ot_premium_hours': 'CLKPREMHOURS', 'clock.over_limit_hours': 'CLKOVERLIMIT',
         'clock.actual_hours': 'CLKACTUALHOURS', 'clock.late_minutes': 'CLKMINUTESLATE',
-        'clock.deduction_hours': 'CLKLATEHOURS',
+        'clock.deduction_hours': 'CLKLATEHOURS', 'clock.late_days': 'CLKLATEDAYS',
     }
 
     def pb_clock_meta(self):

@@ -46,7 +46,7 @@ weeks and summed on screen (`live_plan`).
 
 Nothing is created on install.
 """,
-    'version': '19.0.1.7.0',
+    'version': '19.0.1.8.0',
     'category': 'Human Resources/Attendance',
     'license': 'LGPL-3',
     'author': 'Payobook',
