@@ -27,7 +27,7 @@ action; every record opens the generic premium record form; no visual of a shift
 | P9 | Reversible "Disable" / "Enable" on a clock connection (pb_clock 19.0.1.5.0) + step 6 "Disabled" with Enable (19.0.1.6.0) | LIVE 2026-11-25 00:02 UTC x5 (768c6786c), 211 s down; nothing disabled anywhere (report WFSETUP_P9_REPORT.md) |
 | P6 | Honest clocks (step 6 states + "Switch clock-ins on", step 7 / finish wording), every Undo redraws the step | LIVE 2026-11-24 21:16 UTC on sudima + payobook (19.0.1.5.0), 109 s down (report WFSETUP_P6_REPORT.md) |
 | P10a | Study: how clock hours feed Sudima's pay from 1 Dec (proposal) | done 2026-11-25 (WFSETUP_P10A_PROPOSAL.md) |
-| P10b | Hours from the clocks into pay (scheme date, provider, pre-run check, stamp), leading zeros, extra hours On/Off; rehearsal; go live | see WFSETUP_P10B_REPORT.md |
+| P10b | Hours from the clocks into pay (scheme date, provider, pre-run check, stamp), leading zeros, extra hours On/Off; rehearsal; go live | LIVE 2026-11-25 05:04 UTC x5 (92f9af278), 619 s down; sudima: 2027 holidays, extra hours off, scheme 7844 clock date 1 Dec (report WFSETUP_P10B_REPORT.md) |
 | P8 | Sudima clock-ins into attendance: rehearsal on a hidden copy, then live on Go | NO-GO 2026-11-24 23:21 UTC after the rehearsal (90.3 % matched < 95 %; rules refuse days that already have clock rows); live untouched (report WFSETUP_P8_REPORT.md) |
 
 ## Standing rules every handover repeats
