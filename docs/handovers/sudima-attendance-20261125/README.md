@@ -99,6 +99,10 @@ calculations retain their previous behavior until they adopt these options.
 - Eleven source leavers need dated treatment; 72 active profiles are outside the
   current source list. Do not silently archive them or include them in a pay run.
 - The full recurring allowance entitlement remains outstanding as above.
+- The holiday calendar still needs confirmation. The live setup screen counts
+  all 678 active profiles, so it shows 161 without a week and 517 publishable;
+  the current source list contains 91 without a week and 504 with one. Review
+  older/leaver profiles before publishing; do not publish all 517 blindly.
 
 ## Execution and validation
 
@@ -125,4 +129,40 @@ only changed installed modules are upgraded. Targets: payobook, payobook_templat
 p0clone, sudima, rize. Standard Odoo addons, cron states and the existing Windows
 connector archive are preserved. Rize backup is permanent; other release backups
 have seven-day retention with the latest usable snapshot preserved. ABM untouched.
-Deployment and live verification receipt follows after release completion.
+### Deployment and live verification
+
+Shared release `bd9f7b12e0d4f1ae95ad59d68c8ec70719aaecc9` completed on all five
+databases; service downtime including stopped-state backups was 583 seconds.
+All 210 custom trees and installed versions matched after deployment; cron
+states restored and all four active website login checks returned HTTP 200.
+Only legacy `payroll_analytics` null-column constraint messages appeared in
+upgrade ERROR output (country/date_from/date_to); upgrades exited successfully.
+The same existing data condition was present in the rehearsal copy. No unrelated
+analytics data was repaired.
+
+Follow-up data application passed dry run and commit, using configuration script
+commit `d2cb8eb4a` (included in combined `7684b6a4c`). Policy 2 is active; 595
+current classifications, ten shifts, 504 working weeks and 7,044 reviewed future
+draft rows verified. Eleven protected pay/contract/leave/attendance/pattern tables
+were byte-equivalent at row-JSON digest level; clock publication switches stayed
+unchanged. No allowance amounts or formulas changed.
+
+Live Chrome check on `sudima.payobook.com/bizapp/action-1220?step=rules` passed:
+confirmed policy, Worker and Manager bands, second unpaid break, real-person
+preview at 9 and 10 minutes (8 / 3.83 paid normal hours), and the actual go-live
+readiness screen. Console had no errors. The rehearsal had already exercised
+edit/save/reload/confirm through these same screens. No roster was published.
+
+Final read-back: 595 current people (444 Worker / 151 Manager), 504 with working
+weeks, 572 with contracts, zero running contracts, zero published roster rows and
+zero attendance rows. Both allowance rules still have empty formulas, no clock
+binding, and no contract entitlement lines. All five real PC connectors' latest
+reports on 25 November showed successful reads, zero queued records and no error;
+this is last-report evidence, not a claim that the PCs are continuously online.
+
+Evidence: `/tmp/sudima-attendance-release-20261125/receipt.json` and
+`/odoo/backups/sudima-rules-20261125/final-rules-applied.json`,
+`final-verification.json`. The temporary QA account was disabled, its original
+groups/language restored and password rotated; plaintext credentials removed.
+The rehearsal server, database and its own filestore were removed. No screenshots
+or PNG files were saved by this test run; unrelated images were preserved.
