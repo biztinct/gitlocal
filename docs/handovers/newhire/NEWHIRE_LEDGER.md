@@ -53,7 +53,11 @@ Owner approved the design and the phased build on 2026-11-25.
   `pb.people.onboard.wizard.create_employee(values)`; `pb_new_hire` extends `create_employee` / `create_contract` by
   inheritance so the NEW optional keys are honoured. Signatures unchanged; every old caller (Updates joiners sheet, org chart,
   pay scales) keeps working with the old keys.
-- **D3 Team decides the pay scheme; the country is checked against it.** New pure function
+- **D3 Team decides the pay scheme; the country is checked against it.** *(Amended P7, owner request 2026-11-25:
+  the Country of work LEADS step 2 — it is the first box, puts its own teams and jobs first (`places()`, rule in
+  `models/places.py`), and decides currency, trial period, letter and papers at once. The team still decides the
+  scheme; a team from another country stays pickable with the mismatch warning; changing the country clears a
+  team of another country with Undo. Filtering is guidance only: Send accepts any team/country pair.)* New pure function
   `pb.scheme.map.resolve_for_team(...)` (factor-out, FACTS_CORE §C.4). No per-person "use a different scheme" picker (no seam
   exists); when the team's scheme and the chosen country disagree the screen says so and names the fix.
 - **D4 Country of work is written where it matters**: employee `payroll_country`, contract `payroll_country` (currency),
@@ -312,3 +316,30 @@ Owner approved the design and the phased build on 2026-11-25.
   on one signs out another session's walk on the other. Walk a second server on `127.0.0.1:<port>`.
 - **NH82** (P6) A test run (`--test-enable`, even `--no-http`) binds the conf's `http_port` for its HttpCase tests: a
   walk server on the same conf cannot start ("Address already in use"). Give the walk server its own port.
+
+- **NH83** (P7) `-u pb_bank_ocr` upgrades every installed module that depends on it — 77 on this build (the whole
+  people / My Payobook / payroll stack): a bank-field change is a long upgrade per database. Plan the window for it.
+- **NH84** (P7) The website / My Payobook frontend bundle is loaded LAZILY (`web.assets_frontend_lazy`): a plain
+  script's `DOMContentLoaded` listener never fires because the page is already complete. Check
+  `document.readyState` and run at once.
+- **NH85** (P7) `.pbme.pbmd .pbmd-form` is `flex-direction: column`; a form given its own `display: flex` row keeps
+  that column (and `flex-basis` then becomes a HEIGHT). Set `flex-direction: row` explicitly.
+- **NH86** (P7) A QWeb view word reused on a NEW view needs that view's occurrence
+  (`#: model_terms:ir.ui.view,arch_db:<module>.<view>`) on the existing `.po` entry, else the word stays English on
+  that view only ("Change" on the bank page). Compare the export's occurrences with the repo's after a template edit.
+- **NH87** (P7) `odoo-bin --i18n-export` is gone in 19: `odoo-bin i18n export -c <conf> -d <db> -l vi_VN -o x.po
+  <module>`. Do not `polib.save()` a repo `.po` (it rewraps every entry, a 2,000-line diff): append new entries as
+  text, with a blank line before each, and mind a file without a final newline.
+- **NH88** (P7) Chrome's own page translation (NH61) also breaks OWL patches after a language switch: "Failed to
+  execute 'removeChild' … not a child of this node" in the console. Environmental — reload with `translate="no"`
+  set before the first paint, then judge the console.
+- **NH89** (P7) "The company's only scheme" (scheme-map rung `only`) says nothing about a TEAM: counting it as a
+  team's country would put every team of a one-scheme company under that country. The team rule counts only the
+  team's own map line or its division's (`TEAM_RUNGS`).
+- **NH90** (P7) Step 5's typed values (`draft.have`) outlive a change of the bank row's country: a previous
+  country's code (an Indonesian bank code) showed under Singapore. Switching the country clears the codes,
+  SWIFT and branch; the bank, number and name stay. The server only ever reads the codes of the chosen country.
+- **NH91** (P7) Vietnam's bank format IS the old rule (6–19 digits, no code): `pb.bank.change.request` treats a
+  `VN` request exactly like an older one (same checks, same sentences — existing tests assert them). Only other
+  countries get the new checks. No country at all = the old rule (every older change, every import).
+
