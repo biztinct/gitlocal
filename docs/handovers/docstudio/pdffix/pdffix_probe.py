@@ -71,6 +71,11 @@ def payslips():
     if std:
         pdf, _x = Report.sudo()._render_qweb_pdf(std, res_ids=slips[:1].ids)
         save('payslip_standard.pdf', pdf)
+    vn = env['ir.actions.report'].sudo().search(
+        [('report_name', '=', 'pb_hr_payroll_vietnam.report_payslip_vietnam')], limit=1)
+    if vn:
+        pdf, _x = Report.sudo()._render_qweb_pdf(vn, res_ids=slips[:1].ids)
+        save('payslip_vietnam.pdf', pdf)
 
 
 def letters():
