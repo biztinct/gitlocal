@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="report_payslip">
-         <t t-call="web.html_container">
+        <!-- data-report-dpi 100 (DOCSTUDIO PDFFIX): the PDF engine with patched Qt honours the
+             dpi and zoom settings and drew this slip ~15% larger than the engine without patched Qt,
+             which ignores both; at 100 the slip prints at today's size on both engines. -->
+        <t t-set="data_report_dpi" t-value="100"/>
+        <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
-                <t t-call="web.external_layout">
+                <!-- basic_layout, not external_layout: this payslip draws its own logo and
+                     heading. With a PDF engine that prints the company header (patched Qt,
+                     DOCSTUDIO PDFFIX) the external layout doubled the logo and pushed the
+                     one-page slip onto two pages. Same look as before on both engines. -->
+                <t t-call="web.basic_layout">
                     <div class="page">
                     <!-- Helper function to safely get salary line totals with default value of 0 -->
                     <t t-set="dsal" t-value="{}"/>
