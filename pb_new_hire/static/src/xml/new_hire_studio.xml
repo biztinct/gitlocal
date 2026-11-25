@@ -272,25 +272,64 @@
       <div class="pbnh-q-t">
         <div class="pbnh-eyebrow">Step 2 of 7 · required</div>
         <h1 tabindex="-1" t-esc="heading"/>
-        <p>Pick the team first. The manager, the site and the country of work are suggested from it, and they decide the pay scheme, the currency and the trial period.</p>
+        <p>Pick the country of work first. The teams and jobs there come first in their lists, and the currency, trial period, contract letter and papers follow it. The team then decides who pays.</p>
       </div>
     </div>
     <div class="pbnh-card pbnh-pad pbnh-col">
       <div class="pbnh-grid">
-        <label t-att-class="'pbnh-f' + (err('department_id') ? ' is-bad' : '')">
-          <span>Team <em>*</em></span>
+        <label t-att-class="'pbnh-f pbnh-f--lead' + (err('payroll_country') ? ' is-bad' : '') + (isAuto('payroll_country') ? ' is-auto' : '')">
+          <span>Country of work <em>*</em></span>
+          <select id="pbnh-f-payroll_country" data-coach="nh-country" t-on-change="onCountry" aria-required="true">
+            <option value="" t-att-selected="!d.payroll_country">Choose a country</option>
+            <t t-if="countryGroups">
+              <optgroup label="Where your company already works">
+                <option t-foreach="knownCountries" t-as="c" t-key="c.code" t-att-value="c.code" t-att-selected="c.code === d.payroll_country" t-esc="c.name"/>
+              </optgroup>
+              <optgroup label="Other countries">
+                <option t-foreach="otherCountries" t-as="c" t-key="c.code" t-att-value="c.code" t-att-selected="c.code === d.payroll_country" t-esc="c.name"/>
+              </optgroup>
+            </t>
+            <t t-else="">
+              <option t-foreach="data.countries" t-as="c" t-key="c.code" t-att-value="c.code" t-att-selected="c.code === d.payroll_country" t-esc="c.name"/>
+            </t>
+          </select>
+          <span t-if="isAuto('payroll_country') and countryWhy" class="pbnh-why"><t t-out="icon('sparkles', 12)"/><t t-esc="countryWhy"/></span>
+          <t t-call="pb_new_hire.FieldErr"><t t-set="msg" t-value="err('payroll_country')"/></t>
+        </label>
+        <div t-att-class="'pbnh-f' + (err('department_id') ? ' is-bad' : '')">
+          <label for="pbnh-f-department_id" style="margin:0;font:inherit;color:inherit">Team <em>*</em></label>
           <select id="pbnh-f-department_id" t-on-change="onTeam" aria-required="true">
             <option value="" t-att-selected="!d.department_id">Choose a team</option>
-            <option t-foreach="data.teams" t-as="t" t-key="t.id" t-att-value="t.id" t-att-selected="t.id === d.department_id" t-esc="t.name"/>
+            <optgroup t-if="teamGroups.mine.length" t-att-label="mineLabel">
+              <option t-foreach="teamGroups.mine" t-as="t" t-key="t.id" t-att-value="t.id" t-att-selected="t.id === d.department_id" t-esc="t.name"/>
+            </optgroup>
+            <t t-if="teamGroups.flat">
+              <option t-foreach="teamGroups.unknown" t-as="t" t-key="t.id" t-att-value="t.id" t-att-selected="t.id === d.department_id" t-esc="t.name"/>
+            </t>
+            <optgroup t-elif="teamGroups.unknown.length" label="Other teams">
+              <option t-foreach="teamGroups.unknown" t-as="t" t-key="t.id" t-att-value="t.id" t-att-selected="t.id === d.department_id" t-esc="t.name"/>
+            </optgroup>
+            <optgroup t-if="showOtherTeams and teamGroups.other.length" label="Teams in other countries">
+              <option t-foreach="teamGroups.other" t-as="t" t-key="t.id" t-att-value="t.id" t-att-selected="t.id === d.department_id" t-esc="t.name"/>
+            </optgroup>
           </select>
+          <span t-if="noTeamsHere and !notice" class="pbnh-own-help" t-esc="noTeamsLine"/>
+          <button t-if="otherTeamsCount" type="button" class="pbnh-link pbnh-f-link" t-att-aria-expanded="showOtherTeams ? 'true' : 'false'" t-on-click="toggleOtherTeams"><t t-out="icon(showOtherTeams ? 'chevronUp' : 'globe', 13)"/><t t-esc="otherTeamsLabel"/></button>
+          <div t-if="notice" class="pbnh-hint pbnh-hint--info pbnh-placed" role="status" aria-live="polite">
+            <t t-out="icon('info', 15)"/>
+            <span class="pbnh-hint-t"><span t-esc="noticeText"/> <button type="button" class="pbnh-link" t-on-click="undo">Undo</button></span>
+          </div>
           <t t-call="pb_new_hire.FieldErr"><t t-set="msg" t-value="err('department_id')"/></t>
-        </label>
+        </div>
         <label t-att-class="'pbnh-f' + (err('job_id') ? ' is-bad' : '')">
           <span>Job <em>*</em></span>
           <select id="pbnh-f-job_id" t-on-change="onJob" aria-required="true">
             <option value="" t-att-selected="jobValue === ''">Choose a job</option>
             <optgroup t-if="teamJobs.length" t-att-label="teamLabel">
               <option t-foreach="teamJobs" t-as="j" t-key="j.id" t-att-value="j.id" t-att-selected="isJob(j)" t-esc="j.name"/>
+            </optgroup>
+            <optgroup t-if="countryJobs.length" t-att-label="countryJobsLabel">
+              <option t-foreach="countryJobs" t-as="j" t-key="j.id" t-att-value="j.id" t-att-selected="isJob(j)" t-esc="j.name"/>
             </optgroup>
             <optgroup t-if="otherJobs.length" label="Other jobs">
               <option t-foreach="otherJobs" t-as="j" t-key="j.id" t-att-value="j.id" t-att-selected="isJob(j)" t-esc="j.name"/>
@@ -302,15 +341,6 @@
         <label t-if="showTitle" class="pbnh-f">
           <span>New job title <em>*</em></span>
           <input id="pbnh-f-job_title" type="text" autocomplete="off" placeholder="For example Field Supervisor" t-att-value="d.job_title" t-on-input="onJobTitle"/>
-        </label>
-        <label t-att-class="'pbnh-f' + (err('payroll_country') ? ' is-bad' : '') + (isAuto('payroll_country') ? ' is-auto' : '')">
-          <span>Country of work <em>*</em></span>
-          <select id="pbnh-f-payroll_country" t-on-change="(ev) => this.onSelect('payroll_country', ev)" aria-required="true">
-            <option value="" t-att-selected="!d.payroll_country">Choose a country</option>
-            <option t-foreach="data.countries" t-as="c" t-key="c.code" t-att-value="c.code" t-att-selected="c.code === d.payroll_country" t-esc="c.name"/>
-          </select>
-          <span t-if="isAuto('payroll_country')" class="pbnh-why"><t t-out="icon('sparkles', 12)"/>Suggested from the team</span>
-          <t t-call="pb_new_hire.FieldErr"><t t-set="msg" t-value="err('payroll_country')"/></t>
         </label>
         <div t-att-class="'pbnh-f pbnh-pick' + (isAuto('parent_id') ? ' is-auto' : '') + (err('parent_id') ? ' is-bad' : '')">
           <label for="pbnh-f-parent_id" style="margin:0;font:inherit;color:inherit">Manager <i>optional</i></label>
@@ -359,7 +389,7 @@
     <div class="pbnh-card pbnh-pad pbnh-col">
       <div>
         <h3>What this decides</h3>
-        <p class="pbnh-sub">You never pick these by hand. Change the team or the country and they follow.</p>
+        <p class="pbnh-sub">You never pick these by hand. They follow the country of work, and the team names the pay scheme.</p>
       </div>
       <div class="pbnh-decides" aria-live="polite">
         <div t-att-class="'pbnh-dec ' + schemeTile.cls">
@@ -694,25 +724,30 @@
     <div t-att-class="'pbnh-doc-x' + (isOpen(item) ? ' is-open' : '')" t-att-inert="isOpen(item) ? undefined : ''">
       <div class="pbnh-doc-in">
         <div t-if="item.fields.length" class="pbnh-grid">
-          <t t-foreach="item.fields" t-as="f" t-key="f.name">
-            <label t-if="f.kind === 'select'" t-att-class="'pbnh-f' + (err('have-' + f.name) ? ' is-bad' : '')">
+          <t t-foreach="fieldsOf(item)" t-as="f" t-key="f.name">
+            <label t-if="f.kind === 'select'" t-att-class="'pbnh-f' + (fieldErr(f) ? ' is-bad' : '')">
               <span><t t-esc="f.label"/><em t-if="isRequired(item, f)"> *</em></span>
-              <select t-att-id="fid(f)" t-on-change="(ev) => this.onValue(f, ev)">
-                <option value="" t-att-selected="!value(f)">Choose</option>
-                <option t-foreach="f.options" t-as="o" t-key="o.value" t-att-value="o.value" t-att-selected="o.value === value(f)" t-esc="o.label"/>
+              <select t-att-id="fid(f)" t-on-change="(ev) => this.onValue(f, ev, item)">
+                <option t-if="!(item.key === 'bank' and f.name === 'bank_format')" value="" t-att-selected="!selectValue(item, f)">Choose</option>
+                <option t-foreach="f.options" t-as="o" t-key="o.value" t-att-value="o.value" t-att-selected="o.value === selectValue(item, f)" t-esc="o.label"/>
               </select>
-              <t t-call="pb_new_hire.FieldErr"><t t-set="msg" t-value="err('have-' + f.name)"/></t>
+              <span t-if="f.hint and !fieldErr(f)" class="pbnh-own-help" t-esc="f.hint"/>
+              <t t-call="pb_new_hire.FieldErr"><t t-set="msg" t-value="fieldErr(f)"/></t>
             </label>
-            <label t-else="" t-att-class="'pbnh-f' + (err('have-' + f.name) ? ' is-bad' : '')">
-              <span><t t-esc="f.label"/><em t-if="isRequired(item, f)"> *</em></span>
+            <label t-else="" t-att-class="'pbnh-f' + (fieldErr(f) ? ' is-bad' : '') + (isAutoBank(f) ? ' is-auto' : '') + (f.kind === 'code' ? ' pbnh-f--code' : '')">
+              <span><t t-esc="f.label"/><em t-if="isRequired(item, f)"> *</em><i t-if="item.key === 'bank' and !f.required and f.name !== 'account_holder' and f.name !== 'bank_branch'"> optional</i></span>
               <input t-att-id="fid(f)" t-att-type="inputType(f)" autocomplete="off" t-att-value="value(f)"
-                     t-att-placeholder="placeholder(item, f)" t-att-list="f.kind === 'bank' ? listId(f) : undefined"
-                     t-on-change="(ev) => this.onValue(f, ev)"/>
+                     t-att-placeholder="placeholder(item, f) or f.placeholder or ''" t-att-list="f.kind === 'bank' ? listId(f) : undefined"
+                     t-att-maxlength="maxLen(f)" t-att-inputmode="inputMode(f)" t-att-spellcheck="f.kind === 'code' ? 'false' : undefined"
+                     t-att-autocapitalize="f.kind === 'code' ? 'characters' : undefined"
+                     t-on-input="(ev) => f.kind === 'code' ? this.onCodeInput(item, f, ev) : null"
+                     t-on-change="(ev) => this.onValue(f, ev, item)"/>
               <datalist t-if="f.kind === 'bank'" t-att-id="listId(f)">
                 <option t-foreach="f.options" t-as="o" t-key="o.value" t-att-value="o.value" t-esc="o.label"/>
               </datalist>
-              <span t-if="f.hint and !err('have-' + f.name)" class="pbnh-own-help" t-esc="f.hint"/>
-              <t t-call="pb_new_hire.FieldErr"><t t-set="msg" t-value="err('have-' + f.name)"/></t>
+              <span t-if="isAutoBank(f) and !fieldErr(f)" class="pbnh-why"><t t-out="icon('sparkles', 12)"/><t t-esc="autoBankLine(f)"/></span>
+              <span t-elif="f.hint and !fieldErr(f)" class="pbnh-own-help" t-esc="f.hint"/>
+              <t t-call="pb_new_hire.FieldErr"><t t-set="msg" t-value="fieldErr(f)"/></t>
             </label>
           </t>
         </div>

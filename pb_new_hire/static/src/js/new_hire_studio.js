@@ -131,6 +131,9 @@ export class NewHireStudio extends Component {
             fieldErr: {},       // field -> sentence (from Send, or a quick check)
             decides: null, decidesBusy: false,
             teamScheme: null,
+            places: null,       // P7: step 2's lists for the Country of work (`places()`)
+            placeNotice: null,  // P7: "Team cleared — …" with Undo
+            countryWhy: "",     // P7: where the starting country came from
             usual: { configId: 0, rows: null, busy: false },
             hint: null,
             dup: null,
@@ -159,6 +162,8 @@ export class NewHireStudio extends Component {
             go: (key, field) => this.go(key, field),
             next: () => this.next(),
             pickTeam: (id) => this.pickTeam(id),
+            pickCountry: (code) => this.pickCountry(code),
+            undoPlace: () => this.undoPlace(),
             setUsual: (code, amount) => this.setUsual(code, amount),
             resetUsual: (code) => this.resetUsual(code),
             findPeople: (q) => this.orm.call(MODEL, "find_people", [q, 20]),
@@ -285,6 +290,28 @@ export class NewHireStudio extends Component {
             // nothing kept, nothing to clear
         }
     }
+    /** P7 §1.2: the Country of work this user last picked, in this browser
+     *  session (it survives "Add another person" and a new hire). */
+    get countryKey() {
+        const d = this.nh.data;
+        return d ? `pb_nh_country:${d.company.id}:${d.user.id}` : "";
+    }
+    lastCountry() {
+        try {
+            return this.countryKey ? sessionStorage.getItem(this.countryKey) || "" : "";
+        } catch {
+            return "";
+        }
+    }
+    keepCountry(code) {
+        try {
+            if (this.countryKey && code) {
+                sessionStorage.setItem(this.countryKey, code);
+            }
+        } catch {
+            // private window: the company's usual country next time
+        }
+    }
 
     // ------------------------------------------------------------ data
     async load() {
@@ -295,6 +322,7 @@ export class NewHireStudio extends Component {
         try {
             const data = await this.orm.call(MODEL, "load", [this.prefill || false]);
             nh.data = data;
+            nh.places = data.places || null;
             let draft = Object.assign(blankDraft(data.today), data.draft || {});
             let kept = this.readStore();
             if (this.prefill && kept && kept.draft && String(kept.draft.name || "").trim()) {
@@ -325,6 +353,23 @@ export class NewHireStudio extends Component {
                     });
                 }
             }
+            if (!kept || !kept.draft || kept.draft.name === undefined) {
+                // P7 §1.2: the starting country — the user's last pick in this
+                // browser session wins over the company's usual one (never over
+                // the country of a team the org chart sent)
+                const why = (data.default_country || {}).why || "";
+                const last = this.lastCountry();
+                if (last && !(data.draft || {}).department_id
+                        && (data.countries || []).some((c) => c.code === last)) {
+                    draft.payroll_country = last;
+                    nh.countryWhy = last === (data.draft || {}).payroll_country ? why : "last";
+                } else {
+                    nh.countryWhy = why;
+                }
+                if (draft.payroll_country) {
+                    nh.auto.payroll_country = true;
+                }
+            }
             nh.draft = draft;
             if (!kept) {
                 // what the org chart sent is the person's choice, never overwritten
@@ -333,6 +378,9 @@ export class NewHireStudio extends Component {
                         nh.touched[k] = true;
                     }
                 }
+            }
+            if (draft.payroll_country && (!nh.places || nh.places.country !== draft.payroll_country)) {
+                this.refreshPlaces();
             }
             if (!nh.step || nh.step === "who") {
                 this.focusAfter = draft.name ? null : "name";
@@ -624,6 +672,12 @@ export class NewHireStudio extends Component {
             }
         }
         nh.data.draft = choice.data;
+        nh.placeNotice = null;
+        if (nh.draft.payroll_country) {
+            nh.auto.payroll_country = true;
+            nh.countryWhy = nh.draft.department_id ? "team" : "";
+        }
+        this.refreshPlaces();
         if (nh.step !== "who") {
             this.go("who", "name");
         } else {
@@ -843,8 +897,14 @@ export class NewHireStudio extends Component {
             return;
         }
         this.nh.decidesBusy = true;
+        // P7: `places()` answers "What this decides" too; only the newest of
+        // the two kinds of request may land
+        const gen = (this.decGen = (this.decGen || 0) + 1);
         return this.ask("decides", "decides", [d.department_id || false, d.payroll_country || false,
                                                  d.date_start || false, d.contract_kind], (res, err) => {
+            if (gen !== this.decGen) {
+                return;
+            }
             this.nh.decidesBusy = false;
             if (err) {
                 this.toast(errorText(err), { kind: "error" });
@@ -854,6 +914,73 @@ export class NewHireStudio extends Component {
             const scheme = res && res.scheme;
             this.loadUsual(scheme ? scheme.id : 0);
         });
+    }
+
+    /** P7: step 2's lists for the Country of work, and "What this decides",
+     *  in ONE call. `change`: the person just changed the country — a team
+     *  of another country is cleared (with Undo), never kept silently. */
+    refreshPlaces({ change = false } = {}) {
+        const nh = this.nh;
+        const d = nh.draft;
+        if (!d.payroll_country) {
+            nh.places = null;
+            this.refreshDecides();
+            return;
+        }
+        const team = d.department_id || false;
+        const gen = (this.decGen = (this.decGen || 0) + 1);
+        nh.decidesBusy = true;
+        return this.ask("places", "places", [d.payroll_country, team, d.job_id || false,
+                                               d.date_start || false, d.contract_kind, change], (res, err) => {
+            if (err || !res) {
+                if (gen === this.decGen) {
+                    nh.decidesBusy = false;
+                }
+                if (err) {
+                    this.toast(errorText(err), { kind: "error" });
+                }
+                return;
+            }
+            nh.places = res;
+            if (change && team && res.team_fits === false && nh.draft.department_id === team) {
+                const undo = { department_id: team, job_id: nh.draft.job_id || false,
+                               job_title: nh.draft.job_title || "", newJob: Boolean(nh.draft.newJob) };
+                const take = { department_id: false };
+                if (res.job_fits === false) {
+                    take.job_id = false;
+                }
+                nh.placeNotice = { text: res.team_reason, undo, cleared_job: res.job_fits === false };
+                nh.teamScheme = null;
+                this.patch(take, { decided: true });
+            }
+            if (gen === this.decGen) {
+                nh.decidesBusy = false;
+                nh.decides = res.decides || null;
+                const scheme = res.decides && res.decides.scheme;
+                this.loadUsual(scheme ? scheme.id : 0);
+            }
+        });
+    }
+    /** The person picks the Country of work (it leads step 2). */
+    pickCountry(code) {
+        const nh = this.nh;
+        nh.placeNotice = null;
+        nh.countryWhy = "";
+        if (code) {
+            this.keepCountry(code);
+        }
+        this.patch({ payroll_country: code || "" });
+    }
+    /** "Undo": the team (and job) the country change cleared come back; the
+     *  mismatch warning then says what to do. */
+    undoPlace() {
+        const notice = this.nh.placeNotice;
+        if (!notice) {
+            return;
+        }
+        this.nh.placeNotice = null;
+        this.patch(notice.undo);
+        this.pickTeam(notice.undo.department_id, { initial: true, keepCountry: true });
     }
 
     loadUsual(configId) {
@@ -910,7 +1037,7 @@ export class NewHireStudio extends Component {
         this.patch({ [key]: value }, opts);
     }
 
-    patch(values, { auto = false } = {}) {
+    patch(values, { auto = false, decided = false } = {}) {
         const nh = this.nh;
         const d = nh.draft;
         const changed = [];
@@ -937,7 +1064,10 @@ export class NewHireStudio extends Component {
         nh.refusal = null;
         this.persist();
         const has = (...keys) => keys.some((k) => changed.includes(k));
-        if (has("department_id", "payroll_country", "date_start", "contract_kind")) {
+        if (has("payroll_country")) {
+            // P7: the lists AND "What this decides" for the new country, in one call
+            this.refreshPlaces({ change: !auto });
+        } else if (!decided && has("department_id", "date_start", "contract_kind")) {
             this.refreshDecides();
         }
         if (has("job_id", "date_start", "payroll_country")) {
@@ -971,10 +1101,11 @@ export class NewHireStudio extends Component {
     /** The hero moment: a team suggests its manager, site and country —
      *  only where the person has not typed their own — and the tiles of
      *  "What this decides" fill in. */
-    async pickTeam(id, { initial = false } = {}) {
+    async pickTeam(id, { initial = false, keepCountry = false } = {}) {
         const nh = this.nh;
         const d = nh.draft;
         if (!initial) {
+            nh.placeNotice = null;
             this.patch({ department_id: id || false });
             // a job of another team no longer fits
             const job = (nh.data.jobs || []).find((j) => j.id === d.job_id);
@@ -1005,8 +1136,11 @@ export class NewHireStudio extends Component {
         if (!nh.touched.work_location_id) {
             take.work_location_id = res.site_id || false;
         }
-        if (res.country_code && !nh.touched.payroll_country) {
+        if (initial && !keepCountry && res.country_code && !nh.touched.payroll_country) {
+            // P7 §1.7: a team SENT here (org chart, Hiring) brings its country;
+            // a team picked by hand never moves it — the country leads
             take.payroll_country = res.country_code;
+            nh.countryWhy = "team";
         }
         this.patch(take, { auto: true });
         delete nh.auto.parent_name;
@@ -1073,16 +1207,16 @@ export class NewHireStudio extends Component {
         const job = !(d.job_id || String(d.job_title || "").trim());
         const country = !d.payroll_country;
         if (team && job && country) {
-            return _t("Team, job and country needed");
+            return _t("Country, team and job needed");
         }
         if (team && job) {
             return _t("Team and job needed");
         }
         if (team && country) {
-            return _t("Team and country needed");
+            return _t("Country and team needed");
         }
         if (job && country) {
-            return _t("Job and country needed");
+            return _t("Country and job needed");
         }
         if (team) {
             return _t("Team needed");
@@ -1393,7 +1527,17 @@ export class NewHireStudio extends Component {
         nh.exampleBusy = false;
         this.exampleToken = (this.exampleToken || 0) + 1;
         this.exampleKey = "";
-        nh.draft = Object.assign(blankDraft(nh.data.today), { payroll_country: nh.data.draft.payroll_country || "" });
+        // P7: the next person starts in the country last picked here
+        const last = this.lastCountry();
+        const code = last && (nh.data.countries || []).some((c) => c.code === last)
+            ? last : (nh.data.draft.payroll_country || "");
+        nh.draft = Object.assign(blankDraft(nh.data.today), { payroll_country: code });
+        nh.placeNotice = null;
+        nh.countryWhy = last && code === last ? "last" : ((nh.data.default_country || {}).why || "");
+        if (code) {
+            nh.auto.payroll_country = true;
+        }
+        this.refreshPlaces();
         this.refreshCats();
         this.refreshSched();
         this.refreshDocs();

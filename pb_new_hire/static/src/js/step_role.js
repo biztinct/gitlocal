@@ -1,10 +1,12 @@
 /** @odoo-module **/
 /**
- * Step 2 — Role and place (NEWHIRE P1). The hero moment: picking a team fills
- * the manager, the site and the country of work (only where nothing was
- * chosen by hand, each marked "Suggested from the team"), and "What this
- * decides" lights up — pay scheme, currency, trial period — from the
- * server's own answers. Nothing here is chosen twice.
+ * Step 2 — Role and place (NEWHIRE P1, P7). P7: the Country of work comes
+ * FIRST and leads — the teams and jobs of that country come first in their
+ * lists (`places()`), "What this decides" (currency, trial period, letter,
+ * papers) follows it at once, and changing it clears a team of another
+ * country with Undo. Picking a team then fills the manager and the site
+ * (marked "Leads this team" / "Where most of the team works") and names the
+ * pay scheme. Never stuck: every team and job stays reachable.
  */
 import { Component, useRef, useState, onWillUnmount } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
@@ -20,7 +22,8 @@ export class StepRole extends Component {
         this.icon = icon;
         this.initials = initials;
         this.nh = useState(this.props.api.nh);
-        this.ui = useState({ more: Boolean(this.nh.draft.country_id), q: "", open: false, list: [], active: 0, busy: false });
+        this.ui = useState({ more: Boolean(this.nh.draft.country_id), q: "", open: false, list: [], active: 0, busy: false,
+                             otherTeams: false });
         this.pickRef = useRef("pick");
         this.timer = null;
         onWillUnmount(() => clearTimeout(this.timer));
@@ -31,6 +34,76 @@ export class StepRole extends Component {
     err(field) { return this.nh.fieldErr[field] || ""; }
     isAuto(field) { return Boolean(this.nh.auto[field] && this.d[field]); }
 
+    // ------------------------------------------------------------ P7: the country leads
+    get places() {
+        const p = this.nh.places;
+        return p && p.country && p.country === this.d.payroll_country ? p : null;
+    }
+    get knownCountries() { return (this.data.countries || []).filter((c) => c.known); }
+    get otherCountries() { return (this.data.countries || []).filter((c) => !c.known); }
+    get countryGroups() { return this.knownCountries.length && this.otherCountries.length; }
+    onCountry(ev) { this.props.api.pickCountry(ev.target.value || ""); }
+    get countryWhy() {
+        const why = this.nh.countryWhy;
+        return why === "last" ? _t("Your last choice")
+            : why === "most" ? _t("Where most of your people work")
+            : why === "team" ? _t("Where this team works")
+            : why === "company" ? _t("Your company's country") : "";
+    }
+    get countryName() { return this.props.api.countryName; }
+    /** `{mine, unknown, other}` teams, in the list's own order. Without a
+     *  country every team is in one list. */
+    get teamGroups() {
+        const all = this.data.teams || [];
+        const p = this.places;
+        if (!p) {
+            return { mine: [], unknown: all, other: [], flat: true };
+        }
+        const mine = new Set(p.teams.mine);
+        const other = new Set(p.teams.other);
+        return {
+            mine: all.filter((t) => mine.has(t.id)),
+            other: all.filter((t) => other.has(t.id)),
+            unknown: all.filter((t) => !mine.has(t.id) && !other.has(t.id)),
+            flat: false,
+        };
+    }
+    get teamInOther() {
+        const id = this.d.department_id;
+        return Boolean(id && this.teamGroups.other.some((t) => t.id === id));
+    }
+    get showOtherTeams() { return this.ui.otherTeams || this.teamInOther; }
+    get otherTeamsCount() { return this.teamGroups.other.length; }
+    toggleOtherTeams() {
+        this.ui.otherTeams = !this.showOtherTeams;
+        if (this.ui.otherTeams) {
+            setTimeout(() => document.getElementById("pbnh-f-department_id")?.focus(), 60);
+        }
+    }
+    get mineLabel() { return _t("Teams in %s", this.countryName); }
+    get otherTeamsLabel() {
+        return this.showOtherTeams ? _t("Hide teams from other countries")
+            : _t("Show teams from other countries (%s)", this.otherTeamsCount);
+    }
+    get noTeamsHere() {
+        const g = this.teamGroups;
+        return !g.flat && !g.mine.length;
+    }
+    get noTeamsLine() { return _t("No team has people working in %s yet.", this.countryName); }
+    teamPeople(t) {
+        const p = this.places;
+        return p ? (p.team_people || {})[String(t.id)] || 0 : 0;
+    }
+    get notice() { return this.nh.placeNotice; }
+    get noticeText() {
+        const n = this.notice;
+        if (!n) {
+            return "";
+        }
+        return n.cleared_job ? _t("Team and job cleared: %s", n.text) : _t("Team cleared: %s", n.text);
+    }
+    undo() { this.props.api.undoPlace(); }
+
     // ------------------------------------------------------------ team / job
     onTeam(ev) {
         const id = Number(ev.target.value) || false;
@@ -40,10 +113,22 @@ export class StepRole extends Component {
         const id = this.d.department_id;
         return (this.data.jobs || []).filter((j) => id && j.department_id === id);
     }
+    /** P7: jobs already held by people working in the country. */
+    get countryJobs() {
+        const p = this.places;
+        if (!p) {
+            return [];
+        }
+        const held = new Set(p.jobs);
+        const id = this.d.department_id;
+        return (this.data.jobs || []).filter((j) => held.has(j.id) && !(id && j.department_id === id));
+    }
     get otherJobs() {
         const id = this.d.department_id;
-        return (this.data.jobs || []).filter((j) => !id || j.department_id !== id);
+        const held = new Set((this.places && this.places.jobs) || []);
+        return (this.data.jobs || []).filter((j) => (!id || j.department_id !== id) && !held.has(j.id));
     }
+    get countryJobsLabel() { return _t("Held by people in %s", this.countryName); }
     get teamLabel() {
         return _t("In %s", this.props.api.teamName || _t("this team"));
     }
@@ -95,7 +180,9 @@ export class StepRole extends Component {
         const seq = (this.seq = (this.seq || 0) + 1);
         this.ui.busy = true;
         try {
-            const rows = q ? await this.props.api.findPeople(q) : (this.data.managers || []);
+            // P7: before typing, the people working in the country come first
+            const first = this.places && this.places.managers.length ? this.places.managers : (this.data.managers || []);
+            const rows = q ? await this.props.api.findPeople(q) : first;
             if (seq === this.seq) {
                 this.ui.list = rows || [];
                 this.ui.active = 0;
@@ -144,7 +231,7 @@ export class StepRole extends Component {
     get schemeTile() {
         const dec = this.dec;
         if (!this.d.department_id) {
-            return { cls: "", value: _t("Choose a team first"), sub: "" };
+            return { cls: "", value: _t("Pick a team"), sub: _t("The team decides who pays.") };
         }
         if (!dec) {
             return { cls: "is-busy", value: _t("Working it out"), sub: "" };
@@ -222,7 +309,7 @@ export class StepRole extends Component {
     useSchemeCountry() {
         const s = this.mismatchCountry;
         if (s) {
-            this.props.api.set("payroll_country", s.country_code);
+            this.props.api.pickCountry(s.country_code);
         }
     }
     get useSchemeLabel() {

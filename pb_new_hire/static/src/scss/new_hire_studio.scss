@@ -193,6 +193,14 @@
     .pbnh-f input:focus, .pbnh-f select:focus, .pbnh-in:focus { outline: 2px solid var(--pbnh-p-light); border-color: var(--pbnh-p); }
     .pbnh-f.is-bad input, .pbnh-f.is-bad select { border-color: var(--pbnh-err); }
     .pbnh-f.is-auto input, .pbnh-f.is-auto select { border-color: color-mix(in srgb, var(--pbnh-teal) 45%, var(--pbnh-line)); background: color-mix(in srgb, var(--pbnh-teal-soft) 45%, white); }
+    // P7: the Country of work leads step 2 — its own row, first
+    .pbnh-f--lead { grid-column: 1 / -1; }
+    .pbnh-f--lead select { max-width: 420px; font-weight: 600; }
+    .pbnh-f-link { align-self: flex-start; display: inline-flex; gap: 5px; align-items: center; text-decoration: none; margin-top: 2px; }
+    .pbnh-f-link svg { width: 13px; height: 13px; }
+    .pbnh-f-link:hover { text-decoration: underline; }
+    .pbnh-placed { margin-top: 4px; padding: 8px 11px; font-size: 12.5px; }
+    .pbnh-placed .pbnh-hint-t { flex-direction: row; flex-wrap: wrap; gap: 6px; align-items: baseline; }
     .pbnh-why { font-size: 11.5px; color: var(--pbnh-teal); font-weight: 600; display: flex; gap: 4px; align-items: center; animation: pbnh-fade .25s; }
     .pbnh-why svg { width: 12px; height: 12px; }
     .pbnh-ferr { font-size: 12px; color: var(--pbnh-err); font-weight: 500; animation: pbnh-fade .2s; }
@@ -341,6 +349,9 @@
     }
     .pbnh-f--wide { grid-column: 1 / -1; }
     .pbnh-own-help { font-size: 11.5px; color: var(--pbnh-faint); }
+    // P7: a country's bank code box (IFSC, BSB, bank / branch code) reads like the code it is
+    .pbnh-f--code input { font-variant-numeric: tabular-nums; letter-spacing: .06em; font-feature-settings: "zero" 1; }
+    .pbnh-f--code input::placeholder { letter-spacing: .06em; }
     .pbnh-own-check { display: flex; gap: 8px; align-items: center; min-height: 40px; }
     .pbnh-own-check input { width: 18px; height: 18px; min-height: 0; accent-color: var(--pbnh-p); }
     .pbnh-own-later { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; color: var(--pbnh-muted); }

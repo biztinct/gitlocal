@@ -152,8 +152,10 @@ class TestDetailsOptions(DocsCommon):
                          {'pb_bpjs_employment_number', 'pb_bpjs_health_number'})
         self.assertEqual(idn['bank']['need'], 'first_pay')
         self.assertFalse(idn['bank']['can_skip'])
+        # P7: the boxes of the account's country (Indonesia: a 3-digit bank code)
         self.assertEqual([f['name'] for f in idn['bank']['fields']],
-                         ['bank_name', 'account_number', 'account_holder'])
+                         ['bank_format', 'bank_name', 'bank_branch', 'bank_code', 'account_number',
+                          'account_holder'])
         self.assertEqual(idn['bank']['ask_url'], '/my/details/bank')
         self.assertTrue(idn['paper-%s' % self.cat_other.id]['can_ask'])
         # Singapore: few items, a tax fund, no tax number
@@ -275,7 +277,7 @@ class TestSendDocs(DocsCommon):
         bad = self.studio().send(self.docs_draft(items={'bank': 'have'},
                                                  have=dict(bank, account_number='12-34')))
         self.assertEqual((bad['step'], bad['field']), ('docs', 'have-account_number'))
-        self.assertIn('6 to 19 digits', bad['message'])
+        self.assertIn('7 to 14 digits', bad['message'], 'P7: Singapore account numbers')
         out = self.studio().send(self.docs_draft(items={'bank': 'have'}, have=bank))
         self.assertTrue(out['pending'], out)
         prop = self.proposal(out)

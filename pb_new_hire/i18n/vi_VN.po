@@ -6135,3 +6135,201 @@ msgstr "tuần làm việc %s"
 #: code:addons/pb_new_hire/models/studio_welcome.py:0
 msgid "you"
 msgstr "bạn"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "%(hint)s This one has %(n)s."
+msgstr "%(hint)s Số này có %(n)s."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/places.py:0
+msgid "%(team)s has no one in %(country)s."
+msgstr "%(team)s không có ai làm việc tại %(country)s."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/docs_legs.py:0
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Bank account in"
+msgstr "Tài khoản ngân hàng tại"
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/docs_legs.py:0
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Branch"
+msgstr "Chi nhánh"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Country and job needed"
+msgstr "Cần quốc gia và công việc"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Country and team needed"
+msgstr "Cần quốc gia và nhóm"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Country, team and job needed"
+msgstr "Cần quốc gia, nhóm và công việc"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "From the IFSC code"
+msgstr "Theo mã IFSC"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "From the bank"
+msgstr "Theo ngân hàng"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Held by people in %s"
+msgstr "Người ở %s đang làm"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Hide teams from other countries"
+msgstr "Ẩn các nhóm ở quốc gia khác"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "No team has people working in %s yet."
+msgstr "Chưa có nhóm nào có người làm việc tại %s."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Optional."
+msgstr "Không bắt buộc."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Other countries"
+msgstr "Quốc gia khác"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Other teams"
+msgstr "Nhóm khác"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Pick a team"
+msgstr "Chọn một nhóm"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"Pick the country of work first. The teams and jobs there come first in their"
+" lists, and the currency, trial period, contract letter and papers follow "
+"it. The team then decides who pays."
+msgstr ""
+"Chọn quốc gia làm việc trước. Các nhóm và công việc ở đó đứng đầu danh sách,"
+" còn tiền tệ, thời gian thử việc, thư hợp đồng và giấy tờ đi theo quốc gia "
+"đó. Sau đó nhóm quyết định ai trả lương."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Show teams from other countries (%s)"
+msgstr "Hiện các nhóm ở quốc gia khác (%s)"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Team and job cleared: %s"
+msgstr "Đã bỏ chọn nhóm và công việc: %s"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Team cleared: %s"
+msgstr "Đã bỏ chọn nhóm: %s"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Teams in %s"
+msgstr "Các nhóm ở %s"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Teams in other countries"
+msgstr "Các nhóm ở quốc gia khác"
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "The boxes below follow the country of the account."
+msgstr "Các ô bên dưới đi theo quốc gia của tài khoản."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "The team decides who pays."
+msgstr "Nhóm quyết định ai trả lương."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Undo"
+msgstr "Hoàn tác"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Where most of your people work"
+msgstr "Nơi phần lớn nhân viên của bạn làm việc"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Where this team works"
+msgstr "Nơi nhóm này làm việc"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Where your company already works"
+msgstr "Nơi công ty bạn đã có hoạt động"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"You never pick these by hand. They follow the country of work, and the team "
+"names the pay scheme."
+msgstr ""
+"Bạn không bao giờ phải tự chọn những mục này. Chúng đi theo quốc gia làm "
+"việc, và nhóm cho biết chương trình lương."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Your company's country"
+msgstr "Quốc gia của công ty bạn"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Your last choice"
+msgstr "Lựa chọn gần nhất của bạn"

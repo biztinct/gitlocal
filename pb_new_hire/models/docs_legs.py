@@ -308,8 +308,19 @@ class PbNewHireProposalDocs(models.Model):
             add(label, text)
         if values.get('account_number'):
             add(_('Bank'), values.get('bank_name'))
+            fmt = values.get('bank_format')
+            if fmt and 'pb.bank.format' in self.env:
+                # P7: the account's country and its codes, in that country's words
+                Format = self.env['pb.bank.format']
+                add(_('Bank account in'), dict((c['code'], c['name']) for c in Format.choices()).get(fmt))
+                spec = Format.spec(fmt, banks=False)
+                for code in spec['codes']:
+                    add(code['label'], values.get(code['key']))
+                if spec['swift']:
+                    add(spec['swift']['label'], values.get('bank_swift'))
+                add(_('Branch'), values.get('bank_branch'))
             add(_('Account holder'), values.get('account_holder'))
-            add(_('Account number'), mask(''.join(c for c in str(values['account_number']) if c.isdigit())))
+            add(_('Account number'), mask(''.join(c for c in str(values['account_number']) if c.isalnum())))
         add(_('Papers attached'), ', '.join(p.get('label') or '' for p in values.get('pb_nh_papers') or []))
         add(_('Will be asked'), ', '.join(a.get('label') or '' for a in values.get('pb_nh_asks') or []))
         add(_('Left for later'), ', '.join(names.get('later') or []))

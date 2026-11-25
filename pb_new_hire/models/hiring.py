@@ -286,6 +286,10 @@ class PbNewHireHiring(models.AbstractModel):
             draft['date_start'] = row['first_day']
         if row['team_id']:
             draft['department_id'] = row['team_id']
+            # P7 §1.7: the team brings its country (scheme, else its people)
+            team_code = self._team_country(self._team(row['team_id']))
+            if team_code:
+                draft['payroll_country'] = team_code
         if row['job_id']:
             draft['job_id'] = row['job_id']
         elif o.job_title:
@@ -299,8 +303,7 @@ class PbNewHireHiring(models.AbstractModel):
             draft['buddy_name'] = buddy.name or ''
         note = ''
         if row['wage'] > 0:
-            decided = self.decides(row['team_id'], False) if row['team_id'] else {}
-            code = (decided.get('scheme') or {}).get('country_code') or ''
+            code = draft.get('payroll_country') or ''
             mine = self._currency_for(code) if code else self._company_currency()
             if row['wage_currency']['name'] and row['wage_currency']['name'] != mine.get('name'):
                 note = _("The offer's pay is in %(theirs)s. Type the monthly wage in %(mine)s.",

@@ -279,21 +279,30 @@ class PbNewHire(models.AbstractModel):
         if 'hr.work.location' in self.env:
             sites = [{'id': s.id, 'name': s.name or ''} for s in self.env['hr.work.location'].sudo().search(
                 [('company_id', 'in', [company.id, False])], order='name, id', limit=200)]
-        countries = [{'code': c, 'name': l} for c, l in self._countries()]
+        # P7: the country leads step 2 — the ones the company already works
+        # in come first, with how many people work there
+        known = self._known_countries()
+        people = self._country_counts()
+        countries = [{'code': c, 'name': l, 'known': c in known, 'people': people.get(c, 0)}
+                     for c, l in self._countries()]
         codes = [c['code'] for c in countries]
         nationalities = [{'id': c.id, 'name': c.name or '', 'code': c.code or ''}
                          for c in self.env['res.country'].sudo().search([], order='name')]
         today = fields.Date.context_today(self)
         company_code = company.country_id.code or ''
+        default_code, default_why = self._default_country()
         draft = {
             'date_start': fields.Date.to_string(today),
-            'payroll_country': company_code if company_code in codes else '',
+            'payroll_country': default_code,
         }
         pre = prefill if isinstance(prefill, dict) else {}
         if pre:
             team = self._team(pre.get('department_id'))
             if team:
                 draft['department_id'] = team.id
+                # P7 §1.7: a team sent by the org chart brings its country
+                draft['payroll_country'] = self._team_country(team) or default_code
+                default_why = 'team' if draft['payroll_country'] != default_code else default_why
             job = self._job(pre.get('job_id'))
             if job:
                 draft['job_id'] = job.id
@@ -327,6 +336,11 @@ class PbNewHire(models.AbstractModel):
             # P3b: does this site send email (step 5's invite card)
             'mail_on': self.env['pb.new.hire.invite']._mail_on(),
             'draft': draft,
+            # P7: where the starting country came from, and step 2's lists for it
+            'default_country': {'code': default_code, 'why': default_why},
+            'places': self.places(draft['payroll_country'], draft.get('department_id') or False,
+                                  draft.get('job_id') or False, draft['date_start'])
+            if draft['payroll_country'] else False,
         }
 
     # ======================================================= team defaults
@@ -354,10 +368,11 @@ class PbNewHire(models.AbstractModel):
         answer = self.env['pb.scheme.map'].sudo().resolve_for_team(team.id, self._company().id)
         if answer.get('config_id'):
             config = self.env['hr.formula.config'].sudo().browse(answer['config_id'])
-            codes = dict(self._countries())
             out['scheme'] = {'id': config.id, 'name': config.name or ''}
-            if config.country_code in codes:
-                out['country_code'] = config.country_code
+        # P7 §1.7: the scheme's country, else where most of the team works.
+        # The screen uses it only for a team that was SENT (org chart, Hiring);
+        # a team picked by hand never moves the country, which leads.
+        out['country_code'] = self._team_country(team) or False
         return out
 
     # ======================================================== what decides

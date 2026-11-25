@@ -6135,3 +6135,201 @@ msgstr "minggu kerja %s"
 #: code:addons/pb_new_hire/models/studio_welcome.py:0
 msgid "you"
 msgstr "Anda"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "%(hint)s This one has %(n)s."
+msgstr "%(hint)s Ini berisi %(n)s."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/places.py:0
+msgid "%(team)s has no one in %(country)s."
+msgstr "%(team)s tidak punya orang di %(country)s."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/docs_legs.py:0
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Bank account in"
+msgstr "Rekening bank di"
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/docs_legs.py:0
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Branch"
+msgstr "Cabang"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Country and job needed"
+msgstr "Perlu negara dan pekerjaan"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Country and team needed"
+msgstr "Perlu negara dan tim"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Country, team and job needed"
+msgstr "Perlu negara, tim, dan pekerjaan"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "From the IFSC code"
+msgstr "Dari kode IFSC"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "From the bank"
+msgstr "Dari bank"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Held by people in %s"
+msgstr "Dipegang orang di %s"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Hide teams from other countries"
+msgstr "Sembunyikan tim dari negara lain"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "No team has people working in %s yet."
+msgstr "Belum ada tim yang punya orang bekerja di %s."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Optional."
+msgstr "Opsional."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Other countries"
+msgstr "Negara lain"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Other teams"
+msgstr "Tim lain"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Pick a team"
+msgstr "Pilih tim"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"Pick the country of work first. The teams and jobs there come first in their"
+" lists, and the currency, trial period, contract letter and papers follow "
+"it. The team then decides who pays."
+msgstr ""
+"Pilih negara kerja lebih dulu. Tim dan pekerjaan di sana muncul paling atas,"
+" dan mata uang, masa percobaan, surat kontrak, serta dokumen mengikutinya. "
+"Lalu tim menentukan siapa yang menggaji."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Show teams from other countries (%s)"
+msgstr "Tampilkan tim dari negara lain (%s)"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Team and job cleared: %s"
+msgstr "Tim dan pekerjaan dikosongkan: %s"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Team cleared: %s"
+msgstr "Tim dikosongkan: %s"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Teams in %s"
+msgstr "Tim di %s"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Teams in other countries"
+msgstr "Tim di negara lain"
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "The boxes below follow the country of the account."
+msgstr "Kotak di bawah mengikuti negara rekening."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "The team decides who pays."
+msgstr "Tim menentukan siapa yang menggaji."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Undo"
+msgstr "Urungkan"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Where most of your people work"
+msgstr "Tempat sebagian besar orang Anda bekerja"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Where this team works"
+msgstr "Tempat tim ini bekerja"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Where your company already works"
+msgstr "Tempat perusahaan Anda sudah bekerja"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"You never pick these by hand. They follow the country of work, and the team "
+"names the pay scheme."
+msgstr ""
+"Anda tidak pernah memilih ini sendiri. Semuanya mengikuti negara kerja, dan "
+"tim menentukan skema gaji."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Your company's country"
+msgstr "Negara perusahaan Anda"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Your last choice"
+msgstr "Pilihan terakhir Anda"

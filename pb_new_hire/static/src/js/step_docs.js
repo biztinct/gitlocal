@@ -18,7 +18,36 @@ import { Component, onMounted, onWillUnmount, useRef, useState } from "@odoo/owl
 import { _t } from "@web/core/l10n/translation";
 import { formatFloat } from "@web/core/utils/numbers";
 import { MODEL, icon, errorText, fmtDay, docItemsOf, docChoiceOf, docGapOf, haveValueOf, docTallyOf,
-         docAskedOf, FILE_MIMES, FILE_MAX, FILES_MAX } from "./studio_util";
+         docAskedOf, docFieldsOf, bankFormatOf, FILE_MIMES, FILE_MAX, FILES_MAX } from "./studio_util";
+
+/** P7: a typed code as the bank check stores it, while typing. */
+function shapeCode(fmt, raw) {
+    const text = String(raw || "");
+    if (fmt === "ifsc" || fmt === "swift") {
+        return text.replace(/[\s.\-/]/g, "").toUpperCase();
+    }
+    if (fmt === "bsb") {
+        const digits = text.replace(/\D/g, "").slice(0, 6);
+        return digits.length > 3 ? `${digits.slice(0, 3)}-${digits.slice(3)}` : digits;
+    }
+    if (fmt === "digits") {
+        return text.replace(/\D/g, "");
+    }
+    return text;
+}
+/** P7: the same check the server makes (the sentences are the server's). */
+function codeOk(f, value) {
+    if (f.fmt === "ifsc") {
+        return /^[A-Z]{4}0[A-Z0-9]{6}$/.test(value);
+    }
+    if (f.fmt === "bsb") {
+        return /^\d{3}-\d{3}$/.test(value);
+    }
+    if (f.fmt === "swift") {
+        return /^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(value);
+    }
+    return new RegExp(`^\\d{${f.length}}$`).test(value);
+}
 
 const FOCUSABLE = 'button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 let SEQ = 0;
@@ -74,7 +103,8 @@ export class StepDocs extends Component {
     setup() {
         this.icon = icon;
         this.nh = useState(this.props.api.nh);
-        this.ui = useState({ drag: "", fileErr: {}, editor: null, editorBusy: false, editorErr: "", adding: "" });
+        this.ui = useState({ drag: "", fileErr: {}, editor: null, editorBusy: false, editorErr: "", adding: "",
+                             bankErr: {}, bankAuto: {} });
         this.root = useRef("root");
         onWillUnmount(() => { this.ui.editor = null; });
     }
@@ -265,6 +295,15 @@ export class StepDocs extends Component {
     get askAllLabel() { return _t("Ask %s for everything", this.first); }
 
     // ------------------------------------------------------------ typed values
+    /** P7: a row's boxes — the bank row's follow the account's country. */
+    fieldsOf(item) { return docFieldsOf(this.nh, item); }
+    bankFormat(item) { return bankFormatOf(this.nh, item); }
+    fieldErr(f) { return this.err(`have-${f.name}`) || this.ui.bankErr[f.name] || ""; }
+    maxLen(f) { return f.kind === "code" ? f.max : f.kind === "account" ? f.max + 8 : undefined; }
+    inputMode(f) {
+        return (f.kind === "code" && (f.fmt === "digits" || f.fmt === "bsb"))
+            || (f.kind === "account" && !f.letters) ? "numeric" : undefined;
+    }
     fid(f) { return `pbnh-f-have-${f.name}`; }
     value(f) {
         const v = haveValueOf(this.nh, f.name);
@@ -276,8 +315,110 @@ export class StepDocs extends Component {
         }
         return "";
     }
-    onValue(f, ev) {
+    /** P7: codes take their shape while typing (IFSC in capitals, a BSB
+     *  with its dash, digits only); India: the bank follows the IFSC. */
+    onCodeInput(item, f, ev) {
+        const shaped = shapeCode(f.fmt, ev.target.value);
+        if (shaped !== ev.target.value) {
+            const end = ev.target.selectionEnd === ev.target.value.length;
+            ev.target.value = shaped;
+            if (end) {
+                ev.target.setSelectionRange(shaped.length, shaped.length);
+            }
+        }
+        delete this.ui.bankErr[f.name];
+        if (f.fmt === "ifsc" && shaped.length >= 4) {
+            this.bankFromIfsc(item, shaped);
+        }
+    }
+    bankFromIfsc(item, ifsc) {
+        const fmt = this.bankFormat(item);
+        if (((item.bank || {}).directory || {})[fmt] !== "prefix") {
+            return;
+        }
+        const name = haveValueOf(this.nh, "bank_name");
+        if (name && !this.ui.bankAuto.bank_name) {
+            return;                                     // typed by hand: never overwritten
+        }
+        const box = this.fieldsOf(item).find((x) => x.name === "bank_name");
+        const hit = ((box && box.options) || []).find((o) => (o.code || "").toUpperCase() === ifsc.slice(0, 4));
+        if (hit && hit.value !== name) {
+            this.ui.bankAuto.bank_name = hit.value;
+            this.api.setHave("bank_name", hit.value);
+        }
+    }
+    /** Singapore, Indonesia: the bank's code from the directory, once picked. */
+    codeFromBank(item, bankName) {
+        const fmt = this.bankFormat(item);
+        if (((item.bank || {}).directory || {})[fmt] !== "bank_code") {
+            return;
+        }
+        const current = haveValueOf(this.nh, "bank_code");
+        if (current && current !== this.ui.bankAuto.bank_code) {
+            return;                                     // typed by hand: never overwritten
+        }
+        const box = this.fieldsOf(item).find((x) => x.name === "bank_name");
+        const hit = ((box && box.options) || []).find((o) => o.value.toLowerCase() === String(bankName || "").trim().toLowerCase());
+        const code = hit && hit.code ? hit.code : "";
+        if (code !== (current || "")) {
+            this.ui.bankAuto.bank_code = code;
+            this.api.setHave("bank_code", code);
+        }
+    }
+    isAutoBank(f) {
+        const v = haveValueOf(this.nh, f.name);
+        return Boolean(v && this.ui.bankAuto[f.name] === v);
+    }
+    autoBankLine(f) {
+        return f.name === "bank_name" ? _t("From the IFSC code") : _t("From the bank");
+    }
+    /** The quick check on leaving a box (the server checks again at Send). */
+    checkBank(f, value) {
+        const v = String(value || "").trim();
+        let msg = "";
+        if (f.kind === "code" && v && !codeOk(f, v)) {
+            msg = f.bad;
+        } else if (f.kind === "account" && v) {
+            const clean = v.replace(/[\s.\-/]/g, "");
+            const okChars = f.letters ? /^[A-Za-z0-9]+$/.test(clean) : /^\d+$/.test(clean);
+            if (!okChars) {
+                msg = f.bad;
+            } else if (clean.length < f.min || clean.length > f.max) {
+                msg = _t("%(hint)s This one has %(n)s.", { hint: f.hint, n: clean.length });
+            }
+        }
+        if (msg) {
+            this.ui.bankErr[f.name] = msg;
+        } else {
+            delete this.ui.bankErr[f.name];
+        }
+    }
+    onValue(f, ev, item) {
         const v = ev.target.value;
+        if (item && item.key === "bank") {
+            if (f.name === "bank_format") {
+                this.ui.bankErr = {};
+                this.api.setHave("bank_format", v);
+                return;
+            }
+            if (f.kind === "code" || f.kind === "account") {
+                const shaped = f.kind === "code" ? shapeCode(f.fmt, v) : v;
+                this.checkBank(f, shaped);
+                if (f.name === "bank_code" && shaped !== this.ui.bankAuto.bank_code) {
+                    delete this.ui.bankAuto.bank_code;
+                }
+                this.api.setHave(f.name, shaped);
+                return;
+            }
+            if (f.name === "bank_name") {
+                if (v !== this.ui.bankAuto.bank_name) {
+                    delete this.ui.bankAuto.bank_name;
+                }
+                this.api.setHave(f.name, v);
+                this.codeFromBank(item, v);
+                return;
+            }
+        }
         if (f.name === "private_phone" && !String(this.d.personal || "").includes("@")
                 && (this.d.have || {}).private_phone === undefined) {
             // one source of truth: step 1's personal phone
@@ -289,6 +430,10 @@ export class StepDocs extends Component {
     inputType(f) { return f.kind === "date" ? "date" : f.kind === "phone" ? "tel" : "text"; }
     listId(f) { return `pbnh-banks-${f.name}`; }
     isRequired(item, f) { return f.required && !(item.key === "bank" && f.name === "account_holder"); }
+    /** P7: the select's value — the bank row's country defaults to the country of work. */
+    selectValue(item, f) {
+        return item.key === "bank" && f.name === "bank_format" ? this.bankFormat(item) : this.value(f);
+    }
 
     // ------------------------------------------------------------ files
     file(item) { return (this.nh.files || {})[item.key] || null; }

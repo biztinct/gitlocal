@@ -12,9 +12,12 @@ whether it may be left out. The product's own tables decide:
                           CHOICE_FIELD and its own kind labels; its own
                           validator (`pb.me.detail.request._pb_check`)
   self-uploadable paper   `pb.employee.document.category.ess_uploadable`
-  bank                    the old Add employee window's keys and checks
-                          (`_pb_bank_choices`, `_pb_bank_problem`), so the
-                          approved apply sends it exactly as before
+  bank                    the bank check's ONE per-country definition
+                          (`pb.bank.format`, pb_bank_ocr — P7): the boxes,
+                          labels, hints and checks of the account's country
+                          (IFSC for India, BSB for Australia …); the approved
+                          apply sends it through the old window's path
+                          (`_pb_send_bank`) with the country and its codes
   file limits             the side panel's own rules and sentences
                           (`pb.people.vault_upload_batch`)
 
@@ -73,6 +76,11 @@ ID_TWIN = {'VN': 'vietnam_citizen_id', 'SG': 'singapore_nric_fin'}
 
 #: The bank keys of the old window (`pb.people.onboard.wizard.BANK_KEYS`).
 BANK_FIELDS = ('bank_name', 'account_number', 'account_holder')
+#: P7: the country of the account and its codes (`BANK_EXTRA_KEYS` of the
+#: old window's path) — screen box name → key of `pb.bank.format.check`.
+BANK_CHECK = {'bank_name': 'bank_name', 'bank_branch': 'bank_branch',
+              'account_holder': 'account_holder', 'account_number': 'account_number',
+              'bank_code': 'bank_code', 'branch_code': 'branch_code', 'bank_swift': 'swift'}
 
 MAX_TEXT = 200
 
@@ -144,22 +152,63 @@ class PbNewHireDocs(models.AbstractModel):
                 'first_pay': [p['label'] for p in papers if p['need'] == 'first_pay']}
 
     @api.model
-    def _bank_options(self, code):
-        """The banks the bank check knows, this country's first (the old
-        window's own list; typing another bank is fine)."""
-        if self.env.context.get('pb_nh_labels_only'):
-            return []                           # the words of an ask need no bank list
-        try:
-            banks = self.env['pb.people.onboard.wizard']._pb_bank_choices()
-        except Exception:                       # noqa: BLE001 — a list, never a gate
-            return []
-        mine = [b for b in banks if b.get('country') == code]
-        return [{'value': b['value'], 'label': b.get('label') or ''} for b in (mine or banks)][:200]
+    def _field(self, name, label, kind='text', required=False, hint='', options=None, **extra):
+        out = {'name': name, 'label': label, 'kind': kind, 'required': bool(required),
+               'hint': hint or '', 'options': options or []}
+        out.update(extra)
+        return out
+
+    # ================================================================ P7: the bank
+    @api.model
+    def _bank_fields(self, spec, choices):
+        """The bank row's boxes for one country's format — built from the
+        bank check's definition, nothing decided here."""
+        out = [self._field('bank_format', _("Bank account in"), 'select', required=True,
+                           options=[{'value': c['code'], 'label': c['name']} for c in choices],
+                           hint=_("The boxes below follow the country of the account.")),
+               self._field('bank_name', _("Bank"), 'bank', required=True,
+                           options=[{'value': b['value'], 'label': b['label'], 'code': b['code']}
+                                    for b in spec['banks']])]
+        if spec['branch']:
+            out.append(self._field('bank_branch', _("Branch"), hint=_("Optional.")))
+        for code in spec['codes']:
+            out.append(self._field(code['key'], code['label'], 'code', required=code['required'],
+                                   hint=code['hint'], fmt=code['kind'], length=code['length'],
+                                   max=code['max'], placeholder=code['placeholder'],
+                                   missing=code['missing'], bad=code['bad']))
+        acc = spec['account']
+        out.append(self._field('account_number', _("Account number"), 'account', required=True,
+                               hint=acc['hint'], min=acc['min'], max=acc['max'],
+                               letters=acc['letters'], bad=acc['bad_chars']))
+        out.append(self._field('account_holder', _("Name on the account"),
+                               hint=_("Left empty, the person's own name is used.")))
+        if spec['swift']:
+            out.append(self._field('bank_swift', spec['swift']['label'], 'code', hint=spec['swift']['hint'],
+                                   fmt='swift', length=11, max=11, placeholder='MBBEMYKL',
+                                   bad=spec['swift']['bad']))
+        return out
 
     @api.model
-    def _field(self, name, label, kind='text', required=False, hint='', options=None):
-        return {'name': name, 'label': label, 'kind': kind, 'required': bool(required),
-                'hint': hint or '', 'options': options or []}
+    def _bank_item_extra(self, code):
+        """`{default, directory, fields: {format: [boxes]}}` — every format's
+        boxes, so the screen switches at once when HR picks another country
+        for the account."""
+        Format = self.env['pb.bank.format']
+        choices = Format.choices()
+        specs = Format.specs(banks=not self.env.context.get('pb_nh_labels_only'))
+        return {'default': Format.spec(code, banks=False)['code'] or code,
+                'directory': {k: v['directory'] for k, v in specs.items()},
+                'fields': {k: self._bank_fields(v, choices) for k, v in specs.items()}}
+
+    @api.model
+    def _bank_format_of(self, have, code):
+        """Which country's format the typed account follows: the one HR
+        picked, else the Country of work."""
+        from odoo.addons.pb_bank_ocr.models.bank_formats import FORMAT_CODES, OTHER
+        chosen = str((have or {}).get('bank_format') or '')
+        if chosen in FORMAT_CODES or chosen == OTHER:
+            return chosen
+        return self.env['pb.bank.format'].spec(code, banks=False)['code'] or OTHER
 
     @api.model
     def _selection_options(self, model, name):
@@ -274,16 +323,13 @@ class PbNewHireDocs(models.AbstractModel):
                  fields=[self._field(f, l) for f, l in ins], can_ask=False,
                  ask_why_not=_("These numbers are kept by HR. Add them now or later on the record."),
                  ask_url='')
-        # 6. the bank account (the old window's keys, so the approved apply
-        #    sends it through the bank change path unchanged)
+        # 6. the bank account, in the format of the account's country (P7:
+        #    the bank check's one definition); the approved apply sends it
+        #    through the old window's path, with the country and its codes
+        bank_extra = self._bank_item_extra(code)
         item('bank', 'details', 'landmark', _("Bank account"),
              _("Where the pay goes. A second person approves it, whoever types it."), 'first_pay',
-             fields=[self._field('bank_name', _("Bank"), 'bank', required=True,
-                                 options=self._bank_options(code)),
-                     self._field('account_number', _("Account number"), required=True,
-                                 hint=_("6 to 19 digits.")),
-                     self._field('account_holder', _("Name on the account"),
-                                 hint=_("Left empty, the person's own name is used."))])
+             fields=bank_extra['fields'][bank_extra['default']], bank=bank_extra)
         # 7. papers of the country (the ID and tax papers are merged above)
         for paper in papers:
             if paper is id_paper or paper is tax_paper:
@@ -549,11 +595,14 @@ class PbNewHireDocs(models.AbstractModel):
                     "Ask %(first)s for it, or add it now.", what=item['label'], first=first))
             if choices[key] not in ('have', NUMBER_ONLY):
                 continue
+            if key == 'bank':
+                refused = self._validate_bank(code, have, first, item)
+                if refused:
+                    return refused
+                continue
             typed = 0
             for field in item['fields']:
                 value = have.get(field['name'])
-                if key == 'bank' and field['name'] == 'account_holder':
-                    continue
                 if _blank(value):
                     if field['required']:
                         return self._refuse('docs', 'have-%s' % field['name'], _(
@@ -561,19 +610,10 @@ class PbNewHireDocs(models.AbstractModel):
                             first=first) if item['can_ask'] else _(
                             "Type the %s, or choose Later.", field['label'].lower()))
                     continue
-                if key == 'bank':
-                    typed += 1
-                    continue
                 _clean, problem = self._check_value(code, field, value)
                 if problem:
                     return self._refuse('docs', 'have-%s' % field['name'], problem)
                 typed += 1
-            if key == 'bank':
-                problem = self.env['pb.people.onboard.wizard']._pb_bank_problem(
-                    self.env['pb.people.onboard.wizard']._pb_bank_entered(
-                        {k: have.get(k) for k in BANK_FIELDS}))
-                if problem:
-                    return self._refuse('docs', 'have-account_number', problem)
             if item['upload'] and choices[key] == 'have':
                 raw, problem = self._file_problem(item, by_key.get(key), total)
                 if problem:
@@ -583,6 +623,37 @@ class PbNewHireDocs(models.AbstractModel):
                 return self._refuse('docs', 'have-%s' % item['fields'][0]['name'], _(
                     "Type at least one of these, or choose another option."))
         return None
+
+    @api.model
+    def _validate_bank(self, code, have, first, item):
+        """The bank row: the bank's name, then the account country's own
+        check (codes, the number's length) — its first sentence, on its box."""
+        if _blank(have.get('bank_name')):
+            return self._refuse('docs', 'have-bank_name', _(
+                "Type the %(what)s, or choose Ask %(first)s.", what=_("Bank").lower(), first=first))
+        fmt = self._bank_format_of(have, code)
+        _clean, problems = self.env['pb.bank.format'].check(
+            fmt, {k: have.get(n) for n, k in BANK_CHECK.items()})
+        if problems:
+            back = {v: n for n, v in BANK_CHECK.items()}
+            key, sentence = next(iter(problems.items()))
+            return self._refuse('docs', 'have-%s' % back.get(key, 'account_number'), sentence)
+        return None
+
+    @api.model
+    def _bank_values(self, code, have, name):
+        """The bank keys of the ONE values dict: the old window's three, as
+        stored by the bank check, and (P7) the country and its codes."""
+        fmt = self._bank_format_of(have, code)
+        clean, _problems = self.env['pb.bank.format'].check(
+            fmt, {k: have.get(n) for n, k in BANK_CHECK.items()})
+        out = {'bank_name': clean['bank_name'], 'account_number': clean['account_number'],
+               'account_holder': clean['account_holder'] or name, 'bank_format': fmt}
+        for box, key in (('bank_branch', 'bank_branch'), ('bank_code', 'bank_code'),
+                         ('branch_code', 'branch_code'), ('bank_swift', 'swift')):
+            if clean.get(key):
+                out[box] = clean[key]
+        return out
 
     @api.model
     def _values_docs(self, d, vals, files=None):
@@ -619,12 +690,7 @@ class PbNewHireDocs(models.AbstractModel):
                 continue
             if choice == 'have':
                 if key == 'bank':
-                    for name in BANK_FIELDS:
-                        value = ' '.join(str(have.get(name) or '').split())[:MAX_TEXT]
-                        if value:
-                            vals[name] = value
-                    if not vals.get('account_holder'):
-                        vals['account_holder'] = vals['name']
+                    vals.update(self._bank_values(code, have, vals['name']))
                 else:
                     for field in item['fields']:
                         value = have.get(field['name'])

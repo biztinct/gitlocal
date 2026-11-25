@@ -211,6 +211,21 @@ export function haveValueOf(nh, name) {
 function blank(v) {
     return v === undefined || v === null || v === false || String(v).trim() === "";
 }
+/** P7: which country's format the bank row follows — the one HR picked,
+ *  else the Country of work's (`item.bank.default`). */
+export function bankFormatOf(nh, item) {
+    const chosen = (nh.draft.have || {}).bank_format;
+    const bank = item.bank || {};
+    return chosen && (bank.fields || {})[chosen] ? chosen : bank.default;
+}
+/** The boxes of a row. P7: the bank row's follow its account's country
+ *  (the bank check's one definition, built on the server). */
+export function docFieldsOf(nh, item) {
+    if (item.key === "bank" && item.bank && item.bank.fields) {
+        return item.bank.fields[bankFormatOf(nh, item)] || item.fields;
+    }
+    return item.fields;
+}
 /** What an "I have it" row still lacks: "" | "fields" | "file" | "again" | "expiry".
  *  P3b: "I have the number" (merged card rows) needs the number only. */
 export function docGapOf(nh, item) {
@@ -218,7 +233,8 @@ export function docGapOf(nh, item) {
     if (choice !== "have" && choice !== "number") {
         return "";
     }
-    const fields = item.fields.filter((f) => !(item.key === "bank" && f.name === "account_holder"));
+    const fields = docFieldsOf(nh, item).filter((f) => !(item.key === "bank"
+        && (f.name === "account_holder" || f.name === "bank_format")));
     const required = fields.filter((f) => f.required);
     if (required.some((f) => blank(haveValueOf(nh, f.name)))) {
         return "fields";
