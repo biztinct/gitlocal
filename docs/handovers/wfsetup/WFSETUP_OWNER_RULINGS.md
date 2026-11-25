@@ -36,3 +36,8 @@
   (backlog, `WFSETUP_BACKLOG.md` B1) — do not design it now.
 - R15 Sign-off: only every overtime entry must be decided (approved or turned down); no weekly timesheet sign-off.
 - R16 27 working days in December with divisor 26: keep as today (no cap).
+- R17 (2026-11-25) Worked public holiday at Sudima: **ask Sudima HR first**; keep 300% (holiday OT only) until they
+  answer. Must be settled before 1 Jan 2027 (first VN holiday in clock months). Checked: scheme 7844 has no holiday
+  formula of its own — VNOTPAY = VNBASEHOUR × VNOTHOURS, VNPREMPAY = VNBASEHOUR × VNPREMHOURS — the multiplier lives in
+  the hours, which come from the clocks from 1 Dec, so the policy rate IS what gets paid. 400% option = add the
+  holiday's day pay for daily-paid workers (monthly-salaried already include it). Backlog B7.

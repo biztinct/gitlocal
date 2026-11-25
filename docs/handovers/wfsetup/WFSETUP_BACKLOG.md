@@ -11,4 +11,4 @@
 - **B5** (P10b) Pay data template: say "From the clocks — leave blank" on clock-answered columns of a clock month.
 - **B6** (P10b) Component editor source card: show "From the clocks — from <date>" as a chip.
 - **B7** (P10b, owner question) A worked public holiday is paid as holiday overtime only (R13 as written); the law adds
-  the holiday's own pay for daily-paid workers.
+  the holiday's own pay for daily-paid workers. Owner 2026-11-25: ask Sudima HR first (R17); keep 300% until then; settle before 1 Jan.
