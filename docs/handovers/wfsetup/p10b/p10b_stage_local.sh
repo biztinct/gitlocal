@@ -6,7 +6,7 @@
 COMMIT=$1; OUT=$2
 MODS="pb_hr_payroll_formula pb_clock pb_attendance_policy pb_payrun_wizard pb_workforce_setup pb_formula_studio pb_blueprint"
 set -e
-D=docs/handovers/wfsetup/p9
+D=docs/handovers/wfsetup/p10b
 rm -rf "$OUT" && mkdir -p "$OUT/commit"
 git archive "$COMMIT" $MODS > "$OUT/p10b_stage.tar"
 tar -xf "$OUT/p10b_stage.tar" -C "$OUT/commit"
