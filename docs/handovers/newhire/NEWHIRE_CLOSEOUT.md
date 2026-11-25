@@ -9,6 +9,11 @@
   Indonesian on all five (`pb_lifecycle` 19.0.1.22.0, `pb_onboarding` 19.0.1.5.0, `pb_assets` 19.0.1.4.0,
   `pb_training` 19.0.1.15.0, `pb_goals` 19.0.1.6.0; `biz_debrand` files only). Running checklists show the steps in
   the reader's language.
+- P7 (owner request 2026-11-25, `NEWHIRE_P7_REPORT.md`): step 2 starts with the Country of work (that country's
+  teams and jobs first, "What this decides" follows it, a team of another country is cleared with Undo); step 5's
+  bank row, the employee's own My Payobook bank page and Bank Verification all show the account country's own
+  boxes (IFSC, BSB, bank / branch code, SWIFT) from ONE definition (`pb_bank_ocr` `pb.bank.format`). Release
+  status: see the P7 report §5.
 - Architect live look after P5b: `/bizapp/add-employee` on payobook.com opens the seven-step studio, console clean.
 - Demo record left on payobook on purpose: "DEMO NH P5b Live Check". Nothing created on the four other sites.
 - `docs/deploy/PENDING.md`: the "pending on the other four" row is removed.
@@ -35,6 +40,9 @@ Owner decisions / setup
 Architect rulings made during the build (reversible): HR's step-6 buddy beats Hiring's; no document reader → bank from
 Hiring defaults to "Ask the person" (reader configured on payobook only); optional "Valid until" for the Hiring ID
 card; older welcome links stay valid after "Send again" until expiry; first payslip example 1–1.5 s accepted.
+P7 owner questions (report §7): label of the first country group; Singapore bank code required or optional; no
+bank file layout yet for Australia / Thailand / Cambodia / Malaysia; rize teams not linked to pay schemes (lists
+built from where people work).
 Not verified live
 - L6 Hiring › "Confirm they joined" → studio (no signed offer waiting on any site; proven locally, P4 walks G4).
 - Approval path on live (the walks added people straight away, no approval step for those logins; proven locally P1–P3).
@@ -42,4 +50,4 @@ Not verified live
 - ~~Contract letter PDF after the other session's PDF change~~ — produced and opened in P6 (see item 8).
 
 ## 3. Cleanup
-Worktrees `gitlocal-worktrees/newhire`, `gitlocal-worktrees/nh-release` and `gitlocal-worktrees/nh-p6` can be removed.
+Worktrees `gitlocal-worktrees/newhire`, `gitlocal-worktrees/nh-release`, `gitlocal-worktrees/nh-p6` and `gitlocal-worktrees/nh-p7` can be removed.

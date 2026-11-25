@@ -10,11 +10,19 @@ for c in env['res.company'].sudo().search([], order='id'):
     bank = people.filtered('pb_bank_on_record')
     ready = bank.filtered(lambda e: e.contract_id and e.contract_id.state == 'open')
     out[c.id] = (len(people), len(bank), len(ready))
-Req = env['pb.bank.change.request'].sudo()
-fmt = 'pb_bank_format' in Req._fields
-waiting = Req.search([('state', 'in', ('draft', 'hr_review', 'finance_review'))])
+# plain SQL for the change requests: on a rehearsal copy the STAGED code may already know the new column
+# while the database (not yet upgraded) does not have it
+env.cr.execute("select count(*) from pb_bank_change_request where state in ('draft','hr_review','finance_review')")
+waiting = env.cr.fetchone()[0]
+env.cr.execute("select count(*) from information_schema.columns where table_name='pb_bank_change_request' "
+               "and column_name='pb_bank_format'")
+if env.cr.fetchone()[0]:
+    env.cr.execute("select count(*) from pb_bank_change_request where state in ('draft','hr_review','finance_review') "
+                   "and pb_bank_format is not null")
+    with_country = env.cr.fetchone()[0]
+else:
+    with_country = 'no field'
 print('PROBE ready per company (people, bank on record, payroll-ready):', out,
       '| totals', tuple(sum(v[i] for v in out.values()) for i in range(3)),
-      '| waiting bank changes', len(waiting),
-      '| with a country', len(waiting.filtered('pb_bank_format')) if fmt else 'no field')
+      '| waiting bank changes', waiting, '| with a country', with_country)
 env.cr.rollback()
