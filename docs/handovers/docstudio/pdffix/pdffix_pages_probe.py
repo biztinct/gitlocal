@@ -39,7 +39,10 @@ elif MODE == 'fix':
             head, tail = dc.pdf_split(p.get('body'))
             out.append(dict(p, body=head, body_tail=tail))
         v['pages'] = out
-        if DPI:
+        if DPI == 'contract':
+            if any('pbdc-' in '%s%s' % (p.get('body') or '', p.get('body_tail') or '') for p in out):
+                v['data_report_dpi'] = 100
+        elif DPI:
             v['data_report_dpi'] = int(DPI)
         return v
     dr.ReportDocLetter._get_report_values = patched
@@ -83,6 +86,16 @@ try:
             open(os.path.join(OUT, 't%d_%s.pdf' % (t.id, lang[:2])), 'wb').write(raw)
             n, lc, lt = info(raw)
             print('PROBE t%d %s %s pages %d lastpage_chars %d | %s' % (t.id, lang[:2], (t.with_context(lang='en_US').name or '')[:28], n, lc, lt), flush=True)
+    exp = env.ref('pb_lifecycle.letter_template_experience', raise_if_not_found=False)
+    if exp:
+        base = str(exp.with_context(lang='en_US').body_html or '')
+        extra = ''.join('<p><strong>Paragraph %d.</strong> This sentence checks that every word of a long '
+                        'letter reaches the page, with <strong>bold words</strong> in the middle and a '
+                        'plain ending word number %d.</p>' % (i, i) for i in range(1, 31))
+        r = DS.sample_pdf(exp.id, {'body': base + extra}, vn.id, 'en_US')
+        if r.get('ok'):
+            raw = base64.b64decode(r['data']); open(os.path.join(OUT, 'long_letter.pdf'), 'wb').write(raw)
+            print('PROBE long_letter pages %d lastpage_chars %d | %s' % info(raw), flush=True)
     if 'pb.contracts' in env:
         for k in env['hr.contract'].sudo().search([('state', '=', 'open'), ('company_id', '=', qa.company_id.id)], order='id', limit=1):
             r = q['pb.contracts'].contract_document_pdf(k.id)
