@@ -17,6 +17,7 @@ T11 the training and goals steps of the same checklist (where installed)
 """
 import os
 import xml.etree.ElementTree as ET
+from unittest.mock import patch
 
 from psycopg2.extras import Json
 
@@ -190,9 +191,15 @@ class TestP6Translations(TransactionCase):
             from odoo.addons.biz_debrand.models.brand import debrand_text  # noqa: F401
         except ImportError:
             self.skipTest('biz_debrand not installed')
-        icp = self.env['ir.config_parameter'].sudo()
-        icp.set_param('biz_debrand.brand_name', 'Acmework')
-        icp.set_param('biz_debrand.product_name', 'Payobook')
+        # Fake the brand lookup: writing the brand settings would refresh biz_debrand's
+        # in-memory brand cache, which a test rollback does not undo (it leaked into
+        # later suites' messages once).
+        brand_mod = 'odoo.addons.biz_debrand.models.brand.'
+        with patch(brand_mod + 'brand_for_env', return_value=('Acmework', 'https://acme.example')), \
+                patch(brand_mod + 'product_for_env', return_value='Payobook'):
+            self._t7_body()
+
+    def _t7_body(self):
         self._english_only('pb_onboarding', ONB)
         shipped = self.words[('pb.journey.template.step,description', 'pb_onboarding.step_rize_buddy', 'vi_VN')][0]
         self.assertIn('Payobook', shipped)
