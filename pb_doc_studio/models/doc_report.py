@@ -11,7 +11,7 @@ paper format), so the company header never runs into the letter.
 """
 from odoo import api, models
 
-from .doc_common import DEFAULT_PAGE, LETTERHEAD_ROOM, MARGINS
+from .doc_common import DEFAULT_PAGE, LETTERHEAD_ROOM, MARGINS, pdf_body
 
 
 class ReportDocLetter(models.AbstractModel):
@@ -25,6 +25,7 @@ class ReportDocLetter(models.AbstractModel):
         if not pages:
             letters = self.env['pb.hr.letter'].browse(docids or []).exists()
             pages = [letter._pbds_pdf_page() for letter in letters]
+        pages = [dict(p, body=pdf_body(p.get('body'))) for p in pages]
         first = pages[0]['page'] if pages else DEFAULT_PAGE
         clean = self.env['pb.doc.studio']._pbds_clean_page(first)
         values = {
