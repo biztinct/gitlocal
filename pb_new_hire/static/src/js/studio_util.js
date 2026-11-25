@@ -12,6 +12,7 @@ import { markup } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { formatFloat } from "@web/core/utils/numbers";
 import { localization } from "@web/core/l10n/localization";
+import { browser } from "@web/core/browser/browser";
 import { ic } from "@pb_import_kit/js/import_icons";
 
 const { DateTime } = luxon;
@@ -179,7 +180,7 @@ export function ownMissingOf(nh) {
  * NH27). The list itself is the server's (`details_options`); these only
  * read the choices and what was typed.
  */
-export const DOC_CHOICES = ["ask", "have", "skip", "later"];
+export const DOC_CHOICES = ["ask", "have", "skip", "later", "number"];
 export const FILE_MIMES = ["image/png", "image/jpeg", "application/pdf"];
 export const FILE_MAX = 10 * 1024 * 1024;
 export const FILES_MAX = 50 * 1024 * 1024;
@@ -190,7 +191,8 @@ export function docItemsOf(nh) {
 export function docChoiceOf(nh, item) {
     const c = (nh.draft.items || {})[item.key];
     if (!DOC_CHOICES.includes(c) || (c === "ask" && !item.can_ask) || (c === "later" && item.can_ask)
-            || (c === "skip" && !item.can_skip) || (c === "have" && !item.can_have)) {
+            || (c === "skip" && !item.can_skip) || (c === "have" && !item.can_have)
+            || (c === "number" && !item.can_number)) {
         return item.default;
     }
     return c;
@@ -209,9 +211,11 @@ export function haveValueOf(nh, name) {
 function blank(v) {
     return v === undefined || v === null || v === false || String(v).trim() === "";
 }
-/** What an "I have it" row still lacks: "" | "fields" | "file" | "again" | "expiry". */
+/** What an "I have it" row still lacks: "" | "fields" | "file" | "again" | "expiry".
+ *  P3b: "I have the number" (merged card rows) needs the number only. */
 export function docGapOf(nh, item) {
-    if (docChoiceOf(nh, item) !== "have") {
+    const choice = docChoiceOf(nh, item);
+    if (choice !== "have" && choice !== "number") {
         return "";
     }
     const fields = item.fields.filter((f) => !(item.key === "bank" && f.name === "account_holder"));
@@ -222,7 +226,7 @@ export function docGapOf(nh, item) {
     if (!required.length && !item.upload && fields.length && fields.every((f) => blank(haveValueOf(nh, f.name)))) {
         return "fields";
     }
-    if (item.upload) {
+    if (item.upload && choice === "have") {
         const meta = (nh.draft.file_meta || {})[item.key];
         if (!(nh.files || {})[item.key]) {
             return meta && meta.name ? "again" : "file";
@@ -236,12 +240,49 @@ export function docGapOf(nh, item) {
 export function docGapsOf(nh) {
     return docItemsOf(nh).filter((i) => docGapOf(nh, i));
 }
+/** How many rows each side gives. "I have the number" counts for both: the
+ *  number is with you, the card is asked. */
 export function docTallyOf(nh) {
     const out = { ask: 0, have: 0, skip: 0, later: 0 };
     for (const item of docItemsOf(nh)) {
-        out[docChoiceOf(nh, item)] += 1;
+        const c = docChoiceOf(nh, item);
+        if (c === "number") {
+            out.ask += 1;
+            out.have += 1;
+        } else {
+            out[c] += 1;
+        }
     }
     return out;
+}
+/** What the new person is asked for: `[{key, label, need}]` — on a
+ *  number-only card row, the card. */
+export function docAskedOf(nh) {
+    const out = [];
+    for (const item of docItemsOf(nh)) {
+        const c = docChoiceOf(nh, item);
+        if (c === "ask") {
+            out.push({ key: item.key, label: item.label, need: item.need, icon: item.icon });
+        } else if (c === "number") {
+            out.push({ key: item.key, label: item.upload.label, need: item.need, icon: item.icon });
+        }
+    }
+    return out;
+}
+
+/**
+ * P3b: put text on the clipboard. True when it got there. Never waits more
+ * than 1.5 s: a browser can leave the promise pending (a tab without focus,
+ * a permission prompt), and then the caller shows the text to copy by hand.
+ */
+export async function copyText(text) {
+    const clip = browser.navigator && browser.navigator.clipboard;
+    if (!clip || !clip.writeText) {
+        return false;
+    }
+    const timeout = new Promise((resolve) => setTimeout(() => resolve(false), 1500));
+    const write = clip.writeText(text).then(() => true, () => false);
+    return Promise.race([write, timeout]);
 }
 
 export function deepClone(value) {

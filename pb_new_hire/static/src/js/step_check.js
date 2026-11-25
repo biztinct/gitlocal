@@ -10,9 +10,10 @@
  * card shows the welcome legs — one green line when all went well, an amber
  * row for each that did not — and "See new joiners".
  */
-import { Component, useState } from "@odoo/owl";
+import { Component, useState, useEffect } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
-import { icon, fmtDay, money, rich, weekNameOf, ownMissingOf, docItemsOf, docChoiceOf, docGapsOf, docTallyOf } from "./studio_util";
+import { icon, fmtDay, money, rich, weekNameOf, ownMissingOf, docItemsOf, docChoiceOf, docGapsOf, docTallyOf,
+         docAskedOf, errorText, copyText } from "./studio_util";
 
 export class StepCheck extends Component {
     static template = "pb_new_hire.StepCheck";
@@ -21,6 +22,17 @@ export class StepCheck extends Component {
     setup() {
         this.icon = icon;
         this.nh = useState(this.props.api.nh);
+        // P3b: the done card of an ADDED person reads the real asks (and
+        // whether the welcome link can be copied here) once
+        this.card = useState({ data: null, busy: false, link: "", hint: "" });
+        useEffect((empId, applied) => {
+            if (applied && empId) {
+                this.loadCard(empId);
+            } else {
+                this.card.data = null;
+                this.card.link = "";
+            }
+        }, () => [this.result && this.result.employee_id, Boolean(this.result && this.result.applied)]);
     }
 
     get api() { return this.props.api; }
@@ -105,10 +117,13 @@ export class StepCheck extends Component {
         const pick = (c) => items.filter((i) => docChoiceOf(this.nh, i) === c).map((i) => i.label);
         const bits = [];
         if (t.ask) {
-            bits.push(_t("Asked: %s", pick("ask").join(", ")));
+            bits.push(_t("Asked: %s", docAskedOf(this.nh).map((a) => a.label).join(", ")));
         }
         if (t.have) {
-            bits.push(_t("With you: %s", pick("have").join(", ")));
+            // a number-only card row: the number is with you
+            const mine = items.filter((i) => ["have", "number"].includes(docChoiceOf(this.nh, i)))
+                .map((i) => (docChoiceOf(this.nh, i) === "number" ? i.fields[0].label : i.label));
+            bits.push(_t("With you: %s", mine.join(", ")));
         }
         if (t.later) {
             bits.push(_t("Later: %s", pick("later").join(", ")));
@@ -201,12 +216,30 @@ export class StepCheck extends Component {
         } else {
             out.push(rich(_t("Bank account: add it from the employee's side panel later.")));
         }
-        const asks = docTallyOf(this.nh).ask;
+        const asks = docAskedOf(this.nh).length;
         if (asks) {
-            out.push(rich(_t("What %(first)s is asked for (%(n)s things) is noted on the record. The welcome message that asks for it comes in the next release."),
-                          { first: this.first, n: String(asks) }));
+            out.push(this.welcomeLine(asks));
         }
         return out;
+    }
+    /** P3b: what really happens to the asks — one welcome message, or why not. */
+    welcomeLine(n) {
+        const d = this.d;
+        const personal = String(d.personal || "").trim();
+        const address = personal.includes("@") ? personal : String(d.work_email || "").trim();
+        const w = this.nh.welcome;
+        const mode = d.login_mode || (w && w.login && w.login.chosen) || "none";
+        const things = n === 1 ? _t("1 thing") : _t("%s things", n);
+        if (mode !== "email" || !address) {
+            return rich(_t("%(first)s has no email sign-in, so no welcome link is sent. The %(things)s to finish wait on My Payobook for when they sign in."),
+                        { first: this.first, things });
+        }
+        if (this.nh.data && this.nh.data.mail_on === false) {
+            return rich(_t("This site does not send email: copy the welcome link from New joiners and send it to %(first)s yourself (%(things)s to finish)."),
+                        { first: this.first, things });
+        }
+        return rich(_t("%(first)s gets the welcome link with %(things)s to finish, at %(address)s."),
+                    { first: this.first, things }, { address });
     }
     /** The next three things of step 6's timeline (after the first day's own row). */
     get head() {
@@ -286,6 +319,84 @@ export class StepCheck extends Component {
         const r = this.result && this.result.result;
         return (r && r.legs_summary) || "";
     }
+    // ------------------------------------------------------------ what was asked (P3b)
+    async loadCard(empId) {
+        this.card.busy = true;
+        try {
+            const res = await this.api.inviteCard(empId);
+            this.card.data = res || null;
+        } catch {
+            this.card.data = null;          // the list from the screen still shows
+        } finally {
+            this.card.busy = false;
+        }
+    }
+    /** `[{key, label, need, state}]`: the server's rows once added, else what the screen asked. */
+    get askedRows() {
+        const asked = this.card.data && this.card.data.asked;
+        if (asked && asked.items) {
+            return asked.items;
+        }
+        return docAskedOf(this.nh).map((a) => ({ ...a, state: "open" }));
+    }
+    get askedIcons() {
+        return Object.fromEntries(docAskedOf(this.nh).map((a) => [a.key, a.icon]));
+    }
+    askedIcon(row) { return this.askedIcons[row.key] || "fileText"; }
+    get askedTitle() { return _t("What %s has been asked for", this.first); }
+    get askedChip() {
+        const rows = this.askedRows;
+        const done = rows.filter((r) => r.state === "done").length;
+        return _t("%(done)s of %(total)s done", { done, total: rows.length });
+    }
+    askedState(row) {
+        if (row.state === "done") {
+            return { cls: "pbnh-chip--ok", icon: "check", text: _t("Done") };
+        }
+        if (row.state === "waiting") {
+            return { cls: "pbnh-chip--p", icon: "hourglass", text: _t("Sent, waiting for HR") };
+        }
+        return { cls: "pbnh-chip--warn", icon: "clock", text: _t("Waiting for %s", this.first) };
+    }
+    needText(row) { return row.need === "first_pay" ? _t("Needed before first pay") : row.need === "joining" ? _t("Asked at joining") : _t("Optional"); }
+    get remindRow() {
+        const on = this.d.remind !== false;
+        return on
+            ? { b: _t("Reminders every 2 days"), s: _t("You are told if anything needed for pay is still missing 3 days before %s.", fmtDay(this.d.date_start)) }
+            : { b: _t("No reminders"), s: _t("Send the link again from New joiners when you want to chase these.") };
+    }
+    get canCopy() {
+        const a = this.card.data && this.card.data.asked;
+        return Boolean(this.result && this.result.applied && a && a.can_copy);
+    }
+    async copyLink() {
+        if (this.card.busy) {
+            return;
+        }
+        this.card.busy = true;
+        try {
+            const res = await this.api.copyLink(this.result.employee_id);
+            if (!res || !res.ok) {
+                this.api.toast((res && res.message) || _t("The link could not be copied."), { kind: "error" });
+                return;
+            }
+            this.card.hint = res.expires_hint || "";
+            const copied = await copyText(res.link);
+            if (copied) {
+                this.card.link = "";
+                this.api.toast(_t("Link copied. %s", res.expires_hint || ""));
+            } else {
+                // no clipboard here: show the link to select and copy by hand
+                this.card.link = res.link;
+            }
+        } catch (e) {
+            this.api.toast(errorText(e), { kind: "error" });
+        } finally {
+            this.card.busy = false;
+        }
+    }
+    selectLink(ev) { ev.target.select(); }
+
     get canSeeJoiners() {
         const f = (this.nh.data && this.nh.data.features) || {};
         return Boolean(this.result && this.result.applied && f.joiners

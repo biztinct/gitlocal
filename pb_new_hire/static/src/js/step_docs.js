@@ -17,8 +17,8 @@
 import { Component, onMounted, onWillUnmount, useRef, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { formatFloat } from "@web/core/utils/numbers";
-import { MODEL, icon, errorText, docItemsOf, docChoiceOf, docGapOf, haveValueOf, docTallyOf,
-         FILE_MIMES, FILE_MAX, FILES_MAX } from "./studio_util";
+import { MODEL, icon, errorText, fmtDay, docItemsOf, docChoiceOf, docGapOf, haveValueOf, docTallyOf,
+         docAskedOf, FILE_MIMES, FILE_MAX, FILES_MAX } from "./studio_util";
 
 const FOCUSABLE = 'button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 let SEQ = 0;
@@ -90,7 +90,7 @@ export class StepDocs extends Component {
     get country() { return (this.docs && this.docs.country_name) || this.api.countryName; }
     get heading() { return _t("Who fills in the rest?"); }
     get intro() {
-        return _t("For each item, choose whether you have it now or %s should give it. What you ask for is noted when the hire is approved.", this.first);
+        return _t("For each item, choose whether you have it now or %s should give it. Anything you ask for goes into one welcome link that works on a phone.", this.first);
     }
     get papersTitle() { return _t("Papers for %s", this.country); }
     get detailsSub() { return _t("What %s gives is checked by HR before it is saved.", this.first); }
@@ -99,10 +99,19 @@ export class StepDocs extends Component {
     // ------------------------------------------------------------ choices
     choice(item) { return docChoiceOf(this.nh, item); }
     options(item) {
-        const ask = { key: "ask", label: _t("Ask %s", this.first), on: item.can_ask, why: item.ask_why_not };
-        const have = { key: "have", label: _t("I have it"), on: item.can_have, why: "" };
         const skip = { key: "skip", label: _t("Not needed"), on: item.can_skip,
                        why: item.can_skip ? "" : _t("Needed before the first pay, so it cannot be left out.") };
+        if (item.can_number) {
+            // P3b (answer a): the card and its number — three answers
+            const out = [
+                { key: "ask", label: _t("Ask for both"), on: item.can_ask, why: item.ask_why_not },
+                { key: "number", label: _t("I have the number"), on: true, why: "" },
+                { key: "have", label: _t("I have both"), on: item.can_have, why: "" },
+            ];
+            return item.can_skip ? [...out, skip] : out;
+        }
+        const ask = { key: "ask", label: _t("Ask %s", this.first), on: item.can_ask, why: item.ask_why_not };
+        const have = { key: "have", label: _t("I have it"), on: item.can_have, why: "" };
         const later = { key: "later", label: _t("Later"), on: true, why: "" };
         return item.can_ask ? [ask, have, skip] : (item.can_skip ? [ask, have, later, skip] : [ask, have, later]);
     }
@@ -112,7 +121,7 @@ export class StepDocs extends Component {
             return;
         }
         this.api.setChoice(item.key, opt.key);
-        if (opt.key === "have") {
+        if (opt.key === "have" || opt.key === "number") {
             this.later(() => this.focusRow(item));
         }
     }
@@ -133,7 +142,7 @@ export class StepDocs extends Component {
         } else if (ev.key === "Enter" && !(ev.metaKey || ev.ctrlKey)) {
             ev.preventDefault();
             ev.stopPropagation();
-            if (this.choice(item) !== "have" && item.can_have) {
+            if (!this.isOpen(item) && item.can_have) {
                 this.api.setChoice(item.key, "have");
             }
             this.later(() => this.focusRow(item));
@@ -163,6 +172,10 @@ export class StepDocs extends Component {
         if (c === "skip") {
             return _t("Not asked for.");
         }
+        if (c === "number" && docGapOf(this.nh, item) !== "fields") {
+            return _t("The number is saved. %(first)s is asked for the %(card)s on My Payobook.",
+                      { first: this.first, card: item.upload.label });
+        }
         const gap = docGapOf(this.nh, item);
         if (gap === "again") {
             return _t("The page was reloaded, so the file is no longer here. Add the file again.");
@@ -180,7 +193,8 @@ export class StepDocs extends Component {
         const gap = docGapOf(this.nh, item);
         return `pbnh-row pbnh-doc is-${c}${gap ? " is-gap" : ""}${gap === "again" ? " is-again" : ""}`;
     }
-    isOpen(item) { return this.choice(item) === "have"; }
+    isOpen(item) { const c = this.choice(item); return c === "have" || c === "number"; }
+    showUpload(item) { return Boolean(item.upload) && this.choice(item) === "have"; }
 
     // ------------------------------------------------------------ presets
     get canAskAll() { return this.items.some((i) => this.choice(i) !== (i.can_ask ? "ask" : "later")); }
@@ -292,18 +306,90 @@ export class StepDocs extends Component {
 
     // ------------------------------------------------------------ summary card
     get tally() { return docTallyOf(this.nh); }
-    get asked() { return this.items.filter((i) => this.choice(i) === "ask"); }
-    get summaryTitle() {
+    /** What the person is asked for (a number-only card row asks the card). */
+    get asked() { return docAskedOf(this.nh); }
+    get day() { return fmtDay(this.d.date_start); }
+    get companyName() { return (this.nh.data && this.nh.data.company && this.nh.data.company.name) || ""; }
+    /** The address the welcome message goes to: the personal email, else the work email. */
+    get address() {
+        const personal = String(this.d.personal || "").trim();
+        return personal.includes("@") ? personal : String(this.d.work_email || "").trim();
+    }
+    get loginMode() {
+        const w = this.nh.welcome;
+        return this.d.login_mode || (w && w.login && w.login.chosen) || (this.address ? "email" : "none");
+    }
+    get mailOn() { return !this.nh.data || this.nh.data.mail_on !== false; }
+    /** none | nobody (no email sign-in) | nomail (site sends no email) | send */
+    get invite() {
+        if (!this.asked.length) {
+            return "none";
+        }
+        if (this.loginMode !== "email" || !this.address) {
+            return "nobody";
+        }
+        return this.mailOn ? "send" : "nomail";
+    }
+    get inviteTitle() {
         const n = this.asked.length;
-        return !n ? _t("Nothing to ask %s for", this.first)
-            : n === 1 ? _t("%s will be asked for 1 thing", this.first)
-            : _t("%(first)s will be asked for %(n)s things", { first: this.first, n });
+        if (!n) {
+            return _t("Nothing to send");
+        }
+        if (this.invite === "nobody") {
+            return n === 1 ? _t("1 thing to finish, no welcome link") : _t("%s things to finish, no welcome link", n);
+        }
+        return n === 1 ? _t("One link, 1 thing to finish") : _t("One link, %s things to finish", n);
     }
-    get summaryLine() {
-        return this.asked.length
-            ? _t("After the hire is approved, %s is asked for these on My Payobook. The welcome message that asks for them is switched on in the next release.", this.first)
-            : _t("You have everything, so %s is not asked for anything before the first day.", this.first);
+    get inviteLine() {
+        const kind = this.invite;
+        if (kind === "none") {
+            return _t("You have everything, so %s is not asked for anything before the first day.", this.first);
+        }
+        if (kind === "nobody") {
+            if (!this.address) {
+                return _t("No email address yet, so no welcome link. Add one in step 1, or %s can finish these after signing in with the employee number.", this.first);
+            }
+            return this.loginMode === "code"
+                ? _t("%s signs in with the employee number, so no welcome link is sent. These are waiting on My Payobook after they sign in.", this.first)
+                : _t("%s has no sign-in yet (step 6), so no welcome link is sent. These wait on My Payobook until a sign-in is made.", this.first);
+        }
+        if (kind === "nomail") {
+            return _t("This site does not send email. After approval, copy the welcome link from New joiners and send it yourself.");
+        }
+        return _t("Sent to %(address)s as soon as the hire is approved. Due before %(day)s.", { address: this.address, day: this.day });
     }
+    get inviteFix() {
+        if (this.invite !== "nobody") {
+            return null;
+        }
+        return !this.address ? { label: _t("Add an email in step 1"), step: "who", field: "personal" }
+            : { label: _t("Change the sign-in in step 6"), step: "welcome", field: false };
+    }
+    goFix() {
+        const fix = this.inviteFix;
+        if (fix) {
+            this.api.go(fix.step, fix.field);
+        }
+    }
+    get passwordLine() { return _t("%s chooses a password the first time.", this.first); }
+    get remindOn() { return this.d.remind !== false; }
+    toggleRemind() { this.api.set("remind", !this.remindOn); }
+    get remindLabel() {
+        return _t("Remind %s every 2 days until it is done, and tell me if it is not done 3 days before the first day.", this.first);
+    }
+    get remindSub() {
+        if (!this.remindOn) {
+            return _t("No reminders. You can still send the link again from New joiners.");
+        }
+        return this.invite === "send" ? ""
+            : _t("Without a welcome link only the note to you 3 days before the first day applies.");
+    }
+    // the phone preview
+    get phoneHi() { return _t("Welcome, %s", this.first); }
+    get phoneDue() { return _t("Please finish these before %s", this.day); }
+    get phoneGo() { return _t("Start · about %s minutes", Math.max(2, Math.round(this.asked.length * 1.5))); }
+    get phoneNone() { return _t("See you on %s.", this.day); }
+    todoStyle(i) { return `animation-delay:${Math.min(i, 12) * 60}ms`; }
 
     // ------------------------------------------------------------ the editor
     get editable() { return Boolean(this.docs && this.docs.papers_editable); }

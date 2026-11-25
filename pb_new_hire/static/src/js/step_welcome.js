@@ -79,7 +79,7 @@ export class StepWelcome extends Component {
         }
     }
     fixLabel(m) {
-        return m.fix === "who" ? _t("Add a work email") : m.fix === "sched" ? _t("Type a clock number") : "";
+        return m.fix === "who" ? _t("Add an email") : m.fix === "sched" ? _t("Type a clock number") : "";
     }
 
     // ------------------------------------------------------------ buddy

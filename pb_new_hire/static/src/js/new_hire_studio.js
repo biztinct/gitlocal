@@ -66,9 +66,11 @@ const P2_KEYS = {
     items: [{}, (d) => ({ ...(d.items || {}) })],
     have: [{}, (d) => ({ ...(d.have || {}) })],
     file_meta: [{}, null],
+    // P3b — step 5's reminders switch
+    remind: [true, (d) => d.remind !== false],
 };
 /** Changing one of these re-builds step 6's options and its timeline. */
-const WELCOME_INPUTS = ["name", "date_start", "work_email", "department_id", "payroll_country", "parent_id",
+const WELCOME_INPUTS = ["name", "date_start", "work_email", "personal", "department_id", "payroll_country", "parent_id",
     "country_id", "contract_kind", "trial_on", "clock_on", "clock_code", "login_mode", "buddy_id",
     "equipment", "open_case"];
 
@@ -149,6 +151,9 @@ export class NewHireStudio extends Component {
             openWorkforceSetup: () => this.openWorkforceSetup(),
             seeJoiners: () => this.seeJoiners(),
             orm: this.orm,
+            // P3b — the welcome link of an added person
+            inviteCard: (employeeId) => this.orm.call("pb.new.hire.invite", "card", [employeeId]),
+            copyLink: (employeeId) => this.orm.call("pb.new.hire.invite", "copy_link", [employeeId]),
             setChoice: (key, choice) => this.setChoices({ [key]: choice }),
             setChoices: (map) => this.setChoices(map),
             setHave: (name, value) => this.setHave(name, value),

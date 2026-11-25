@@ -196,7 +196,7 @@
           <span>Personal email or phone <i>optional</i></span>
           <input id="pbnh-f-personal" type="text" autocomplete="off" placeholder="Email or phone number" t-att-value="d.personal"
                  t-on-input="(ev) => this.onText('personal', ev)"/>
-          <span class="pbnh-why" style="color:var(--pbnh-muted);font-weight:500">Kept on the record as their own contact.</span>
+          <span class="pbnh-why" style="color:var(--pbnh-muted);font-weight:500">Used to send the welcome link before day one.</span>
         </label>
       </div>
     </div>
@@ -660,7 +660,7 @@
             </label>
           </t>
         </div>
-        <t t-if="item.upload">
+        <t t-if="showUpload(item)">
           <div t-if="file(item)" class="pbnh-file">
             <span class="pbnh-file-ic" t-out="icon('fileCheck', 18)"/>
             <span class="pbnh-file-t"><b t-esc="file(item).name"/><small t-esc="size(file(item).size)"/></span>
@@ -732,15 +732,40 @@
         <t t-foreach="papers" t-as="item" t-key="item.key"><t t-call="pb_new_hire.DocRow"/></t>
         <div t-if="!papers.length" class="pbnh-row"><span class="pbnh-empty" style="flex:1">No papers are listed for this country.</span></div>
       </div>
-      <div class="pbnh-card pbnh-pad pbnh-asksum">
-        <span class="pbnh-tile pbnh-tile--teal" t-out="icon(asked.length ? 'send' : 'checkCircle', 18)"/>
-        <div class="pbnh-col" style="gap:4px;flex:1;min-width:0">
-          <h3 t-key="asked.length" t-esc="summaryTitle"/>
-          <p class="pbnh-sub" t-esc="summaryLine"/>
-          <div t-if="asked.length" class="pbnh-asklist">
-            <span t-foreach="asked" t-as="a" t-key="a.key" class="pbnh-chip pbnh-chip--teal" t-esc="a.label"/>
+      <!-- P3b: the invite card. Left, what the person receives; right, the
+           phone preview of the page the link opens. -->
+      <div t-att-class="'pbnh-card pbnh-pad pbnh-invite is-' + invite" role="region" t-att-aria-label="inviteTitle">
+        <div class="pbnh-invite-t">
+          <div>
+            <div class="pbnh-eyebrow">What <t t-esc="first"/> receives</div>
+            <h3 t-key="asked.length" class="pbnh-invite-h" t-esc="inviteTitle"/>
+            <p t-att-class="'pbnh-sub' + (invite === 'nobody' or invite === 'nomail' ? ' pbnh-invite-warn' : '')">
+              <t t-if="invite === 'nobody' or invite === 'nomail'" t-out="icon(invite === 'nomail' ? 'info' : 'alert', 14)"/>
+              <t t-esc="inviteLine"/>
+              <button t-if="inviteFix" type="button" class="pbnh-link" t-on-click="goFix" t-esc="inviteFix.label"/>
+            </p>
           </div>
-          <div class="pbnh-hint pbnh-hint--quiet" style="margin-top:6px"><t t-out="icon('shield', 16)"/><span class="pbnh-hint-t">The bank account still goes to a second person for approval, whoever types it.</span></div>
+          <t t-if="asked.length">
+            <div class="pbnh-invite-row">
+              <button type="button" t-att-class="'pbnh-tog' + (remindOn ? ' is-on' : '')" role="switch" id="pbnh-f-remind"
+                      t-att-aria-checked="remindOn ? 'true' : 'false'" t-att-aria-label="remindLabel" t-on-click="toggleRemind"/>
+              <span class="pbnh-col" style="gap:2px"><span t-esc="remindLabel"/><small t-if="remindSub" class="pbnh-sub" t-esc="remindSub"/></span>
+            </div>
+            <div t-if="invite !== 'nobody'" class="pbnh-invite-row pbnh-invite-key"><t t-out="icon('key', 16)"/><span t-esc="passwordLine"/></div>
+          </t>
+          <div class="pbnh-hint pbnh-hint--quiet"><t t-out="icon('shield', 16)"/><span class="pbnh-hint-t">The bank account still goes to a second person for approval, whoever types it.</span></div>
+        </div>
+        <div class="pbnh-phone" role="img" aria-label="Preview of the welcome page on a phone">
+          <div class="pbnh-phone-scr">
+            <div class="pbnh-phone-lab" t-esc="companyName"/>
+            <div class="pbnh-phone-hi" t-esc="phoneHi"/>
+            <t t-if="asked.length">
+              <div class="pbnh-phone-due" t-esc="phoneDue"/>
+              <div t-foreach="asked" t-as="a" t-key="a.key" class="pbnh-phone-todo" t-att-style="todoStyle(a_index)" t-esc="a.label"/>
+              <div class="pbnh-phone-go" t-esc="phoneGo"/>
+            </t>
+            <div t-else="" class="pbnh-phone-none"><t t-esc="phoneNone"/><br/>Nothing to fill in.</div>
+          </div>
         </div>
       </div>
     </t>
@@ -968,6 +993,35 @@
           </t>
           <button type="button" t-att-class="'pbnh-btn' + (result.applied ? '' : ' pbnh-btn--pri')" t-on-click="() => this.api.again()"><t t-out="icon('userPlus', 16)"/>Add another person</button>
           <button type="button" class="pbnh-btn pbnh-btn--ghost" t-on-click="() => this.api.backToEmployees()"><t t-out="icon('users', 16)"/>Back to Employees</button>
+        </div>
+      </div>
+      <!-- P3b: what the person has been asked for (POC), with the link for sites that send no email -->
+      <div t-if="askedRows.length" class="pbnh-card">
+        <div class="pbnh-cardh pbnh-asked-h">
+          <div>
+            <h3 t-esc="askedTitle"/>
+            <p class="pbnh-sub">You follow this on the New joiners board. Each answer comes to HR to check before it is saved.</p>
+          </div>
+          <span class="pbnh-chip pbnh-chip--p pbnh-num" t-esc="askedChip"/>
+        </div>
+        <div t-foreach="askedRows" t-as="row" t-key="row.key" class="pbnh-row">
+          <span class="pbnh-tile" t-out="icon(askedIcon(row), 17)"/>
+          <div class="pbnh-row-t"><b t-esc="row.label"/><small t-esc="needText(row)"/></div>
+          <span t-att-class="'pbnh-chip ' + askedState(row).cls"><t t-out="icon(askedState(row).icon, 13)"/><t t-esc="askedState(row).text"/></span>
+        </div>
+        <div class="pbnh-row">
+          <span class="pbnh-tile" t-out="icon('send', 17)"/>
+          <div class="pbnh-row-t"><b t-esc="remindRow.b"/><small t-esc="remindRow.s"/></div>
+          <button t-if="canCopy" type="button" class="pbnh-btn pbnh-btn--sm" t-att-disabled="card.busy" t-on-click="copyLink">
+            <t t-out="icon('copy', 14)"/>Copy the welcome link
+          </button>
+        </div>
+        <div t-if="card.link" class="pbnh-row pbnh-col" style="align-items:stretch;gap:6px">
+          <label class="pbnh-f" style="width:100%">
+            <span>Copy this link and send it to <t t-esc="first"/></span>
+            <input type="text" readonly="readonly" t-att-value="card.link" t-on-focus="selectLink" t-on-click="selectLink"/>
+          </label>
+          <small class="pbnh-sub" t-esc="card.hint"/>
         </div>
       </div>
     </t>

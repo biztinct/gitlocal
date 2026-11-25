@@ -405,9 +405,31 @@
     .pbnh-file-x { border: 0; background: transparent; color: var(--pbnh-muted); border-radius: 8px; padding: 6px; display: grid; place-items: center; }
     .pbnh-file-x:hover { background: rgba(0, 0, 0, .06); color: var(--pbnh-ink); }
     .pbnh-file-dates { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
-    .pbnh-asksum { display: flex; gap: 14px; align-items: flex-start; }
-    .pbnh-asksum h3 { animation: pbnh-land .25s ease-out; }
-    .pbnh-asklist { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+    // P3b: the invite card (POC `.invite` / `.phone`)
+    .pbnh-invite { display: grid; grid-template-columns: minmax(0, 1fr) 230px; gap: 20px; align-items: start; }
+    .pbnh-invite-t { padding-top: 6px; }
+    .pbnh-invite-t { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+    .pbnh-invite-h { font-size: 18px; margin-top: 2px; animation: pbnh-land .25s ease-out; }
+    .pbnh-invite .pbnh-sub { margin-top: 4px; }
+    .pbnh-invite-warn { color: var(--pbnh-warn); display: block; }
+    .pbnh-invite-warn svg { vertical-align: -2px; margin-right: 4px; }
+    .pbnh-invite-warn .pbnh-link { margin-left: 6px; }
+    .pbnh-invite-row { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; }
+    .pbnh-invite-row .pbnh-tog { margin-top: 1px; }
+    .pbnh-invite-key { color: var(--pbnh-muted); align-items: center; }
+    .pbnh-invite-key svg { color: var(--pbnh-p); }
+    .pbnh-phone { background: var(--pbnh-p-dark); border-radius: 30px; padding: 9px; box-shadow: 0 18px 40px rgba(36, 31, 82, .28); }
+    .pbnh-phone-scr { background: var(--pbnh-canvas); border-radius: 22px; padding: 16px 13px 13px; display: flex; flex-direction: column; gap: 9px; min-height: 330px; }
+    .pbnh-phone-lab { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--pbnh-faint); }
+    .pbnh-phone-hi { font: 800 16px/1.2 var(--pbnh-display); }
+    .pbnh-phone-due { font-size: 12px; color: var(--pbnh-muted); }
+    .pbnh-phone-todo { background: var(--pbnh-card); border-radius: 10px; padding: 8px 10px; display: flex; gap: 8px; align-items: center; font-size: 12px; font-weight: 500; animation: pbnh-rise .25s ease-out both; }
+    .pbnh-phone-todo::before { content: ""; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--pbnh-p-light); flex: none; }
+    .pbnh-phone-go { margin-top: auto; background: var(--pbnh-p); color: #fff; border-radius: 10px; text-align: center; padding: 9px; font-weight: 600; font-size: 12.5px; }
+    .pbnh-phone-none { color: var(--pbnh-muted); font-size: 12px; text-align: center; margin: auto; }
+    .pbnh-invite.is-nobody .pbnh-phone, .pbnh-invite.is-nomail .pbnh-phone { opacity: .78; }
+    // the done card: what the person has been asked for
+    .pbnh-asked-h { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; }
     .pbnh-ready .is-p { color: var(--pbnh-teal); }
     .pbnh-split { display: flex; height: 8px; border-radius: 9px; overflow: hidden; background: var(--pbnh-line2); }
     .pbnh-split i { display: block; transition: flex .35s ease-out; }
@@ -591,6 +613,8 @@
         .pbnh-doc-in, .pbnh-doc > .pbnh-ferr { padding-left: 0; }
         .pbnh-doc .pbnh-seg { width: 100%; }
         .pbnh-presets { width: 100%; }
+        .pbnh-invite { grid-template-columns: minmax(0, 1fr); }
+        .pbnh-phone { max-width: 250px; margin: 0 auto; width: 100%; }
     }
     @media (prefers-reduced-motion: reduce) {
         *, *::before, *::after { animation: none !important; transition: none !important; }
