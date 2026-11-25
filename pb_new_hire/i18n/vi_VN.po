@@ -6333,3 +6333,13 @@ msgstr "Quốc gia của công ty bạn"
 #: code:addons/pb_new_hire/static/src/js/step_role.js:0
 msgid "Your last choice"
 msgstr "Lựa chọn gần nhất của bạn"
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid ""
+"The bank paper was read, but one thing is missing: %s Open it in Bank "
+"requests to finish."
+msgstr ""
+"Giấy tờ ngân hàng đã được đọc, nhưng còn thiếu một thứ: %s Mở nó trong Yêu "
+"cầu ngân hàng để hoàn tất."

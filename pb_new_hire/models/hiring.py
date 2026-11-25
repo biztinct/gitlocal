@@ -579,14 +579,19 @@ class PbNewHireLegsHiring(models.AbstractModel):
         entered = Wizard._pb_bank_entered({'bank_name': req.x_bank_name or '',
                                            'account_number': req.x_account_number or '',
                                            'account_holder': req.x_account_name or ''})
-        if req.x_account_number and entered and not Wizard._pb_bank_problem(entered):
+        # P7: the request follows the person's Country of Work (an IFSC for
+        # India, a bank code for Singapore …): what the paper did not show is
+        # said, never invented
+        problem = req._pb_format_problem() if hasattr(req, '_pb_format_problem') and req.x_account_number \
+            else ''
+        if req.x_account_number and entered and not problem and not Wizard._pb_bank_problem(entered):
             try:
                 with self.env.cr.savepoint():
                     Bank.do_action(rid, 'submit')
-                return True, req
+                return True, req, ''
             except Exception:                   # noqa: BLE001 — stays a draft to finish
                 _logger.info('new hire: the Hiring bank request %s was not sent', rid, exc_info=True)
-        return False, req
+        return False, req, problem
 
     # ================================================================ the files
     @api.model
@@ -609,9 +614,12 @@ class PbNewHireLegsHiring(models.AbstractModel):
                     photo = True
                 continue
             if key == 'bank' and values.get('pb_nh_hiring_bank') and 'pb.bank.ocr' in self.env:
-                sent, _req = self._hiring_bank(employee, att)
+                sent, _req, missing = self._hiring_bank(employee, att)
                 if sent:
                     bank_text = _("bank account from the Hiring paper, waiting for a second approval")
+                elif missing:
+                    amber = _("The bank paper was read, but one thing is missing: %s Open it in Bank "
+                              "requests to finish.", missing)
                 else:
                     amber = _("The bank paper came across but could not be read. Open it in Bank "
                               "requests to finish.")

@@ -178,8 +178,9 @@ class TestFromHiring(WelcomeCommon):
 
     def test_h3_h5_apply_and_close(self):
         def readable(this):
+            # P7: a Singapore paper shows the bank's 4-digit code (the reader fills it, B6)
             this.write({'x_bank_name': 'DEMO Bank', 'x_account_number': '123456789012',
-                        'x_account_name': 'DEMO NH Candidate One'})
+                        'x_account_name': 'DEMO NH Candidate One', 'x_bank_code': '7171'})
         before = {m: self.env[m].sudo().search_count([]) for m in ('hr.contract', 'pb.journey.case')}
         originals = self.offer.docreq_ids.item_ids.mapped('attachment_id')
         sent, emp = self._approved(self.offer, ocr=readable, login_mode='email',
@@ -410,8 +411,9 @@ class TestFromHiring(WelcomeCommon):
         self.assertEqual(bad['field'], 'hiring_valid_until')
 
         def readable(this):
+            # P7: a Singapore paper shows the bank's 4-digit code (the reader fills it, B6)
             this.write({'x_bank_name': 'DEMO Bank', 'x_account_number': '123456789012',
-                        'x_account_name': 'DEMO NH Candidate One'})
+                        'x_account_name': 'DEMO NH Candidate One', 'x_bank_code': '7171'})
         sent, emp = self._approved(self.offer, ocr=readable, hiring_valid_until='2031-05-31')
         leg = self.legs(sent)['hiring']
         self.assertTrue(leg['ok'], leg)
@@ -419,3 +421,18 @@ class TestFromHiring(WelcomeCommon):
             [('employee_id', '=', emp.id), ('category_id', '=', id_cat.id)])
         self.assertEqual(len(card), 1, 'filed in its own kind of paper')
         self.assertEqual(card.expiry_date, date(2031, 5, 31))
+
+    def test_p7_bank_paper_without_the_country_code(self):
+        """P7: a Singapore paper read without the bank code (an unknown bank)
+        is not sent; the leg says what is missing, in the bank check's words."""
+        def readable(this):
+            this.write({'x_bank_name': 'DEMO Bank', 'x_account_number': '123456789012',
+                        'x_account_name': 'DEMO NH Candidate One'})
+        sent, emp = self._approved(self.offer, ocr=readable, hiring_valid_until='2031-05-31')
+        leg = self.legs(sent)['hiring']
+        self.assertFalse(leg['ok'], leg)
+        self.assertIn('The bank paper was read, but one thing is missing: Type the 4-digit bank code.',
+                      leg['message'])
+        req = self.env['pb.bank.change.request'].sudo().search([('employee_id', '=', emp.id)])
+        self.assertEqual((req.state, req.pb_bank_format), ('draft', 'SG'))
+
