@@ -26,7 +26,14 @@ result() { echo "$1" > $EV/golive.result; }
 rm -f $EV/golive.result
 exec 9>>/tmp/payobook-studio-deploy.lock
 flock -n 9 || { log "lock busy - refused, nothing changed"; result REFUSED-LOCK; exit 0; }
-echo "$TAG $(date -u '+%Y-%m-%d %H:%M:%S UTC') pid $$ (go-live)" >&9
+# other deployers mark the lock by writing their name into the file (and removing it after)
+HOLDER=$(head -c 200 /tmp/payobook-studio-deploy.lock | tr -d '\0')
+if [ -n "$HOLDER" ] && ! echo "$HOLDER" | grep -q "^$TAG"; then
+  log "lock file names another holder ($HOLDER) - refused, nothing changed"; result REFUSED-LOCK; exit 0
+fi
+: > /tmp/payobook-studio-deploy.lock
+echo "$TAG $(date -u '+%Y-%m-%d %H:%M:%S UTC') pid $$ (go-live)" > /tmp/payobook-studio-deploy.lock
+trap ': > /tmp/payobook-studio-deploy.lock; rm -f /tmp/payobook-studio-deploy.lock' EXIT
 notes_ok() {
   python3 - "$TAG" > $EV/notes-check.txt <<'PY'
 import re, sys, datetime
