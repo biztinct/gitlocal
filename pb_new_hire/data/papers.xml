@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- NEWHIRE P3a: the usual papers a new person is asked for, per country of
      work (handover §2.2). Existing categories only. noupdate: a company
-     changes its own list from step 5, never these rows. -->
+     changes its own list from step 5, never these rows. P3b: every row has
+     its own plain label, so no stock category name ("Degree / Certificate")
+     reaches a screen; databases that already hold the rows get the labels
+     from migrations/19.0.1.3.0. -->
 <odoo>
     <data noupdate="1">
         <!-- Indonesia -->
@@ -39,6 +42,7 @@
         <record id="paper_vn_cert" model="pb.new.hire.paper">
             <field name="category_id" ref="pb_employee_vault.cat_certificate"/>
             <field name="country_code">VN</field><field name="need">optional</field>
+            <field name="label">Highest certificate</field>
             <field name="sequence">30</field>
         </record>
         <!-- India -->
@@ -55,6 +59,7 @@
         <record id="paper_in_cert" model="pb.new.hire.paper">
             <field name="category_id" ref="pb_employee_vault.cat_certificate"/>
             <field name="country_code">IN</field><field name="need">optional</field>
+            <field name="label">Highest certificate</field>
             <field name="sequence">30</field>
         </record>
         <!-- Singapore -->
@@ -66,6 +71,7 @@
         <record id="paper_sg_cert" model="pb.new.hire.paper">
             <field name="category_id" ref="pb_employee_vault.cat_certificate"/>
             <field name="country_code">SG</field><field name="need">optional</field>
+            <field name="label">Highest certificate</field>
             <field name="sequence">20</field>
         </record>
         <!-- Malaysia -->
@@ -77,6 +83,7 @@
         <record id="paper_my_cert" model="pb.new.hire.paper">
             <field name="category_id" ref="pb_employee_vault.cat_certificate"/>
             <field name="country_code">MY</field><field name="need">optional</field>
+            <field name="label">Highest certificate</field>
             <field name="sequence">20</field>
         </record>
     </data>

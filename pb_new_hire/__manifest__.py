@@ -16,7 +16,11 @@ add"; P2 adds step 4 (schedule and time off) and step 6 (welcome and first
 day) and the welcome legs that run after approval (`models/welcome_legs.py`);
 P3a adds step 5 (details and documents): the papers needed per country of
 work (`pb.new.hire.paper`), HR's "I have it" entry, and the record of what
-the new person will be asked (`pb.new.hire.ask`, sent in P3b).
+the new person will be asked (`pb.new.hire.ask`). P3b sends it: the welcome
+message with the standard sign-up link (`models/invite.py`), the page it
+lands on (`/my/welcome`, `controllers/welcome.py`), the row on the My
+Payobook home, reminders inside the one lifecycle job, and what each person
+was asked on the New joiners board (`models/joiners.py`).
 
 Nothing is written before Send. Send builds ONE values dict and proposes it
 through the existing new-hire approval (`pb.newhire.proposal`, kind
@@ -28,7 +32,7 @@ Callers that do not send them are untouched.
 The old door (`pb_onboard_wizard` tag) opens this studio wherever this module
 is installed (`static/src/js/takeover.js`).
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -57,12 +61,16 @@ is installed (`static/src/js/takeover.js`).
         'pb_me_tax',                # tax kinds per country, their fields and checks
         'pb_bank_ocr',              # the bank change path a second person approves
         'pb_employee_bank_panel',   # bank on record (Payroll-ready)
+        # P3b — the welcome link is the standard sign-up invitation
+        'auth_signup',
     ],
     'data': [
         'security/ir.model.access.csv',
         'security/rules.xml',
         'data/papers.xml',
+        'data/mail_template.xml',
         'views/studio_action.xml',
+        'views/welcome_templates.xml',
     ],
     'assets': {
         'web.assets_backend': [
@@ -80,6 +88,13 @@ is installed (`static/src/js/takeover.js`).
             'pb_new_hire/static/src/js/new_hire_studio.js',
             'pb_new_hire/static/src/js/takeover.js',
             'pb_new_hire/static/src/xml/new_hire_studio.xml',
+            # P3b — the New joiners board (patched, never edited)
+            'pb_new_hire/static/src/scss/joiners_board.scss',
+            'pb_new_hire/static/src/js/joiners_board.js',
+            'pb_new_hire/static/src/xml/joiners_board.xml',
+        ],
+        'web.assets_frontend': [
+            'pb_new_hire/static/src/scss/welcome_page.scss',
         ],
     },
     'installable': True,

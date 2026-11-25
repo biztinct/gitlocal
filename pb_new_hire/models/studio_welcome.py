@@ -316,9 +316,20 @@ class PbNewHireWelcome(models.AbstractModel):
         return code if d.get('clock_on') and code else ''
 
     @api.model
+    def _personal_email(self, d):
+        """Step 1's personal contact when it is an email (P3b §2.1)."""
+        personal = str(d.get('personal') or '').strip()
+        return personal if '@' in personal else ''
+
+    @api.model
+    def _login_address(self, d):
+        """The sign-in's address: the work email, else the personal one."""
+        return (d.get('work_email') or '').strip() or self._personal_email(d)
+
+    @api.model
     def _login_modes(self, d, case_ok, approval_needs):
         first = self._first_of(d.get('name'))
-        email = (d.get('work_email') or '').strip()
+        email = self._login_address(d)
         code = self._clock_of(d)
         param = self.env['ir.config_parameter'].sudo().get_param(
             'pb_zoho_bridge.auto_create_logins', '1')
@@ -327,15 +338,17 @@ class PbNewHireWelcome(models.AbstractModel):
         # email: `_auto_create_login` (Hiring's), the invitation sent on day one
         if not email:
             modes.append({'key': 'email', 'label': _("Email invitation"), 'available': False,
-                          'why_not': _("Add a work email in step 1, or use the employee number."),
+                          'why_not': _("Add a work or personal email in step 1, or use the employee "
+                                       "number."),
                           'sub': '', 'fix': 'who'})
         elif not email_on:
             modes.append({'key': 'email', 'label': _("Email invitation"), 'available': False,
                           'why_not': _("Email sign-ins are switched off here."), 'sub': ''})
         else:
-            sub = _("An invitation goes to %s on the first day.", email) if case_ok else _(
-                "A sign-in is made for %s. No invitation is sent, because the joining "
-                "checklist is what sends it.", email)
+            # P3b: the sign-in's address is named; the welcome message (step
+            # 5) is what carries the link before the first day
+            sub = _("Signs in with %s. The sign-in details also go there on the first day.",
+                    email) if case_ok else _("Signs in with %s.", email)
             modes.append({'key': 'email', 'label': _("Email invitation"), 'available': True,
                           'why_not': '', 'sub': sub})
         # code: `create_worker_logins` — the login is the clock number
@@ -620,7 +633,7 @@ class PbNewHireWelcome(models.AbstractModel):
             pulse_days = set()
         ctx = {
             'first': first, 'start': start, 'login': mode,
-            'email': (d.get('work_email') or '').strip(), 'code': self._clock_of(d),
+            'email': self._login_address(d), 'code': self._clock_of(d),
             'manager': self._person(d.get('parent_id')),
             'buddy': self._person(d.get('buddy_id')) if open_case else self.env['hr.employee'],
             'equipment_names': names, 'open_case': open_case, 'trial': trial,
@@ -659,9 +672,9 @@ class PbNewHireWelcome(models.AbstractModel):
             return self._refuse('sched', 'clock_code',
                                 _("A clock number has at most %s characters.", MAX_CLOCK))
         mode = d.get('login_mode')
-        if mode == 'email' and not (d.get('work_email') or '').strip():
+        if mode == 'email' and not self._login_address(d):
             return self._refuse('welcome', 'login_mode', _(
-                "An email invitation needs a work email. Add one in step 1, or choose another "
+                "An email invitation needs an email address. Add one in step 1, or choose another "
                 "sign-in."))
         if mode == 'code' and not code:
             return self._refuse('welcome', 'login_mode', _(
@@ -727,7 +740,7 @@ class PbNewHireWelcome(models.AbstractModel):
         if own_out:
             vals['own_fields'] = own_out
             names['own'] = own_names
-        email = (d.get('work_email') or '').strip()
+        email = self._login_address(d)
         mode = d.get('login_mode') if d.get('login_mode') in LOGIN_MODES else ''
         if not mode:
             param = self.env['ir.config_parameter'].sudo().get_param(

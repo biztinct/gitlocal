@@ -60,8 +60,10 @@ DRAFT_KEYS = (
     # P2 — step 3's category, step 4 and step 6
     'type_id', 'week_id', 'late_group', 'clock_on', 'clock_code', 'login_mode',
     'buddy_id', 'equipment', 'letter', 'open_case', 'own',
-    # P3a — step 5: {item key: ask|have|skip|later} and the typed values
+    # P3a — step 5: {item key: ask|have|skip|later|number} and the typed values
     'items', 'have',
+    # P3b — step 5's reminders switch
+    'remind',
 )
 
 _EMAIL = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
@@ -318,6 +320,8 @@ class PbNewHire(models.AbstractModel):
             'nationalities': nationalities,
             'approval': self._approval_info(),
             'features': self._features(),
+            # P3b: does this site send email (step 5's invite card)
+            'mail_on': self.env['pb.new.hire.invite']._mail_on(),
             'draft': draft,
         }
 

@@ -98,7 +98,31 @@ class PbNewHirePaper(models.Model):
                                         ('company_id', '=', False)], limit=1)
             if usual.label:
                 return usual.label
-        return self.category_id.name or ''
+        return self.plain_name(self.category_id)
+
+    @api.model
+    def plain_name(self, category):
+        """What a paper is called on screen when nobody gave it a word: a
+        plain name for the shipped categories (P3b, architect answer c —
+        never "Degree / Certificate" or "ID Document"), else the category's
+        own name (a company's own category is named by that company)."""
+        words = {
+            'pb_employee_vault.cat_id_document': _("Identity card"),
+            'pb_employee_vault.cat_certificate': _("Highest certificate"),
+            'pb_employee_vault.cat_health_check': _("Health check"),
+            'pb_employee_vault.cat_work_permit': _("Work permit"),
+            'pb_employee_vault.cat_other': _("Other paper"),
+            'pb_employee_vault.cat_resume': _("CV"),
+            'pb_employee_vault.cat_offer_letter': _("Offer letter"),
+            'pb_employee_vault.cat_labor_contract': _("Signed contract"),
+            'pb_me_tax.cat_tax_paper': _("Tax card"),
+            'pb_training.cat_licence': _("Licence"),
+        }
+        for xmlid, word in words.items():
+            ref = self.env.ref(xmlid, raise_if_not_found=False)
+            if ref and ref == category:
+                return word
+        return category.name or ''
 
     # ------------------------------------------------------------ the editor
     @api.model

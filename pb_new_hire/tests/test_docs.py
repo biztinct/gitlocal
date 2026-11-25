@@ -320,7 +320,8 @@ class TestPapersHeld(DocsCommon):
         doc = self.env['pb.employee.document'].sudo().search(
             [('employee_id', '=', emp.id), ('category_id', '=', self.cat_cert.id)])
         self.assertEqual(len(doc), 1)
-        self.assertEqual(doc.name, self.cat_cert.name, 'Singapore lists it by its own name')
+        # P3b (architect answer c): every paper row has a plain label
+        self.assertEqual(doc.name, 'Highest certificate', 'Singapore lists it by its plain name')
         self.assertFalse(doc.verified, 'HR verifies it on the record')
         self.assertEqual(base64.b64decode(doc.attachment_id.datas), base64.b64decode(PNG))
         self.assertFalse(held.exists(), 'the held file is gone')

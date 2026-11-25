@@ -53,6 +53,18 @@ DETAIL_FIELDS = (
 )
 
 
+#: Employee field → the running contract's own copy of it (FACTS_ONBOARD
+#: §E). The VN tax code is pb_me_tax's precedent; the HR-kept numbers follow
+#: it (P3b, architect answer b). Written only where the contract has the field.
+CONTRACT_COPY = (
+    ('vietnam_tax_code', 'vietnam_tax_code'),
+    ('vietnam_social_insurance_number', 'vietnam_social_insurance_number'),
+    ('pb_in_uan_number', 'uan_number'),
+    ('pb_in_esi_number', 'esi_number'),
+    ('singapore_nric_fin', 'singapore_nric_fin'),
+)
+
+
 def _int(value):
     try:
         return int(value or 0)
@@ -113,11 +125,15 @@ class PbNewHireLegsDocs(models.AbstractModel):
             write[twin] = write['identification_id']
         if write:
             employee.with_context(tracking_disable=True).write(write)
-        tax = write.get('vietnam_tax_code')
+        # the running contract's own copies (the VN tax code as pb_me_tax's
+        # approval copies it; P3b answer b: the HR-kept numbers too)
         contract = state.get('contract')
-        if tax and contract and 'vietnam_tax_code' in contract._fields \
-                and contract.vietnam_tax_code != tax:
-            contract.sudo().with_context(mail_notrack=True).write({'vietnam_tax_code': tax})
+        if contract:
+            copy = {theirs: write[mine] for mine, theirs in CONTRACT_COPY
+                    if write.get(mine) and theirs in contract._fields
+                    and contract[theirs] != write[mine]}
+            if copy:
+                contract.sudo().with_context(mail_notrack=True, tracking_disable=True).write(copy)
         if refused:
             raise LegFailed('; '.join(refused))
         n = len([k for k in write if k != twin])

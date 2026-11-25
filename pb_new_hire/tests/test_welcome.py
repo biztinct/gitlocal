@@ -528,6 +528,11 @@ class TestStepSix(WelcomeCommon):
         """Rail 3: list every mail and activity the full welcome makes at apply."""
         self.pay_manager(self.maker)
         self.fast_lane()
+        # P3b: this site sends email (an outgoing server that goes nowhere —
+        # nothing is sent by the suite), so the welcome message is queued too
+        self.env['ir.mail_server'].sudo().create({
+            'name': 'DEMO NH nowhere', 'smtp_host': '127.0.0.1', 'smtp_port': 1025,
+            'smtp_encryption': 'none'})
         mails = self.env['mail.mail'].sudo().search([]).ids
         acts = self.env['mail.activity'].sudo().search([]).ids
         out = self.studio().send(self.welcome_draft(buddy_id=self.mentor.id,
@@ -551,7 +556,9 @@ class TestStepSix(WelcomeCommon):
             t = self.env.ref(xmlid, raise_if_not_found=False)
             if t:
                 buddy_subjects.add((t.subject or '')[:10])
-        self.assertLessEqual(len(new_mails), 2, 'only the two buddy mails Hiring also sends')
+        welcome = new_mails.filtered(lambda m: 'a few things before' in (m.subject or ''))
+        self.assertEqual(len(welcome), 1, 'P3b: one welcome message with the asks')
+        self.assertLessEqual(len(new_mails - welcome), 2, 'only the two buddy mails Hiring also sends')
         legs = self.legs(out)
         self.assertTrue(all(leg['ok'] for leg in legs.values()), legs)
         self.assertTrue(out['result']['legs_summary'].startswith('Ready: '))

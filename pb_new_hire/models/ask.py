@@ -20,7 +20,7 @@ own `state` / `done_on` (sudo, so a reader with read-only rights may call it).
 """
 import logging
 
-from odoo import api, fields, models
+from odoo import _, api, fields, models
 
 _logger = logging.getLogger(__name__)
 
@@ -36,6 +36,9 @@ FIELD_DONE = {
     'emergency': ('emergency_contact', 'emergency_phone'),
     'id_number': ('identification_id',),
 }
+
+#: The joining checklist step the asks finish (pb_onboarding's template).
+DETAILS_STEP = 'pb_onboarding.step_rize_data'
 
 #: The tax kinds a new person may be asked for (pb_me_tax KINDS_BY_COUNTRY).
 TAX_KEYS = ('tax_number', 'tax_status', 'tax_regime', 'tax_fund')
@@ -65,27 +68,38 @@ class PbNewHireAsk(models.Model):
     _one_ask = models.UniqueIndex('(employee_id, key)', 'Each thing is asked for once.')
 
     # ================================================================ refresh
-    def _open_requests(self, employee):
-        """The open requests of this person in the product's own flows,
-        read once for every row of that person."""
+    def _open_requests(self, employees):
+        """`{employee id: {profile, detail:set(kinds), bank}}` — the open
+        requests of these people in the product's own flows, ONE search per
+        flow for all of them (P3b: the New joiners board reads many people)."""
         env = self.env
-        out = {'profile': False, 'detail': set(), 'bank': False}
+        ids = employees.ids
+        out = {i: {'profile': False, 'detail': set(), 'bank': False} for i in ids}
+        if not ids:
+            return out
         if 'pb.profile.change.request' in env:
-            out['profile'] = bool(env['pb.profile.change.request'].sudo().search_count(
-                [('employee_id', '=', employee.id), ('state', '=', 'hr_review')], limit=1))
+            for row in env['pb.profile.change.request'].sudo().search_read(
+                    [('employee_id', 'in', ids), ('state', '=', 'hr_review')], ['employee_id']):
+                out[row['employee_id'][0]]['profile'] = True
         if 'pb.me.detail.request' in env:
-            rows = env['pb.me.detail.request'].sudo().search(
-                [('employee_id', '=', employee.id), ('state', '=', 'hr_review')])
-            out['detail'] = set(rows.mapped('kind'))
+            for row in env['pb.me.detail.request'].sudo().search_read(
+                    [('employee_id', 'in', ids), ('state', '=', 'hr_review')], ['employee_id', 'kind']):
+                out[row['employee_id'][0]]['detail'].add(row['kind'])
         if 'pb.bank.change.request' in env:
-            out['bank'] = bool(env['pb.bank.change.request'].sudo().search_count(
-                [('employee_id', '=', employee.id),
-                 ('state', 'in', ('hr_review', 'finance_review'))], limit=1))
+            for row in env['pb.bank.change.request'].sudo().search_read(
+                    [('employee_id', 'in', ids),
+                     ('state', 'in', ('hr_review', 'finance_review'))], ['employee_id']):
+                out[row['employee_id'][0]]['bank'] = True
         return out
 
-    def _has_paper(self, employee, category):
-        return bool(self.env['pb.employee.document'].sudo().search_count(
-            [('employee_id', '=', employee.id), ('category_id', '=', category.id)], limit=1))
+    def _papers(self, employees, categories):
+        """`{(employee id, category id)}` of the papers these people have."""
+        if not employees or not categories:
+            return set()
+        rows = self.env['pb.employee.document'].sudo().search_read(
+            [('employee_id', 'in', employees.ids), ('category_id', 'in', categories.ids)],
+            ['employee_id', 'category_id'])
+        return {(r['employee_id'][0], r['category_id'][0]) for r in rows}
 
     def _tax_field(self, employee):
         """The employee field a tax kind of this person is kept in."""
@@ -101,12 +115,15 @@ class PbNewHireAsk(models.Model):
             'tax_fund': CHOICE_FIELD.get(('tax_fund', code)),
         }
 
-    def _state_of(self, row, employee, open_req, tax_fields):
+    def _state_of(self, row, employee, open_req, tax_fields, papers):
         emp = employee
         key = row.key
 
         def filled(*names):
             return all(n in emp._fields and emp[n] for n in names)
+
+        def has_paper(category):
+            return (emp.id, category.id) in papers
 
         if key in ('personal', 'emergency'):
             if filled(*FIELD_DONE[key]):
@@ -115,7 +132,7 @@ class PbNewHireAsk(models.Model):
         if key == 'id_number':
             done = filled('identification_id')
             if done and row.category_id:
-                done = self._has_paper(emp, row.category_id)
+                done = has_paper(row.category_id)
             if done:
                 return 'done'
             return 'waiting' if 'id_paper' in open_req['detail'] else 'open'
@@ -123,7 +140,7 @@ class PbNewHireAsk(models.Model):
             field = tax_fields.get(key)
             done = bool(field) and filled(field)
             if done and row.category_id:
-                done = self._has_paper(emp, row.category_id)
+                done = has_paper(row.category_id)
             if done:
                 return 'done'
             return 'waiting' if key in open_req['detail'] else 'open'
@@ -132,38 +149,87 @@ class PbNewHireAsk(models.Model):
                 return 'done'
             return 'waiting' if open_req['bank'] else 'open'
         if row.category_id:                     # a paper
-            return 'done' if self._has_paper(emp, row.category_id) else 'open'
+            return 'done' if has_paper(row.category_id) else 'open'
         return row.state or 'open'
 
     def refresh(self):
-        """Work out each row's state from the product's data. Cheap and
-        idempotent; writes only rows whose state moved."""
-        now = fields.Datetime.now()
-        for employee in self.mapped('employee_id'):
-            emp = employee.sudo()
-            # computed, unstored answers (bank on record) are read fresh
-            emp.invalidate_recordset()
-            open_req = self._open_requests(emp)
-            tax_fields = self._tax_field(emp)
-            for row in self.filtered(lambda r: r.employee_id == employee):
-                state = self._state_of(row, emp, open_req, tax_fields)
+        """Work out each row's state from the product's data. Cheap,
+        idempotent and batched: a fixed number of reads whatever the number
+        of people; writes only rows whose state moved (one write per new
+        state)."""
+        rows = self.sudo()
+        employees = rows.mapped('employee_id')
+        if not employees:
+            return True
+        # computed, unstored answers (bank on record) are read fresh (NH35)
+        employees.invalidate_recordset()
+        open_req = self._open_requests(employees)
+        papers = self._papers(employees, rows.mapped('category_id'))
+        moved = {}
+        for employee in employees:
+            tax_fields = self._tax_field(employee)
+            for row in rows.filtered(lambda r: r.employee_id == employee):
+                state = self._state_of(row, employee, open_req[employee.id], tax_fields, papers)
                 if state != row.state:
-                    row.sudo().write({'state': state,
-                                      'done_on': now if state == 'done' else False})
+                    moved.setdefault(state, self.browse())
+                    moved[state] |= row
+        now = fields.Datetime.now()
+        for state, changed in moved.items():
+            changed.sudo().write({'state': state, 'done_on': now if state == 'done' else False})
         return True
 
     # ================================================================ the reader
     @api.model
-    def summary(self, employee):
-        """THE reader of what a new person was asked (P3b's page, home row,
-        board chip and reminders): `{total, done, waiting, open, items:[{key,
-        label, state, need, url}]}`, refreshed first."""
-        employee = employee if hasattr(employee, '_name') else \
-            self.env['hr.employee'].browse(int(employee or 0))
-        rows = self.sudo().search([('employee_id', '=', employee.id)])
-        rows.refresh()
+    def _shape(self, rows):
         items = [{'key': r.key, 'label': r.label, 'state': r.state, 'need': r.need,
                   'url': r.url or ''} for r in rows]
         count = {s: sum(1 for i in items if i['state'] == s) for s, _l in STATES}
         return {'total': len(items), 'done': count['done'], 'waiting': count['waiting'],
                 'open': count['open'], 'items': items}
+
+    @api.model
+    def summaries(self, employees):
+        """`{employee id: summary}` for many people at once (one refresh)."""
+        employees = employees.sudo()
+        rows = self.sudo().search([('employee_id', 'in', employees.ids)])
+        rows.refresh()
+        out = {}
+        for employee in employees:
+            mine = rows.filtered(lambda r: r.employee_id == employee)
+            out[employee.id] = self._shape(mine)
+            if mine and not out[employee.id]['open'] and not out[employee.id]['waiting']:
+                self._tick_details_step(employee)
+        return out
+
+    @api.model
+    def summary(self, employee):
+        """THE reader of what a new person was asked (P3b's page, home row,
+        board chip and reminders): `{total, done, waiting, open, items:[{key,
+        label, state, need, url}]}`, refreshed first. When everything is done
+        the joining checklist's "Finish your own details" step ticks itself."""
+        employee = employee if hasattr(employee, '_name') else \
+            self.env['hr.employee'].browse(int(employee or 0))
+        return self.summaries(employee)[employee.id] if employee else self._shape(self.browse())
+
+    # ================================================================ the checklist
+    @api.model
+    def _tick_details_step(self, employee):
+        """Tick "Finish your own details" (`pb_onboarding.step_rize_data`) on
+        this person's running joining checklist — once (`nh_details_ticked`),
+        and only a step still open."""
+        emp = employee.sudo()
+        if 'nh_details_ticked' not in emp._fields or emp.nh_details_ticked \
+                or 'pb.journey.task' not in self.env:
+            return False
+        step = self.env.ref(DETAILS_STEP, raise_if_not_found=False)
+        if not step:
+            return False
+        tasks = self.env['pb.journey.task'].sudo().search([
+            ('employee_id', '=', emp.id), ('step_id', '=', step.id),
+            ('state', 'in', ('pending', 'in_progress', 'blocked')),
+            ('case_id.state', 'not in', ('cancelled', 'done'))])
+        if not tasks:
+            return False
+        tasks.action_done(payload={'note': _("Ticked when the joining details were finished.")})
+        emp.write({'nh_details_ticked': True})
+        return True

@@ -35,8 +35,8 @@ from .studio import _int
 
 _logger = logging.getLogger(__name__)
 
-#: The four answers a row can have.
-CHOICES = ('ask', 'have', 'skip', 'later')
+#: The answers a row can have ('number' only on the merged card rows).
+CHOICES = ('ask', 'have', 'skip', 'later', 'number')
 
 #: The side panel's file rules (`pb.people.vault_upload_batch`).
 FILE_MIMES = ('image/png', 'image/jpeg', 'application/pdf')
@@ -46,6 +46,10 @@ MAX_FILES = 20
 
 ID_CATEGORY = 'pb_employee_vault.cat_id_document'
 TAX_CATEGORY = 'pb_me_tax.cat_tax_paper'
+
+#: P3b (architect answer a): on the merged identity-card and tax-card rows
+#: HR may have the number only — the number is saved and the CARD is asked.
+NUMBER_ONLY = 'number'
 
 #: Where on My Payobook each item is asked for (FACTS_ONBOARD §A7).
 ASK_URL = {
@@ -215,11 +219,15 @@ class PbNewHireDocs(models.AbstractModel):
         id_label = self._id_label(code)
         id_need = stronger('first_pay', id_paper['need']) if id_paper else 'first_pay'
         if id_paper:
+            # number only (answer a): the card is uploaded where the person
+            # uploads that kind of paper — My documents when it is
+            # self-uploadable, else the ID paper form
             item('id_number', 'papers', 'idCard',
                  _("%(paper)s and number", paper=id_paper['label']),
                  _("The card and the %(number)s on it, asked for together.", number=id_label),
                  id_need, fields=[self._field('identification_id', id_label, required=True)],
-                 upload=upload(id_paper), merged=True)
+                 upload=upload(id_paper), merged=True,
+                 card_url=ASK_URL['paper'] if id_paper['self_upload'] else ASK_URL['id_number'])
         else:
             item('id_number', 'details', 'idCard', id_label,
                  _("The number payroll and the insurance reports use."), id_need,
@@ -248,7 +256,9 @@ class PbNewHireDocs(models.AbstractModel):
                          _("%(paper)s and number", paper=tax_paper['label']),
                          _("The card and the %(number)s on it, asked for together.", number=label),
                          stronger(need, tax_paper['need']), fields=[fld],
-                         upload=upload(tax_paper), ask_url=url, merged=True)
+                         upload=upload(tax_paper), ask_url=url, merged=True,
+                         # the tax page files the card as the number's proof
+                         card_url=url)
                 else:
                     icon = 'receipt' if kind == 'tax_number' else 'scale'
                     sub = _("Checked by HR before it is saved.") if kind == 'tax_number' \
@@ -285,6 +295,8 @@ class PbNewHireDocs(models.AbstractModel):
                  ask_url=ASK_URL['paper'] if can_ask else '', category_id=cat.id)
         for row in items:
             row.setdefault('merged', False)
+            row.setdefault('card_url', '')
+            row['can_number'] = bool(row['merged'])
             row.setdefault('ask_note', '')
             row.setdefault('category_id', (row['upload'] or {}).get('category_id') or False)
         return items
@@ -328,16 +340,17 @@ class PbNewHireDocs(models.AbstractModel):
         rows = []
         for cat, row in sorted(eff.items(), key=lambda kv: (kv[1].sequence, kv[0].sequence, kv[0].id)):
             default = defaults.get(cat)
-            rows.append({'category_id': cat.id, 'name': cat.name or '',
+            rows.append({'category_id': cat.id, 'name': Paper.plain_name(cat),
                          'need': row.need if row.active else 'none',
                          'label': row.display_label(),
                          'usual': (default.need if default else 'none'),
-                         'usual_label': default.display_label() if default else (cat.name or ''),
+                         'usual_label': default.display_label() if default else Paper.plain_name(cat),
                          'self_upload': bool(getattr(cat, 'ess_uploadable', False))})
         listed = {r['category_id'] for r in rows}
         others = self.env['pb.employee.document.category'].sudo().search(
             [('active', '=', True)], order='sequence, name, id')
-        return rows, [{'category_id': c.id, 'name': c.name or ''} for c in others if c.id not in listed]
+        return rows, [{'category_id': c.id, 'name': Paper.plain_name(c)}
+                      for c in others if c.id not in listed]
 
     @api.model
     def papers_edit_load(self, country_code):
@@ -400,8 +413,9 @@ class PbNewHireDocs(models.AbstractModel):
             else:
                 if need == 'none':
                     continue
+                plain = Paper.plain_name(cat)
                 vals = {'need': need, 'active': True,
-                        'label': False if (not label or label == cat.name) else label}
+                        'label': False if (not label or label in (cat.name, plain)) else label}
             Sudo.create(dict(vals, category_id=cat.id, country_code=code,
                              company_id=company.id, sequence=seq))
         return self.papers_edit_load(code)
@@ -430,6 +444,8 @@ class PbNewHireDocs(models.AbstractModel):
             if choice == 'later' and item['can_ask']:
                 choice = None
             if choice == 'have' and not item['can_have']:
+                choice = None
+            if choice == NUMBER_ONLY and not item.get('can_number'):
                 choice = None
             out[item['key']] = choice if choice in CHOICES else item['default']
         return out
@@ -529,7 +545,7 @@ class PbNewHireDocs(models.AbstractModel):
                 return self._refuse('docs', 'doc-%s' % key, _(
                     "%(what)s is needed before the first pay, so it cannot be left out. "
                     "Ask %(first)s for it, or add it now.", what=item['label'], first=first))
-            if choices[key] != 'have':
+            if choices[key] not in ('have', NUMBER_ONLY):
                 continue
             typed = 0
             for field in item['fields']:
@@ -556,7 +572,7 @@ class PbNewHireDocs(models.AbstractModel):
                         {k: have.get(k) for k in BANK_FIELDS}))
                 if problem:
                     return self._refuse('docs', 'have-account_number', problem)
-            if item['upload']:
+            if item['upload'] and choices[key] == 'have':
                 raw, problem = self._file_problem(item, by_key.get(key), total)
                 if problem:
                     return self._refuse('docs', 'file-%s' % key, problem)
@@ -581,6 +597,23 @@ class PbNewHireDocs(models.AbstractModel):
         details, shown, asks, papers, later = {}, [], [], [], []
         for n, item in enumerate(items):
             key, choice = item['key'], choices[item['key']]
+            if choice == NUMBER_ONLY:
+                # the number is saved now; the card itself is asked for, on
+                # the page that serves that kind of paper (answer a)
+                for field in item['fields']:
+                    value = have.get(field['name'])
+                    if _blank(value):
+                        continue
+                    clean, problem = self._check_value(code, field, value)
+                    if problem:
+                        continue
+                    details[field['name']] = clean
+                    shown.append([field['label'],
+                                  mask(clean) if field['name'] in SECRET_FIELDS else clean])
+                asks.append({'key': key, 'label': item['upload']['label'], 'need': item['need'],
+                             'url': item['card_url'] or item['ask_url'], 'sequence': (n + 1) * 10,
+                             'category_id': item['category_id'] or False})
+                continue
             if choice == 'have':
                 if key == 'bank':
                     for name in BANK_FIELDS:
@@ -614,6 +647,8 @@ class PbNewHireDocs(models.AbstractModel):
         if details:
             vals['pb_nh_details'] = details
         vals['pb_nh_asks'] = asks
+        # P3b: remind the person every 2 days (and HR 3 days before day one)
+        vals['nh_remind'] = d.get('remind') is not False
         vals['pb_nh_papers'] = papers
         names['details'] = shown
         names['later'] = later

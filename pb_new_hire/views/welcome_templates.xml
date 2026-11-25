@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- NEWHIRE P3b — /my/welcome, the page the welcome link lands on.
+       The pb_me_portal kit (.pbme, ess_icon, pbme-card, pbme-btn) with a
+       thin layer of its own (.pbnhw-*, static/src/scss/welcome_page.scss).
+       Every card is a link to the existing page that collects that thing.
+       Loop names: cards `cd`. -->
+
+  <template id="portal_breadcrumbs_welcome" name="Welcome breadcrumbs"
+            inherit_id="portal.portal_breadcrumbs" priority="45">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'my_welcome'" class="breadcrumb-item active">Welcome</li>
+    </xpath>
+  </template>
+
+  <template id="portal_my_welcome" name="Welcome (new joiner)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbnhw">
+
+        <!-- the hero: the ring, the greeting, the one button -->
+        <section t-att-class="'pbme-card pbnhw-hero' + (all_done and ' is-done' or '')">
+          <div class="pbnhw-ring" t-attf-style="--pbnhw-deg: {{ ring }}deg" role="img"
+               t-attf-aria-label="{{ done }} / {{ total }}">
+            <span class="pbnhw-ring-in">
+              <t t-if="all_done"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="26"/></t></t>
+              <t t-else=""><b t-esc="done"/><small>of <t t-esc="total"/> done</small></t>
+            </span>
+          </div>
+          <div class="pbnhw-hero-t">
+            <div class="pbme-eyebrow" t-esc="company"/>
+            <h1 class="pbme-h1">Welcome, <t t-esc="first"/></h1>
+            <p class="pbme-hero-sub" t-esc="lead"/>
+          </div>
+          <t t-set="first_open" t-value="[cd for cd in cards if cd['state'] == 'open' and cd['link']][:1]"/>
+          <a t-if="first_open" class="pbme-btn pbme-btn--primary pbnhw-go" t-att-href="first_open[0]['url']">
+            Start · about <t t-esc="minutes"/> minutes
+            <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'arrow-right'"/><t t-set="isz" t-value="16"/></t>
+          </a>
+          <a t-elif="all_done" class="pbme-btn pbme-btn--primary pbnhw-go" href="/my">
+            Go to your home page
+            <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'arrow-right'"/><t t-set="isz" t-value="16"/></t>
+          </a>
+        </section>
+
+        <!-- the list -->
+        <section class="pbnhw-sec">
+          <h2 class="pbnhw-h2">
+            <t t-if="all_done">What you finished</t>
+            <t t-elif="day">Before <t t-esc="day"/></t>
+            <t t-else="">To finish</t>
+          </h2>
+          <ol class="pbnhw-list">
+            <li t-foreach="cards" t-as="cd" t-att-class="'pbnhw-item is-' + cd['state']"
+                t-attf-style="animation-delay: {{ cd_index * 50 }}ms">
+              <a t-if="cd['link']" class="pbme-card pbnhw-card" t-att-href="cd['url']">
+                <t t-call="pb_new_hire.pbnhw_card_body"/>
+              </a>
+              <div t-else="" class="pbme-card pbnhw-card">
+                <t t-call="pb_new_hire.pbnhw_card_body"/>
+              </div>
+            </li>
+          </ol>
+          <p class="pbme-muted pbnhw-foot">
+            <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'shield'"/><t t-set="isz" t-value="15"/></t>
+            Each one opens the page where you give it. What you send is checked by HR before it is saved, and your bank account is approved by a second person.
+          </p>
+        </section>
+      </div>
+    </t>
+  </template>
+
+  <template id="pbnhw_card_body" name="Welcome: one card">
+    <span class="pbnhw-tile"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="cd['state'] == 'done' and 'check' or cd['icon']"/><t t-set="isz" t-value="18"/></t></span>
+    <span class="pbnhw-card-t">
+      <b t-esc="cd['label']"/>
+      <small t-esc="cd['hint']"/>
+      <span class="pbnhw-chips">
+        <span t-if="cd['state'] == 'done'" class="pbnhw-chip is-done">Done</span>
+        <span t-elif="cd['state'] == 'waiting'" class="pbnhw-chip is-waiting">Sent, waiting for HR</span>
+        <span t-else="" class="pbnhw-chip is-open">To do</span>
+        <span t-if="cd['need'] == 'first_pay' and cd['state'] != 'done'" class="pbnhw-chip is-pay">Needed for your first pay</span>
+      </span>
+    </span>
+    <span t-if="cd['link']" class="pbnhw-chev"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'chevron-right'"/><t t-set="isz" t-value="18"/></t></span>
+  </template>
+
+</odoo>

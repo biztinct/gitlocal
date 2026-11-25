@@ -5,7 +5,8 @@ The person and the contract are the CORE (P1, `create_ext.py`): a failure
 there rolls the whole approval back. Everything here is a WELCOME LEG and
 runs AFTER the core, each in its own savepoint, in this fixed order:
 
-    clock → week → own_fields → login → case → buddy → equipment → letter
+    clock → week → own_fields → details → papers → asks → login → case →
+    buddy → equipment → letter → invite
 
 (the late and overtime rule is not a leg: it rides on the ONE employee
 create through the P1 create hook, `pb_attendance_category`.)
@@ -50,7 +51,10 @@ LEG_ORDER = ('clock', 'week', 'own_fields',
              # P3a (docs_legs.py): what HR typed, the papers HR attached and
              # what the new person will be asked — before the sign-in
              'details', 'papers', 'asks',
-             'login', 'case', 'buddy', 'equipment', 'letter')
+             'login', 'case', 'buddy', 'equipment', 'letter',
+             # P3b (invite.py): the welcome message — last, it needs the
+             # sign-in and the asks (not the checklist)
+             'invite')
 
 #: Tests set this to see a leg's programming error instead of a failed leg.
 RAISE_CTX = 'pb_nh_legs_raise'
@@ -235,12 +239,16 @@ class PbNewHireLegs(models.AbstractModel):
         if 'pb.zoho.pipeline' not in self.env or employee.pb_portal_user_id:
             return _("sign-in") if employee.pb_portal_user_id else False
         email = (employee.work_email or '').strip()
-        if not email:
-            raise LegFailed(_("there is no work email to sign in with."))
+        private = (employee.private_email or '').strip()
+        if not email and not private:
+            raise LegFailed(_("there is no email address to sign in with."))
         param = self.env['ir.config_parameter'].sudo().get_param(
             'pb_zoho_bridge.auto_create_logins', '1')
         if str(param).strip() not in ('1', 'true', 'True', 'yes'):
             raise LegFailed(_("email sign-ins are switched off here."))
+        if not email:
+            # P3b §2.1: only a personal email before day one (the usual case)
+            return self._login_private(employee, private)
         summary = {'logins': 0, 'created': 0, 'updated': 0, 'ignored': 0,
                    'review': 0, 'onboarding': 0, 'offboarding': 0}
         self.env['pb.zoho.pipeline'].sudo()._auto_create_login(
@@ -248,6 +256,43 @@ class PbNewHireLegs(models.AbstractModel):
         employee.invalidate_recordset(['pb_portal_user_id', 'user_id'])
         if not employee.pb_portal_user_id:
             raise LegFailed(_("no sign-in could be made for %s.", email))
+        return _("sign-in for %s", email)
+
+    @api.model
+    def _login_private(self, employee, email):
+        """The same employee-tier login `_auto_create_login` makes, with the
+        PERSONAL email as login and address — its own building blocks (the
+        user values, `no_reset_password`, `_link_employee_login`). An
+        existing sign-in with that address is used only when it is an
+        employee-tier login nobody else's employee holds."""
+        Pipeline = self.env['pb.zoho.pipeline'].sudo()
+        Users = self.env['res.users'].sudo().with_context(active_test=False)
+        company = employee.company_id or self.env.company
+        existing = Users.search([('login', '=ilike', email)], limit=1)
+        if existing:
+            taken = self.env['hr.employee'].sudo().with_context(active_test=False).search_count([
+                ('id', '!=', employee.id), '|', ('user_id', '=', existing.id),
+                ('pb_portal_user_id', '=', existing.id)], limit=1)
+            if not existing.share or taken:
+                raise LegFailed(_("A sign-in with %s already exists for someone else. Create the "
+                                  "sign-in from Access.", email))
+            user = existing
+        else:
+            portal = self.env.ref('base.group_portal', raise_if_not_found=False)
+            if not portal:
+                raise LegFailed(_("employee sign-ins are not set up here."))
+            user = self.env['res.users'].sudo().with_context(
+                no_reset_password=True, mail_create_nosubscribe=True).create({
+                    'name': employee.name,
+                    'login': email,
+                    'email': email,
+                    'company_id': company.id,
+                    'company_ids': [(6, 0, [company.id])],
+                    'group_ids': [(6, 0, [portal.id])],
+                })
+        employee.write({'pb_portal_user_id': user.id})
+        Pipeline._link_employee_login(employee, user)
+        employee.invalidate_recordset(['pb_portal_user_id', 'user_id'])
         return _("sign-in for %s", email)
 
     @api.model

@@ -31,7 +31,7 @@ def _code(text):
 
 
 def _files(*exts):
-    for folder in ('static', 'views'):
+    for folder in ('static', 'views', 'data'):
         for root, _dirs, files in os.walk(os.path.join(HERE, folder)):
             for name in files:
                 if name.endswith(exts):
