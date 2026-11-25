@@ -352,51 +352,75 @@ const EN_DOWNLOAD = B("Download", "Tải xuống");
 const EN_READY_CHECK = B("Ready to check", "Cần kiểm tra");
 const EN_SEND_APPROVAL = B("Send for approval", "Gửi duyệt");
 
-/* -------------------------------------------- the practice employee form
+/* ------------------------------------------- the practice Add employee screen
    DRAWN INLINE, UNDER THE ROSTER, AND SAID SO ON THE CARD.
 
-   The product opens a form VIEW here — press New and the roster is replaced.
-   The replica cannot: a screen is one zero-argument function with no state
-   behind it, so a form that appears and disappears would be a second screen
-   with no sidebar leaf, no action tag and nothing for the Coach to resolve it
-   by. Drawing it inline is the honest version of the same lesson, and the
-   panel's own heading says which of the two you are looking at — the same
-   ruling as `rep-pipeline`, where the product draws columns and the replica
-   draws a stepper because the lesson is about the journey between them.
+   NEWHIRE P5a. The product's Add employee is a guided screen of its own
+   (pb_new_hire): a rail of seven steps — three required, three already filled
+   in with the company's usual answers, and Check and add — with the step in
+   the middle and the record so far on the right. The replica cannot open a
+   second screen: a screen is one zero-argument function with no state behind
+   it, so a screen that appears and disappears would have no sidebar leaf, no
+   action tag and nothing for the Coach to resolve it by. Drawing it inline is
+   the honest version of the same lesson, and the panel's own heading says
+   which of the two you are looking at — the same ruling as `rep-pipeline`.
 
-   Nothing here saves anything. The Save button is a picture of a button; what
-   the learner is rehearsing is the ORDER — name, division, save — and the fact
-   that a person on the roster is still not a person who can be paid. */
+   It draws what the lesson walks: the rail's seven names in the product's
+   words, the three required steps' one decisive field each (Full name, Team,
+   Monthly wage) and Check and add's Send. Nothing here sends anything. What the
+   learner rehearses is the ORDER — name, team, wage, Send — and the fact that
+   a person on the roster is still not a person who can be paid. */
 function newEmployeeHTML() {
+    const rail = [
+        [B("Who is joining", "Ai sắp vào làm"), "req"],
+        [B("Role and place", "Vị trí và nơi làm việc"), "req"],
+        [B("Contract and pay", "Hợp đồng và lương"), "req"],
+        [B("Schedule and time off", "Lịch làm và nghỉ phép"), "set"],
+        [B("Details and documents", "Thông tin và giấy tờ"), "set"],
+        [B("Welcome and first day", "Chào đón và ngày đầu"), "set"],
+        [B("Check and add", "Kiểm tra và thêm"), "end"],
+    ].map(([name, kind], i) => `<span class="lrn-chip ${kind === "req" ? "b" : ""}">${esc(N(i + 1))}${SP}${esc(tx(name))}</span>`).join("");
+    const step = (n, name) => `<span class="lrn-clabel">${esc(tx(B("Step", "Bước")))}${SP}${esc(N(n))}${DOT}${esc(tx(name))}</span>`;
     return `
         <div class="lrn-panel">
             <h3>${ic("user-plus")}${esc(tx(B(
-                "New employee — practice form. Save writes nothing.",
-                "Nhân viên mới — biểu mẫu thực hành. Nút Lưu không ghi gì.")))}</h3>
+                "Add employee — practice copy. Send writes nothing.",
+                "Thêm nhân viên — bản thực hành. Nút Gửi không ghi gì.")))}</h3>
             <p class="lrn-note">${esc(tx(B(
-                "In Payobook this opens as its own form. Here it sits under the roster, so you can read both at once.",
-                "Trong Payobook, phần này mở ra thành một biểu mẫu riêng. Ở đây nó nằm ngay dưới danh sách để bạn đọc được cả hai cùng lúc.")))}</p>
+                "In Payobook this opens as its own screen of seven steps. Here the three required steps and Check and add sit under the roster, so you can read both at once.",
+                "Trong Payobook, phần này mở ra thành một màn hình riêng gồm bảy bước. Ở đây ba bước bắt buộc và bước Kiểm tra và thêm nằm ngay dưới danh sách để bạn đọc được cả hai cùng lúc.")))}</p>
+            <div class="lrn-strip">${rail}</div>
+            <p class="lrn-note">${esc(tx(B(
+                "Steps 1 to 3 are required. Steps 4 to 6 already hold your company's usual answers.",
+                "Bước 1 đến 3 là bắt buộc. Bước 4 đến 6 đã có sẵn câu trả lời thường dùng của công ty bạn.")))}</p>
+            ${step(1, B("Who is joining", "Ai sắp vào làm"))}
             ${inputRow("rep-newemp-name",
                        B("Full name", "Họ và tên"),
                        B("Type the person's full name", "Nhập họ và tên của người đó"))}
-            <label class="lrn-flabel">${esc(tx(B("Division", "Bộ phận")))}</label>
-            <select class="lrn-in" data-coach="rep-newemp-div">
+            ${step(2, B("Role and place", "Vị trí và nơi làm việc"))}
+            <label class="lrn-flabel">${esc(tx(B("Team", "Nhóm")))}</label>
+            <select class="lrn-in" data-coach="rep-newemp-team">
                 <option>${esc(tx(RUN.division))}</option>
                 <option>F&amp;B</option>
                 <option>${esc(tx(B("IT Services", "Dịch vụ CNTT")))}</option>
             </select>
+            <p class="lrn-note">${esc(tx(B("Paid by", "Trả lương theo")))}:${SP}<b>${esc(RUN.scheme)}</b>${DOT}${esc(tx(B(
+                "Country of work: Vietnam, paid in ₫", "Quốc gia làm việc: Việt Nam, trả bằng ₫")))}</p>
+            ${step(3, B("Contract and pay", "Hợp đồng và lương"))}
+            ${inputRow("rep-newemp-wage",
+                       B("Monthly wage, ₫", "Lương tháng, ₫"),
+                       B("For example 9,500,000", "Ví dụ 9.500.000"))}
+            ${step(7, B("Check and add", "Kiểm tra và thêm"))}
             <div class="lrn-strip">
-                <button class="lrn-btn pri" data-coach="rep-newemp-save">${ic("check")}${
-                    esc(tx(B("Save", "Lưu")))}</button>
+                <button class="lrn-btn pri" data-coach="rep-newemp-send">${ic("send")}${
+                    esc(tx(B("Send for approval", "Gửi duyệt")))}</button>
             </div>
-            <!-- WHAT PAYOBOOK DOES, said as what Payobook does. The first
-                 version of this sentence promised that a saved person "joins
-                 the roster above", which is not true of this panel: nothing is
-                 saved and the roster never grows. A replica may show less than
+            <!-- WHAT PAYOBOOK DOES, said as what Payobook does. Nothing here is
+                 sent and the roster never grows: a replica may show less than
                  the product; it may not promise more. -->
             <p class="lrn-note">${esc(tx(B(
-                "In Payobook a saved person joins the roster above, and is still not payroll-ready: that needs a running contract and bank details.",
-                "Trong Payobook, người đã lưu sẽ xuất hiện trong danh sách ở trên, và vẫn chưa sẵn sàng tính lương: còn cần hợp đồng đang hiệu lực và thông tin ngân hàng.")))}</p>
+                "In Payobook a second person approves the hire where your company asks for it. The person then joins the roster above, and is still not payroll-ready until their bank details are approved.",
+                "Trong Payobook, một người thứ hai sẽ duyệt người mới nếu công ty bạn yêu cầu. Sau đó người này xuất hiện trong danh sách ở trên, và vẫn chưa sẵn sàng tính lương cho đến khi thông tin ngân hàng của họ được duyệt.")))}</p>
         </div>`;
 }
 

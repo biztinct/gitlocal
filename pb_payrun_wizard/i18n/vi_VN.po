@@ -1214,3 +1214,45 @@ msgstr "%s phiếu lương trong kỳ lương bổ sung này trừ khoản tạm
 #: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
 msgid "Good to know — nothing to do:"
 msgstr "Để bạn biết — không cần làm gì:"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid ", paid days and overtime come from the clocks and the late and overtime rules. Leave those columns empty in the pay data file — a number typed there is shown beside the clock value and not used."
+msgstr ", ngày công và giờ làm thêm được lấy từ máy chấm công và quy tắc đi muộn, làm thêm. Hãy để trống các cột đó trong tệp dữ liệu lương — số nhập vào đó chỉ hiển thị bên cạnh giá trị từ máy chấm công và không được dùng."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Check again"
+msgstr "Kiểm tra lại"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Do not put lateness into any money column of the file — the late rules already take it off."
+msgstr "Đừng đưa khoản đi muộn vào bất kỳ cột tiền nào của tệp — quy tắc đi muộn đã trừ rồi."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Everyone's hours are ready."
+msgstr "Giờ của mọi người đã sẵn sàng."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Hours from the clocks"
+msgstr "Giờ từ máy chấm công"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "people need attention before this run can be worked out."
+msgstr "người cần xem lại trước khi tính được đợt trả lương này."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "people ready"
+msgstr "người đã sẵn sàng"

@@ -273,7 +273,8 @@ class TestReportPdf(TransactionCase):
         _r, on = self._download(self.admin_u, report, dict(look, letterhead=True))
         _r, off = self._download(self.admin_u, report, dict(look, letterhead=False))
         on, off = on.decode('utf-8'), off.decode('utf-8')
-        self.assertIn('data-report-margin-top="40"', on)
+        self.assertIn('data-report-margin-top="52"', on)
+        self.assertIn('data-report-header-spacing="52"', on)
         self.assertIn('o_report_layout', on, "the company's own letterhead")
         # server fonts only (DS-B8): sans for Clean, serif for Classic
         self.assertIn("font-family: 'DejaVu Sans'", on)

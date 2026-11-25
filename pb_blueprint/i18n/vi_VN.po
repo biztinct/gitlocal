@@ -9371,3 +9371,64 @@ msgstr "Giữ như một kịch bản"
 #: code:addons/pb_blueprint/static/src/xml/steps.xml:0
 msgid "Numbers at a glance"
 msgstr "Số liệu nhanh"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/edit_cards.xml:0
+msgid "+ Add a column for it"
+msgstr "+ Thêm một cột cho mục này"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/edit_cards.xml:0
+msgid "From this date, the columns below take their\n               value from the clocks and the late and overtime rules instead of the pay\n               data file. Pay periods before it are paid exactly as before."
+msgstr "Từ ngày này, các cột dưới đây lấy giá trị từ máy chấm công và quy tắc đi muộn, làm thêm thay cho tệp dữ liệu lương. Các kỳ lương trước ngày đó vẫn trả như cũ."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/edit_cards.xml:0
+msgid "Hours from the clocks"
+msgstr "Giờ từ máy chấm công"
+
+#. module: pb_blueprint
+#. odoo-python
+#: code:addons/pb_blueprint/models/blueprint_edit.py:0
+msgid "Hours from the clocks are not available here."
+msgstr "Ở đây chưa có giờ từ máy chấm công."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/edit_cards.js:0
+#: code:addons/pb_blueprint/static/src/xml/edit_cards.xml:0
+msgid "Hours from the clocks from"
+msgstr "Lấy giờ từ máy chấm công từ ngày"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/edit_cards.xml:0
+msgid "Lateness reaches pay once, through the paid days. Columns\n               marked “Shown, never paid” cannot be used in a formula."
+msgstr "Đi muộn chỉ ảnh hưởng lương một lần, qua ngày công được trả. Các cột ghi “Chỉ hiển thị, không trả” không được dùng trong công thức."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/edit_cards.xml:0
+msgid "Leave it empty to keep every month on the pay data file."
+msgstr "Để trống để mọi tháng vẫn dùng tệp dữ liệu lương."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/edit_cards.xml:0
+msgid "Must stay empty"
+msgstr "Phải để trống"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/edit_cards.xml:0
+msgid "Shown, never paid"
+msgstr "Chỉ hiển thị, không trả"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/edit_cards.xml:0
+msgid "— not used —"
+msgstr "— không dùng —"

@@ -348,16 +348,18 @@ class PbJourneys(models.AbstractModel):
         today = date.today()
         can_write = self._can_write()
         tasks = []
-        for task in case.task_ids.sorted(
-                key=lambda t: (t.due_date or date.max, t.sequence, t.id))[
-                :TASK_LIMIT]:
+        shown_tasks = case.task_ids.sorted(
+            key=lambda t: (t.due_date or date.max, t.sequence, t.id))[:TASK_LIMIT]
+        # NEWHIRE P6: a step nobody changed reads in the reader's language.
+        words = shown_tasks._pb_shown_texts()
+        for task in shown_tasks:
             link = ''
             if can_write:
                 link = self._safe(lambda t=task: t._token_url(), default='')
             tasks.append({
                 'id': task.id,
-                'name': task.name,
-                'description': task.description or '',
+                'name': words[task.id]['name'],
+                'description': words[task.id]['description'],
                 'kind': task.step_kind or 'task',
                 'kind_label': STEP_KIND_LABEL.get(task.step_kind, ''),
                 'rule': task.assignee_rule or '',

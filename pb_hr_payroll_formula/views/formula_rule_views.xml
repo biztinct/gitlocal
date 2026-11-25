@@ -179,6 +179,9 @@
                                          out. -->
                                     <field name="period_key"
                                            invisible="column_type != 'input'"/>
+                                    <!-- WFSETUP P10b — from the scheme's clock date. -->
+                                    <field name="pb_clock_key"
+                                           invisible="column_type != 'input'"/>
                                 </group>
                             </group>
                             <group string="Information" class="oe_read_only">

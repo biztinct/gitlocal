@@ -1,0 +1,117 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_onboarding
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-11-25 10:00+0000\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+
+# ===================================================================
+#  NEWHIRE P6 (2026-11-25): shipped joining-checklist / equipment names.
+#  Written onto stored rows by migrations/<version>/post-migrate.py
+#  (pb_lifecycle.models.seed_translations) where the English is unchanged.
+# ===================================================================
+#. module: pb_onboarding
+#: model:pb.journey.template,name:pb_onboarding.journey_template_rize_onboarding
+msgid "New joiner — the full welcome"
+msgstr "Karyawan baru — sambutan lengkap"
+
+#. module: pb_onboarding
+#: model:pb.journey.template.step,name:pb_onboarding.step_rize_buddy
+msgid "Choose their buddy"
+msgstr "Pilih pendamping"
+
+#. module: pb_onboarding
+#: model:pb.journey.template.step,description:pb_onboarding.step_rize_buddy
+msgid "Pick the colleague who will show them the ropes. Payobook shows who is eligible and why, and puts the catch-ups in the diary."
+msgstr "Pilih rekan kerja yang akan membimbing mereka. Sistem menunjukkan siapa yang memenuhi syarat dan alasannya, lalu memasukkan pertemuan rutin ke kalender."
+
+#. module: pb_onboarding
+#: model:pb.journey.template.step,name:pb_onboarding.step_rize_laptop
+msgid "Laptop and equipment"
+msgstr "Laptop dan perlengkapan"
+
+#. module: pb_onboarding
+#: model:pb.journey.template.step,description:pb_onboarding.step_rize_laptop
+msgid "A request is raised automatically when this journey opens, and a spare is suggested before anything is bought. The machine should be on the desk and set up before they walk in."
+msgstr "Permintaan diajukan otomatis saat perjalanan ini dimulai, dan perangkat cadangan disarankan sebelum membeli yang baru. Perangkat harus sudah ada di meja dan siap dipakai sebelum mereka datang."
+
+#. module: pb_onboarding
+#: model:pb.journey.template.step,name:pb_onboarding.step_rize_access
+msgid "Tool access"
+msgstr "Akses alat kerja"
+
+#. module: pb_onboarding
+#: model:pb.journey.template.step,description:pb_onboarding.step_rize_access
+msgid "Email, chat and the systems they will use on day one. Nothing to chase on their first morning."
+msgstr "Email, obrolan, dan sistem yang akan mereka pakai di hari pertama. Tidak ada yang perlu dikejar di pagi pertama mereka."
+
+#. module: pb_onboarding
+#: model:pb.journey.template.step,name:pb_onboarding.step_rize_intro_form
+msgid "Tell us about you"
+msgstr "Ceritakan tentang Anda"
+
+#. module: pb_onboarding
+#: model:pb.journey.template.step,description:pb_onboarding.step_rize_intro_form
+msgid "A few lines from the joiner, which become the card their new team gets on day one. No login needed — the link is theirs."
+msgstr "Beberapa baris dari karyawan baru, yang menjadi kartu untuk tim barunya di hari pertama. Tidak perlu masuk akun — tautannya milik mereka."
+
+#. module: pb_onboarding
+#: model:pb.journey.template.step,name:pb_onboarding.step_rize_poster
+msgid "Welcome card to the team"
+msgstr "Kartu sambutan untuk tim"
+
+#. module: pb_onboarding
+#: model:pb.journey.template.step,description:pb_onboarding.step_rize_poster
+msgid "Sends itself on the joining day: a designed card built from their own answers, emailed to their team and nobody else."
+msgstr "Terkirim otomatis di hari bergabung: kartu yang dirancang dari jawaban mereka sendiri, dikirim lewat email ke tim mereka dan tidak kepada orang lain."
+
+#. module: pb_onboarding
+#: model:pb.journey.template.step,name:pb_onboarding.step_rize_day1
+msgid "Day-one introduction"
+msgstr "Perkenalan hari pertama"
+
+#. module: pb_onboarding
+#: model:pb.journey.template.step,description:pb_onboarding.step_rize_day1
+msgid "Sends itself on the joining day: an invitation to the manager and the joiner, with the meeting attached so it lands in both diaries."
+msgstr "Terkirim otomatis di hari bergabung: undangan untuk atasan dan karyawan baru, dengan rapat terlampir agar masuk ke kalender keduanya."
+
+#. module: pb_onboarding
+#: model:pb.journey.template.step,name:pb_onboarding.step_rize_credentials
+msgid "Send their sign-in details"
+msgstr "Kirim detail akun masuk"
+
+#. module: pb_onboarding
+#: model:pb.journey.template.step,description:pb_onboarding.step_rize_credentials
+msgid "Their account was made the day their record arrived. This is the day it is handed over — not before, so a link cannot be sitting in an inbox for three weeks."
+msgstr "Akun mereka dibuat pada hari datanya masuk. Inilah hari akun diserahkan — tidak lebih awal, agar tautan tidak menganggur di kotak masuk selama tiga minggu."
+
+#. module: pb_onboarding
+#: model:pb.journey.template.step,name:pb_onboarding.step_rize_data
+msgid "Finish your own details"
+msgstr "Lengkapi data Anda"
+
+#. module: pb_onboarding
+#: model:pb.journey.template.step,description:pb_onboarding.step_rize_data
+msgid "Bank account, emergency contact, address, documents — everything payroll needs before the first pay run. The joiner does this themselves from their own profile page."
+msgstr "Rekening bank, kontak darurat, alamat, dokumen — semua yang dibutuhkan penggajian sebelum penggajian pertama. Karyawan baru mengisinya sendiri dari halaman profilnya."
+
+#. module: pb_onboarding
+#: model:pb.journey.template.step,name:pb_onboarding.step_rize_orientation
+msgid "Welcome session"
+msgstr "Sesi sambutan"
+
+#. module: pb_onboarding
+#: model:pb.journey.template.step,description:pb_onboarding.step_rize_orientation
+msgid "They are put into the next session automatically when this journey opens. This step is the reminder that it actually happened."
+msgstr "Mereka otomatis dimasukkan ke sesi berikutnya saat perjalanan ini dimulai. Langkah ini mengingatkan untuk memastikan sesi itu benar-benar terlaksana."

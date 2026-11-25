@@ -39,6 +39,8 @@ from datetime import datetime, timedelta
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError
 
+from . import clock_code
+
 _logger = logging.getLogger(__name__)
 
 _FUTURE_SLACK = timedelta(minutes=10)
@@ -227,8 +229,18 @@ class PbClockPairing(models.AbstractModel):
 
     # ------------------------------------------------------------ matching
     @api.model
-    def _code_index(self, company, codes):
-        """{code: employee} for `codes` in `company` by the D5 order."""
+    def _code_index(self, company, codes, detail=None):
+        """{code: employee} for `codes` in `company` by the D5 order.
+
+        WFSETUP P10b (owner ruling R8) — two passes. The exact pass is
+        unchanged. A digit code nothing matched exactly is then compared with
+        leading zeros ignored (`clock_code.norm`) over the same three fields:
+        exactly ONE person with that zero-free number matches; two or more
+        stay unmatched and are reported in `detail['shared']`
+        ({code: [employee ids]}) so the numbers screen can say "same number
+        for two people" — never picked between. `detail['normalised']`
+        collects the codes matched by the second pass.
+        """
         codes = sorted({c for c in codes if c})
         if not codes:
             return {}
@@ -250,7 +262,45 @@ class PbClockPairing(models.AbstractModel):
                 key = (rank, 0 if e.active else 1, e.id)
                 if value not in best or key < best[value][0]:
                     best[value] = (key, e)
-        return {code: hit[1] for code, hit in best.items()}
+        out = {code: hit[1] for code, hit in best.items()}
+        rest = [c for c in codes if c not in out and c.strip().isdigit()]
+        if rest:
+            out.update(self._code_index_zero_free(company, rest, detail))
+        return out
+
+    @api.model
+    def _code_index_zero_free(self, company, codes, detail=None):
+        """The second pass of `_code_index`: leading zeros ignored."""
+        wanted = {}
+        for c in codes:
+            for v in clock_code.variants(c):
+                wanted.setdefault(v, set()).add(c)
+        if not wanted:
+            return {}
+        Emp = self.env['hr.employee'].sudo().with_context(active_test=False)
+        emps = Emp.search([
+            ('company_id', '=', company.id),
+            '|', '|',
+            ('pb_clock_code', 'in', list(wanted)),
+            ('barcode', 'in', list(wanted)),
+            ('identification_id', 'in', list(wanted)),
+        ])
+        by_core = {}
+        for e in emps:
+            for value in (e.pb_clock_code, e.barcode, e.identification_id):
+                value = (value or '').strip()
+                if value in wanted:
+                    by_core.setdefault(clock_code.norm(value), {})[e.id] = e
+        out = {}
+        for c in codes:
+            people = by_core.get(clock_code.norm(c)) or {}
+            if len(people) == 1:
+                out[c] = next(iter(people.values()))
+                if detail is not None:
+                    detail.setdefault('normalised', set()).add(c)
+            elif len(people) > 1 and detail is not None:
+                detail.setdefault('shared', {})[c] = sorted(people)
+        return out
 
     @api.model
     def _match(self, punches, summary):

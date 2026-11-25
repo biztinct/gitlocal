@@ -1,0 +1,123 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_attendance_policy
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: id_ID\n"
+"Plural-Forms: \n"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Clock hours outside a shift"
+msgstr "Jam absensi di luar shift"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Clock number shared with someone else"
+msgstr "Nomor absensi sama dengan orang lain"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Night overtime has no pay column"
+msgstr "Lembur malam belum punya kolom gaji"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "No clock number"
+msgstr "Tidak ada nomor absensi"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "No shifts this month"
+msgstr "Tidak ada shift bulan ini"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Only one clock-in on a shift"
+msgstr "Hanya satu absen pada shift"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Overtime waiting for a decision"
+msgstr "Lembur menunggu keputusan"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Overtime without a rate"
+msgstr "Lembur tanpa tarif"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Punches on a day with no shift"
+msgstr "Absen pada hari tanpa shift"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Shift changed since it was worked out"
+msgstr "Shift berubah sejak dihitung"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Shift not over yet"
+msgstr "Shift belum selesai"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Shift not under confirmed late rules"
+msgstr "Shift belum memakai aturan terlambat yang dikonfirmasi"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Shift not worked out yet"
+msgstr "Shift belum dihitung"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payrun.py:0
+msgid "This pay period starts before and ends after the clock start date (%(day)s). Split it at that date."
+msgstr "Periode gaji ini dimulai sebelum dan berakhir setelah tanggal mulai jam dari mesin absensi (%(day)s). Pisahkan periode pada tanggal itu."
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "This pay run can't be worked out yet — %(n)s people need attention: %(what)s."
+msgstr "Penggajian ini belum bisa dihitung — %(n)s orang perlu diperiksa: %(what)s."
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Time off on a day with clock-ins"
+msgstr "Cuti pada hari dengan absen"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Time off type not set as paid or unpaid"
+msgstr "Jenis cuti belum diatur berbayar atau tidak"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Time off waiting for approval"
+msgstr "Cuti menunggu persetujuan"

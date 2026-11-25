@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- NEWHIRE P1 — the New Hire Studio. Opened by xmlid (the old
+         `pb_onboard_wizard` tag hands over to it, static/src/js/takeover.js).
+         The tag starts with `pb_` so the Payobook sidebar stays. -->
+    <record id="action_new_hire_studio" model="ir.actions.client">
+        <field name="name">Add employee</field>
+        <field name="tag">pb_new_hire_studio</field>
+        <field name="path">add-employee</field>
+    </record>
+</odoo>

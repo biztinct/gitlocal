@@ -69,3 +69,59 @@ msgstr ""
 "          </div>\n"
 "        </div>\n"
 "      "
+
+
+# ===================================================================
+#  NEWHIRE P6 (2026-11-25): shipped joining-checklist / equipment names.
+#  Written onto stored rows by migrations/<version>/post-migrate.py
+#  (pb_lifecycle.models.seed_translations) where the English is unchanged.
+# ===================================================================
+#. module: pb_assets
+#: model:pb.asset.category,name:pb_assets.cat_laptop
+msgid "Laptop"
+msgstr "Laptop"
+
+#. module: pb_assets
+#: model:pb.asset.category,name:pb_assets.cat_phone
+msgid "Phone"
+msgstr "Telepon"
+
+#. module: pb_assets
+#: model:pb.asset.category,name:pb_assets.cat_sim
+msgid "SIM card"
+msgstr "Kartu SIM"
+
+#. module: pb_assets
+#: model:pb.asset.category,name:pb_assets.cat_idcard
+msgid "ID card"
+msgstr "Kartu ID karyawan"
+
+#. module: pb_assets
+#: model:pb.asset.category,name:pb_assets.cat_credit_card
+msgid "Company card"
+msgstr "Kartu perusahaan"
+
+#. module: pb_assets
+#: model:pb.asset.category,name:pb_assets.cat_monitor
+msgid "Monitor"
+msgstr "Monitor"
+
+#. module: pb_assets
+#: model:pb.asset.category,name:pb_assets.cat_email
+msgid "Email account"
+msgstr "Akun email"
+
+#. module: pb_assets
+#: model:pb.asset.category,name:pb_assets.cat_login
+msgid "System login"
+msgstr "Akun masuk sistem"
+
+#. module: pb_assets
+#: model:pb.asset.category,name:pb_assets.cat_software
+msgid "Software licence"
+msgstr "Lisensi perangkat lunak"
+
+#. module: pb_assets
+#: model:pb.asset.category,name:pb_assets.cat_phone_number
+msgid "Phone number"
+msgstr "Nomor telepon"

@@ -92,7 +92,10 @@ class PbJourneyTemplateStep(models.Model):
         ondelete='cascade', index=True)
     sequence = fields.Integer(default=10)
     name = fields.Char(string='Step', required=True, translate=True)
-    description = fields.Text(string='What to do')
+    # NEWHIRE P6: translatable, so a shipped step reads in Vietnamese and
+    # Indonesian (the column becomes jsonb on upgrade; biz_debrand's scrub
+    # treats it as a translated column since the same change).
+    description = fields.Text(string='What to do', translate=True)
     anchor = fields.Selection(
         ANCHORS, string='Counts from', required=True, default='case_open')
     offset_days = fields.Integer(

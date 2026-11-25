@@ -102,3 +102,19 @@ msgid ""
 msgstr ""
 "Nilai kinerja terbaru mereka sekarang %(value)s dari 5, dari tahun sasaran "
 "%(year)s."
+
+
+# ===================================================================
+#  NEWHIRE P6 (2026-11-25): shipped joining-checklist / equipment names.
+#  Written onto stored rows by migrations/<version>/post-migrate.py
+#  (pb_lifecycle.models.seed_translations) where the English is unchanged.
+# ===================================================================
+#. module: pb_goals
+#: model:pb.journey.template.step,name:pb_goals.step_rize_goals
+msgid "Open their goals for the year"
+msgstr "Buka sasaran tahun ini"
+
+#. module: pb_goals
+#: model:pb.journey.template.step,description:pb_goals.step_rize_goals
+msgid "Runs itself the day after they join: a goal sheet is opened for them in whichever goal year is open, with a fortnight to write it, and they get an email saying so. If no goal year is open yet, the step simply says so."
+msgstr "Berjalan otomatis sehari setelah mereka bergabung: lembar sasaran dibuka untuk mereka di tahun sasaran yang sedang dibuka, dengan waktu dua minggu untuk mengisinya, dan mereka menerima email pemberitahuan. Jika belum ada tahun sasaran yang dibuka, langkah ini cukup menyebutkannya."

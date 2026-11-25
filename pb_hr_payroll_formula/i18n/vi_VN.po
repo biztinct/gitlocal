@@ -16016,3 +16016,207 @@ msgstr "Tạm ứng giữa tháng đã trừ trong"
 #: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payslip__pb_advance_taken_in_id
 msgid "This extra payslip did not take the mid-month advance, because this payslip of the same month already had."
 msgstr "Phiếu lương bổ sung này không trừ khoản tạm ứng giữa tháng, vì phiếu lương này của cùng tháng đã trừ rồi."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "%(fact)s could not be worked out."
+msgstr "Không tính được %(fact)s."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payslip__pb_clock_stamp
+msgid "A fingerprint of the shifts, overtime and time off the clock hours of this payslip were worked out from. Approval is refused if they changed since."
+msgstr "Dấu kiểm của ca, giờ làm thêm và nghỉ phép dùng để tính giờ của phiếu lương này. Không duyệt được nếu chúng đã thay đổi."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Actual hours (from punches)"
+msgstr "Giờ thực tế (từ chấm công)"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__pb_clock_key
+msgid "Answered by the clocks"
+msgstr "Lấy từ máy chấm công"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Choose the column this is paid in — only information columns are added here."
+msgstr "Hãy chọn cột dùng để trả khoản này — ở đây chỉ thêm được cột thông tin."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Clock hours are not installed for this scheme. Ask an administrator to install the late and overtime rules."
+msgstr "Chưa cài giờ từ máy chấm công cho chế độ lương này. Hãy nhờ quản trị viên cài quy tắc đi muộn và làm thêm."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Clock hours changed after these payslips were computed (%s). Recompute before approving."
+msgstr "Giờ từ máy chấm công đã thay đổi sau khi tính các phiếu lương này (%s). Hãy tính lại trước khi duyệt."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip__pb_clock_stamp
+msgid "Clock hours stamp"
+msgstr "Dấu kiểm giờ máy chấm công"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Days worked"
+msgstr "Ngày làm việc"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__pb_clock_key
+msgid "From the scheme's clock start date, this component takes its value from the clocks and the late and overtime rules instead of the pay data file."
+msgstr "Từ ngày bắt đầu lấy giờ từ máy chấm công của chế độ lương, thành phần này lấy giá trị từ máy chấm công và quy tắc đi muộn, làm thêm thay cho tệp dữ liệu lương."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__pb_clock_from
+msgid "From this date, the components marked 'From the clocks' take their value from the clocks and the late and overtime rules instead of the pay data file. Pay periods before it are paid exactly as before. Empty = off."
+msgstr "Từ ngày này, các thành phần đánh dấu 'Từ máy chấm công' lấy giá trị từ máy chấm công và quy tắc đi muộn, làm thêm thay cho tệp dữ liệu lương. Các kỳ lương trước ngày đó vẫn trả như cũ. Để trống = tắt."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Hours from the clocks are not ready for %(who)s: %(why)s"
+msgstr "Giờ từ máy chấm công của %(who)s chưa sẵn sàng: %(why)s"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__pb_clock_from
+msgid "Hours from the clocks from"
+msgstr "Lấy giờ từ máy chấm công từ ngày"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Hours from the clocks need the person this row is about."
+msgstr "Giờ từ máy chấm công cần biết dòng này là của ai."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Hours taken off for lateness"
+msgstr "Số giờ bị trừ do đi muộn"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Late minutes"
+msgstr "Số phút đi muộn"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Late minutes are already taken off through the late rules. Remove the column “%s” to avoid taking them off twice."
+msgstr "Số phút đi muộn đã được trừ qua quy tắc đi muộn. Hãy bỏ cột “%s” để không trừ hai lần."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Left empty (paid through the clocks)"
+msgstr "Để trống (trả theo máy chấm công)"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Overtime above the legal limit"
+msgstr "Giờ làm thêm vượt giới hạn luật định"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Overtime hours (within the legal limit)"
+msgstr "Giờ làm thêm (trong giới hạn luật định)"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Overtime premium hours"
+msgstr "Giờ phụ trội làm thêm"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Paid days (days worked + paid leave + public holidays)"
+msgstr "Ngày công được trả (ngày làm + nghỉ phép có lương + ngày lễ)"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Paid leave days"
+msgstr "Ngày nghỉ phép có lương"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Paid normal hours"
+msgstr "Giờ làm thường được trả"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Public holiday days"
+msgstr "Ngày nghỉ lễ"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "That column is not an input of this scheme."
+msgstr "Cột đó không phải là cột nhập của chế độ lương này."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "The clocks do not answer that. Pick one of the hours or days in the list."
+msgstr "Máy chấm công không trả lời mục đó. Hãy chọn một mục giờ hoặc ngày trong danh sách."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_rule.py:0
+msgid "The clocks do not answer “%s”. Pick one of the hours or days the clocks work out."
+msgstr "Máy chấm công không trả lời “%s”. Hãy chọn một mục giờ hoặc ngày mà máy chấm công tính được."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "This pay period starts before and ends after the clock start date (%(day)s). Split it at that date."
+msgstr "Kỳ lương này bắt đầu trước và kết thúc sau ngày bắt đầu lấy giờ từ máy chấm công (%(day)s). Hãy tách kỳ tại ngày đó."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "this person"
+msgstr "người này"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "“%(col)s” must be empty in months paid from the clocks — that work is paid as overtime from the clocks (the file says %(value)s)."
+msgstr "“%(col)s” phải để trống trong các tháng trả theo máy chấm công — phần việc đó được trả như giờ làm thêm từ máy chấm công (tệp ghi %(value)s)."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "“%s” is already filled from overtime requests or approved weeks. Use another component for hours from the clocks."
+msgstr "“%s” đã được điền từ đơn làm thêm hoặc tuần đã duyệt. Hãy dùng thành phần khác cho giờ từ máy chấm công."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "“%s” is calculated — only an input can come from the clocks."
+msgstr "“%s” là cột tính toán — chỉ cột nhập mới lấy từ máy chấm công."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "“%s” is shown for information and cannot be paid. Set its pay role to “Information only” and keep it off the payslip lines."
+msgstr "“%s” chỉ để xem thông tin và không được trả. Hãy đặt vai trò lương là “Chỉ thông tin” và không đưa vào dòng phiếu lương."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "“%s” is shown for information and cannot be used in a formula. Pay is worked out from paid hours."
+msgstr "“%s” chỉ để xem thông tin và không được dùng trong công thức. Lương được tính từ giờ được trả."

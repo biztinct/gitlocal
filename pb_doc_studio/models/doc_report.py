@@ -4,10 +4,14 @@
 Two callers: a real letter (`docids` = `pb.hr.letter` ids, `_make_pdf`) and
 the studio's sample PDF (`data['pbds_sample']`, prepared by `sample_pdf`, no
 record at all — nothing is created or filed for a sample).
+
+With the company letterhead on, the top margin and the header spacing grow
+by `LETTERHEAD_ROOM` (as `data-report-*` attributes, which win over the
+paper format), so the company header never runs into the letter.
 """
 from odoo import api, models
 
-from .doc_common import DEFAULT_PAGE
+from .doc_common import DEFAULT_PAGE, LETTERHEAD_ROOM, MARGINS, pdf_body
 
 
 class ReportDocLetter(models.AbstractModel):
@@ -21,12 +25,17 @@ class ReportDocLetter(models.AbstractModel):
         if not pages:
             letters = self.env['pb.hr.letter'].browse(docids or []).exists()
             pages = [letter._pbds_pdf_page() for letter in letters]
+        pages = [dict(p, body=pdf_body(p.get('body'))) for p in pages]
         first = pages[0]['page'] if pages else DEFAULT_PAGE
         clean = self.env['pb.doc.studio']._pbds_clean_page(first)
-        return {
+        values = {
             'doc_ids': docids,
             'doc_model': 'pb.hr.letter',
             'docs': self.env['pb.hr.letter'].browse(docids or []),
             'pages': pages,
             'letterhead': clean['letterhead'],
         }
+        if clean['letterhead']:
+            top = dict((k, m) for k, _l, m in MARGINS)[clean['margins']][0] + LETTERHEAD_ROOM
+            values.update(data_report_margin_top=top, data_report_header_spacing=top)
+        return values

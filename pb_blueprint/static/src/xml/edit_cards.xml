@@ -224,6 +224,50 @@
                t-esc="w"/>
           </div>
 
+          <!-- WFSETUP P10b — hours from the clocks (only where the late and
+               overtime rules are installed). -->
+          <div class="pbbp-subcard pbbp-clock" t-if="clock and clock.available">
+            <div class="pbbp-subcard-h">
+              <span t-out="ic('clock', 16)"/>
+              <b>Hours from the clocks</b>
+            </div>
+            <p class="pbbp-subcard-lead">From this date, the columns below take their
+               value from the clocks and the late and overtime rules instead of the pay
+               data file. Pay periods before it are paid exactly as before.</p>
+            <div class="pbbp-fields">
+              <div class="pbbp-field">
+                <label for="pbbp-set-clock">Hours from the clocks from</label>
+                <input id="pbbp-set-clock" type="date" t-att-value="v.pb_clock_from or ''"
+                       t-att-disabled="props.busy" t-on-change="onClockFrom"/>
+                <small>Leave it empty to keep every month on the pay data file.</small>
+              </div>
+            </div>
+            <div class="pbbp-clock-rows">
+              <div class="pbbp-clock-row" t-foreach="clock.keys" t-as="k" t-key="k.key">
+                <span class="pbbp-clock-l">
+                  <b t-esc="k.label"/>
+                  <small t-if="k.use === 'pay'">Paid</small>
+                  <small t-elif="k.use === 'info'">Shown, never paid</small>
+                  <small t-else="">Must stay empty</small>
+                </span>
+                <select t-att-aria-label="k.label" t-att-disabled="props.busy or state.clockBusy"
+                        t-on-change="(ev) => this.onClockPick(k.key, ev)">
+                  <option value="" t-att-selected="!clock.map[k.key]">— not used —</option>
+                  <option t-if="k.use === 'info'" value="new">+ Add a column for it</option>
+                  <option t-foreach="clockInputs(k)" t-as="c" t-key="c.id"
+                          t-att-value="c.id" t-att-selected="c.id === clock.map[k.key]">
+                    <t t-esc="c.col"/> · <t t-esc="c.name"/>
+                  </option>
+                </select>
+              </div>
+            </div>
+            <p class="pbbp-note">Lateness reaches pay once, through the paid days. Columns
+               marked “Shown, never paid” cannot be used in a formula.</p>
+            <p class="pbbp-note is-warn" t-foreach="clock.issues or []" t-as="w" t-key="w_index"
+               t-esc="w"/>
+            <p class="pbbp-note is-warn" t-if="state.clockError" t-esc="state.clockError"/>
+          </div>
+
           <div class="pbbp-subcard">
             <div class="pbbp-subcard-h">
               <span t-out="ic('landmark', 16)"/>

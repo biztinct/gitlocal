@@ -389,39 +389,18 @@ class PbSchemeMap(models.AbstractModel):
                 continue
 
             # 2 — the department map, deepest first.
-            found = None
-            for candidate in reversed(chain):
-                found = self._pick(by_department.get(candidate), cycle_type)
-                if found:
-                    out[employee_id] = {
-                        'config_id': found.config_id.id,
-                        'config_name': found.config_id.name or '',
-                        'rung': 'department',
-                        'via': _("from %(team)s's team map",
-                                 team=names.get(candidate)
-                                 or _("this team")),
-                    }
-                    break
-            if employee_id in out:
+            found = self._rung_department(chain, by_department, names,
+                                          cycle_type)
+            if found:
+                out[employee_id] = found
                 continue
 
             # 3 — the division the team belongs to.
-            division_id = 0
-            for candidate in reversed(chain):
-                if candidate in division_of:
-                    division_id = division_of[candidate]
-                    break
-            if division_id:
-                found = self._pick(by_division.get(division_id), cycle_type)
-                if found:
-                    out[employee_id] = {
-                        'config_id': found.config_id.id,
-                        'config_name': found.config_id.name or '',
-                        'rung': 'division',
-                        'via': _("from the %(division)s division",
-                                 division=found.division_id.name or ''),
-                    }
-                    continue
+            found = self._rung_division(chain, division_of, by_division,
+                                        cycle_type)
+            if found:
+                out[employee_id] = found
+                continue
 
             # 4 — an advanced rule.
             hit = None
@@ -439,22 +418,99 @@ class PbSchemeMap(models.AbstractModel):
                 continue
 
             # 5 — the company's only scheme. Rule 8.
-            key = (company_id, cycle_type)
-            if key not in only_cache:
-                only_cache[key] = self._only_scheme(company_id, cycle_type)
-            single = only_cache[key]
-            if single:
-                out[employee_id] = {
-                    'config_id': single.id,
-                    'config_name': single.name or '',
-                    'rung': 'only',
-                    'via': _("the only scheme in this company"),
-                }
+            found = self._rung_only(company_id, cycle_type, only_cache)
+            if found:
+                out[employee_id] = found
                 continue
 
             # 6 — nobody, and it says so.
             out[employee_id] = self._blank()
         return out
+
+    # ============================================= the team rungs, shared
+    # NEWHIRE P1: rungs 2, 3 and 5 need only a team and a company, so the
+    # same three functions answer `resolve_many` (a real person) and
+    # `resolve_for_team` (somebody who does not exist yet). One body each.
+    @api.model
+    def _rung_department(self, chain, by_department, names, cycle_type):
+        """Rung 2 — the department map, deepest team first, or None."""
+        for candidate in reversed(chain):
+            found = self._pick(by_department.get(candidate), cycle_type)
+            if found:
+                return {
+                    'config_id': found.config_id.id,
+                    'config_name': found.config_id.name or '',
+                    'rung': 'department',
+                    'via': _("from %(team)s's team map",
+                             team=names.get(candidate) or _("this team")),
+                }
+        return None
+
+    @api.model
+    def _rung_division(self, chain, division_of, by_division, cycle_type):
+        """Rung 3 — the division the team (or a team above it) belongs to."""
+        division_id = 0
+        for candidate in reversed(chain):
+            if candidate in division_of:
+                division_id = division_of[candidate]
+                break
+        if not division_id:
+            return None
+        found = self._pick(by_division.get(division_id), cycle_type)
+        if not found:
+            return None
+        return {
+            'config_id': found.config_id.id,
+            'config_name': found.config_id.name or '',
+            'rung': 'division',
+            'via': _("from the %(division)s division",
+                     division=found.division_id.name or ''),
+        }
+
+    @api.model
+    def _rung_only(self, company_id, cycle_type, only_cache=None):
+        """Rung 5 — the company's only active scheme (ledger rule 8)."""
+        cache = only_cache if only_cache is not None else {}
+        key = (company_id, cycle_type)
+        if key not in cache:
+            cache[key] = self._only_scheme(company_id, cycle_type)
+        single = cache[key]
+        if not single:
+            return None
+        return {
+            'config_id': single.id,
+            'config_name': single.name or '',
+            'rung': 'only',
+            'via': _("the only scheme in this company"),
+        }
+
+    @api.model
+    def resolve_for_team(self, department_id, company_id=None,
+                         cycle_type='any', on_date=None):
+        """`{config_id, config_name, rung, via}` for somebody who would join
+        `department_id` in `company_id` — before any record exists.
+
+        The rungs that need only a team: the department map (2), the division
+        (3) and the company's only scheme (5). A work segment (1) and an
+        advanced rule (4) need a person, so a hypothetical hire never reaches
+        them; for an employee of the team who has neither, the answer equals
+        `resolve(employee)`. Never raises.
+        """
+        company_id = self._as_company_id(company_id)
+        dept_id = int(department_id or 0)
+        chains, _meta = self._chains([company_id])
+        chain = chains.get(dept_id) or ([dept_id] if dept_id else [])
+        rows = self._map_rows([company_id], on_date)
+        by_department = self._by_department(rows)
+        names = self._department_names(set(chain) | set(by_department))
+        found = self._rung_department(chain, by_department, names, cycle_type)
+        if not found:
+            found = self._rung_division(
+                chain, self._division_of_department(on_date),
+                self._by_division(rows), cycle_type)
+        if not found:
+            found = self._rung_only(company_id, cycle_type)
+        return found or self._blank()
 
     # ============================================================== coverage
     @api.model

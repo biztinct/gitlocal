@@ -508,6 +508,22 @@ export class StepRules extends Component {
             this.state.busy = false;
         }
     }
+    /** R12 — the attendance app's own extra-hours count, off / on again. */
+    async extraHoursOff() { await this._extraHours("extra_hours_off"); }
+    async extraHoursOn() { await this._extraHours("extra_hours_on"); }
+    async _extraHours(method) {
+        if (!(await this.flush())) { return; }
+        this.state.busy = true;
+        try {
+            const res = await this.orm.call(MODEL, method, []);
+            if (res.rules) { this.props.studio.setRules(res.rules); }
+            this.props.studio.toast(res.summary, { kind: "info" });
+        } catch (e) {
+            this.props.studio.toast(errorText(e), { kind: "error" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
     openAdvanced() {
         this.action.doAction("pb_attendance_policy.action_policy");
     }

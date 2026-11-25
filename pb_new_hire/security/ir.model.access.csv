@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_new_hire_paper_hr,new hire papers: HR reads,model_pb_new_hire_paper,hr.group_hr_user,1,0,0,0
+access_pb_new_hire_paper_mgr,new hire papers: HR managers change,model_pb_new_hire_paper,hr.group_hr_manager,1,1,1,1
+access_pb_new_hire_paper_sys,new hire papers: administrators,model_pb_new_hire_paper,base.group_system,1,1,1,1
+access_pb_new_hire_ask_hr,new hire asks: HR,model_pb_new_hire_ask,hr.group_hr_user,1,1,1,1
+access_pb_new_hire_ask_user,new hire asks: own,model_pb_new_hire_ask,base.group_user,1,0,0,0
+access_pb_new_hire_ask_portal,new hire asks: own (portal),model_pb_new_hire_ask,base.group_portal,1,0,0,0

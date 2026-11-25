@@ -252,6 +252,24 @@ class HrFormulaRuleValueLabels(models.Model):
 class HrFormulaConfigUsualAnswers(models.Model):
     _inherit = 'hr.formula.config'
 
+    def _pb_usual_answer_rules(self):
+        """The rules whose usual answer a new contract is filled in with, in
+        fill order: contract components that hold a number and carry a
+        non-zero usual answer, sorted (sequence, id).
+
+        The ONE filter — `_pb_fill_one` fills exactly these, and a screen that
+        previews a scheme's usual answers before any contract exists
+        (NEWHIRE P1) shows exactly these.
+        """
+        self.ensure_one()
+        return self.rule_ids.filtered(
+            lambda r: r.is_contract_component
+            and not r.is_text_component
+            and (r.value_kind or 'money') in NUMERIC_FILL_KINDS
+            and (r.code or '').strip()
+            and abs(r.default_value or 0.0) > 1e-9
+        ).sorted(lambda r: (r.sequence, r.id))
+
     def _pb_apply_usual_answers(self, spec):
         """Set usual answers and words on this scheme's rules, idempotently.
 
@@ -513,13 +531,7 @@ class HrContractFillIn(models.Model):
                 for line in contract.sudo().advantages_ids}      # FI2
         made = 0
         for scheme in schemes:
-            rules = scheme.rule_ids.filtered(
-                lambda r: r.is_contract_component
-                and not r.is_text_component
-                and (r.value_kind or 'money') in NUMERIC_FILL_KINDS
-                and (r.code or '').strip()
-                and abs(r.default_value or 0.0) > 1e-9
-            ).sorted(lambda r: (r.sequence, r.id))
+            rules = scheme._pb_usual_answer_rules()
             for rule in rules:
                 code = rule.code.strip()
                 if code in have:

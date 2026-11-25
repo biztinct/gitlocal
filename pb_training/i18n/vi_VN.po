@@ -12467,3 +12467,19 @@ msgstr "Khi khóa học trễ hạn %s ngày, trưởng nhóm nhân sự đượ
 #: code:addons/pb_training/models/workflow_timetable.py:0
 msgid "When a course is %s days late, the HR lead can be told, then once a week (the reminders are switched off here)."
 msgstr "Khi khóa học trễ hạn %s ngày, trưởng nhóm nhân sự có thể được báo, sau đó mỗi tuần một lần (việc nhắc đang tắt ở đây)."
+
+
+# ===================================================================
+#  NEWHIRE P6 (2026-11-25): shipped joining-checklist / equipment names.
+#  Written onto stored rows by migrations/<version>/post-migrate.py
+#  (pb_lifecycle.models.seed_translations) where the English is unchanged.
+# ===================================================================
+#. module: pb_training
+#: model:pb.journey.template.step,name:pb_training.step_training_day1
+msgid "Put them on their first courses"
+msgstr "Xếp các khóa học đầu tiên"
+
+#. module: pb_training
+#: model:pb.journey.template.step,description:pb_training.step_training_day1
+msgid "Runs itself on the joining day: the courses every new joiner has to do are added to their own training page, with a date to finish them by. If no day-one courses have been set up yet, the step simply says so."
+msgstr "Tự động chạy vào ngày vào làm: các khóa học mà mọi nhân viên mới phải học được thêm vào trang đào tạo của họ, kèm hạn hoàn thành. Nếu chưa thiết lập khóa học ngày đầu nào, bước này chỉ ghi rõ như vậy."

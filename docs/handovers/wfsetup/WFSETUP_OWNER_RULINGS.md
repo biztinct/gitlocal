@@ -26,3 +26,18 @@
 - R11 Owner's thought, adopted: pay formulas read **paid hours**; **actual hours from the punches stay in a separate
   field**, shown but never used in a formula.
 - R12 The built-in "extra hours" count is switched off on Sudima (its overtime comes from the rules).
+
+## 2026-11-25 (answers to the P10a proposal §10, on cards)
+- R13 Leave and public holidays: **recorded in Payobook** (proposal Q1 option B). Sudima enters time off in Payobook;
+  we load Vietnam's public holidays. Paid days = clock worked-day equivalents + approved paid leave days + calendar
+  holiday days. No new spreadsheet column, no formula change.
+- R14 Overtime above the legal limit: **pay only up to the limit** (`approved_hours`; `bonus_hours` NOT paid here,
+  shown as "Overtime above the legal limit"). How Sudima pays the excess is a **separate future work stream**
+  (backlog, `WFSETUP_BACKLOG.md` B1) — do not design it now.
+- R15 Sign-off: only every overtime entry must be decided (approved or turned down); no weekly timesheet sign-off.
+- R16 27 working days in December with divisor 26: keep as today (no cap).
+- R17 (2026-11-25) Worked public holiday at Sudima: **ask Sudima HR first**; keep 300% (holiday OT only) until they
+  answer. Must be settled before 1 Jan 2027 (first VN holiday in clock months). Checked: scheme 7844 has no holiday
+  formula of its own — VNOTPAY = VNBASEHOUR × VNOTHOURS, VNPREMPAY = VNBASEHOUR × VNPREMHOURS — the multiplier lives in
+  the hours, which come from the clocks from 1 Dec, so the policy rate IS what gets paid. 400% option = add the
+  holiday's day pay for daily-paid workers (monthly-salaried already include it). Backlog B7.
