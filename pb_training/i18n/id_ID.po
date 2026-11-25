@@ -56,3 +56,19 @@ msgstr "Jika kursus terlambat %s hari, kepala HR diberi tahu, lalu seminggu seka
 #: code:addons/pb_training/models/workflow_timetable.py:0
 msgid "When a course is %s days late, the HR lead can be told, then once a week (the reminders are switched off here)."
 msgstr "Jika kursus terlambat %s hari, kepala HR dapat diberi tahu, lalu seminggu sekali (pengingat dimatikan di sini)."
+
+
+# ===================================================================
+#  NEWHIRE P6 (2026-11-25): shipped joining-checklist / equipment names.
+#  Written onto stored rows by migrations/<version>/post-migrate.py
+#  (pb_lifecycle.models.seed_translations) where the English is unchanged.
+# ===================================================================
+#. module: pb_training
+#: model:pb.journey.template.step,name:pb_training.step_training_day1
+msgid "Put them on their first courses"
+msgstr "Daftarkan ke kursus pertama"
+
+#. module: pb_training
+#: model:pb.journey.template.step,description:pb_training.step_training_day1
+msgid "Runs itself on the joining day: the courses every new joiner has to do are added to their own training page, with a date to finish them by. If no day-one courses have been set up yet, the step simply says so."
+msgstr "Berjalan otomatis di hari bergabung: kursus yang wajib bagi setiap karyawan baru ditambahkan ke halaman pelatihan mereka, dengan batas waktu penyelesaian. Jika belum ada kursus hari pertama yang disiapkan, langkah ini cukup menyebutkannya."

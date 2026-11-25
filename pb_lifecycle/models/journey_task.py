@@ -3,7 +3,9 @@
 
 A task is the case's OWN copy of a checklist step: its wording, its date and its
 owner were decided when the journey opened and belong to it from then on. The
-`step_id` link is kept for reporting, never re-read to re-derive anything.
+`step_id` link is kept for reporting, never re-read to re-derive anything —
+with one read-only exception (NEWHIRE P6, `_pb_shown_texts`): a task whose
+words are still exactly the step's own is SHOWN in the reader's language.
 """
 
 import json
@@ -86,6 +88,47 @@ class PbJourneyTask(models.Model):
             if self._needs_token(vals) and not vals.get('portal_token'):
                 vals['portal_token'] = secrets.token_urlsafe(24)
         return super().create(vals_list)
+
+    # ------------------------------------------------------------- wording
+    def _pb_shown_texts(self, lang=None):
+        """``{task_id: {'name', 'description'}}`` in the reader's language.
+
+        NEWHIRE P6. A task keeps the words it was given when the journey
+        opened, in the language of whoever opened it. When those words are
+        still EXACTLY one of the checklist step's own versions (any language
+        it holds), nobody changed them since, so the reader gets the step's
+        version in their own language. A task whose words were changed in
+        the journey, or whose step was renamed afterwards, keeps its own
+        words, as before. Read-only: nothing is written.
+        """
+        lang = lang or self.env.lang or 'en_US'
+        out = {t.id: {'name': t.name or '', 'description': t.description or ''} for t in self}
+        step_ids = list({t.step_id.id for t in self if t.step_id})
+        if not step_ids:
+            return out
+        Step = self.env['pb.journey.template.step']
+        Step.flush_model(['name', 'description'])
+        self.env.cr.execute(
+            'SELECT id, name, description FROM pb_journey_template_step WHERE id = ANY(%s)',
+            (step_ids,))
+        words = {}
+        for sid, name, desc in self.env.cr.fetchall():
+            words[sid] = (name if isinstance(name, dict) else {},
+                          desc if isinstance(desc, dict) else {})
+
+        def pick(own, versions):
+            plain = {k: v for k, v in versions.items() if not k.startswith('_') and v}
+            if not own or own not in plain.values():
+                return own
+            return plain.get(lang) or plain.get('en_US') or own
+
+        for t in self:
+            if t.step_id.id not in words:
+                continue
+            names, descs = words[t.step_id.id]
+            out[t.id] = {'name': pick(t.name or '', names),
+                         'description': pick(t.description or '', descs)}
+        return out
 
     def _token_url(self):
         self.ensure_one()

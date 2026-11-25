@@ -61,7 +61,7 @@ additive `_inherit` extensions declared inside this module, and the lens
 arrives through P0's soft registry, which is what lets the dependency run one
 way only.
 """,
-    'version': '19.0.1.4.0',
+    'version': '19.0.1.5.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

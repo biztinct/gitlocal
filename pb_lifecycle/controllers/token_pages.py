@@ -77,6 +77,8 @@ class PbLifecycleTokenPages(http.Controller):
     def _task_page(self, token, task, status):
         emp = task.employee_id if task else None
         first = (emp.name or '').split(' ')[-1] if emp else ''
+        # NEWHIRE P6: a step nobody changed reads in the visitor's language.
+        words = task._pb_shown_texts()[task.id] if task else {}
         return request.render('pb_lifecycle.journey_task_page', {
             'status': status,
             # echoed back so the form posts to the same token — never
@@ -84,8 +86,8 @@ class PbLifecycleTokenPages(http.Controller):
             'token': token,
             'has_task': bool(task),
             'task': {
-                'name': task.name or '',
-                'description': task.description or '',
+                'name': words.get('name') or '',
+                'description': words.get('description') or '',
                 'kind': task.step_kind or 'task',
                 'due': str(task.due_date) if task and task.due_date else '',
                 'who': first,

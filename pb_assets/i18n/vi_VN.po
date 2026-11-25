@@ -618,3 +618,59 @@ msgstr ""
 "          </div>\n"
 "        </div>\n"
 "      "
+
+
+# ===================================================================
+#  NEWHIRE P6 (2026-11-25): shipped joining-checklist / equipment names.
+#  Written onto stored rows by migrations/<version>/post-migrate.py
+#  (pb_lifecycle.models.seed_translations) where the English is unchanged.
+# ===================================================================
+#. module: pb_assets
+#: model:pb.asset.category,name:pb_assets.cat_laptop
+msgid "Laptop"
+msgstr "Máy tính xách tay"
+
+#. module: pb_assets
+#: model:pb.asset.category,name:pb_assets.cat_phone
+msgid "Phone"
+msgstr "Điện thoại"
+
+#. module: pb_assets
+#: model:pb.asset.category,name:pb_assets.cat_sim
+msgid "SIM card"
+msgstr "Thẻ SIM"
+
+#. module: pb_assets
+#: model:pb.asset.category,name:pb_assets.cat_idcard
+msgid "ID card"
+msgstr "Thẻ nhân viên"
+
+#. module: pb_assets
+#: model:pb.asset.category,name:pb_assets.cat_credit_card
+msgid "Company card"
+msgstr "Thẻ công ty"
+
+#. module: pb_assets
+#: model:pb.asset.category,name:pb_assets.cat_monitor
+msgid "Monitor"
+msgstr "Màn hình"
+
+#. module: pb_assets
+#: model:pb.asset.category,name:pb_assets.cat_email
+msgid "Email account"
+msgstr "Tài khoản email"
+
+#. module: pb_assets
+#: model:pb.asset.category,name:pb_assets.cat_login
+msgid "System login"
+msgstr "Tài khoản đăng nhập hệ thống"
+
+#. module: pb_assets
+#: model:pb.asset.category,name:pb_assets.cat_software
+msgid "Software licence"
+msgstr "Giấy phép phần mềm"
+
+#. module: pb_assets
+#: model:pb.asset.category,name:pb_assets.cat_phone_number
+msgid "Phone number"
+msgstr "Số điện thoại"

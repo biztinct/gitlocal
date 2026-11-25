@@ -101,6 +101,8 @@ class PbOnboardingPortal(CustomerPortal):
         steps = []
         current_marked = False
         my_user = request.env.user
+        # NEWHIRE P6: a step nobody changed reads in the joiner's language.
+        words = case.task_ids._pb_shown_texts()
         for task in case.task_ids.sorted(
                 key=lambda t: (t.due_date or date.max, t.sequence, t.id)):
             settled = task.state in ('done', 'skipped')
@@ -116,8 +118,8 @@ class PbOnboardingPortal(CustomerPortal):
                     and emp.user_id and emp.user_id.id == my_user.id))
             steps.append({
                 'id': task.id,
-                'name': task.name or '',
-                'description': task.description or '',
+                'name': words[task.id]['name'],
+                'description': words[task.id]['description'],
                 'due': task.due_date,
                 'state': task.state,
                 'settled': settled,

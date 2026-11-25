@@ -137,7 +137,10 @@ JSONB_TARGETS = [
     ("hr_skill", ["name"]),
     ("hr_resume_line", ["name"]),
     ("hr_job", ["description"]),
-    ("pb_journey_template_step", ["name"]),
+    # NEWHIRE P6: `description` is translatable (jsonb) from pb_lifecycle
+    # 19.0.1.22.0; on an older build the column is text and this pass skips it
+    # (the text pass above still has it).
+    ("pb_journey_template_step", ["name", "description"]),
     # pb_learn deliberately described the legacy salary structures by the
     # vendor's name. Ruled out by the brand owner: no vendor mention anywhere,
     # legacy or not. The module's source XML is fixed too, so a reinstall does
@@ -185,16 +188,23 @@ class ResConfigSettings(models.TransientModel):
     # ------------------------------------------------------------------
     # helpers
     # ------------------------------------------------------------------
-    def _biz_columns(self, table, columns):
-        """Return the subset of ``columns`` that actually exists on ``table``."""
+    def _biz_columns(self, table, columns, data_types=None):
+        """Return the subset of ``columns`` that actually exists on ``table``.
+
+        ``data_types`` (optional) keeps only columns of those SQL types: the
+        plain-text pass must skip a column that a later version made
+        translatable (jsonb) — NEWHIRE P6 made `pb_journey_template_step.
+        description` one; the jsonb pass picks it up instead.
+        """
         self.env.cr.execute(
             """
-            SELECT column_name FROM information_schema.columns
+            SELECT column_name, data_type FROM information_schema.columns
              WHERE table_schema = 'public' AND table_name = %s AND column_name = ANY(%s)
             """,
             (table, list(columns)),
         )
-        return [row[0] for row in self.env.cr.fetchall()]
+        return [row[0] for row in self.env.cr.fetchall()
+                if not data_types or row[1] in data_types]
 
     def _biz_sql_prefilter(self, product):
         """The SQL word pattern that decides which rows Python even looks at.
@@ -211,7 +221,7 @@ class ResConfigSettings(models.TransientModel):
         return "\\modoo"
 
     def _biz_scrub_text(self, table, columns, brand, website, product=None):
-        columns = self._biz_columns(table, columns)
+        columns = self._biz_columns(table, columns, ("text", "character varying"))
         if not columns:
             return 0
         word = self._biz_sql_prefilter(product)
@@ -372,6 +382,20 @@ class ResConfigSettings(models.TransientModel):
                         else:
                             forgotten.append(jid)
                             continue
+                        if new_value != current:
+                            self.env.cr.execute(
+                                'UPDATE "%s" SET "%s" = %%s WHERE id = %%s' % (table, column),
+                                (Json(new_value), res_id),
+                            )
+                            restored += 1
+                    elif isinstance(current, dict):
+                        # NEWHIRE P6: a text cell journalled before its column
+                        # became translatable (jsonb): the brand word goes
+                        # back in every language it holds.
+                        new_value = {
+                            lang: rule.sub(j_product, text) if isinstance(text, str) else text
+                            for lang, text in current.items()
+                        }
                         if new_value != current:
                             self.env.cr.execute(
                                 'UPDATE "%s" SET "%s" = %%s WHERE id = %%s' % (table, column),
