@@ -300,6 +300,9 @@
           <label for="pbnh-f-department_id" style="margin:0;font:inherit;color:inherit">Team <em>*</em></label>
           <select id="pbnh-f-department_id" t-on-change="onTeam" aria-required="true">
             <option value="" t-att-selected="!d.department_id">Choose a team</option>
+            <optgroup t-if="teamGroups.paid.length" t-att-label="paidLabel">
+              <option t-foreach="teamGroups.paid" t-as="t" t-key="t.id" t-att-value="t.id" t-att-selected="t.id === d.department_id" t-esc="t.name"/>
+            </optgroup>
             <optgroup t-if="teamGroups.mine.length" t-att-label="mineLabel">
               <option t-foreach="teamGroups.mine" t-as="t" t-key="t.id" t-att-value="t.id" t-att-selected="t.id === d.department_id" t-esc="t.name"/>
             </optgroup>
@@ -389,13 +392,38 @@
     <div class="pbnh-card pbnh-pad pbnh-col">
       <div>
         <h3>What this decides</h3>
-        <p class="pbnh-sub">You never pick these by hand. They follow the country of work, and the team names the pay scheme.</p>
+        <p class="pbnh-sub">They follow the country of work. The pay scheme follows the team; when the country has several, you pick one.</p>
       </div>
       <div class="pbnh-decides" aria-live="polite">
-        <div t-att-class="'pbnh-dec ' + schemeTile.cls">
+        <div t-att-class="'pbnh-dec ' + schemeTile.cls + (schemeChoices.length ? ' pbnh-dec--choose' : '')">
           <span><t t-out="icon('banknote', 13)"/>Pay scheme</span>
-          <b t-key="schemeTile.value" t-esc="schemeTile.value"/>
-          <small t-if="schemeTile.sub" t-esc="schemeTile.sub"/>
+          <t t-if="schemeChoices.length">
+            <small class="pbnh-dec-q">Pick the pay scheme for this person</small>
+            <div class="pbnh-schemes" role="radiogroup" aria-label="Pay scheme">
+              <div t-foreach="schemeChoices" t-as="o" t-key="o.id"
+                   t-att-class="'pbnh-scheme' + (isScheme(o) ? ' is-on' : '')"
+                   role="radio" t-att-aria-checked="isScheme(o) ? 'true' : 'false'"
+                   t-att-tabindex="isScheme(o) ? '0' : '-1'"
+                   t-on-click="() => this.pickScheme(o)" t-on-keydown="(ev) => this.onSchemeKey(o, ev)">
+                <span class="pbnh-scheme-dot" aria-hidden="true"><t t-if="isScheme(o)" t-out="icon('check', 11)"/></span>
+                <span class="pbnh-scheme-t">
+                  <b t-esc="o.name"/>
+                  <small t-esc="schemeMeta(o)"/>
+                </span>
+                <span t-if="isUsualScheme(o)" class="pbnh-scheme-tag">Usual</span>
+              </div>
+            </div>
+            <small t-if="schemeTile.sub" t-esc="schemeTile.sub"/>
+            <small t-if="schemeDiffers" class="pbnh-scheme-differs">
+              <t t-esc="differsLine"/>
+              <button type="button" class="pbnh-link" t-on-click="useUsualScheme">Use the usual one</button>
+            </small>
+          </t>
+          <t t-else="">
+            <b t-key="schemeTile.value" t-esc="schemeTile.value"/>
+            <small t-if="schemeTile.sub" t-esc="schemeTile.sub"/>
+            <small t-if="schemeTile.mapping"><button type="button" class="pbnh-link" t-on-click="openMapping">Suggest who pays each team</button></small>
+          </t>
         </div>
         <div t-att-class="'pbnh-dec ' + currencyTile.cls">
           <span><t t-out="icon('coins', 13)"/>Currency</span>
@@ -424,7 +452,12 @@
           <b t-esc="problem"/>
           <span t-if="dec.fix" t-esc="dec.fix"/>
           <button t-if="mismatchCountry" type="button" class="pbnh-link" t-on-click="useSchemeCountry" t-esc="useSchemeLabel"/>
+          <button t-if="!mismatchCountry and d.department_id" type="button" class="pbnh-link" t-on-click="openMapping">Suggest who pays each team</button>
         </span>
+      </div>
+      <div t-elif="dec and dec.pay_line" class="pbnh-hint pbnh-hint--info" role="status">
+        <t t-out="icon('info', 16)"/>
+        <span class="pbnh-hint-t"><span t-esc="dec.pay_line"/></span>
       </div>
     </div>
   </div>
@@ -459,7 +492,7 @@
           <t t-if="scheme">
             <b class="pbnh-paidby-n" t-esc="scheme.name"/>
             <div class="pbnh-sub"><span t-esc="scheme.why"/> <span t-out="wagesIn"/></div>
-            <div t-if="!scheme.match" class="pbnh-sub" style="color:#7A3A06;margin-top:4px"><span t-esc="dec.problem"/> <span t-esc="dec.fix"/></div>
+            <div t-if="dec.problem" class="pbnh-sub" style="color:#7A3A06;margin-top:4px"><span t-esc="dec.problem"/> <span t-esc="dec.fix"/></div>
           </t>
           <t t-elif="dec and dec.problem">
             <b class="pbnh-paidby-n" t-esc="dec.problem"/>
@@ -469,7 +502,8 @@
             <b class="pbnh-paidby-n pbnh-sub">Working it out</b>
           </t>
         </div>
-        <span class="pbnh-chip">Set by the team</span>
+        <span t-if="scheme and scheme.hand" class="pbnh-chip">Picked in step 2</span>
+        <span t-else="" class="pbnh-chip">Set by the team</span>
       </div>
 
       <div class="pbnh-card pbnh-pad pbnh-col" style="gap:6px">

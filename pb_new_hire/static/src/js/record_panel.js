@@ -172,9 +172,9 @@ export class RecordPanel extends Component {
         }
         const money = cur ? _t("Pays in %s", cur.name) : "";
         return {
-            cls: dec.scheme.match ? "is-set" : "is-warn",
+            cls: dec.scheme.match && !dec.problem ? "is-set" : "is-warn",
             name: dec.scheme.name,
-            sub: dec.scheme.match ? [money, dec.scheme.why].filter(Boolean).join(" · ") : dec.problem,
+            sub: dec.scheme.match && !dec.problem ? [money, dec.scheme.why].filter(Boolean).join(" · ") : dec.problem,
         };
     }
 }

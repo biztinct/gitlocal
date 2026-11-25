@@ -76,8 +76,10 @@ const P2_KEYS = {
 /** P4: changing one of these works the payslip example out again (500 ms
  *  after the last change). */
 const EXAMPLE_INPUTS = ["name", "date_start", "department_id", "job_id", "job_title", "payroll_country", "country_id",
-    "wage", "contract_kind", "date_end", "usual", "type_id"];
+    "wage", "contract_kind", "date_end", "usual", "type_id", "scheme_id"];
 const EXAMPLE_MS = 500;
+/** P8: the Mapping screen ("Who is paid by what" is its scheme board). */
+const MAPPING_XMLID = "pb_formula_studio.action_pb_mapping_studio";
 const EXAMPLE_RETRY_MS = 600;
 const EXAMPLE_TRIES = 8;
 /** Changing one of these re-builds step 6's options and its timeline. */
@@ -104,6 +106,7 @@ function blankDraft(today) {
         payroll_country: "", parent_id: false, parent_name: "", work_location_id: false,
         country_id: false, wage: null, contract_kind: "permanent", date_end: "", trial_on: true,
         usual: {}, pb_scale_pin_reason: "", fill_job_id: false,
+        scheme_id: false,       // P8: the pay scheme picked by hand (several for the country)
         ...Object.fromEntries(Object.entries(P2_KEYS).map(([k, [blank]]) => [k, deepClone(blank)])),
     };
 }
@@ -164,6 +167,8 @@ export class NewHireStudio extends Component {
             pickTeam: (id) => this.pickTeam(id),
             pickCountry: (code) => this.pickCountry(code),
             undoPlace: () => this.undoPlace(),
+            pickScheme: (id) => this.pickScheme(id),
+            openMapping: (focus) => this.openMapping(focus),
             setUsual: (code, amount) => this.setUsual(code, amount),
             resetUsual: (code) => this.resetUsual(code),
             findPeople: (q) => this.orm.call(MODEL, "find_people", [q, 20]),
@@ -454,7 +459,7 @@ export class NewHireStudio extends Component {
         const s = this.sendDraft;
         const keys = ["name", "date_start", "department_id", "job_id", "job_title", "payroll_country", "country_id",
             "wage", "contract_kind", "date_end", "trial_on", "usual", "type_id", "late_group", "work_location_id",
-            "pb_scale_pin_reason"];
+            "pb_scale_pin_reason", "scheme_id"];
         return Object.fromEntries(keys.map((k) => [k, s[k]]));
     }
     /** Ask again 500 ms after the last change. ONE request at a time from
@@ -882,6 +887,17 @@ export class NewHireStudio extends Component {
             this.toast(errorText(e), { kind: "error" });
         }
     }
+    /** P8: Mapping's "Who is paid by what" board, with a drawer open
+     *  ("country": Suggest who pays each team). */
+    async openMapping(focus = "country") {
+        try {
+            await this.action.doAction(MAPPING_XMLID, {
+                additionalContext: { pb_focus: `scheme:${focus}` },
+            });
+        } catch (e) {
+            this.toast(errorText(e), { kind: "error" });
+        }
+    }
     async seeJoiners() {
         try {
             await this.action.doAction(JOINERS_XMLID);
@@ -901,7 +917,8 @@ export class NewHireStudio extends Component {
         // the two kinds of request may land
         const gen = (this.decGen = (this.decGen || 0) + 1);
         return this.ask("decides", "decides", [d.department_id || false, d.payroll_country || false,
-                                                 d.date_start || false, d.contract_kind], (res, err) => {
+                                                 d.date_start || false, d.contract_kind,
+                                                 d.scheme_id || false, d.job_id || false], (res, err) => {
             if (gen !== this.decGen) {
                 return;
             }
@@ -931,7 +948,8 @@ export class NewHireStudio extends Component {
         const gen = (this.decGen = (this.decGen || 0) + 1);
         nh.decidesBusy = true;
         return this.ask("places", "places", [d.payroll_country, team, d.job_id || false,
-                                               d.date_start || false, d.contract_kind, change], (res, err) => {
+                                               d.date_start || false, d.contract_kind, change,
+                                               d.scheme_id || false], (res, err) => {
             if (err || !res) {
                 if (gen === this.decGen) {
                     nh.decidesBusy = false;
@@ -969,7 +987,8 @@ export class NewHireStudio extends Component {
         if (code) {
             this.keepCountry(code);
         }
-        this.patch({ payroll_country: code || "" });
+        // P8: a scheme picked by hand belongs to the old country
+        this.patch({ payroll_country: code || "", scheme_id: false });
     }
     /** "Undo": the team (and job) the country change cleared come back; the
      *  mismatch warning then says what to do. */
@@ -1067,7 +1086,7 @@ export class NewHireStudio extends Component {
         if (has("payroll_country")) {
             // P7: the lists AND "What this decides" for the new country, in one call
             this.refreshPlaces({ change: !auto });
-        } else if (!decided && has("department_id", "date_start", "contract_kind")) {
+        } else if (!decided && has("department_id", "date_start", "contract_kind", "scheme_id", "job_id")) {
             this.refreshDecides();
         }
         if (has("job_id", "date_start", "payroll_country")) {
@@ -1146,6 +1165,12 @@ export class NewHireStudio extends Component {
         delete nh.auto.parent_name;
         this.persist();
         this.refreshAll();
+    }
+
+    /** P8: the person picks one of the country's pay schemes by hand
+     *  (several for the country). `false` goes back to the usual one. */
+    pickScheme(id) {
+        this.patch({ scheme_id: id || false });
     }
 
     setUsual(code, amount) {
@@ -1442,6 +1467,7 @@ export class NewHireStudio extends Component {
             contract_kind: d.contract_kind, date_end: d.contract_kind === "fixed" ? d.date_end : "",
             trial_on: d.trial_on, usual: Object.entries(d.usual || {}).map(([code, amount]) => ({ code, amount })),
             pb_scale_pin_reason: d.pb_scale_pin_reason || "", fill_job_id: d.fill_job_id || false,
+            scheme_id: d.scheme_id || false,
         };
     }
 

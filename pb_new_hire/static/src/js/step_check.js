@@ -145,7 +145,8 @@ export class StepCheck extends Component {
     get warnings() {
         const out = [];
         if (this.dec && this.dec.problem) {
-            out.push({ key: "scheme", b: this.dec.problem, s: this.dec.fix || "", go: "role", field: "payroll_country" });
+            out.push({ key: "scheme", b: this.dec.problem, s: this.dec.fix || "", go: "role",
+                       field: this.dec.scheme && this.dec.scheme.match ? "department_id" : "payroll_country" });
         }
         const same = (this.nh.dup && this.nh.dup.same_name) || [];
         if (same.length) {
@@ -199,6 +200,10 @@ export class StepCheck extends Component {
             out.push(scheme
                 ? rich(_t("%(name)s is added straight away, with a running contract in %(code)s on %(scheme)s."), { name: this.name || this.first, code, scheme })
                 : rich(_t("%(name)s is added straight away, with a running contract in %(code)s."), { name: this.name || this.first, code }));
+        }
+        if (this.dec && this.dec.pay_line) {
+            // P8 A.4: who will pay them, and how to make it the team's own
+            out.push(rich(this.dec.pay_line));
         }
         if (this.trialEnds) {
             out.push(rich(_t("The trial period is set to end on %(day)s."), { day: fmtDay(this.trialEnds, true) }));

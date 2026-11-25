@@ -164,7 +164,7 @@ class PbNewHirePlaces(models.AbstractModel):
     # ================================================================ places
     @api.model
     def places(self, country_code, department_id=False, job_id=False, date_start=False,
-               contract_kind='permanent', clear=False):
+               contract_kind='permanent', clear=False, scheme_id=False):
         """Step 2 for one Country of work, in one call. `clear`: the person
         just CHANGED the country — "What this decides" is then worked out
         without a team that does not fit (the screen clears it, with Undo);
@@ -199,7 +199,8 @@ class PbNewHirePlaces(models.AbstractModel):
         keep = team if (team and (not clear or out['team_fits'] is not False)) \
             else self.env['hr.department']
         if code or keep:
-            out['decides'] = self.decides(keep.id or False, code or False, date_start, contract_kind)
+            out['decides'] = self.decides(keep.id or False, code or False, date_start, contract_kind,
+                                          scheme_id, job.id or False)
         return out
 
     @api.model

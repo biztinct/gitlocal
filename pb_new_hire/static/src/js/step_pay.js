@@ -31,7 +31,7 @@ export class StepPay extends Component {
 
     // ------------------------------------------------------------ paid by
     get scheme() { return this.dec && this.dec.scheme; }
-    get paidCls() { return this.scheme && this.scheme.match ? "" : "is-warn"; }
+    get paidCls() { return this.scheme && this.scheme.match && !(this.dec && this.dec.problem) ? "" : "is-warn"; }
     get wagesIn() {
         return this.cur ? rich(_t("Wages are in %(code)s."), { code: this.cur.name }) : "";
     }

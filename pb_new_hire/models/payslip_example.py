@@ -41,6 +41,7 @@ from odoo.tools.misc import format_date
 
 from odoo.addons.pb_people_advanced.models.newhire_approval import NEWHIRE_WRITE
 
+from .studio import _int
 from .create_ext import PREVIEW_CTX            # "for the example only": no welcome leg
 
 _logger = logging.getLogger(__name__)
@@ -57,6 +58,7 @@ EXAMPLE_KEYS = (
     'name', 'date_start', 'department_id', 'job_id', 'job_title', 'payroll_country',
     'country_id', 'wage', 'contract_kind', 'date_end', 'trial_on', 'usual', 'type_id',
     'late_group', 'pb_scale_pin_reason', 'work_location_id',
+    'scheme_id',                    # P8: the pay scheme picked by hand
 )
 
 #: The values keys the preview create drops (welcome legs, the bank, the
@@ -209,7 +211,8 @@ class PbNewHireExample(models.AbstractModel):
         team = self._team(d.get('department_id'))
         start = self._day(d.get('date_start'))
         kind = 'fixed' if d.get('contract_kind') == 'fixed' else 'permanent'
-        decided = self.decides(team.id, code, fields.Date.to_string(start), kind)
+        decided = self.decides(team.id, code, fields.Date.to_string(start), kind,
+                               _int(d.get('scheme_id')) or False, _int(d.get('job_id')) or False)
         scheme = decided.get('scheme') or {}
         config = self._scheme(scheme.get('id'))
         if not config:

@@ -68,7 +68,12 @@ DRAFT_KEYS = (
     'offer_id',
     # P5a — the date the identity card from Hiring is valid until (optional)
     'hiring_valid_until',
+    # P8 — the pay scheme the person picked by hand (several for the country)
+    'scheme_id',
 )
+
+#: P8: how many schemes the chooser lists at most.
+MAX_SCHEMES = 20
 
 _EMAIL = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
 
@@ -384,45 +389,205 @@ class PbNewHire(models.AbstractModel):
             return _("Because %(team)s's division is paid by this scheme.", team=team.name or '')
         if rung == 'only':
             return _("It is the only pay scheme in %(company)s.", company=company.name or '')
+        if rung == 'rule':
+            return _("A rule on the map pays people like them with this scheme.")
         return ''
 
+    # ============================================= P8: which pay scheme
     @api.model
-    def decides(self, department_id, country_code, date_start=False, contract_kind='permanent'):
-        """"What this decides": the pay scheme (from the team, checked against
-        the chosen country — D3), the currency and the trial period (from the
-        chosen country — D4, D5)."""
+    def _scheme_options(self, code):
+        """The active pay schemes for people working in `code` (this company's
+        or shared; never a mid-month advance), with what the chooser shows:
+        currency, kind of run and how many people each pays today."""
+        if not code:
+            return []
+        company = self._company()
+        configs = self.env['pb.scheme.map'].sudo()._country_schemes(company.id, code)[:MAX_SCHEMES]
+        if not configs:
+            return []
+        Employee = self.env['hr.employee'].sudo()
+        counts = {}
+        if 'pb_paid_by_id' in Employee._fields:
+            for config, n in Employee._read_group(
+                    [('company_id', '=', company.id), ('active', '=', True),
+                     ('pb_paid_by_id', 'in', configs.ids)], ['pb_paid_by_id'], ['__count']):
+                counts[config.id] = n
+        kinds = dict(configs._fields['cycle_type']._description_selection(self.env))
+        out = []
+        for config in configs:
+            money = self._currency_for(config.country_code) or {}
+            out.append({'id': config.id, 'name': config.name or '',
+                        'currency': money.get('name') or '', 'symbol': money.get('symbol') or '',
+                        'kind': kinds.get(config.cycle_type) or '',
+                        'people': counts.get(config.id, 0)})
+        return out
+
+    @api.model
+    def _most_paid(self, config_ids, team, code):
+        """`(config_id, where)` — of `config_ids`, the scheme that pays most of
+        the team's people today ('team'), else most people working in `code`
+        ('country'); `(0, '')` when nobody is paid by any of them."""
+        Employee = self.env['hr.employee'].sudo()
+        if not config_ids or 'pb_paid_by_id' not in Employee._fields:
+            return 0, ''
+        company = self._company()
+        base = [('company_id', '=', company.id), ('active', '=', True),
+                ('pb_paid_by_id', 'in', list(config_ids))]
+        for where, extra in (('team', [('department_id', '=', team.id)] if team else None),
+                             ('country', [('payroll_country', '=', code)])):
+            if extra is None:
+                continue
+            groups = Employee._read_group(base + extra, ['pb_paid_by_id'], ['__count'])
+            if groups:
+                best = sorted(groups, key=lambda g: (-g[1], g[0].id))[0]
+                return best[0].id, where
+        return 0, ''
+
+    @api.model
+    def _scheme_for(self, d):
+        """NEWHIRE P8 A — THE answer to "which pay scheme" for a draft. Every
+        reader (step 2's tile and chooser, step 3, the payslip example, the
+        usual answers, the values sent) goes through here.
+
+        * `pay_run`: what the PAY RUN would do for this person
+          (`pb.scheme.map.resolve_for_draft`: the team's map line, its
+          division, a rule on the map judged on the draft, the only scheme).
+        * `usual`: the scheme shown when nobody picked one — the pay run's
+          answer when it is of the chosen country (or comes from the team's
+          own line: P7's mismatch stays visible); else the country's only
+          scheme; else, of several, the one that pays most of the team, then
+          most people in the country.
+        * a hand pick (`scheme_id`) is honoured only when it is one of the
+          country's schemes; `honoured` says whether the pay run will really
+          use the chosen scheme. Nothing here writes: the studio never maps
+          a team (A.4); a draft without `scheme_id` (an older payload) gets
+          `usual`.
+        """
+        company = self._company()
+        Config = self.env['hr.formula.config'].sudo()
+        codes = dict(self._countries())
+        code = d.get('payroll_country') if d.get('payroll_country') in codes else ''
+        team = self._team(d.get('department_id'))
+        options = self._scheme_options(code)
+        ids = [o['id'] for o in options]
+        pay_run = {}
+        if team:
+            pay_run = self.env['pb.scheme.map'].sudo().resolve_for_draft(
+                team.id, {'payroll_country': code or False, 'job_id': _int(d.get('job_id')) or False},
+                company.id)
+        run_cfg = Config.browse(pay_run.get('config_id') or 0).exists()
+        rung = pay_run.get('rung') or 'none'
+        team_rung = rung in ('department', 'division')
+        usual, why = Config, ''
+        if run_cfg and (team_rung or not code or run_cfg.country_code == code):
+            usual, why = run_cfg, self._why(rung, team, company)
+        elif options:
+            if len(options) == 1:
+                usual = Config.browse(ids[0])
+                why = _("The only pay scheme for %(country)s.", country=codes.get(code, ''))
+            else:
+                best, where = self._most_paid(ids, team, code)
+                usual = Config.browse(best or ids[0])
+                why = (_("Pays most people in %(team)s.", team=team.name or '') if where == 'team'
+                       else _("Pays most people working in %(country)s.", country=codes.get(code, ''))
+                       if where == 'country' else
+                       _("One of %(count)s pay schemes for %(country)s.", count=len(ids),
+                         country=codes.get(code, '')))
+        elif run_cfg:
+            usual, why = run_cfg, self._why(rung, team, company)
+        chosen, hand = usual, False
+        picked = _int(d.get('scheme_id'))
+        if picked and picked in ids:
+            chosen, hand = Config.browse(picked), True
+            if chosen != usual:
+                why = _("You chose this pay scheme.")
+        return {
+            'config': chosen, 'usual': usual, 'why': why, 'hand': hand,
+            'differs': bool(hand and usual and chosen != usual),
+            'options': options, 'team': team, 'code': code,
+            'pay_run': run_cfg, 'rung': rung, 'via': pay_run.get('via') or '',
+            'honoured': bool(chosen and run_cfg and chosen == run_cfg),
+        }
+
+    @api.model
+    def _scheme_teams(self, config):
+        """Team ids the scheme pays through their own map line or their
+        division's (A.3: a scheme picked first puts its teams first)."""
+        if not config:
+            return []
+        company = self._company()
+        answers = self.env['pb.scheme.map'].sudo().resolve_for_teams(self._team_ids(), company.id)
+        return sorted(t for t, a in answers.items()
+                      if a.get('config_id') == config.id and a.get('rung') in ('department', 'division'))
+
+    @api.model
+    def decides(self, department_id, country_code, date_start=False, contract_kind='permanent',
+                scheme_id=False, job_id=False):
+        """"What this decides": the pay scheme (P8: `_scheme_for` — from the
+        country, the team and a hand pick when the country has several), the
+        currency and the trial period (from the chosen country — D4, D5)."""
         self._gate()
         company = self._company()
         code = country_code if country_code in dict(self._countries()) else ''
         out = {'scheme': False, 'currency': self._currency_for(code) if code else False,
-               'trial': False, 'trial_none': False, 'problem': False, 'fix': False}
+               'trial': False, 'trial_none': False, 'problem': False, 'fix': False,
+               'schemes': [], 'scheme_teams': [], 'pay_line': False}
         team = self._team(department_id)
-        if team:
-            answer = self.env['pb.scheme.map'].sudo().resolve_for_team(team.id, company.id)
-            config = self.env['hr.formula.config'].sudo().browse(
-                answer.get('config_id') or 0).exists()
-            if config:
-                match = not code or config.country_code == code
-                out['scheme'] = {
-                    'id': config.id, 'name': config.name or '',
-                    'country_code': config.country_code or '',
-                    'country_name': self._country_label(config.country_code),
-                    'match': match, 'rung': answer.get('rung') or '',
-                    'why': self._why(answer.get('rung'), team, company),
-                }
-                if not match:
-                    theirs = self._country_label(config.country_code)
-                    mine = self._country_label(code)
-                    out['problem'] = _(
-                        "%(team)s is paid by %(scheme)s, a %(theirs)s scheme, but you chose "
-                        "%(mine)s as the country of work.",
-                        team=team.name or '', scheme=config.name or '', theirs=theirs, mine=mine)
-                    out['fix'] = _("Choose %(theirs)s, or pick the team that %(mine)s people "
-                                   "belong to.", theirs=theirs, mine=mine)
+        found = self._scheme_for({'department_id': team.id if team else False,
+                                  'payroll_country': code, 'scheme_id': scheme_id, 'job_id': job_id})
+        config = found['config']
+        out['schemes'] = found['options'] if len(found['options']) > 1 else []
+        if config:
+            match = not code or config.country_code == code
+            out['scheme'] = {
+                'id': config.id, 'name': config.name or '',
+                'country_code': config.country_code or '',
+                'country_name': self._country_label(config.country_code),
+                'match': match, 'rung': found['rung'] if found['honoured'] else '',
+                'why': found['why'], 'hand': found['hand'], 'differs': found['differs'],
+                'honoured': found['honoured'],
+                'usual_id': found['usual'].id if found['usual'] else 0,
+                'usual_name': found['usual'].name or '' if found['usual'] else '',
+            }
+            if out['schemes']:
+                out['scheme_teams'] = self._scheme_teams(config)
+        run = found['pay_run']
+        if team and config and not match:
+            theirs = self._country_label(config.country_code)
+            mine = self._country_label(code)
+            out['problem'] = _(
+                "%(team)s is paid by %(scheme)s, a %(theirs)s scheme, but you chose "
+                "%(mine)s as the country of work.",
+                team=team.name or '', scheme=config.name or '', theirs=theirs, mine=mine)
+            out['fix'] = _("Choose %(theirs)s, or pick the team that %(mine)s people "
+                           "belong to.", theirs=theirs, mine=mine)
+        elif team and not config:
+            out['problem'] = _("No pay scheme pays %(team)s yet.", team=team.name or '')
+            out['fix'] = _("You can still add the person. Set who pays this team in Mapping "
+                           "before the first pay run.")
+        elif team and not run:
+            # A.4: the country's scheme is shown, but nothing puts the person on
+            # a pay run yet — say who will pay them and how to make it so.
+            out['problem'] = _("No pay scheme pays %(team)s yet.", team=team.name or '')
+            out['fix'] = _("%(scheme)s is used for the example. Set who pays %(team)s in Mapping "
+                           "so the pay run includes them.", scheme=config.name or '',
+                           team=team.name or '')
+        elif team and run and not found['honoured']:
+            if found['rung'] in ('department', 'division'):
+                out['problem'] = _("%(team)s is paid by %(run)s, and the pay run follows the team.",
+                                   team=team.name or '', run=run.name or '')
+                out['fix'] = _("To pay them by %(scheme)s, pick one of its teams (they are listed "
+                               "first) or change who pays %(team)s in Mapping.",
+                               scheme=config.name or '', team=team.name or '')
             else:
-                out['problem'] = _("No pay scheme pays %(team)s yet.", team=team.name or '')
-                out['fix'] = _("You can still add the person. Set who pays this team in Mapping "
-                               "before the first pay run.")
+                out['problem'] = _("The pay run will pay them by %(run)s, not %(scheme)s.",
+                                   run=run.name or '', scheme=config.name or '')
+                out['fix'] = _("Set who pays %(team)s in Mapping to make %(scheme)s theirs.",
+                               team=team.name or '', scheme=config.name or '')
+        elif team and found['honoured'] and found['rung'] == 'rule':
+            out['pay_line'] = _("%(scheme)s pays them through a rule on the map. Set who pays "
+                                "%(team)s in Mapping to make it the team's own.",
+                                scheme=config.name or '', team=team.name or '')
         start = self._day(date_start)
         if code:
             policy = self.env['pb.probation.policy'].sudo().policy_for_country(
@@ -654,7 +819,8 @@ class PbNewHire(models.AbstractModel):
         site = self._site(d.get('work_location_id'))
         start = self._day(d.get('date_start'))
         kind = 'fixed' if d.get('contract_kind') == 'fixed' else 'permanent'
-        decided = self.decides(team.id, code, fields.Date.to_string(start), kind)
+        decided = self.decides(team.id, code, fields.Date.to_string(start), kind,
+                               _int(d.get('scheme_id')) or False, _int(d.get('job_id')) or False)
         scheme = decided.get('scheme') or {}
         config = self._scheme(scheme.get('id'))
         nationality = self.env['res.country'].sudo().browse(_int(d.get('country_id'))).exists() \
@@ -682,6 +848,8 @@ class PbNewHire(models.AbstractModel):
                 'parent_id': boss.name or '',
                 'work_location_id': site.name if site else '',
                 'scheme': config.name or '',
+                # P8: the approver reads who will really pay them
+                'scheme_note': decided.get('problem') or '' if config else '',
                 'country': self._country_label(code),
                 'currency': (decided.get('currency') or {}).get('name') or '',
             },

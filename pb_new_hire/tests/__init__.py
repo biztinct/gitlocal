@@ -8,3 +8,4 @@ from . import test_payslip_example
 from . import test_hiring
 from . import test_p5a
 from . import test_p7
+from . import test_p8

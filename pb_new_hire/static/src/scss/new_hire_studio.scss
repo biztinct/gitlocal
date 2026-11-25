@@ -253,6 +253,37 @@
     .pbnh-dec:not(.is-set):not(.is-warn) b { color: var(--pbnh-faint); font-weight: 500; }
     .pbnh-dec small { color: var(--pbnh-muted); font-size: 12px; line-height: 1.35; }
     .pbnh-dec.is-busy b { opacity: .55; }
+    // P8 A.2: several pay schemes for the country — the tile becomes a chooser
+    .pbnh-dec.pbnh-dec--choose { grid-column: 1 / -1; gap: 6px; }
+    .pbnh-dec .pbnh-dec-q { color: var(--pbnh-ink); font-weight: 500; }
+    .pbnh-schemes { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; }
+    .pbnh-scheme {
+        display: flex; align-items: flex-start; gap: 9px; padding: 9px 11px; border-radius: 10px;
+        border: 1px solid var(--pbnh-line); background: var(--pbnh-card); cursor: pointer; min-width: 0;
+        transition: border-color .18s ease-out, box-shadow .18s ease-out, transform .18s ease-out;
+    }
+    .pbnh-scheme:hover { border-color: var(--pbnh-teal); }
+    .pbnh-scheme:focus-visible { outline: 2px solid var(--pbnh-teal); outline-offset: 1px; }
+    .pbnh-scheme.is-on { border-color: var(--pbnh-teal); box-shadow: 0 0 0 3px var(--pbnh-teal-soft); }
+    .pbnh-scheme:active { transform: scale(.99); }
+    .pbnh-scheme-dot {
+        flex: 0 0 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--pbnh-line);
+        display: inline-flex; align-items: center; justify-content: center; color: #fff; margin-top: 1px;
+        transition: background .18s ease-out, border-color .18s ease-out;
+    }
+    .pbnh-scheme.is-on .pbnh-scheme-dot { background: var(--pbnh-teal); border-color: var(--pbnh-teal); }
+    .pbnh-scheme-dot svg { width: 11px; height: 11px; }
+    .pbnh-scheme-t { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 auto; }
+    .pbnh-dec .pbnh-scheme-t b { font-size: 13px; animation: none; color: var(--pbnh-ink); font-weight: 600; }
+    .pbnh-scheme-t small { font-size: 11.5px; }
+    .pbnh-scheme-tag {
+        flex: 0 0 auto; font-size: 10.5px; font-weight: 600; padding: 1px 7px; border-radius: 999px;
+        background: var(--pbnh-teal-soft); color: var(--pbnh-teal);
+    }
+    .pbnh-dec .pbnh-scheme-differs { color: var(--pbnh-warn); }
+    @media (prefers-reduced-motion: reduce) {
+        .pbnh-scheme, .pbnh-scheme-dot { transition: none; }
+    }
 
     // ------------------------------------------------ step 3: pay
     .pbnh-paidby { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }

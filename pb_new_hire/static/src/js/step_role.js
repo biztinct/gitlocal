@@ -57,16 +57,28 @@ export class StepRole extends Component {
         const all = this.data.teams || [];
         const p = this.places;
         if (!p) {
-            return { mine: [], unknown: all, other: [], flat: true };
+            return { mine: [], unknown: all, other: [], paid: [], flat: true };
         }
+        // P8 A.3: with several pay schemes for the country, the teams the
+        // chosen scheme pays come first, in their own group
+        const paid = new Set(this.schemeTeams);
         const mine = new Set(p.teams.mine);
         const other = new Set(p.teams.other);
         return {
-            mine: all.filter((t) => mine.has(t.id)),
-            other: all.filter((t) => other.has(t.id)),
-            unknown: all.filter((t) => !mine.has(t.id) && !other.has(t.id)),
+            paid: all.filter((t) => paid.has(t.id)),
+            mine: all.filter((t) => mine.has(t.id) && !paid.has(t.id)),
+            other: all.filter((t) => other.has(t.id) && !paid.has(t.id)),
+            unknown: all.filter((t) => !mine.has(t.id) && !other.has(t.id) && !paid.has(t.id)),
             flat: false,
         };
+    }
+    get schemeTeams() {
+        const dec = this.dec;
+        return dec && dec.schemes && dec.schemes.length && dec.scheme ? (dec.scheme_teams || []) : [];
+    }
+    get paidLabel() {
+        const s = this.dec && this.dec.scheme;
+        return s ? _t("Teams %s pays", s.name) : "";
     }
     get teamInOther() {
         const id = this.d.department_id;
@@ -87,7 +99,7 @@ export class StepRole extends Component {
     }
     get noTeamsHere() {
         const g = this.teamGroups;
-        return !g.flat && !g.mine.length;
+        return !g.flat && !g.mine.length && !g.paid.length;
     }
     get noTeamsLine() { return _t("No team has people working in %s yet.", this.countryName); }
     teamPeople(t) {
@@ -228,19 +240,69 @@ export class StepRole extends Component {
 
     // ------------------------------------------------------------ what this decides
     get dec() { return this.nh.decides; }
+    /** P8 A.2: the tile follows the Country of work — one scheme is shown
+     *  as chosen, several get a chooser, none says so with a way to Mapping. */
     get schemeTile() {
         const dec = this.dec;
-        if (!this.d.department_id) {
-            return { cls: "", value: _t("Pick a team"), sub: _t("The team decides who pays.") };
+        if (!this.d.payroll_country && !this.d.department_id) {
+            return { cls: "", value: _t("Choose a country first"), sub: "" };
         }
         if (!dec) {
             return { cls: "is-busy", value: _t("Working it out"), sub: "" };
         }
         if (!dec.scheme) {
-            return { cls: "is-warn", value: _t("No pay scheme yet"), sub: "" };
+            if (!this.d.department_id) {
+                return { cls: "is-warn", value: _t("No pay scheme for %s yet", this.countryName), sub: "",
+                         mapping: true };
+            }
+            return { cls: "is-warn", value: _t("No pay scheme yet"), sub: "", mapping: true };
         }
-        return { cls: dec.scheme.match ? "is-set" : "is-warn", value: dec.scheme.name, sub: dec.scheme.why };
+        const ok = dec.scheme.match && (!this.d.department_id || dec.scheme.honoured);
+        return { cls: ok ? "is-set" : "is-warn", value: dec.scheme.name, sub: dec.scheme.why };
     }
+    /** The chooser: only when the country has several pay schemes. */
+    get schemeChoices() {
+        const dec = this.dec;
+        return dec && dec.schemes && dec.schemes.length > 1 ? dec.schemes : [];
+    }
+    isScheme(o) { return Boolean(this.dec && this.dec.scheme && this.dec.scheme.id === o.id); }
+    isUsualScheme(o) { return Boolean(this.dec && this.dec.scheme && this.dec.scheme.usual_id === o.id); }
+    pickScheme(o) { this.props.api.pickScheme(o.id); }
+    /** Radio-group keys: Enter / Space picks, the arrows move and pick. */
+    onSchemeKey(o, ev) {
+        if (ev.key === "Enter" || ev.key === " ") {
+            ev.preventDefault();
+            this.pickScheme(o);
+            return;
+        }
+        const step = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[ev.key];
+        if (!step) {
+            return;
+        }
+        ev.preventDefault();
+        const list = this.schemeChoices;
+        const at = list.findIndex((x) => x.id === o.id);
+        const next = list[(at + step + list.length) % list.length];
+        if (next) {
+            this.pickScheme(next);
+            const host = ev.currentTarget.parentElement;
+            setTimeout(() => host?.querySelector(".pbnh-scheme.is-on")?.focus(), 60);
+        }
+    }
+    schemeMeta(o) {
+        const people = o.people === 1 ? _t("pays 1 person") : _t("pays %s people", o.people || 0);
+        return [o.currency, o.kind, people].filter(Boolean).join(" · ");
+    }
+    get schemeDiffers() {
+        const s = this.dec && this.dec.scheme;
+        return s && s.differs ? s : null;
+    }
+    get differsLine() {
+        const s = this.schemeDiffers;
+        return s ? _t("This differs from the team's usual scheme, %s.", s.usual_name) : "";
+    }
+    useUsualScheme() { this.props.api.pickScheme(false); }
+    openMapping() { this.props.api.openMapping("country"); }
     get currencyTile() {
         const cur = this.props.api.currency;
         if (!this.d.payroll_country || !cur) {

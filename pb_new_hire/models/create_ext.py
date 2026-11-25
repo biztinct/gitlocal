@@ -310,6 +310,7 @@ class PbNewHireProposalNH(models.Model):
         add(_('First day'), day(values.get('date_start')))
         add(_('Country of work'), names.get('country') or values.get('payroll_country'))
         add(_('Paid by'), names.get('scheme') or _('No pay scheme yet'))
+        add(_('Who pays them'), names.get('scheme_note'))       # P8: when the pay run differs
         add(_('Team'), self._row_label('hr.department', values.get('department_id'),
                                        names.get('department_id') or ''))
         if values.get('job_id'):
