@@ -291,3 +291,24 @@ Owner approved the design and the phased build on 2026-11-25.
 - **NH77** (P5b) payobook (demo) has no Indonesian team (every scheme is Vietnamese) and no approval route for new hires
   (the studio adds the person at once). The Indonesian path and the "second person approves" path cannot be shown there
   without new demo data.
+
+- **NH78** (P6) An upgrade's translation loader puts a `.po`'s `model:` words into EVERY shipped row (by xml id) that
+  lacks that language, WITHOUT comparing the stored English: a step a company renamed in English would get our
+  Vietnamese on top (proved on `nh10_p6`, rolled back). It runs right after the module's post-migrate. The P6 migration
+  never writes a renamed row; instead the release gate `p6/nh6_shipped.py` stops the release if any shipped row is
+  renamed (none on the five databases, 2026-11-25). Pinning the missing languages to the company's own words would
+  close the gap but writes onto a renamed row — an architect decision.
+- **NH79** (P6) A joining checklist's steps are the case's OWN copies (`pb.journey.task.name/description`, plain
+  columns), made in the language of whoever opened it. Translating the template step changes nothing on a running
+  checklist. Readers (`pb.journeys.get_case` — Journeys and the New joiners drawer — `/my` joining page, link page) show
+  `pb.journey.task._pb_shown_texts()`: the step's words in the reader's language while the task still holds one of
+  the step's own versions; a step changed in that journey keeps its words. Nothing is written.
+- **NH80** (P6) `biz_debrand`'s stored-row clean-up runs at the END OF EVERY UPGRADE (`_register_hook`) and reads
+  the columns it lists RAW, as plain text or as translated jsonb. Making a listed column translatable broke its
+  plain-text pass (`jsonb ~* unknown`, a WARNING with traceback per upgrade) and stopped the brand rewrite on that
+  column. P6 made the plain-text pass type-aware and listed `pb_journey_template_step.description` as translated.
+  Bumping `biz_debrand` would cascade an upgrade of every module depending on it: ship it as files only.
+- **NH81** (P6) Two local servers on `localhost:<port>` share ONE session cookie (cookies ignore the port): signing in
+  on one signs out another session's walk on the other. Walk a second server on `127.0.0.1:<port>`.
+- **NH82** (P6) A test run (`--test-enable`, even `--no-http`) binds the conf's `http_port` for its HttpCase tests: a
+  walk server on the same conf cannot start ("Address already in use"). Give the walk server its own port.
