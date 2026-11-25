@@ -101,11 +101,20 @@ outside the current source list. Do not auto-archive or include them in a pay ru
 
 Second data application: `apply_sudima_attendance_final_rules_20261125.py`, after
 the shared release. It adds the long shift, saves both groups' paid grace, and
-marks only current employees' future draft rosters as reviewed. It keeps the
-policy draft while the allowance/employee coverage remains unresolved, and never
-publishes rosters, enables connector publication, approves overtime or runs pay.
+marks only current employees' future draft rosters as reviewed. It confirms the now-agreed attendance rules using the screen’s Confirm action.
+The allowance/employee coverage gaps still prevent full payroll readiness; this
+does not publish rosters, enable connector publication, approve overtime or run pay.
 
 Validation in progress: 13 standalone calculation tests pass. The isolated
 application rehearsal passed 42/43 cases initially; the new late-day test correctly
 refused undecided OT. After completing the fixture's approval workflow, its
 source-to-payroll retest passed. The application behavior was not weakened.
+
+### Latest owner response
+
+Daily allowance divisor confirmed as 26. Owner explicitly instructed **keep the
+current amounts/formula as-is** while asking Sudima for full entitlement. Thus
+VNATT/VNATTPLUS stay untouched; the intended future formula is
+`max(0, full monthly Attendance allowance - full monthly Attendance allowance / 26 * late working days)`.
+This formula has not been activated or applied to historical paid allowances.
+The other deployment must finish first; owner confirmed waiting for it.

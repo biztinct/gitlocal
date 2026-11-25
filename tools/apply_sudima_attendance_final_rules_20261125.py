@@ -33,7 +33,7 @@ result=S.save_rules({'late':late,'shifts':[{'shift_id':long.id,'break_start':'11
     'second_break_start':'23:30','second_break_minutes':60,'overtime_from':'16:30','touched':True}]})
 assert result['state']=='draft'
 P.band_ids.write({'confirmed':True})
-P.write({'note':'Owner confirmations 25 Nov 2026: both groups under 10 minutes retain paid start time and late-arrival evidence; no extra hours penalty. At >=10 minutes deduct actual missed time plus 4h Worker / 1h Manager. Never debit annual leave. Each late working day reduces Attendance allowance by one day; Additional attendance allowance is unchanged. Full entitlement amount and daily divisor still require confirmation before activating allowance payroll. Proposed working weeks accepted for employees already assigned; no schedules invented for 91 current people without a pattern. Both breaks confirmed for 07:30-04:00. Cash/excess OT retained as a separate pending workstream, not paid through regular payrun. Clock pay begins 1 Dec. No roster/contract/payroll publication until readiness checks pass.'})
+P.write({'note':'Owner confirmations 25 Nov 2026: both groups under 10 minutes retain paid start time and late-arrival evidence; no extra hours penalty. At >=10 minutes deduct actual missed time plus 4h Worker / 1h Manager. Never debit annual leave. Each late working day reduces Attendance allowance by one day; Additional attendance allowance is unchanged. Daily divisor 26 confirmed. Owner instructed to retain the existing allowance amounts/formulas until the full entitlement is supplied by Sudima. Proposed working weeks accepted for employees already assigned; no schedules invented for 91 current people without a pattern. Both breaks confirmed for 07:30-04:00. Cash/excess OT retained as a separate pending workstream, not paid through regular payrun. Clock pay begins 1 Dec. Attendance rules confirmed; no roster/contract/payroll publication until employee coverage and payroll readiness checks pass.'})
 # Record the validation on the existing future draft roster, not on people who
 # are absent from the current client list. The roster's review fields are editable in UI.
 rows=e['hr.shift.planning'].search([('employee_id','in',current),('state','=','draft'),('date','>=','2026-12-01')])
@@ -59,16 +59,18 @@ for rule in P.shift_ids.filtered(lambda x:x.template_id.code.startswith('SD-')):
                 expected=8 if minutes<10 else 8-minutes/60-penalty
                 assert abs(r['normal_hours']-expected)<1e-9,r
                 assert abs(r['worked_hours']-(8-minutes/60))<1e-9,r
+confirmation=S.confirm_rules()
+assert not confirmation['problems'],confirmation
+assert P.state=='active'
 members=e['pb.shift.pattern.member'].search([('employee_id','in',current),('pattern_id.active','=',True)])
 receipt={'shift_checks':checks,'late_cases':8,'accepted_current_working_weeks':len(members.employee_id),
     'current_without_working_week':len(set(current)-set(members.employee_id.ids)),
-    'reviewed_future_draft_rows':len(rows),'policy_state':P.state,
+    'reviewed_future_draft_rows':len(rows),'policy_state':P.state,'confirmation':confirmation,
     'payroll_state':e['hr.formula.config'].browse(7844).state}
 assert len(checks)==10
 if os.getenv('SUDIMA_RULES_APPLY')=='1':
-    assert env.cr.dbname=='sudima'
     e.cr.commit()
-    (root/'final-rules-applied.json').write_text(json.dumps(receipt,indent=2))
+    (root/('final-rules-applied.json' if env.cr.dbname=='sudima' else 'rehearsal-final-rules-applied.json')).write_text(json.dumps(receipt,indent=2))
 else:
     e.cr.rollback()
 print('FINAL_RULES_RECEIPT',json.dumps(receipt))
