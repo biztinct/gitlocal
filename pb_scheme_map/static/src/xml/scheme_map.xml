@@ -85,6 +85,12 @@
                   t-on-click="startDraft">
             <t t-out="ic('sparkles', 15)"/> Review scheme suggestions
           </button>
+          <button t-if="hasSchemes" class="pbim-btn outline"
+                  t-att-disabled="state.busy ? 'disabled' : false"
+                  title="Each team that no line pays yet, with the pay scheme of the country most of its people work in. Nothing changes until you press Set."
+                  t-on-click="startCountry">
+            <t t-out="ic('globe', 15)"/> Suggest who pays each team
+          </button>
           <button t-if="canEdit" class="pbim-btn outline"
                   t-att-disabled="state.busy ? 'disabled' : false"
                   t-on-click="recompute">
@@ -455,6 +461,102 @@
               Accept all <t t-esc="keptRows.length"/>
             </button>
             <button class="pbim-btn ghost" t-on-click="closeDraft">Not now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== NEWHIRE P8: who pays each team, by country -->
+    <div t-if="state.countrying" class="smp-scrim"
+         t-on-click="() => this.closeCountry()">
+      <div class="smp-panel is-wide" role="dialog"
+           aria-label="Suggest who pays each team"
+           t-on-click.stop="onPanelClick">
+        <div class="smp-panel__head">
+          <h3>Who pays each team, by country of work</h3>
+          <button type="button" class="smp-icon" title="Close"
+                  t-on-mouseup="closeCountryClick"
+                  t-on-keydown="closeCountryKey">
+            <t t-out="ic('x', 16)"/>
+          </button>
+        </div>
+
+        <div t-if="!state.country" class="smp-empty">
+          <span class="smp-empty__icon"><t t-out="ic('loader', 20)"/></span>
+          <p class="smp-empty__title">Reading where each team's people work…</p>
+        </div>
+
+        <div t-elif="!countryRows.length" class="smp-empty">
+          <span class="smp-empty__icon"><t t-out="ic('checkCircle', 20)"/></span>
+          <p class="smp-empty__title">Every team already has a pay scheme</p>
+          <p class="smp-empty__sub">Nothing to suggest: each team is on the map.</p>
+        </div>
+
+        <div t-else="" class="smp-panel__body">
+          <p class="smp-panel__sub" t-esc="countrySummary"/>
+          <div t-if="state.countryDone" class="smp-country__done" role="status">
+            <t t-out="ic('checkCircle', 15)"/>
+            <span t-esc="countryDoneLine"/>
+          </div>
+
+          <div class="smp-panel__list">
+            <p t-if="countryOffers.length" class="smp-country__group">Can be set now</p>
+            <label t-foreach="countryOffers" t-as="row" t-key="'o' + row.department_id"
+                   class="smp-draft smp-country"
+                   t-att-data-smp-on="isTicked(row) ? '1' : '0'">
+              <input type="checkbox" class="smp-country__tick"
+                     t-att-checked="isTicked(row)"
+                     t-att-disabled="!countryCanWrite"
+                     t-on-change="() => this.toggleTick(row)"/>
+              <div class="smp-draft__body">
+                <p class="smp-draft__wire">
+                  <b t-esc="row.department"/>
+                  <span class="smp-draft__arrow"><t t-out="ic('arrowRight', 14)"/></span>
+                  <b t-esc="row.config"/>
+                  <span class="smp-badge" t-esc="countryLine(row)"/>
+                  <span t-if="row.moves" class="smp-tag is-warn">Moves <t t-esc="row.moves"/></span>
+                </p>
+                <p class="smp-draft__why" t-esc="row.reason"/>
+                <p t-if="row.warn" class="smp-draft__why smp-country__warn">
+                  <t t-out="ic('alert', 13)"/> <t t-esc="row.warn"/>
+                </p>
+              </div>
+            </label>
+
+            <p t-if="countryChoices.length" class="smp-country__group">Needs your choice</p>
+            <div t-foreach="countryChoices" t-as="row" t-key="'c' + row.department_id"
+                 class="smp-draft smp-country is-choice">
+              <span class="smp-country__mark"><t t-out="ic('helpCircle', 16)"/></span>
+              <div class="smp-draft__body">
+                <p class="smp-draft__wire">
+                  <b t-esc="row.department"/>
+                  <span class="smp-badge" t-esc="countryLine(row)"/>
+                </p>
+                <p class="smp-draft__why" t-esc="row.reason"/>
+              </div>
+            </div>
+
+            <details t-if="countryEmpty.length" class="smp-country__empty">
+              <summary>
+                <t t-esc="countryEmpty.length"/> teams with nobody in them yet
+              </summary>
+              <p class="smp-draft__why">
+                <t t-foreach="countryEmpty" t-as="row" t-key="'e' + row.department_id">
+                  <span class="smp-badge" t-esc="row.department"/>
+                </t>
+              </p>
+            </details>
+          </div>
+
+          <div class="smp-panel__acts">
+            <button t-if="countryCanWrite" class="pbim-btn primary"
+                    t-att-disabled="state.busy or !tickedCount ? 'disabled' : false"
+                    t-on-click="acceptCountry">
+              <t t-out="ic('check', 15)"/>
+              <t t-esc="countryApplyLabel"/>
+            </button>
+            <span t-else="" class="smp-panel__sub">A payroll manager can set these.</span>
+            <button class="pbim-btn ghost" t-on-click="closeCountry">Close</button>
           </div>
         </div>
       </div>

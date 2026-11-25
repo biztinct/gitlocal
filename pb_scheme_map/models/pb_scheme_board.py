@@ -566,6 +566,63 @@ class PbSchemeBoard(models.AbstractModel):
         result['board'] = self.get_board(company_id, 'any')
         return result
 
+    # ================================== NEWHIRE P8 — by the country of work
+    @api.model
+    def country_suggestions(self, company_id=None):
+        """"Suggest who pays each team": every team no line pays yet, with the
+        scheme of the country most of its people work in. Writes nothing."""
+        if not self._can_read():
+            raise AccessError(_("You cannot read this company's roster."))
+        out = self.env['pb.scheme.map'].sudo().suggest_by_country(
+            self._pick_company(company_id))
+        out['can_write'] = self._can_write()
+        return out
+
+    @api.model
+    def accept_country_suggestions(self, department_ids, company_id=None):
+        """Write the ticked suggestions through the board's own path (the same
+        as accepting the drafted map: a proposal, carried out at once where no
+        second person checks). The suggestions are worked out AGAIN here and
+        only a team that is still unmapped and still has a writable suggestion
+        is taken — the screen's copy is never trusted. A team already paid by
+        a line of its own is never touched."""
+        self._require_write()
+        company_id = self._pick_company(company_id)
+        wanted = {int(d) for d in (department_ids or []) if d}
+        fresh = self.env['pb.scheme.map'].sudo().suggest_by_country(company_id)
+        rows = [{
+            'department_id': r['department_id'],
+            'config_id': r['config_id'],
+            'cycle_type': r['cycle_type'],
+            'confidence': 1.0,
+            'sentence': r.get('sentence') or r.get('reason') or '',
+            'keep_existing': True,
+        } for r in fresh['rows']
+            if r['department_id'] in wanted and r['config_id']
+            and r['state'] in ('suggest', 'moves')]
+        if not rows:
+            return {'created': 0, 'replaced': 0, 'teams': [],
+                    'board': self.get_board(company_id, 'any')}
+        if self._map_held():
+            moved = sum(r['moves'] for r in fresh['rows']
+                        if r['department_id'] in wanted)
+            answer = self.env['pb.schememap.proposal'].propose(
+                'accept_draft',
+                _("Pay %(count)s teams by the pay scheme of their country of work",
+                  count=len(rows)),
+                payload={'rows': rows, 'company_id': company_id},
+                facts={'employees_moved': {'value': moved, 'unit': ''},
+                       'schemes': {'value': len({r['config_id'] for r in rows}),
+                                   'unit': ''}},
+            ).answer()
+            answer['teams'] = [r['department_id'] for r in rows]
+            answer['board'] = self.get_board(company_id, 'any')
+            return answer
+        result = self.env['pb.scheme.map'].sudo().accept_draft(rows)
+        result['teams'] = [r['department_id'] for r in rows]
+        result['board'] = self.get_board(company_id, 'any')
+        return result
+
     # ------------------------------------------------ is anybody checking?
     @api.model
     def _map_held(self):

@@ -533,6 +533,245 @@ class PbSchemeMap(models.AbstractModel):
             out[dept_id] = found or self._blank()
         return out
 
+    # ===================================================== NEWHIRE P8
+    @api.model
+    def resolve_for_draft(self, department_id, values=None, company_id=None,
+                          cycle_type='any', on_date=None):
+        """`{config_id, config_name, rung, via}` the PAY RUN would give a person
+        who does not exist yet: the team rungs of `resolve_for_team` (2, 3),
+        then the map's advanced rules (4) judged on an IN-MEMORY employee made
+        from `values` (`payroll_country`, `job_id`, …), then the company's only
+        scheme (5). The order of `resolve_many` minus the work segment (a person
+        with no days yet). Rules are read exactly as `resolve_many` reads them
+        (no kind-of-run filter on a rule). Writes nothing; never raises."""
+        company_id = self._as_company_id(company_id)
+        dept_id = int(department_id or 0)
+        try:
+            chains, _meta = self._chains([company_id])
+            rows = self._map_rows([company_id], on_date)
+            by_department = self._by_department(rows)
+            chain = chains.get(dept_id) or ([dept_id] if dept_id else [])
+            names = self._department_names(set(by_department) | set(chain))
+            found = self._rung_department(chain, by_department, names, cycle_type)
+            if not found:
+                found = self._rung_division(chain, self._division_of_department(on_date),
+                                            self._by_division(rows), cycle_type)
+            if not found:
+                found = self._rung_rule_draft(rows, dept_id, values, company_id)
+            if not found:
+                found = self._rung_only(company_id, cycle_type)
+        except Exception:       # noqa: BLE001 — a screen question, never fatal
+            _logger.warning('Scheme map: the draft person could not be resolved',
+                            exc_info=True)
+            found = None
+        return found or self._blank()
+
+    @api.model
+    def _rung_rule_draft(self, rows, dept_id, values, company_id):
+        """Rung 4 for a person who does not exist: the first advanced rule (in
+        `sequence` order, as `resolve_many`) whose employee domain an in-memory
+        record built from `values` satisfies."""
+        rule_rows = [r for r in rows if r.domain and not r.department_id
+                     and not r.division_id]
+        if not rule_rows:
+            return None
+        Employee = self.env['hr.employee'].sudo()
+        vals = {k: v for k, v in dict(values or {}).items()
+                if k in Employee._fields and v not in (None, '')}
+        vals['company_id'] = company_id
+        vals['active'] = True
+        if dept_id:
+            vals['department_id'] = dept_id
+        try:
+            person = Employee.new(vals)
+        except Exception:       # noqa: BLE001
+            _logger.debug('Scheme map: no in-memory person', exc_info=True)
+            return None
+        for row in rule_rows:
+            try:
+                hit = person.filtered_domain(row._employee_domain())
+            except Exception:   # noqa: BLE001 — a rule this cannot judge is skipped
+                continue
+            if hit:
+                return {
+                    'config_id': row.config_id.id,
+                    'config_name': row.config_id.name or '',
+                    'rung': 'rule',
+                    'via': _("from a rule on the map"),
+                }
+        return None
+
+    @api.model
+    def _country_schemes(self, company_id, country_code):
+        """The active schemes that can pay somebody working in `country_code`:
+        this company's or shared, never a mid-month advance (an advance is not
+        "who pays this person")."""
+        domain = [('state', '=', 'active'), ('country_code', '=', country_code),
+                  ('cycle_type', '!=', 'mid_cycle'),
+                  '|', ('company_id', '=', False),
+                  ('company_id', '=', int(company_id))]
+        return self.env['hr.formula.config'].sudo().search(domain, order='name, id')
+
+    @api.model
+    def suggest_by_country(self, company_id=None):
+        """NEWHIRE P8 B.1 — "Suggest who pays each team". Writes NOTHING.
+
+        Every team of the company that no map line of its own or of its
+        division pays yet, with a suggestion and the reason:
+          * the team's country = the Country of work of MORE THAN HALF of its
+            active people (a tie, nobody with a country or an empty team: no
+            suggestion);
+          * the suggestion = the only active scheme for that country; with
+            several, the one that paid more than half of the team's people in
+            their latest pay run; still unclear: "needs your choice".
+        Two rails on top, so a suggestion never changes what anybody is paid
+        today: a team where somebody is paid by ANOTHER scheme today (a rule
+        on the map) is offered unticked and says how many people would move;
+        a team with an old line on the map in the way (a line naming a scheme
+        that no longer pays, the map's one-line-per-kind-of-run check) cannot
+        be written from here and says so.
+        """
+        company_id = self._as_company_id(company_id)
+        started = time.time()
+        Dept = self.env['hr.department'].sudo()
+        teams = Dept.search([('company_id', 'in', [company_id, False]),
+                             ('active', '=', True)])
+        teams = teams.filtered(lambda t: not t.company_id or t.company_id.id == company_id)
+        answers = self.resolve_for_teams(teams.ids, company_id)
+        roster = self._departments_for(company_ids=[company_id])
+        people_of = defaultdict(list)
+        for employee_id, (dept_id, _c) in roster.items():
+            if dept_id:
+                people_of[dept_id].append(employee_id)
+        wanted = [t for t in teams if (answers.get(t.id) or {}).get('rung')
+                  not in ('department', 'division')]
+        everyone = [e for t in wanted for e in people_of.get(t.id, [])]
+        Employee = self.env['hr.employee'].sudo()
+        country_of = {e.id: e.payroll_country or '' for e in Employee.browse(everyone)}
+        today = self.resolve_many(everyone) if everyone else {}
+        labels = dict(self.env['hr.formula.config']._fields['country_code']
+                      ._description_selection(self.env))
+        latest = self._latest_paid(everyone)
+        Assign = self.env['hr.formula.scheme.assignment'].sudo().with_context(active_test=False)
+        scheme_cache = {}
+        rows = []
+        for team in sorted(wanted, key=lambda t: (-len(people_of.get(t.id, [])), t.name or '')):
+            ids = people_of.get(team.id, [])
+            row = {'department_id': team.id, 'department': team.complete_name or team.name or '',
+                   'people': len(ids), 'country_code': '', 'country': '',
+                   'config_id': 0, 'config': '', 'cycle_type': '', 'state': 'none',
+                   'tick': False, 'moves': 0, 'reason': '', 'split': ''}
+            rows.append(row)
+            if not ids:
+                row['reason'] = _("Nobody works in this team yet.")
+                continue
+            counts = defaultdict(int)
+            for e in ids:
+                counts[country_of.get(e) or ''] += 1
+            row['split'] = ', '.join(
+                '%s %s' % (n, labels.get(c) or _("no country"))
+                for c, n in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0])))
+            top, n = max(counts.items(), key=lambda kv: (kv[1], kv[0] or '~'))
+            if not top or n * 2 <= len(ids):
+                row['state'] = 'choice'
+                row['reason'] = (_("Nobody here has a country of work yet.")
+                                 if not any(c for c in counts) else
+                                 _("No single country of work for most of these people (%(split)s).",
+                                   split=row['split']))
+                continue
+            row['country_code'], row['country'] = top, labels.get(top) or top
+            if top not in scheme_cache:
+                scheme_cache[top] = self._country_schemes(company_id, top)
+            schemes = scheme_cache[top]
+            config = self.env['hr.formula.config']
+            if not schemes:
+                row['state'] = 'choice'
+                row['reason'] = _("%(n)s of %(total)s work in %(country)s, and there is no "
+                                  "active pay scheme for %(country)s yet.",
+                                  n=n, total=len(ids), country=row['country'])
+                continue
+            if len(schemes) == 1:
+                config = schemes
+                why = _("%(n)s of %(total)s work in %(country)s, and %(scheme)s is the only "
+                        "pay scheme for %(country)s.", n=n, total=len(ids),
+                        country=row['country'], scheme=config.name or '')
+            else:
+                paid = defaultdict(int)
+                for e in ids:
+                    if latest.get(e) in schemes.ids:
+                        paid[latest[e]] += 1
+                best = max(paid.items(), key=lambda kv: (kv[1], -kv[0])) if paid else (0, 0)
+                if best[1] * 2 > len(ids):
+                    config = schemes.browse(best[0])
+                    why = _("%(n)s of %(total)s work in %(country)s, and %(scheme)s paid "
+                            "%(paid)s of them in their latest pay run.", n=n, total=len(ids),
+                            country=row['country'], scheme=config.name or '', paid=best[1])
+                else:
+                    row['state'] = 'choice'
+                    row['reason'] = _("%(n)s of %(total)s work in %(country)s, which has "
+                                      "%(count)s pay schemes, and their last pay runs do not "
+                                      "point to one of them.", n=n, total=len(ids),
+                                      country=row['country'], count=len(schemes))
+                    continue
+            row.update({'config_id': config.id, 'config': config.name or ''})
+            # the map's own write must not meet a line already there
+            cycle = False
+            for kind in ('any', config.cycle_type or 'any'):
+                clash = Assign.search_count([
+                    ('department_id', '=', team.id), ('active', '=', True),
+                    '|', ('cycle_type', '=', kind), ('config_id', '=', config.id)])
+                if not clash:
+                    cycle = kind
+                    break
+            if not cycle or Assign.search_count([('department_id', '=', team.id),
+                                                 ('config_id', '=', config.id)]):
+                old = Assign.search([('department_id', '=', team.id)], limit=1, order='id')
+                row['state'] = 'blocked'
+                row['reason'] = _("An older line on the map still names %(old)s for this team. "
+                                  "Take it off on the map first, then ask again.",
+                                  old=old.config_id.name or _("another scheme"))
+                continue
+            row['cycle_type'] = cycle
+            moved = [e for e in ids if (today.get(e) or {}).get('config_id')
+                     and today[e]['config_id'] != config.id]
+            row['moves'] = len(moved)
+            row['reason'] = why
+            row['sentence'] = why
+            if moved:
+                row['state'] = 'moves'
+                row['warn'] = _("%(n)s of them are paid by another pay scheme today and "
+                                "would move to %(scheme)s.", n=len(moved),
+                                scheme=config.name or '')
+            else:
+                row['state'] = 'suggest'
+                row['tick'] = True
+        counts = defaultdict(int)
+        for row in rows:
+            counts[row['state']] += 1
+        return {
+            'company_id': company_id,
+            'rows': rows[:MAX_DRAFT_ROWS],
+            'mapped': len(teams) - len(wanted),
+            'counts': dict(counts),
+            'ms': int((time.time() - started) * 1000),
+        }
+
+    @api.model
+    def _latest_paid(self, employee_ids):
+        """`{employee_id: config_id}` of each person's latest payslip in a pay
+        run (ids only)."""
+        if not employee_ids:
+            return {}
+        self.env.cr.execute("""
+            SELECT DISTINCT ON (s.employee_id) s.employee_id, s.formula_config_id
+              FROM hr_payslip s
+             WHERE s.employee_id = ANY(%s)
+               AND s.payslip_run_id IS NOT NULL
+               AND s.formula_config_id IS NOT NULL
+             ORDER BY s.employee_id, s.date_to DESC NULLS LAST, s.id DESC
+        """, ([int(e) for e in employee_ids],))
+        return dict(self.env.cr.fetchall())
+
     # ============================================================== coverage
     @api.model
     def coverage(self, company_id=None, cycle_type='any', limit=MAX_NAMED):
@@ -816,6 +1055,15 @@ class PbSchemeMap(models.AbstractModel):
                             ('config_id', '=', config_id)]
             base = [('active', '=', True)] + segment + conflict
             clash = Assign.sudo().search(base)
+            if row.get('keep_existing') and (clash or (
+                    department_id and Assign.sudo().with_context(
+                        active_test=False).search_count([
+                            ('department_id', '=', department_id),
+                            ('config_id', '=', config_id)]))):
+                # NEWHIRE P8: "Suggest who pays each team" never changes a
+                # line that is already there, even one written after the
+                # suggestion was made (an approval can land days later).
+                continue
             if clash:
                 clash.unlink()
                 replaced += len(clash)

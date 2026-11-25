@@ -119,6 +119,12 @@ export class SchemeMapBoard extends Component {
             showExceptions: false,
             dialogError: "",     // a refusal about the thing in front of you
 
+            // NEWHIRE P8 — "Suggest who pays each team" (by country of work)
+            countrying: false,
+            country: null,       // { rows: [...], counts, mapped, can_write }
+            ticked: [],          // department ids the reader keeps ticked
+            countryDone: null,   // { created, teams } after Apply
+
             paths: [],           // the drawn wires, measured from the DOM
 
             // GROUP P7 — the wires as a GESTURE (polish item P2).
@@ -140,6 +146,9 @@ export class SchemeMapBoard extends Component {
             this.measure();
             if ((this.props.focus || "") === "exceptions") {
                 this.state.showExceptions = true;
+            }
+            if ((this.props.focus || "") === "country") {
+                this.startCountry();
             }
         });
         onPatched(() => { this.measure(); });
@@ -752,6 +761,120 @@ export class SchemeMapBoard extends Component {
     acceptConfident() { return this.acceptDraft(this.confidentRows); }
     acceptAllKept() { return this.acceptDraft(this.keptRows); }
 
+    // ============================================ NEWHIRE P8 — by country
+    async startCountry() {
+        this.state.countrying = true;
+        this.state.country = null;
+        this.state.countryDone = null;
+        this.state.ticked = [];
+        try {
+            const res = await this.orm.call(
+                MODEL, "country_suggestions", [this.state.companyId || 0]);
+            this.state.country = res;
+            this.state.ticked = (res.rows || []).filter((r) => r.tick).map((r) => r.department_id);
+        } catch (e) {
+            this.state.countrying = false;
+            this.notif.add(
+                this._msg(e, _t("The teams could not be read.")),
+                { type: "danger" });
+        }
+    }
+
+    closeCountry() {
+        this.state.countrying = false;
+        this.state.country = null;
+        this.state.ticked = [];
+        this.state.countryDone = null;
+    }
+
+    closeCountryClick(ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        this.closeCountry();
+    }
+
+    closeCountryKey(ev) {
+        if (ev.key === "Enter" || ev.key === " ") { this.closeCountryClick(ev); }
+    }
+
+    get countryRows() { return (this.state.country || {}).rows || []; }
+    /** Rows the reader can tick: a scheme was found and the map can take it. */
+    get countryOffers() {
+        return this.countryRows.filter((r) => r.state === "suggest" || r.state === "moves");
+    }
+    /** Rows with no suggestion: a choice only the reader can make. */
+    get countryChoices() {
+        return this.countryRows.filter((r) => r.state === "choice" || r.state === "blocked");
+    }
+    get countryEmpty() { return this.countryRows.filter((r) => r.state === "none"); }
+    get countryCanWrite() { return Boolean(this.state.country && this.state.country.can_write); }
+    isTicked(row) { return this.state.ticked.includes(row.department_id); }
+    toggleTick(row) {
+        const at = this.state.ticked.indexOf(row.department_id);
+        if (at >= 0) { this.state.ticked.splice(at, 1); }
+        else { this.state.ticked.push(row.department_id); }
+    }
+    get tickedCount() {
+        return this.countryOffers.filter((r) => this.isTicked(r)).length;
+    }
+    get countryApplyLabel() {
+        return _t("Set %(count)s teams", { count: this.tickedCount });
+    }
+    get countrySummary() {
+        return _t("%(offers)s teams can be set now, %(choices)s need your choice and %(empty)s have nobody in them yet.",
+                  { offers: this.countryOffers.length, choices: this.countryChoices.length,
+                    empty: this.countryEmpty.length });
+    }
+    countryLine(row) {
+        return _t("%(count)s %(word)s", { count: this.num(row.people), word: this.peopleWord(row.people) });
+    }
+
+    async acceptCountry() {
+        const picked = this.countryOffers.filter((r) => this.isTicked(r));
+        const ids = picked.map((r) => r.department_id);
+        const moved = picked.reduce((n, r) => n + (r.moves || 0), 0);
+        if (!ids.length) { return; }
+        this.state.busy = true;
+        try {
+            const result = await this.orm.call(
+                MODEL, "accept_country_suggestions", [ids, this.state.companyId || 0]);
+            this.state.board = result.board;
+            const teams = (result.teams || []).length;
+            this.state.countryDone = {
+                teams,
+                moved,
+                pending: Boolean(result.pending),
+                message: result.pending ? (result.message || "") : "",
+            };
+            if (!result.pending) {
+                // the list again: the teams just set are gone from it
+                const res = await this.orm.call(
+                    MODEL, "country_suggestions", [this.state.companyId || 0]);
+                this.state.country = res;
+                this.state.ticked = (res.rows || []).filter((r) => r.tick).map((r) => r.department_id);
+            }
+        } catch (e) {
+            this.notif.add(
+                this._msg(e, _t("The map could not be written.")),
+                { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+    get countryDoneLine() {
+        const done = this.state.countryDone;
+        if (!done) { return ""; }
+        if (done.pending) {
+            return done.message || _t("Sent for approval. The teams are set once it is approved.");
+        }
+        if (done.moved) {
+            return _t("%(count)s teams now have a pay scheme. %(moved)s people moved to their team's scheme.",
+                      { count: done.teams, moved: done.moved });
+        }
+        return _t("%(count)s teams now have a pay scheme. Their people keep the scheme that pays them today.",
+                  { count: done.teams });
+    }
+
     // ============================================================ exceptions
     toggleExceptions() {
         this.state.showExceptions = !this.state.showExceptions;
@@ -793,6 +916,7 @@ export class SchemeMapBoard extends Component {
         if (ev.key !== "Escape") { return; }
         if (this.state.attaching) { this.closeAttach(); return; }
         if (this.state.drafting) { this.closeDraft(); return; }
+        if (this.state.countrying) { this.closeCountry(); return; }
         if (this.state.showExceptions) { this.state.showExceptions = false; }
     }
 

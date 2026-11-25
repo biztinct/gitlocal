@@ -666,6 +666,62 @@
         font-size: 12px;
     }
 
+    // --------------------------------------- NEWHIRE P8: by country of work
+    .smp-country {
+        cursor: pointer;
+        transition: opacity .16s ease, background-color .16s ease;
+
+        &:hover { background: var(--pbim-soft); }
+        &.is-choice { cursor: default; &:hover { background: transparent; } }
+    }
+
+    .smp-country__tick {
+        flex: 0 0 auto;
+        width: 18px;
+        height: 18px;
+        accent-color: var(--pbim-primary);
+    }
+
+    .smp-country__mark { flex: 0 0 auto; color: var(--pbim-amber); display: inline-flex; }
+
+    .smp-country__group {
+        margin: 14px 0 2px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        color: var(--pbim-muted);
+
+        &:first-child { margin-top: 0; }
+    }
+
+    .smp-country__warn {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        color: var(--pbim-amber);
+    }
+
+    .smp-country__done {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 10px;
+        padding: 9px 12px;
+        border-radius: var(--pbim-r-sm);
+        background: var(--pbim-green-soft);
+        color: var(--pbim-green);
+        font-size: 13px;
+        animation: smp-rise .24s ease-out;
+    }
+
+    .smp-country__empty {
+        margin-top: 12px;
+
+        summary { cursor: pointer; color: var(--pbim-muted); font-size: 12.5px; }
+        .smp-badge { margin: 4px 4px 0 0; }
+    }
+
     // ------------------------------------------------------------- a person
     .smp-person {
         display: flex;
