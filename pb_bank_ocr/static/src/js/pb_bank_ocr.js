@@ -42,7 +42,6 @@ export class PbBankOcr extends Component {
     setup() {
         this.orm = useService("orm");
         this.notif = useService("notification");
-        this.fieldDefs = FIELD_DEFS;
         this.state = useState({
             loaded: false,
             view: "queue",
@@ -201,6 +200,27 @@ export class PbBankOcr extends Component {
     }
 
     // ------------------------------------------------------------- fields
+    /** NEWHIRE P7: the boxes follow the account's country (IFSC for India,
+     *  BSB for Australia …), as the server's one definition says. */
+    get fieldDefs() {
+        return (this.state.req && this.state.req.field_defs) || FIELD_DEFS;
+    }
+    get canEditFormat() {
+        const r = this.state.req;
+        return Boolean(r && ["draft", "hr_review", "finance_review"].includes(r.state));
+    }
+    async onFormat(ev) {
+        const value = ev.target.value || false;
+        this.state.busy = true;
+        try {
+            await this.orm.call(MODEL, "save_fields", [this.state.req.id, { pb_bank_format: value }]);
+            this.state.req = await this.orm.call(MODEL, "validate", [this.state.req.id]);
+        } catch (e) {
+            this.notif.add(this._err(e), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
     fieldVal(key) {
         return (this.state.req.fields[key] || {}).value || "";
     }
@@ -216,6 +236,9 @@ export class PbBankOcr extends Component {
         return "rose";
     }
     onFieldInput(key, ev) {
+        if (!this.state.req.fields[key]) {
+            this.state.req.fields[key] = { value: "", confidence: null };
+        }
         this.state.req.fields[key].value = ev.target.value;
         this.state.edited[key] = true;
     }
@@ -223,7 +246,7 @@ export class PbBankOcr extends Component {
 
     async saveAndValidate() {
         const vals = {};
-        for (const d of FIELD_DEFS) { vals[d.key] = this.fieldVal(d.key); }
+        for (const d of this.fieldDefs) { vals[d.key] = this.fieldVal(d.key); }
         vals.duplicate_ack = this.state.req.duplicate_ack;
         this.state.busy = true;
         try {

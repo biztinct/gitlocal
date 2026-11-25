@@ -122,6 +122,15 @@
             </div>
 
             <div class="pbbk-fields">
+              <div class="pbbk-field" t-if="state.req.formats">
+                <label class="pbbk-field__lbl" for="pbbk-format">Bank account in</label>
+                <div class="pbbk-field__row">
+                  <select id="pbbk-format" class="pbbk-field__in" t-att-disabled="!canEditFormat or state.busy" t-on-change="onFormat">
+                    <option value="" t-att-selected="!state.req.bank_format">Not set (6 to 19 digits, no code)</option>
+                    <option t-foreach="state.req.formats" t-as="fm" t-key="fm.code" t-att-value="fm.code" t-att-selected="fm.code === state.req.bank_format" t-esc="fm.name"/>
+                  </select>
+                </div>
+              </div>
               <t t-foreach="fieldDefs" t-as="f" t-key="f.key">
                 <div class="pbbk-field">
                   <label class="pbbk-field__lbl" t-esc="f.label"/>
@@ -135,6 +144,7 @@
                     </span>
                     <span t-else="" class="pbbk-tag">from document</span>
                   </div>
+                  <small t-if="f.hint" class="pbbk-field__hint" t-esc="f.hint"/>
                 </div>
               </t>
             </div>
@@ -240,6 +250,7 @@
                 <span t-if="c.name_band" t-attf-class="pbbk-band pbbk-band--{{ c.name_band }} pbbk-band--sm"><t t-esc="c.name_score"/>%</span>
               </div>
               <div class="pbbk-rcard__sub"><t t-esc="c.bank || '—'"/> · <t t-esc="c.account"/></div>
+              <div t-if="c.codes" class="pbbk-rcard__sub pbbk-rcard__codes" t-esc="c.codes"/>
             </div>
             <span class="pbbk-rcard__dupe" t-if="c.has_dupes" t-out="ic('alert', 15)"/>
           </div>

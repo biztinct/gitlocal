@@ -14,6 +14,12 @@ def _opts(records, name_field='name'):
     return [{'id': r.id, 'name': getattr(r, name_field, False) or r.display_name} for r in records]
 
 
+
+#: NEWHIRE P7 — the optional bank keys a caller may send with the three of
+#: `BANK_KEYS`: which country the account is in and that country's codes
+#: (`pb.bank.format`). Old callers send none and keep the old check.
+BANK_EXTRA_KEYS = ('bank_format', 'bank_branch', 'bank_code', 'branch_code', 'bank_swift')
+
 class PbPeopleRefs(models.AbstractModel):
     """Shared reference lists for the People wizards."""
     _name = 'pb.people.refs'
@@ -72,6 +78,12 @@ class PbOnboardWizard(models.AbstractModel):
     BANK_KEYS = ('bank_name', 'account_number', 'account_holder')
 
     @api.model
+    def _pb_bank_formats(self):
+        """NEWHIRE P7: the bank check's per-country definition, when the
+        bank check is installed (None otherwise)."""
+        return self.env.get('pb.bank.format')
+
+    @api.model
     def _pb_bank_door_ready(self):
         Req = self.env.get('pb.bank.change.request')
         return Req is not None and hasattr(Req, '_pb_hold_new_hire')
@@ -103,7 +115,14 @@ class PbOnboardWizard(models.AbstractModel):
         holder = ' '.join(str(vals.get('account_holder') or '').split())
         if not (bank or number or holder):
             return None
-        return {'bank': bank, 'number': number, 'holder': holder}
+        out = {'bank': bank, 'number': number, 'holder': holder}
+        # NEWHIRE P7: a caller that names the account's country (the New Hire
+        # Studio) sends that country's codes too; the old window sends none.
+        for key in BANK_EXTRA_KEYS:
+            value = ' '.join(str(vals.get(key) or '').split())
+            if value:
+                out[key] = value
+        return out
 
     @api.model
     def _pb_bank_problem(self, bank):
@@ -112,6 +131,14 @@ class PbOnboardWizard(models.AbstractModel):
         digits; spaces, dashes and dots are tidied away)."""
         if not bank:
             return ''
+        if bank.get('bank_format') and self._pb_bank_formats() is not None:
+            # NEWHIRE P7: the account's country decides (the bank check's one
+            # definition, `pb.bank.format`)
+            return self._pb_bank_formats().first_problem(bank['bank_format'], {
+                'bank_name': bank['bank'], 'account_number': bank['number'],
+                'account_holder': bank['holder'], 'bank_branch': bank.get('bank_branch'),
+                'bank_code': bank.get('bank_code'), 'branch_code': bank.get('branch_code'),
+                'swift': bank.get('bank_swift')})
         number = bank['number']
         if not number:
             return _("Type the account number too, or leave the bank details empty.")
@@ -146,6 +173,21 @@ class PbOnboardWizard(models.AbstractModel):
             'x_bank_name': bank['bank'],
             'x_account_name': bank['holder'] or emp.name or '',
         }
+        if bank.get('bank_format') and self._pb_bank_formats() is not None:
+            # NEWHIRE P7: the country and its codes go with the change, stored
+            # the way the bank check stores them (an IBAN keeps its letters)
+            clean, _problems = self._pb_bank_formats().check(bank['bank_format'], {
+                'account_number': bank['number'], 'bank_branch': bank.get('bank_branch'),
+                'bank_code': bank.get('bank_code'), 'branch_code': bank.get('branch_code'),
+                'swift': bank.get('bank_swift')})
+            values['x_account_number'] = clean['account_number']
+            Req = self.env['pb.bank.change.request']
+            for field, key in (('pb_bank_format', None), ('x_bank_branch', 'bank_branch'),
+                               ('x_bank_code', 'bank_code'), ('x_branch_code', 'branch_code'),
+                               ('x_swift', 'swift')):
+                value = bank['bank_format'] if key is None else clean.get(key)
+                if value and field in Req._fields:
+                    values[field] = value
         try:
             with self.env.cr.savepoint():
                 req = self.env['pb.bank.change.request']._pb_hold_new_hire(

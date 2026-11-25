@@ -57,6 +57,8 @@ _SYS_FIELDS = frozenset({
 _REVIEW_FIELDS = frozenset({
     'x_bank_name', 'x_bank_branch', 'x_account_name', 'x_account_number',
     'x_iban', 'x_swift', 'doc_kind', 'attachment_id', 'employee_id',
+    # NEWHIRE P7: the country's codes are what the approvers agree to as well
+    'x_bank_code', 'x_branch_code', 'pb_bank_format',
 })
 
 
@@ -264,13 +266,22 @@ class PbBankChangeRequest(models.Model):
             # apply numbers the validation no longer describes.
             rec = self.sudo()
             rec.action_validate()
-            if not account_ok(rec.x_account_number):
-                raise UserError(_(
-                    "The account number must be 6-19 digits before approval."))
+            problem = rec._pb_format_problem()
+            if problem:
+                raise UserError(problem)
             if rec.duplicate_ids and not rec.duplicate_ack:
                 raise UserError(_(
                     "This account collides with another employee. HR must tick "
                     "'Duplicate Verified' before approval."))
+
+    def _pb_format_problem(self):
+        """'' or why the details cannot be approved. The old rule: 6 to 19
+        digits (NEWHIRE P7 `pb_bank_format_request` adds each country's own
+        rule for a change that names its country)."""
+        self.ensure_one()
+        if not account_ok(self.x_account_number):
+            return _("The account number must be 6-19 digits before approval.")
+        return ''
 
     def _after_approval_transition(self, to_state):
         if to_state == 'approved':

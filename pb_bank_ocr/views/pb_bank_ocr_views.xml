@@ -29,6 +29,9 @@
                 <field name="name"/>
                 <field name="employee_id"/>
                 <field name="x_bank_name"/>
+                <field name="pb_bank_format" optional="show"/>
+                <field name="x_bank_code" optional="hide"/>
+                <field name="x_branch_code" optional="show"/>
                 <field name="ocr_state"/>
                 <field name="name_match_band"/>
                 <field name="state" widget="badge"
@@ -84,6 +87,9 @@
                         </group>
                         <group>
                             <field name="x_account_number"/>
+                            <field name="pb_bank_format"/>
+                            <field name="x_bank_code" invisible="pb_bank_format not in ('SG', 'ID')"/>
+                            <field name="x_branch_code" invisible="pb_bank_format not in ('IN', 'AU', 'SG', 'TH')"/>
                             <field name="x_iban"/>
                             <field name="x_swift"/>
                         </group>

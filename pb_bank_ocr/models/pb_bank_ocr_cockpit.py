@@ -56,6 +56,8 @@ class PbBankOcr(models.AbstractModel):
             'name_score': round(req.name_match_score or 0),
             'name_band': req.name_match_band or '',
             'has_dupes': bool(req.duplicate_ids),
+            # NEWHIRE P7: "IFSC code HDFC0001234" on the card
+            'codes': req._pb_codes_line(),
         }
 
     # --------------------------------------------------------- queue data
@@ -158,7 +160,9 @@ class PbBankOcr(models.AbstractModel):
     def save_fields(self, request_id, vals):
         req = self._req(request_id)
         allowed = {'x_bank_name', 'x_bank_branch', 'x_account_name',
-                   'x_account_number', 'x_iban', 'x_swift', 'doc_kind'}
+                   'x_account_number', 'x_iban', 'x_swift', 'doc_kind',
+                   # NEWHIRE P7: the country and its codes
+                   'x_bank_code', 'x_branch_code', 'pb_bank_format'}
         # the duplicate ack is HR/finance testimony, never the requester's
         if self._is_hr() or self._is_finance():
             allowed.add('duplicate_ack')
@@ -201,7 +205,8 @@ class PbBankOcr(models.AbstractModel):
             conf = {}
         fields = {}
         for f in ('x_bank_name', 'x_bank_branch', 'x_account_name',
-                  'x_account_number', 'x_iban', 'x_swift'):
+                  'x_account_number', 'x_iban', 'x_swift',
+                  'x_bank_code', 'x_branch_code'):
             fields[f] = {'value': req[f] or '', 'confidence': conf.get(f)}
         diff = []
         for (x, cur, label) in (
@@ -248,7 +253,34 @@ class PbBankOcr(models.AbstractModel):
                 'refuse': req.can_refuse,
             },
             'stepper': req.approval_widget_json or '{}',
+            # NEWHIRE P7: the boxes follow the account's country (the one
+            # definition, `pb.bank.format`)
+            'bank_format': req.pb_bank_format or '',
+            'formats': self.env['pb.bank.format'].choices(),
+            'field_defs': self._pb_field_defs(req),
         }
+
+    @api.model
+    def _pb_field_defs(self, req):
+        """The boxes of the verify screen, in the account's country's words:
+        the codes that country uses, SWIFT and IBAN where they belong (or
+        where the document already gave one)."""
+        spec = self.env['pb.bank.format'].spec(req.pb_bank_format or '', banks=False)
+        out = [{'key': 'x_bank_name', 'label': _('Bank'), 'hint': ''}]
+        if spec['branch'] or req.x_bank_branch:
+            out.append({'key': 'x_bank_branch', 'label': _('Branch'), 'hint': ''})
+        for item in spec['codes']:
+            out.append({'key': 'x_%s' % item['key'], 'label': item['label'],
+                        'hint': item['hint'], 'kind': item['kind']})
+        out += [{'key': 'x_account_name', 'label': _('Account Holder'), 'hint': ''},
+                {'key': 'x_account_number', 'label': _('Account Number'),
+                 'hint': spec['account']['hint']}]
+        if spec['code'] == 'other' or req.x_iban:
+            out.append({'key': 'x_iban', 'label': _('IBAN'), 'hint': ''})
+        if spec['swift'] or req.x_swift or not req.pb_bank_format:
+            out.append({'key': 'x_swift', 'label': _('SWIFT / BIC'),
+                        'hint': spec['swift']['hint'] if spec['swift'] else ''})
+        return out
 
     @api.model
     def get_history(self, employee_id):

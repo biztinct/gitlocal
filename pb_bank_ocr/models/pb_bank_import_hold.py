@@ -45,6 +45,8 @@ OPEN_STATES = ('draft', 'hr_review', 'finance_review')
 #: FS-16: the key a new hire's bank details travel under — one per person,
 #: so a new hire is a single bank change, never a "batch" (batch notice).
 NEWHIRE_KEY_PREFIX = 'pb.newhire,'
+#: NEWHIRE P7: what a hold may carry beyond the four bank-file values
+EXTRA_KEYS = ('pb_bank_format', 'x_bank_code', 'x_branch_code', 'x_swift')
 
 #: id(cursor) → Hold, while an import runs on that cursor.
 _HOLDS = {}
@@ -143,6 +145,9 @@ class PbBankChangeRequestImport(models.Model):
             'x_bank_branch': new['x_bank_branch'] or False,
             'x_account_name': new['x_account_name'] or False,
             'x_account_number': new['x_account_number'],
+            # NEWHIRE P7: a new hire's country and codes ride along (an
+            # import sends none: the old rule)
+            **{k: vals[k] for k in EXTRA_KEYS if vals.get(k)},
         })
         req.action_validate()
         try:

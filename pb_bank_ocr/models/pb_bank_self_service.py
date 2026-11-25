@@ -43,7 +43,9 @@ NAMED_WHO_MODES = ('people', 'team')
 
 #: What an employee may type on their own request while it is a draft.
 PORTAL_FIELDS = ('x_bank_name', 'x_bank_branch', 'x_account_name',
-                 'x_account_number', 'doc_kind')
+                 'x_account_number', 'doc_kind',
+                 # NEWHIRE P7: the country's own codes (the same boxes HR has)
+                 'x_bank_code', 'x_branch_code', 'x_swift')
 UPLOAD_MIMES = ('application/pdf', 'image/png', 'image/jpeg')
 UPLOAD_MAX = 10 * 1024 * 1024
 

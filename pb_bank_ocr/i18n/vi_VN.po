@@ -1795,3 +1795,229 @@ msgstr "Mã quốc gia công khai của ngân hàng: Indonesia mã ngân hàng 3
 #: code:addons/pb_bank_ocr/models/pb_bank_import_hold.py:0
 msgid "New hire: %s"
 msgstr "Nhân viên mới: %s"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "%(low)s to %(high)s digits."
+msgstr "Từ %(low)s đến %(high)s chữ số."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "%(low)s to %(high)s letters and digits. An IBAN is fine."
+msgstr "Từ %(low)s đến %(high)s chữ cái và chữ số. Có thể dùng IBAN."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "11 characters, on the cheque book or in the bank app."
+msgstr "11 ký tự, có trên sổ séc hoặc trong ứng dụng ngân hàng."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "3 digits, if the bank asks for one."
+msgstr "3 chữ số, nếu ngân hàng yêu cầu."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "3 digits. Filled in from the bank when we know it."
+msgstr "3 chữ số. Được điền sẵn theo ngân hàng khi hệ thống biết."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "4 digits, on the passbook. Optional."
+msgstr "4 chữ số, có trên sổ tiết kiệm. Không bắt buộc."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "4 digits. Filled in from the bank when we know it."
+msgstr "4 chữ số. Được điền sẵn theo ngân hàng khi hệ thống biết."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "6 digits, on the bank statement or in the bank app."
+msgstr "6 chữ số, có trên sao kê ngân hàng hoặc trong ứng dụng ngân hàng."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "Another country"
+msgstr "Quốc gia khác"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "BSB"
+msgstr "Mã BSB"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_format_request.py:0
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__pb_bank_format
+msgid "Bank account in"
+msgstr "Tài khoản ngân hàng tại"
+
+#. module: pb_bank_ocr
+#: model:ir.model,name:pb_bank_ocr.model_pb_bank_format
+msgid "Bank details by country"
+msgstr "Thông tin ngân hàng theo quốc gia"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__x_branch_code
+msgid "Branch code"
+msgstr "Mã chi nhánh"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "IFSC code"
+msgstr "Mã IFSC"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "Not set (6 to 19 digits, no code)"
+msgstr "Chưa chọn (6 đến 19 chữ số, không cần mã)"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "Optional. 8 or 11 letters and digits, for payments from abroad."
+msgstr ""
+"Không bắt buộc. 8 hoặc 11 chữ cái và chữ số, dùng cho tiền chuyển từ nước "
+"ngoài."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "The BSB is 6 digits, like 062-000."
+msgstr "Mã BSB gồm 6 chữ số, ví dụ 062-000."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid ""
+"The IFSC code is 11 characters: 4 letters, a zero, then 6 letters or digits."
+msgstr "Mã IFSC gồm 11 ký tự: 4 chữ cái, một số 0, rồi 6 chữ cái hoặc chữ số."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "The SWIFT / BIC code is 8 or 11 letters and digits."
+msgstr "Mã SWIFT / BIC gồm 8 hoặc 11 chữ cái và chữ số."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "The account number can only have digits (spaces and dashes are fine)."
+msgstr "Số tài khoản chỉ được có chữ số (có thể có dấu cách và gạch ngang)."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "The account number can only have letters and digits."
+msgstr "Số tài khoản chỉ được có chữ cái và chữ số."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid ""
+"The account number must be %(low)s to %(high)s digits. This one has %(n)s."
+msgstr "Số tài khoản phải có từ %(low)s đến %(high)s chữ số. Số này có %(n)s."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid ""
+"The account number must be %(low)s to %(high)s letters and digits. This one "
+"has %(n)s."
+msgstr ""
+"Số tài khoản phải có từ %(low)s đến %(high)s chữ cái và chữ số. Số này có "
+"%(n)s."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "The bank code is 3 digits."
+msgstr "Mã ngân hàng gồm 3 chữ số."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "The bank code is 4 digits."
+msgstr "Mã ngân hàng gồm 4 chữ số."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "The branch code is 3 digits."
+msgstr "Mã chi nhánh gồm 3 chữ số."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "The branch code is 4 digits."
+msgstr "Mã chi nhánh gồm 4 chữ số."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "Type the 3-digit bank code."
+msgstr "Nhập mã ngân hàng 3 chữ số."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "Type the 3-digit branch code."
+msgstr "Nhập mã chi nhánh 3 chữ số."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "Type the 4-digit bank code."
+msgstr "Nhập mã ngân hàng 4 chữ số."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "Type the 4-digit branch code."
+msgstr "Nhập mã chi nhánh 4 chữ số."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "Type the BSB. It is on the bank statement or in the bank app."
+msgstr ""
+"Nhập mã BSB. Mã này có trên sao kê ngân hàng hoặc trong ứng dụng ngân hàng."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "Type the IFSC code. It is on the cheque book or in the bank app."
+msgstr "Nhập mã IFSC. Mã này có trên sổ séc hoặc trong ứng dụng ngân hàng."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "Type the account number."
+msgstr "Nhập số tài khoản."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_change_request__pb_bank_format
+msgid ""
+"Which country's bank details these are: the codes asked for and the account "
+"number's length follow it. Empty on older changes, which keep the old check."
+msgstr ""
+"Thông tin ngân hàng này thuộc quốc gia nào: các mã cần nhập và độ dài số tài"
+" khoản đi theo quốc gia đó. Để trống ở các thay đổi cũ, vốn giữ cách kiểm "
+"tra cũ."

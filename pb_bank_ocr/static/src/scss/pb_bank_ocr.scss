@@ -75,6 +75,7 @@
     .pbbk-rcard__top { display: flex; align-items: center; gap: 6px; }
     .pbbk-rcard__emp { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .pbbk-rcard__sub { font-size: .8rem; color: var(--pbbk-muted); }
+    .pbbk-rcard__codes { font-variant-numeric: tabular-nums; }
     .pbbk-rcard__dupe { color: var(--pbbk-rose); }
 
     // ---- provider card ----
@@ -135,6 +136,8 @@
     .pbbk-panel__hd > span:first-child { flex: 1; }
     .pbbk-fields { display: flex; flex-direction: column; gap: 10px; }
     .pbbk-field__lbl { font-size: .74rem; text-transform: uppercase; letter-spacing: .04em; color: var(--pbbk-muted); }
+    // NEWHIRE P7: one-line hint under a country's code box
+    .pbbk-field__hint { display: block; margin-top: 3px; font-size: .72rem; color: var(--pbbk-muted); }
     .pbbk-field__row { display: flex; align-items: center; gap: 8px; }
     .pbbk-field__in { flex: 1; padding: 8px 10px; border: 1px solid var(--pbbk-line); border-radius: 9px; font-size: .92rem; }
     .pbbk-field__in:focus { outline: none; border-color: var(--pbbk-primary); }
