@@ -10,7 +10,7 @@
  */
 import { Component, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
-import { icon, fmtDay } from "./studio_util";
+import { icon, fmtDay, siteNameOf } from "./studio_util";
 
 export class StepSched extends Component {
     static template = "pb_new_hire.StepSched";
@@ -65,7 +65,7 @@ export class StepSched extends Component {
     setGroup(group) { this.api.set("late_group", group); }
 
     // ------------------------------------------------------------ clock
-    get siteName() { return this.api.siteName || _t("the site"); }
+    get siteName() { return siteNameOf(this.nh) || _t("the site"); }
     get clockTitle() { return _t("Clocks in at %s", this.siteName); }
     get clockSub() {
         return this.d.clock_on

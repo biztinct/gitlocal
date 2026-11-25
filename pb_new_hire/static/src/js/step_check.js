@@ -12,7 +12,7 @@
  */
 import { Component, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
-import { icon, fmtDay, money, rich } from "./studio_util";
+import { icon, fmtDay, money, rich, weekNameOf, ownMissingOf } from "./studio_util";
 
 export class StepCheck extends Component {
     static template = "pb_new_hire.StepCheck";
@@ -67,7 +67,7 @@ export class StepCheck extends Component {
     }
     get schedRow() {
         const d = this.d;
-        const week = this.api.weekName || _t("The company's usual working hours");
+        const week = weekNameOf(this.nh) || _t("The company's usual working hours");
         const late = this.nh.sched && this.nh.sched.late_groups
             ? (d.late_group === "manager" ? _t("late rule: Manager") : _t("late rule: Worker")) : "";
         const code = String(d.clock_code || "").trim();
@@ -124,7 +124,7 @@ export class StepCheck extends Component {
             out.push({ key: "clock", b: clock.message, s: _t("The hire is still added; only the clock number would be left out."),
                        go: "sched", field: "clock_code" });
         }
-        for (const f of this.api.ownMissing) {
+        for (const f of ownMissingOf(this.nh)) {
             out.push({ key: `own-${f.name}`, b: _t("%s is needed", f.label),
                        s: _t("It is required on every employee record, so the hire cannot be sent without it."),
                        go: "welcome", field: `own-${f.name}` });
@@ -175,6 +175,9 @@ export class StepCheck extends Component {
         if (this.approval.problem) {
             return _t("This hire cannot be sent yet");
         }
+        if (this.api.ready && ownMissingOf(this.nh).length) {
+            return _t("One more thing in step 6");
+        }
         return this.api.ready ? _t("Ready to send") : _t("The three required steps still need you");
     }
     get launchLine() {
@@ -184,7 +187,7 @@ export class StepCheck extends Component {
         if (!this.api.ready) {
             return _t("Finish the steps marked in amber on the left, then come back.");
         }
-        if (!this.api.sendable) {
+        if (ownMissingOf(this.nh).length) {
             return _t("Some of your own fields are required. Fill them in step 6, then send.");
         }
         return this.approval.needs
@@ -197,7 +200,7 @@ export class StepCheck extends Component {
             ? _t("One last look. A second person approves every new hire, so nothing is created until they agree.")
             : _t("One last look. The person is added as soon as you press the button.");
     }
-    get canSend() { return this.api.sendable && !this.approval.problem && !this.nh.sending; }
+    get canSend() { return this.api.ready && !ownMissingOf(this.nh).length && !this.approval.problem && !this.nh.sending; }
     get refusal() { return this.nh.refusal; }
     refusalGo() {
         const r = this.refusal;
@@ -233,7 +236,8 @@ export class StepCheck extends Component {
         return (r && r.legs_summary) || "";
     }
     get canSeeJoiners() {
-        return Boolean(this.result && this.result.applied
+        const f = (this.nh.data && this.nh.data.features) || {};
+        return Boolean(this.result && this.result.applied && f.joiners
                        && this.legs.some((l) => l.key === "case" && l.ok));
     }
 }

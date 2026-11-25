@@ -7,7 +7,7 @@
  */
 import { Component, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
-import { icon, initials, fmtDay } from "./studio_util";
+import { icon, initials, fmtDay, weekNameOf } from "./studio_util";
 
 export class RecordPanel extends Component {
     static template = "pb_new_hire.RecordPanel";
@@ -47,7 +47,7 @@ export class RecordPanel extends Component {
             { k: "country", label: _t("Country of work"), value: this.api.countryName },
             { k: "boss", label: _t("Manager"), value: d.parent_name || "" },
             { k: "trial", label: _t("Trial ends"), value: trial },
-            { k: "week", label: _t("Working week"), value: this.api.weekName || (this.nh.sched ? _t("Usual hours") : "") },
+            { k: "week", label: _t("Working week"), value: weekNameOf(this.nh) || (this.nh.sched ? _t("Usual hours") : "") },
         ];
     }
     get notSet() { return _t("Not set"); }

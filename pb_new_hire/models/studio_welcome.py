@@ -340,7 +340,7 @@ class PbNewHireWelcome(models.AbstractModel):
         if not email:
             modes.append({'key': 'email', 'label': _("Email invitation"), 'available': False,
                           'why_not': _("Add a work email in step 1, or use the employee number."),
-                          'sub': ''})
+                          'sub': '', 'fix': 'who'})
         elif not email_on:
             modes.append({'key': 'email', 'label': _("Email invitation"), 'available': False,
                           'why_not': _("Email sign-ins are switched off here."), 'sub': ''})
@@ -351,18 +351,20 @@ class PbNewHireWelcome(models.AbstractModel):
             modes.append({'key': 'email', 'label': _("Email invitation"), 'available': True,
                           'why_not': '', 'sub': sub})
         # code: `create_worker_logins` — the login is the clock number
-        why = ''
+        why, fix = '', False
         if not code:
+            fix = 'sched'
             why = _("Type a clock number in step 4. It becomes the employee number %s signs "
                     "in with.", first)
         elif self.env['res.users'].sudo().with_context(active_test=False).search_count(
                 [('login', '=ilike', code)], limit=1):
             why = _("Someone already signs in with %s. Choose another clock number in step 4.", code)
+            fix = 'sched'
         elif not approval_needs and not self.env['pb.access'].can_manage():
             why = _("Only someone who manages access can make this sign-in. Make it in Access, "
                     "Logins for workers.")
         modes.append({'key': 'code', 'label': _("Employee number"), 'available': not why,
-                      'why_not': why,
+                      'why_not': why, 'fix': fix,
                       'sub': _("Signs in with %(code)s. Set the first password in Access once %(first)s "
                                "is added.", code=code, first=first) if not why else ''})
         modes.append({'key': 'none', 'label': _("Not yet"), 'available': True, 'why_not': '',
@@ -443,6 +445,18 @@ class PbNewHireWelcome(models.AbstractModel):
             'onboarding', nationality.id or False, company.id)
 
     @api.model
+    def _fallback_words(self, ctx):
+        """Who gets a step nobody else can own: the person who opens the
+        checklist (`_generate_tasks` falls back to the case's creator) — the
+        one who adds the hire, or whoever approves it."""
+        return _("whoever approves the hire") if ctx['approval_needs'] else _("you")
+
+    @api.model
+    def _fallback_lead(self, ctx):
+        """The same person, at the start of a line."""
+        return _("Whoever approves the hire") if ctx['approval_needs'] else _("You")
+
+    @api.model
     def _owner_words(self, rule, step, ctx):
         first = ctx['first']
         boss = ctx['manager']
@@ -450,10 +464,12 @@ class PbNewHireWelcome(models.AbstractModel):
             if boss and boss.user_id:
                 return _("Manager: %s", boss.name or '')
             if boss:
-                return _("HR, because %s has no sign-in yet", boss.name or '')
-            return _("HR, because there is no manager yet")
+                return _("%(who)s, because %(boss)s has no sign-in yet",
+                         who=self._fallback_lead(ctx), boss=boss.name or '')
+            return _("%s, because there is no manager yet", self._fallback_lead(ctx))
         if rule == 'employee':
-            return first if ctx['login'] != 'none' else _("HR, because %s has no sign-in yet", first)
+            return first if ctx['login'] != 'none' else _(
+                "%(who)s, because %(first)s has no sign-in yet", who=self._fallback_lead(ctx), first=first)
         if rule == 'candidate':
             return _("%s, by a link", first)
         if rule == 'buddy':
@@ -470,7 +486,8 @@ class PbNewHireWelcome(models.AbstractModel):
                 {'company_id': self._company().id}))
         except Exception:                       # noqa: BLE001 — a name, never a crash
             user = False
-        return _("%(role)s: %(name)s", role=label, name=user[:1].name) if user else label
+        return _("%(role)s: %(name)s", role=label, name=user[:1].name) if user \
+            else _("%(role)s: %(who)s", role=label, who=self._fallback_words(ctx))
 
     @api.model
     def _step_line(self, step, ctx):
@@ -512,6 +529,7 @@ class PbNewHireWelcome(models.AbstractModel):
         checklist plans and the end of the trial period. `past` = due today or
         earlier ("Straight away")."""
         today = fields.Date.context_today(self)
+        opened = fields.Date.today()            # `_anchor_base('case_open')` reads this one
         start = ctx['start']
         first = ctx['first']
         out = []
@@ -527,7 +545,7 @@ class PbNewHireWelcome(models.AbstractModel):
                 line = self._step_line(step, ctx)
                 if line is None:
                     continue
-                base = today if step.anchor == 'case_open' else start
+                base = opened if step.anchor == 'case_open' else start
                 when = base + timedelta(days=step.offset_days or 0)
                 add('step-%s' % step.id, when, line[0], self._owner_words(step.assignee_rule, step, ctx),
                     line[1], step.sequence)
@@ -617,7 +635,7 @@ class PbNewHireWelcome(models.AbstractModel):
             'buddy': self._person(d.get('buddy_id')) if open_case else self.env['hr.employee'],
             'equipment_names': names, 'open_case': open_case, 'trial': trial,
             'lead_days': lead, 'review_auto': flag(self.env, P_AUTO_TRIGGER),
-            'pulse_days': pulse_days,
+            'pulse_days': pulse_days, 'approval_needs': bool(approval.get('needs')),
         }
         buddies = self.find_buddies(team.name if team else '', 8) if team else []
         return {

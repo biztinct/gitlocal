@@ -24,6 +24,11 @@ class NewHireCommon(TransactionCase):
         if not vnd.active:
             vnd.active = True
         cls.vn, cls.sg = env.ref('base.vn'), env.ref('base.sg')
+        # A tenant's own required Form builder fields would make every send in
+        # these tests ask for them (P2, handover §2.4) — W4 tests that rule.
+        if 'pb.form.field.meta' in env:
+            env['pb.form.field.meta'].sudo().search(
+                [('model', '=', 'hr.employee'), ('is_required', '=', True)]).write({'is_required': False})
         cls.company = env['res.company'].create({
             'name': 'DEMO NH Company', 'currency_id': vnd.id, 'country_id': cls.vn.id})
         co = {'company_id': cls.company.id, 'company_ids': [(6, 0, [cls.company.id])]}

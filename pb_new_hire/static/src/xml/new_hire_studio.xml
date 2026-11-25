@@ -735,7 +735,7 @@
           <p class="pbnh-sub" t-esc="timelineSub"/>
         </div>
         <ol class="pbnh-tl" aria-live="polite">
-          <li t-foreach="events" t-as="e" t-key="e.key" t-att-class="'pbnh-ev is-' + e.kind + (e.past ? ' is-now' : '')" t-att-style="e.style">
+          <li t-foreach="events" t-as="e" t-key="e.key" t-att-class="'pbnh-ev is-' + e.kind + (e.past ? ' is-now' : '') + (e.id === 'day' ? ' is-anchor' : '')" t-att-style="e.style">
             <span class="pbnh-ev-when pbnh-num" t-esc="e.label"/>
             <span class="pbnh-ev-ln" aria-hidden="true"><i/></span>
             <div class="pbnh-ev-what">

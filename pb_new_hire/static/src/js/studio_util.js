@@ -149,6 +149,31 @@ export function groupTyped(text, cur) {
     return frac === null ? grouped : `${grouped}${dp}${frac}`;
 }
 
+/**
+ * P2: answers several components need. Each reads the `nh` it is GIVEN, so a
+ * component passes its own reactive copy and re-renders when they change
+ * (reading through another component's state subscribes that one only).
+ */
+export function weekNameOf(nh) {
+    const weeks = (nh.sched && nh.sched.weeks) || [];
+    const w = weeks.find((x) => x.id === nh.draft.week_id);
+    return w ? w.name : "";
+}
+export function siteNameOf(nh) {
+    const s = ((nh.data && nh.data.sites) || []).find((x) => x.id === nh.draft.work_location_id);
+    return s ? s.name : "";
+}
+/** Required own fields of this country still empty (they block Send). */
+export function ownMissingOf(nh) {
+    const w = nh.welcome;
+    const own = nh.draft.own || {};
+    return ((w && w.own_fields) || []).filter((f) => f.supported && f.required && f.kind !== "bool")
+        .filter((f) => {
+            const v = own[f.name];
+            return v === undefined || v === null || v === false || String(v).trim() === "";
+        });
+}
+
 export function deepClone(value) {
     return JSON.parse(JSON.stringify(value));
 }

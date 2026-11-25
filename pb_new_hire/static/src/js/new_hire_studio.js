@@ -23,7 +23,8 @@ import { useService } from "@web/core/utils/hooks";
 import { router } from "@web/core/browser/router";
 import { useSetupAction } from "@web/search/action_hook";
 import { HubBackChip, hubBack, goBack } from "@pb_hub/js/hub_nav";
-import { MODEL, ACTION_XMLID, icon, errorText, isAccessError, firstName, fmtDay, money, deepClone } from "./studio_util";
+import { MODEL, ACTION_XMLID, icon, errorText, isAccessError, firstName, fmtDay, money, deepClone,
+         weekNameOf, siteNameOf, ownMissingOf } from "./studio_util";
 import { StepWho } from "./step_who";
 import { StepRole } from "./step_role";
 import { StepPay } from "./step_pay";
@@ -139,9 +140,6 @@ export class NewHireStudio extends Component {
             initEquipment: () => this.initEquipment(),
             openWorkforceSetup: () => this.openWorkforceSetup(),
             seeJoiners: () => this.seeJoiners(),
-            get ownMissing() { return studio.ownMissing; },
-            get siteName() { return studio.siteName; },
-            get weekName() { return studio.weekName; },
             send: () => this.send(),
             withdraw: () => this.withdraw(),
             again: () => this.again(),
@@ -295,6 +293,7 @@ export class NewHireStudio extends Component {
             }
             this.refreshCats();
             this.refreshSched();
+            this.checkClock();
         } catch (e) {
             if (isAccessError(e)) {
                 nh.denied = errorText(e);
@@ -438,7 +437,10 @@ export class NewHireStudio extends Component {
             if (!d.department_id && !d.payroll_country) {
                 return;
             }
-            return this.ask("welcome", "welcome_options", [this.sendDraft], (res) => {
+            // a sign-in the screen picked by itself is re-picked by the server
+            // (a work email typed later makes the invitation the default)
+            const draft = { ...this.sendDraft, login_mode: this.nh.touched.login_mode ? d.login_mode : "" };
+            return this.ask("welcome", "welcome_options", [draft], (res) => {
                 if (!res) {
                     return;
                 }
@@ -491,24 +493,8 @@ export class NewHireStudio extends Component {
     }
 
     /** Required own fields of this country still empty (they block Send). */
-    get ownMissing() {
-        const w = this.nh.welcome;
-        const own = this.nh.draft.own || {};
-        return ((w && w.own_fields) || []).filter((f) => f.supported && f.required && f.kind !== "bool")
-            .filter((f) => {
-                const v = own[f.name];
-                return v === undefined || v === null || v === false || String(v).trim() === "";
-            });
-    }
-    get siteName() {
-        const s = ((this.data && this.data.sites) || []).find((x) => x.id === this.nh.draft.work_location_id);
-        return s ? s.name : "";
-    }
-    get weekName() {
-        const weeks = (this.nh.sched && this.nh.sched.weeks) || [];
-        const w = weeks.find((x) => x.id === this.nh.draft.week_id);
-        return w ? w.name : "";
-    }
+    get ownMissing() { return ownMissingOf(this.nh); }
+    get weekName() { return weekNameOf(this.nh); }
     async openWorkforceSetup() {
         try {
             await this.action.doAction(SETUP_XMLID);

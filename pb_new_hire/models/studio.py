@@ -188,7 +188,15 @@ class PbNewHire(models.AbstractModel):
                 bands = bool(self.env['pb.pay.bands']._can_read())
             except Exception:                   # noqa: BLE001 — a probe
                 bands = False
-        return {'bands': bands, 'scales': 'pb.pay.scales' in self.env}
+        joiners = False
+        if 'pb.onboarding' in self.env:
+            try:
+                joiners = bool(self.env['pb.onboarding']._can_read())
+            except Exception:                   # noqa: BLE001 — a probe
+                joiners = False
+        return {'bands': bands, 'scales': 'pb.pay.scales' in self.env,
+                # P2: "See new joiners" only for people the board lets in
+                'joiners': joiners}
 
     # ============================================================ approval
     @api.model

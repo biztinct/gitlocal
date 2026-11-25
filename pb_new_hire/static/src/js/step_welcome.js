@@ -16,7 +16,7 @@
 import { Component, useEffect, useRef, useState, onWillUnmount } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { IC } from "@pb_import_kit/js/import_icons";
-import { icon, initials, fmtDay } from "./studio_util";
+import { icon, initials, fmtDay, ownMissingOf } from "./studio_util";
 
 export class StepWelcome extends Component {
     static template = "pb_new_hire.StepWelcome";
@@ -72,14 +72,14 @@ export class StepWelcome extends Component {
     }
     get blockedModes() { return this.modes.filter((m) => !m.available); }
     fixMode(m) {
-        if (m.key === "email") {
+        if (m.fix === "who") {
             this.api.go("who", "work_email");
-        } else if (m.key === "code") {
+        } else if (m.fix === "sched") {
             this.api.go("sched", "clock_code");
         }
     }
     fixLabel(m) {
-        return m.key === "email" ? _t("Add a work email") : m.key === "code" ? _t("Type a clock number") : "";
+        return m.fix === "who" ? _t("Add a work email") : m.fix === "sched" ? _t("Type a clock number") : "";
     }
 
     // ------------------------------------------------------------ buddy
@@ -198,7 +198,7 @@ export class StepWelcome extends Component {
     }
     ownId(f) { return `pbnh-f-own-${f.name}`; }
     ownErr(f) { return this.err(`own-${f.name}`); }
-    ownMissing(f) { return this.api.ownMissing.some((x) => x.name === f.name); }
+    ownMissing(f) { return ownMissingOf(this.nh).some((x) => x.name === f.name); }
     onOwn(f, ev) {
         let v = ev.target.type === "checkbox" ? ev.target.checked : ev.target.value;
         if (f.kind === "integer" || f.kind === "number") {

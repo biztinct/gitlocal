@@ -310,7 +310,9 @@
     // ------------------------------------------------ step 6: welcome and first day (P2)
     .pbnh-seg button.is-off { color: var(--pbnh-faint); text-decoration: line-through; text-decoration-thickness: 1px; cursor: not-allowed; }
     .pbnh-why-not { flex-basis: 100%; display: flex; flex-direction: column; gap: 4px; padding-left: 46px; font-size: 12.5px; color: var(--pbnh-muted); }
-    .pbnh-why-not > div { display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; }
+    .pbnh-why-not > div { display: flex; gap: 6px; align-items: baseline; }
+    .pbnh-why-not > div > span { flex: 1; min-width: 0; }
+    .pbnh-why-not .pbnh-link { flex: none; }
     .pbnh-why-not svg { color: var(--pbnh-faint); flex: none; position: relative; top: 2px; }
     .pbnh-why-not b { color: var(--pbnh-ink); font-weight: 600; }
     .pbnh-buddy { width: 240px; max-width: 100%; }
@@ -357,8 +359,9 @@
     .pbnh-ev:last-child .pbnh-ev-ln::before { bottom: auto; height: 8px; }
     .pbnh-ev-ln i { position: relative; width: 10px; height: 10px; border-radius: 50%; background: var(--pbnh-card); border: 2px solid var(--pbnh-p); margin-top: 5px; }
     .pbnh-ev.is-now .pbnh-ev-ln i { border-color: var(--pbnh-teal); }
-    .pbnh-ev.is-day .pbnh-ev-ln i { background: var(--pbnh-p); width: 14px; height: 14px; margin-top: 3px; box-shadow: 0 0 0 4px var(--pbnh-p-soft); }
-    .pbnh-ev.is-day .pbnh-ev-what b { color: var(--pbnh-p-dark); }
+    .pbnh-ev.is-day .pbnh-ev-ln i { background: var(--pbnh-p-light); border-color: var(--pbnh-p); }
+    .pbnh-ev.is-anchor .pbnh-ev-ln i { background: var(--pbnh-p); width: 14px; height: 14px; margin-top: 3px; box-shadow: 0 0 0 4px var(--pbnh-p-soft); }
+    .pbnh-ev.is-anchor .pbnh-ev-what b { color: var(--pbnh-p-dark); font-weight: 700; }
     .pbnh-ev-what { padding-bottom: 14px; min-width: 0; }
     .pbnh-ev-what b { font-weight: 600; display: block; overflow-wrap: anywhere; }
     .pbnh-ev-what small { color: var(--pbnh-muted); display: block; font-size: 12px; overflow-wrap: anywhere; }
@@ -513,6 +516,7 @@
         .pbnh-ev { grid-template-columns: 74px 18px minmax(0, 1fr); gap: 8px; }
         .pbnh-buddy { width: 100%; }
         .pbnh-why-not, .pbnh-clock-msg { padding-left: 0; }
+        .pbnh-why-not > div { flex-wrap: wrap; }
         .pbnh-wk > div { font-size: 10.5px; }
     }
     @media (prefers-reduced-motion: reduce) {
