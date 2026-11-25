@@ -100,6 +100,19 @@ export class SetupStudio extends Component {
             addGuard: (fn) => this.addGuard(fn),
             go: (key) => this.go(key),
             refresh: () => this.refresh(),
+            // P6: the step on screen registers how to reload itself, so an
+            // Undo pressed after the step that made the change was left and
+            // opened again still runs (the studio's own call) and redraws
+            // the step that is on screen now
+            registerReload: (fn) => {
+                this.reloader = fn;
+                return () => {
+                    if (this.reloader === fn) {
+                        this.reloader = null;
+                    }
+                };
+            },
+            reloadStep: () => this.reloadStep(),
             putShift: (row) => this.put("shifts", row),
             dropShift: (id) => this.drop("shifts", id),
             putWeek: (row) => this.put("weeks", row),
@@ -364,11 +377,40 @@ export class SetupStudio extends Component {
         const kind = this.state.toast?.kind;
         return kind === "error" ? "triangleAlert" : kind === "info" ? "info" : "checkCircle";
     }
-    onToastUndo() {
+    /**
+     * The ONE undo path (P6). A toast's `undo` is `{ method, args, kind }`:
+     * the studio makes the call with its own services (a step that has been
+     * left meanwhile can no longer call the server), then reloads the step on
+     * screen and the studio data (rail, person panel) BEFORE saying it is
+     * undone — the table never keeps showing the change it just took back.
+     */
+    async onToastUndo() {
         const t = this.state.toast;
         clearTimeout(this.toastTimer);
         this.state.toast = null;
-        t?.undo?.();
+        const u = t?.undo;
+        if (!u || this.undoing) {
+            return;
+        }
+        this.undoing = true;
+        let res;
+        try {
+            res = await this.orm.call(MODEL, u.method, u.args || []);
+        } catch (e) {
+            this.toast(errorText(e), { kind: "error" });
+            return;
+        } finally {
+            this.undoing = false;
+        }
+        await Promise.all([this.reloadStep(), this.refresh()]);
+        this.toast(res?.summary || "", { kind: u.kind || "info" });
+    }
+    async reloadStep() {
+        try {
+            await this.reloader?.();
+        } catch {
+            // the step shows its own load error
+        }
     }
     closeToast() {
         clearTimeout(this.toastTimer);

@@ -5,3 +5,4 @@ from . import res_company
 
 from . import outgoing_email
 from . import reset_password
+from . import native_sections

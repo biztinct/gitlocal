@@ -64,8 +64,10 @@ class TestClockLens(ClockCase):
         self.run_pairing()
         d = self.Lens.get_lens('2026-10-26')
         sugg = {r['code']: r['suggestion'] for r in d['unknown']['rows']}
-        self.assertEqual(sugg['0885']['id'], self.e885.id,
-                         "leading zeros suggest the person, never assign them")
+        # WFSETUP P10b (owner ruling R8): matching ignores leading zeros, so
+        # "0885" is that person's punch now and never an unknown number
+        self.assertNotIn('0885', sugg)
+        self.assertEqual(self.Punch.search([('user_code', '=', '0885')]).employee_id, self.e885)
         self.assertFalse(sugg['TST-B'])
         out = self.Lens.auto_match()
         self.assertEqual(out['assigned'], 0)

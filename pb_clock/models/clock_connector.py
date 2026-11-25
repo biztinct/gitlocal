@@ -41,7 +41,11 @@ class ClockConnector(models.Model):
     code_field = fields.Selection([('UserEnrollNumber', 'Enrollment number'), ('UserFullCode', 'Full code (keep leading zeros)')], default='UserEnrollNumber', required=True, tracking=True)
     publish_punches = fields.Boolean(string='Send accepted records to attendance', default=False, tracking=True,
         help='Collection always continues. Enable after checking the source group, time zone and employee numbers. Closed attendance remains protected.')
-    state = fields.Selection([('new', 'Awaiting setup'), ('connected', 'Connected'), ('revoked', 'Access revoked')], default='new', readonly=True, tracking=True)
+    # WFSETUP P9: 'disabled' is the everyday, reversible stop. The pairing
+    # (token) is kept; the PC is refused with HTTP 423 and keeps its records
+    # queued, so Enable catches up everything punched meanwhile.
+    state = fields.Selection([('new', 'Awaiting setup'), ('connected', 'Connected'), ('disabled', 'Disabled'),
+                              ('revoked', 'Access revoked')], default='new', readonly=True, tracking=True)
     last_contact = fields.Datetime(readonly=True)
     last_read = fields.Datetime(readonly=True, string='Last successful database read')
     latest_source_punch = fields.Char(readonly=True)
@@ -117,6 +121,32 @@ class ClockConnector(models.Model):
         for rec in self:
             rec.message_post(body=_('Installation access revoked. Stored records remain available.'))
 
+    def action_disable(self):
+        """Everyday off switch (WFSETUP P9). Keeps the pairing, the received
+        records and the "Send accepted records to attendance" tick; the PC is
+        refused (423) until Enable and keeps its records queued meanwhile."""
+        self._manager()
+        for rec in self:
+            rec._setup_lock()
+            if rec.state == 'disabled':
+                continue
+            if rec.state != 'connected':
+                raise UserError(_('Only a connected PC can be disabled. This one is not paired.'))
+            rec.sudo().write({'state': 'disabled'})
+            rec.message_post(body=_('Disabled. This PC stops sending clock-ins until it is enabled again. '
+                                    'Nothing already received is removed and the PC stays paired.'))
+
+    def action_enable(self):
+        self._manager()
+        for rec in self:
+            rec._setup_lock()
+            if rec.state == 'connected':
+                continue
+            if rec.state != 'disabled':
+                raise UserError(_('Only a disabled PC can be enabled.'))
+            rec.sudo().write({'state': 'connected'})
+            rec.message_post(body=_('Enabled. On its next sync the PC sends everything punched while it was disabled.'))
+
     def action_setup(self):
         self.ensure_one()
         self._manager()
@@ -161,7 +191,7 @@ class ClockConnector(models.Model):
 
     def _setup_code(self, invited=False):
         self._setup_lock()
-        if self.state == 'connected':
+        if self.state in ('connected', 'disabled'):
             raise UserError(_('This PC is already paired. Ask an attendance manager if it must be replaced.'))
         code = secrets.token_urlsafe(24)
         expires = fields.Datetime.now() + timedelta(minutes=30)
@@ -216,7 +246,8 @@ class ClockConnector(models.Model):
 
     @api.model
     def _authenticate(self, token):
-        return self.sudo().search([('token_hash', '=', digest(token)), ('state', '=', 'connected')], limit=1) if token else self.browse()
+        # A disabled PC is still recognised (the controller answers 423, not 401).
+        return self.sudo().search([('token_hash', '=', digest(token)), ('state', 'in', ('connected', 'disabled'))], limit=1) if token else self.browse()
 
     def _receive(self, payload):
         self.ensure_one()

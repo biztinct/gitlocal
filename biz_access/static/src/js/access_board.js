@@ -1444,7 +1444,8 @@ export class PbAccessBoard extends Component {
             // itself — but only when nothing is open yet, so a reload after an
             // edit does not move the page under somebody.
             if (!this.state.screenId) {
-                const first = this.screenRows.find((r) => r.active);
+                const first = this.screenRows.find(r => r.active && r.id === this.props.action?.context?.pb_screen_id)
+                    || this.screenRows.find((r) => r.active);
                 if (first) { await this.loadScreen(first.id); }
             }
         } catch (e) {

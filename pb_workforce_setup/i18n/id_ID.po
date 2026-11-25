@@ -247,12 +247,6 @@ msgstr "%(why)s (%(n)s)"
 
 #. module: pb_workforce_setup
 #. odoo-python
-#: code:addons/pb_workforce_setup/models/people.py:0
-msgid "%g"
-msgstr "%g"
-
-#. module: pb_workforce_setup
-#. odoo-python
 #: code:addons/pb_workforce_setup/models/setup.py:0
 msgid "%s (copy)"
 msgstr "%s (salinan)"
@@ -287,6 +281,12 @@ msgstr "%s aturan absensi"
 #: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
 msgid "%s clock-ins received today"
 msgstr "%s absen masuk diterima hari ini"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "%s clocks sending clock-ins"
+msgstr "%s mesin absensi sedang mengirim absen"
 
 #. module: pb_workforce_setup
 #. odoo-python
@@ -661,6 +661,12 @@ msgstr "+%s sekali"
 #: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
 msgid "1 already has a different week"
 msgstr "1 orang sudah punya minggu kerja lain"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "1 clock sending clock-ins"
+msgstr "1 mesin absensi sedang mengirim absen"
 
 #. module: pb_workforce_setup
 #. odoo-python
@@ -1200,6 +1206,12 @@ msgid "Ascension Day of Jesus Christ"
 msgstr "Kenaikan Yesus Kristus"
 
 #. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Ask a manager to switch clock-ins on."
+msgstr "Minta manajer untuk menyalakan pengiriman absen."
+
+#. module: pb_workforce_setup
 #. odoo-python
 #: code:addons/pb_workforce_setup/models/setup.py:0
 msgid "Attendance access is required."
@@ -1406,8 +1418,35 @@ msgstr "Absen masuk dan absen pulang dihitung hingga 6 jam sebelum atau sesudah 
 #. module: pb_workforce_setup
 #. odoo-javascript
 #: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Clock-ins are also switched off for this clock."
+msgstr "Pengiriman absen untuk mesin ini juga dimatikan."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "Clock-ins are switched on for “%s”."
+msgstr "Pengiriman absen dinyalakan untuk “%s”."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Clock-ins from this clock will start arriving in attendance, including the "
+"ones it has already sent, and will be turned into paid hours by the rules in"
+" step 4."
+msgstr "Absen dari mesin ini akan mulai masuk ke data absensi, termasuk yang sudah dikirim sebelumnya, dan akan diubah menjadi jam yang dibayar oleh aturan di langkah 4."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
 msgid "Clock-ins now turn into paid hours using your rules."
 msgstr "Absen masuk sekarang diubah menjadi jam yang dibayar sesuai aturan Anda."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "Clock-ins switched off"
+msgstr "Pengiriman absen dimatikan"
 
 #. module: pb_workforce_setup
 #. odoo-javascript
@@ -1526,6 +1565,12 @@ msgstr "Dikonfirmasi"
 #: code:addons/pb_workforce_setup/models/clocks.py:0
 msgid "Confirmed without a clock"
 msgstr "Dikonfirmasi tanpa mesin absensi"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Connected, but clock-ins are switched off"
+msgstr "Terhubung, tetapi pengiriman absen dimatikan"
 
 #. module: pb_workforce_setup
 #. odoo-javascript
@@ -2098,6 +2143,14 @@ msgstr "Masih bisa diubah di editor rotasi."
 
 #. module: pb_workforce_setup
 #. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Its clock-ins are kept, and your late and overtime rules read them once "
+"confirmed. They only appear in attendance after clock-ins are switched on."
+msgstr "Absen dari mesin ini tetap disimpan, dan aturan keterlambatan dan lembur Anda membacanya setelah dikonfirmasi. Absen baru muncul di data absensi setelah pengiriman absen dinyalakan."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
 #: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
 msgid "Its lateness lines are set in step 4."
 msgstr "Baris keterlambatannya diatur di langkah 4."
@@ -2221,6 +2274,11 @@ msgstr "Libur Tahun Baru Imlek (Tet)"
 #: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__made
 msgid "Made"
 msgstr "Dibuat"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__made_to
+msgid "Made To"
+msgstr "Dibuat sampai"
 
 #. module: pb_workforce_setup
 #: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__mail_enabled
@@ -2472,6 +2530,20 @@ msgstr "Kerja malam, tambahan %s"
 #. module: pb_workforce_setup
 #. odoo-javascript
 #: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "No clock is sending clock-ins yet — paid hours will start once one is."
+msgstr "Belum ada mesin absensi yang mengirim absen — jam yang dibayar akan mulai setelah ada yang mengirim."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid ""
+"No clock is sending clock-ins yet. Paid hours start once one is. You can go "
+"live without it."
+msgstr "Belum ada mesin absensi yang mengirim absen. Jam yang dibayar mulai dihitung setelah ada yang mengirim. Anda bisa mulai tanpa itu."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
 msgid "No clock number"
 msgstr "Tanpa nomor absensi"
 
@@ -2622,6 +2694,18 @@ msgid ""
 "Not confirmed yet. Shifts are only paid by your rules once they are "
 "confirmed."
 msgstr "Belum dikonfirmasi. Shift baru dibayar sesuai aturan Anda setelah aturan dikonfirmasi."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Not heard from since %s"
+msgstr "Tidak ada kabar sejak %s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Not heard from yet"
+msgstr "Belum ada kabar"
 
 #. module: pb_workforce_setup
 #. odoo-javascript
@@ -2951,6 +3035,11 @@ msgid "People tap in and out from My Payobook on their phone."
 msgstr "Orang absen masuk dan pulang dari My Payobook di ponsel mereka."
 
 #. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__per_week
+msgid "Per Week"
+msgstr "Per minggu"
+
+#. module: pb_workforce_setup
 #. odoo-javascript
 #: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
 msgid "Person"
@@ -3126,12 +3215,6 @@ msgstr "Penerbitan berhenti sebelum semua minggu selesai."
 #: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
 msgid "Publishing…"
 msgstr "Menerbitkan…"
-
-#. module: pb_workforce_setup
-#. odoo-javascript
-#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
-msgid "Quiet since %s"
-msgstr "Tidak ada data sejak %s"
 
 #. module: pb_workforce_setup
 #: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_attendance_policy__pb_pending_rates
@@ -3334,9 +3417,9 @@ msgstr "Cari orang"
 #. odoo-javascript
 #: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
 msgid ""
-"See each clock and whether it is sending data. If one is not, send your IT "
-"person a ready-made setup link."
-msgstr "Lihat setiap mesin absensi dan apakah mesin itu mengirim data. Jika tidak, kirim tautan penyiapan siap pakai ke petugas IT Anda."
+"See each clock and whether it is sending clock-ins. If one is not, send your"
+" IT person a ready-made setup link."
+msgstr "Lihat setiap mesin absensi dan apakah mesin itu mengirim absen. Jika tidak, kirimkan tautan penyiapan siap pakai ke petugas IT Anda."
 
 #. module: pb_workforce_setup
 #. odoo-javascript
@@ -3346,9 +3429,15 @@ msgstr "Lihat pada orang sungguhan"
 
 #. module: pb_workforce_setup
 #. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "See step 6"
+msgstr "Lihat langkah 6"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
 #: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
-msgid "Sending data"
-msgstr "Mengirim data"
+msgid "Sending clock-ins"
+msgstr "Mengirim absen"
 
 #. module: pb_workforce_setup
 #. odoo-javascript
@@ -3577,6 +3666,18 @@ msgstr "Min"
 #: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
 msgid "Supervisor enters hours"
 msgstr "Pengawas memasukkan jam"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Switch clock-ins on"
+msgstr "Nyalakan pengiriman absen"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Switch clock-ins on for %s"
+msgstr "Nyalakan pengiriman absen untuk %s"
 
 #. module: pb_workforce_setup
 #. odoo-javascript
@@ -4806,3 +4907,139 @@ msgstr "“%s” disembunyikan dari daftar shift Anda. Hari jadwal kerja yang su
 #: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
 msgid "“%s” is removed."
 msgstr "“%s” sudah dihapus."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Disabled"
+msgstr "Dinonaktifkan"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Enable %s"
+msgstr "Aktifkan %s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Disabled on purpose. The PC stays paired and keeps new clock-ins waiting. Once enabled, it sends everything punched meanwhile."
+msgstr "Sengaja dinonaktifkan. PC tetap terpasang dan menahan absen baru. Setelah diaktifkan, PC mengirim semua absen selama itu."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Ask a manager to enable it."
+msgstr "Minta manajer untuk mengaktifkannya."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Enable"
+msgstr "Aktifkan"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "“%s” is enabled. It sends what was punched meanwhile on its next sync."
+msgstr "“%s” diaktifkan. Absen selama itu dikirim pada sinkronisasi berikutnya."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "1 clock disabled"
+msgstr "1 mesin absensi dinonaktifkan"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "%s clocks disabled"
+msgstr "%s mesin absensi dinonaktifkan"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ". Overtime comes from your rules."
+msgstr ". Lembur berasal dari aturan Anda."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ". The attendance screens also work out extra hours of their own. Pay never reads them — overtime comes from your rules."
+msgstr ". Layar absensi juga menghitung jam ekstra sendiri. Gaji tidak pernah membacanya — lembur berasal dari aturan Anda."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are already off."
+msgstr "Jam ekstra bawaan sudah mati."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are off: %s rules removed. Overtime comes from your rules."
+msgstr "Jam ekstra bawaan dimatikan: %s aturan dihapus. Lembur berasal dari aturan Anda."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are off: 1 rule removed. Overtime comes from your rules."
+msgstr "Jam ekstra bawaan dimatikan: 1 aturan dihapus. Lembur berasal dari aturan Anda."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are on again: %s rules put back."
+msgstr "Jam ekstra bawaan menyala lagi: %s aturan dipulihkan."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are on again: 1 rule put back."
+msgstr "Jam ekstra bawaan menyala lagi: 1 aturan dipulihkan."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Built-in extra hours count:"
+msgstr "Hitungan jam ekstra bawaan:"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_res_company__pb_wfs_extra_hours_saved
+msgid "Built-in extra hours rules (saved while switched off)"
+msgstr "Aturan jam ekstra bawaan (disimpan selama dimatikan)"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "On"
+msgstr "Nyala"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Switch it off"
+msgstr "Matikan"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Switch it on again"
+msgstr "Nyalakan lagi"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "The attendance app's extra hours are not installed here."
+msgstr "Jam ekstra aplikasi absensi tidak terpasang di sini."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "There are no saved extra-hours rules to put back. Add them on the attendance settings screen."
+msgstr "Tidak ada aturan jam ekstra tersimpan untuk dipulihkan. Tambahkan di layar pengaturan absensi."
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,help:pb_workforce_setup.field_res_company__pb_wfs_extra_hours_saved
+msgid "Written by Workforce setup when the built-in extra hours count is switched off, so switching it on again restores the same rules."
+msgstr "Ditulis oleh Pengaturan tenaga kerja saat hitungan jam ekstra bawaan dimatikan, agar saat dinyalakan lagi aturan yang sama dipulihkan."

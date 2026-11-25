@@ -70,9 +70,12 @@ export class StepHolidays extends Component {
         onMounted(() => {
             this.mounted = true;
             this.syncBar();
+            // an Undo always redraws the calendar on screen (P6)
+            this.unregister = this.props.studio.registerReload(() => this.load());
         });
         onWillUnmount(() => {
             this.mounted = false;
+            this.unregister?.();
             this.props.studio.setBar("holidays", null);
         });
     }
@@ -357,7 +360,7 @@ export class StepHolidays extends Component {
     async add(k) {
         const res = await this.run(() => this.orm.call(MODEL, "add_day_off", [k]));
         if (res) {
-            await this.after(res, () => this.undoAdd(res.ids));
+            await this.after(res, this.undoAdd(res.ids));
         }
     }
 
@@ -365,7 +368,7 @@ export class StepHolidays extends Component {
         this.state.ask = null;
         const res = await this.run(() => this.orm.call(MODEL, "remove_days_off", [[row.id]]));
         if (res) {
-            await this.after(res, () => this.undoRemove(res.restore));
+            await this.after(res, this.undoRemove(res.restore));
         }
     }
 
@@ -401,22 +404,19 @@ export class StepHolidays extends Component {
         }
         const res = await this.run(() => this.orm.call(MODEL, "add_suggested", [s.year]));
         if (res) {
-            await this.after(res, res.ids.length ? () => this.undoAdd(res.ids) : null);
+            await this.after(res, res.ids.length ? this.undoAdd(res.ids) : null);
         }
     }
 
-    async undoAdd(ids) {
-        const res = await this.run(() => this.orm.call(MODEL, "remove_days_off", [ids]));
-        if (res) {
-            await this.after(res);
-        }
+    /** The Undo of a toast, run by the studio (one undo path, P6): it
+     *  calls the server, reloads the step on screen and the rail, then shows
+     *  this call's own summary. */
+    undoAdd(ids) {
+        return { method: "remove_days_off", args: [ids], kind: "ok" };
     }
 
-    async undoRemove(rows) {
-        const res = await this.run(() => this.orm.call(MODEL, "restore_days_off", [rows]));
-        if (res) {
-            await this.after(res);
-        }
+    undoRemove(rows) {
+        return { method: "restore_days_off", args: [rows], kind: "ok" };
     }
 
     async confirm() {

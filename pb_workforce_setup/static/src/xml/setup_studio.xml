@@ -869,6 +869,13 @@
       <span>Shifts on a public holiday or on a person's day off are marked for the holiday or rest-day rate by themselves. A shift someone changed by hand keeps its choice.</span>
       <button t-if="canManage" type="button" class="pbws-link" t-att-disabled="state.busy" t-on-click="remark"><t t-out="icon('refresh', 14)"/>Re-check holiday and rest-day shifts</button>
     </div>
+    <div t-if="r.extra_hours" t-attf-class="pbws-hint pbws-hint--extra {{ r.extra_hours.on ? 'is-on' : 'is-off' }}">
+      <t t-out="icon('clock', 18)"/>
+      <span t-if="r.extra_hours.on">Built-in extra hours count: <b>On</b>. The attendance screens also work out extra hours of their own. Pay never reads them — overtime comes from your rules.</span>
+      <span t-else="">Built-in extra hours count: <b>Off</b>. Overtime comes from your rules.</span>
+      <button t-if="canManage and r.extra_hours.on" type="button" class="pbws-link" t-att-disabled="state.busy" t-on-click="extraHoursOff"><t t-out="icon('x', 14)"/>Switch it off</button>
+      <button t-elif="canManage and r.extra_hours.saved" type="button" class="pbws-link" t-att-disabled="state.busy" t-on-click="extraHoursOn"><t t-out="icon('undo', 14)"/>Switch it on again</button>
+    </div>
     <p t-if="canManage and r.state !== 'advanced'" class="pbws-foot-link">
       <button type="button" class="pbws-link" t-on-click="openAdvanced"><t t-out="icon('sliders', 14)"/>Advanced rules screen</button>
     </p>
@@ -1016,7 +1023,7 @@
       <div class="pbws-q-t">
         <div class="pbws-eyebrow">Step 6 of 7</div>
         <h1>How do people clock in?</h1>
-        <p>See each clock and whether it is sending data. If one is not, send your IT person a ready-made setup link.</p>
+        <p>See each clock and whether it is sending clock-ins. If one is not, send your IT person a ready-made setup link.</p>
         <t t-if="clk and !canEdit" t-call="pb_workforce_setup.ReadOnly"/>
       </div>
       <button t-if="canEdit and !state.adding" type="button" class="pbws-btn pbws-btn--out" t-on-click="startAdd"><t t-out="icon('plus', 16)"/>Add a clock</button>
@@ -1054,7 +1061,7 @@
         <p>Add the clocks people use at work, or let them clock in another way below.</p>
       </div>
       <div t-else="" class="pbws-grid3">
-        <div t-foreach="rows" t-as="row" t-key="row.key" t-att-class="cardClass(row)">
+        <div t-foreach="rows" t-as="row" t-key="row.key" t-att-class="cardClass(row)" t-att-data-card="row.key">
           <div class="pbws-dev-h">
             <span class="pbws-ri" t-att-title="kindLabel(row)" t-out="icon(kindIcon(row), 18)"/>
             <span t-att-class="chipClass(row)"><t t-out="icon(chipIcon(row), 13)"/><t t-esc="chipText(row)"/></span>
@@ -1065,12 +1072,33 @@
             <small t-esc="heardLine(row)"/>
             <small class="pbws-num" t-esc="todayLine(row)"/>
           </t>
+          <t t-elif="row.state === 'held'">
+            <small t-esc="heardLine(row)"/>
+            <small>Its clock-ins are kept, and your late and overtime rules read them once confirmed. They only appear in attendance after clock-ins are switched on.</small>
+          </t>
           <small t-elif="row.state === 'quiet'" t-esc="quietLine(row)"/>
           <small t-elif="row.state === 'waiting' and row.kind === 'pc'">Nothing received yet. Your IT person installs a small program on the PC beside the clock.</small>
+          <t t-elif="row.state === 'disabled'">
+            <small t-if="row.last_heard" t-esc="heardLine(row)"/>
+            <small>Disabled on purpose. The PC stays paired and keeps new clock-ins waiting. Once enabled, it sends everything punched meanwhile.</small>
+          </t>
           <small t-elif="row.state === 'off'">Switched off. Records already received are kept.</small>
           <p t-if="row.problem" t-att-class="row.state === 'attention' ? 'pbws-dev-p is-err' : 'pbws-dev-p'"><t t-out="icon('info', 14)"/><span t-esc="row.problem"/></p>
           <small t-if="row.pending" class="pbws-num" t-esc="pendingLine(row)"/>
           <small t-if="row.invite_until and row.state !== 'ok'" class="pbws-dev-inv" t-esc="inviteLine(row)"/>
+          <small t-if="isOff(row) and row.state !== 'held'" class="pbws-dev-off"><t t-out="icon('pause', 13)"/>Clock-ins are also switched off for this clock.</small>
+          <small t-if="askLine(row)" class="pbws-dev-off"><t t-out="icon('info', 13)"/>Ask a manager to switch clock-ins on.</small>
+          <small t-if="enableAsk(row)" class="pbws-dev-off"><t t-out="icon('info', 13)"/>Ask a manager to enable it.</small>
+          <div t-if="state.switchAsk === row.key" class="pbws-dev-ask" role="alertdialog" aria-modal="false"
+               t-att-aria-label="switchTitle(row)" t-att-data-switch-ask="row.key" t-on-keydown="onSwitchKey">
+            <b>Clock-ins from this clock will start arriving in attendance, including the ones it has already sent, and will be turned into paid hours by the rules in step 4.</b>
+            <div>
+              <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--out" t-att-disabled="state.busy" t-on-click="() => this.switchOn(row)">
+                <span t-if="state.busy" class="pbws-spin" aria-hidden="true"/><t t-else="" t-out="icon('play', 14)"/>Switch clock-ins on
+              </button>
+              <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost" t-on-click="keepSwitch">Not now</button>
+            </div>
+          </div>
           <div t-if="state.replaceAsk === row.key" class="pbws-dev-ask" role="alertdialog">
             <b>This replaces the link you sent before. Make a new one?</b>
             <div>
@@ -1081,6 +1109,12 @@
           <input t-if="state.linkShown[row.key]" type="text" readonly="readonly" class="pbws-dev-link" t-att-data-link="row.key"
                  t-att-value="state.linkShown[row.key]" aria-label="Setup link for IT" t-on-focus="selectLink"/>
           <div t-if="canEdit" class="pbws-dev-b">
+            <button t-if="canSwitch(row) and state.switchAsk !== row.key" type="button" class="pbws-btn pbws-btn--sm pbws-btn--out"
+                    t-att-data-switch="row.key" t-att-disabled="state.busy" t-on-click="() => this.askSwitch(row)"><t t-out="icon('play', 14)"/>Switch clock-ins on</button>
+            <button t-if="canEnable(row)" type="button" class="pbws-btn pbws-btn--sm pbws-btn--out" t-att-title="enableTitle(row)"
+                    t-att-disabled="state.busy" t-on-click="() => this.enable(row)">
+              <span t-if="state.busy" class="pbws-spin" aria-hidden="true"/><t t-else="" t-out="icon('play', 14)"/>Enable
+            </button>
             <button t-if="canLink(row) and state.replaceAsk !== row.key" type="button" class="pbws-btn pbws-btn--sm pbws-btn--out" t-att-disabled="state.busy" t-on-click="() => this.copyLink(row)"><t t-out="icon('copy', 14)"/>Copy setup link for IT</button>
             <button type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost" t-on-click="() => this.details(row)">Clock details<t t-out="icon('arrowRight', 14)"/></button>
           </div>
@@ -1118,7 +1152,11 @@
     <div t-if="state.finish" class="pbws-card pbws-done" tabindex="-1" role="status">
       <span class="pbws-tick" t-out="icon('check', 30)"/>
       <h1>Workforce is live.</h1>
-      <p><t t-esc="finishLine"/> Clock-ins now turn into paid hours using your rules.</p>
+      <p><t t-esc="finishLine"/><t t-if="state.finish.clocks_sending !== false"> Clock-ins now turn into paid hours using your rules.</t></p>
+      <p t-if="state.finish.clocks_sending === false" class="pbws-done-clk">
+        <t t-out="icon('clock', 16)"/><span>No clock is sending clock-ins yet — paid hours will start once one is.</span>
+        <button type="button" class="pbws-link" t-on-click="goClocks">See step 6<t t-out="icon('arrowRight', 14)"/></button>
+      </p>
       <p t-if="reachLine" class="pbws-done-reach" t-esc="reachLine"/>
       <div class="pbws-done-b">
         <button type="button" class="pbws-btn pbws-btn--pri" t-on-click="openRoster">Open the roster<t t-out="icon('arrowRight', 16)"/></button>

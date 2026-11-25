@@ -10,3 +10,4 @@ from . import company
 from . import holidays
 from . import clocks
 from . import golive
+from . import extra_hours

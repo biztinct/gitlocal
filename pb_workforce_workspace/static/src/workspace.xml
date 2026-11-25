@@ -1,11 +1,29 @@
 <templates xml:space="preserve">
  <t t-name="pb_workforce_workspace.Navigation" t-inherit="pb_mission.PbMission" t-inherit-mode="extension">
   <xpath expr="//div[hasclass('pbms')]" position="attributes"><attribute name="t-att-class">{'pbww-shell': workspace.enabled}</attribute></xpath>
-  <xpath expr="//nav[hasclass('pbms-rail')]" position="attributes"><attribute name="t-if">!workspace.enabled</attribute></xpath>
+  <xpath expr="//nav[hasclass('pbms-rail')]/button" position="replace">
+   <div t-if="!workspace.enabled" class="pbhub-rail__work is-scrollable">
+    <button t-foreach="workspaceDailyLenses" t-as="entry" t-key="entry.key" class="pbms-rail__b"
+            t-att-title="entry.label" t-att-aria-current="state.lens === entry.key ? 'page' : false"
+            t-att-class="{'is-on':state.lens === entry.key}" t-on-click="() => this.setLens(entry.key)">
+     <span class="pbms-rail__ic" t-out="ic(entry.icon,20)"/><span class="pbms-rail__l" t-esc="entry.label"/>
+    </button>
+   </div>
+   <button t-foreach="workspaceFooter" t-as="entry" t-key="entry.key" class="pbms-rail__b"
+           t-att-title="entry.label" t-att-aria-current="state.lens === entry.key ? 'page' : false"
+           t-att-class="{'is-on':state.lens === entry.key}" t-on-click="() => this.workspaceNavigate(entry.key)">
+    <span class="pbms-rail__ic" t-out="ic(entry.icon,20)"/><span class="pbms-rail__l" t-esc="entry.label"/>
+   </button>
+  </xpath>
+  <xpath expr="//nav[hasclass('pbms-rail')]" position="attributes">
+   <attribute name="t-if">!workspace.enabled || workspaceFooter.length</attribute>
+   <attribute name="t-att-class">{'pbww-settings-rail':workspace.enabled}</attribute>
+  </xpath>
   <xpath expr="//div[hasclass('pbms-low')]" position="before">
    <nav t-if="workspace.enabled" class="pbww-nav" aria-label="Workforce workspace">
     <div class="pbww-tabs"><button t-foreach="workspaceGroups" t-as="g" t-key="g.label" t-att-class="{'is-active':workspaceGroup and workspaceGroup.label === g.label and state.lens !== 'setup'}" t-att-aria-current="workspaceGroup and workspaceGroup.label === g.label and state.lens !== 'setup' ? 'page' : false" t-on-click="() => this.workspaceNavigate(g.keys[0])" t-esc="g.title"/>
-     <button t-if="!state.allowed or state.allowed.setup" class="pbww-setup-link" t-att-class="{'is-active':state.lens === 'setup'}" t-on-click="() => this.workspaceNavigate('setup')" t-esc="setupLabel"/>
+     <button t-if="state.allowed and state.allowed.setup and !state.allowed.workspace_settings"
+             class="pbww-setup-link" t-on-click="() => this.workspaceNavigate('setup')" t-esc="setupLabel"/>
     </div>
     <div class="pbww-subnav" t-if="state.lens !== 'setup' and workspaceSubnav.length"><button t-foreach="workspaceSubnav" t-as="l" t-key="l.key" t-att-class="{'is-active':state.lens === l.key}" t-att-aria-current="state.lens === l.key ? 'page' : false" t-on-click="() => this.workspaceNavigate(l.key)" t-esc="l.label"/></div>
    </nav>

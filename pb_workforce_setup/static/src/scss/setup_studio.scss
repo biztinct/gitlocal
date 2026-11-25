@@ -568,6 +568,8 @@
     .pbws-rule-people svg { margin-top: 2px; color: var(--pbws-p); }
     .pbws-hint--days { align-items: center; flex-wrap: wrap; }
     .pbws-hint--days > span { flex: 1; min-width: 220px; }
+    .pbws-hint--extra { align-items: center; flex-wrap: wrap; }
+    .pbws-hint--extra > span { flex: 1; min-width: 220px; }
     .pbws-hint .pbws-link { display: inline-flex; gap: 6px; align-items: center; }
     .pbws-link:disabled { opacity: .5; cursor: default; }
 
@@ -635,7 +637,14 @@
     .pbws-dev { padding: 14px 16px; display: flex; flex-direction: column; gap: 7px; min-width: 0; transition: border-color .2s, box-shadow .2s; }
     .pbws-dev.is-attention { border-color: color-mix(in srgb, var(--pbws-err) 35%, white); }
     .pbws-dev.is-fresh { animation: pbws-glow 1.6s ease-out; }
+    // P9: a disabled PC reads quiet — grey, nothing broken, nothing to fix
+    .pbws-dev.is-disabled { background: #FAFBFD; }
+    .pbws-dev.is-disabled h3 { color: var(--pbws-muted); }
     .pbws-dev-h { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+    // P6: the clock states are whole sentences — wrap inside the card, never cut off
+    .pbws-dev-h .pbws-chip { white-space: normal; min-width: 0; line-height: 1.3; border-radius: 12px; padding: 4px 10px; }
+    .pbws-dev-h .pbws-chip svg { flex: none; }
+    .pbws-dev-h .pbws-ri { flex: none; }
     .pbws-dev h3 { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .pbws-dev small { color: var(--pbws-muted); font-size: 12.5px; display: block; line-height: 1.45; }
     .pbws-dev small b { color: var(--pbws-ink); font-weight: 600; }
@@ -647,6 +656,8 @@
     .pbws-dev-ask { background: var(--pbws-p-soft); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 8px; font-size: 13px; animation: pbws-rise .18s ease-out; }
     .pbws-dev-ask b { font-weight: 600; color: var(--pbws-p-dark); }
     .pbws-dev-ask div { display: flex; gap: 6px; flex-wrap: wrap; }
+    .pbws-dev-off { display: flex !important; gap: 6px; align-items: flex-start; color: var(--pbws-p-dark) !important; }
+    .pbws-dev-off svg { margin-top: 2px; flex: none; }
     .pbws-dev-link { width: 100%; font-size: 12px; border: 1px solid var(--pbws-p-light); border-radius: 8px; padding: 6px 8px; background: var(--pbws-card); color: var(--pbws-ink); }
     .pbws-dev-b { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; padding-top: 4px; }
     .pbws-chip--err { background: var(--pbws-err-soft); color: var(--pbws-err); }
@@ -740,6 +751,9 @@
     .pbws-done h1 { font-size: 26px; font-weight: 800; }
     .pbws-done p { color: var(--pbws-muted); max-width: 56ch; }
     .pbws-done-reach { font-size: 13px; }
+    .pbws-done-clk { display: inline-flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; justify-content: center; font-size: 14px; color: var(--pbws-p-dark) !important; background: var(--pbws-p-soft); border-radius: 10px; padding: 8px 12px; }
+    .pbws-done-clk .pbws-link { display: inline-flex; gap: 4px; align-items: center; }
+    .pbws-done-clk > span { flex: 1 1 0; min-width: 0; }
     .pbws-done-b { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
 
     // ------------------------------------------------ the studio toast (design of record .toast)

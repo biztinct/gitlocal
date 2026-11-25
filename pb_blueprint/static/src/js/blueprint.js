@@ -951,6 +951,17 @@ export class PbBlueprint extends Component {
         this.state.settingsDraft[field] = value;
     }
 
+    /** WFSETUP P10b — the clock card: which input a clock fact answers. */
+    async clockBind(key, ruleId) {
+        if (!this.created) { return { ok: false }; }
+        const res = await this.rpc("bp_clock_bind", [this.state.configId, key, ruleId]);
+        if (res && res.ok && res.clock && this.state.settingsMeta) {
+            this.state.settingsMeta.clock = res.clock;
+            this.state.savedAt = Date.now();
+        }
+        return res;
+    }
+
     /**
      * Write the fields a card just changed — and nothing else.
      *

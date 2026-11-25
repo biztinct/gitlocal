@@ -389,10 +389,19 @@ export function allCategories() {
     return [...shipped, ...extra.filter((c) => !replaced.has(c.key))];
 }
 
+// Keep each request within the server's probe limits even on full installations.
+async function queryBatches(orm, method, items, size) {
+    const calls = [];
+    for (let start = 0; start < items.length; start += size) {
+        calls.push(orm.call("pb.settings", method, [items.slice(start, start + size)]));
+    }
+    return Promise.all(calls);
+}
+
 /** Every action xmlid the descriptor names, for one probe round trip. */
 export function settingsActionXmlids() {
     return [...new Set(allCategories().flatMap(
-        (c) => (c.cards || []).filter((k) => k.xmlid).map((k) => k.xmlid)))];
+        (c) => (c.cards || []).flatMap((k) => k.viewXmlids || (k.xmlid ? [k.xmlid] : []))))];
 }
 
 export class PbSettingsHub extends Component {
@@ -432,6 +441,9 @@ export class PbSettingsHub extends Component {
 
         this.state = useState({
             resolved: false,
+            filter: "",
+            nativeMenus: null,
+            platform: false,
             // category key -> boolean; null while unresolved
             allowed: null,
             // action xmlid -> boolean
@@ -522,6 +534,7 @@ export class PbSettingsHub extends Component {
         const [gates, present] = await Promise.all([
             this._resolveGates(), this._resolveActions(),
         ]);
+        this.state.platform = Boolean(gates.isSystem);
         this.state.allowed = gates.categories;
         this.state.blocked = gates.cards;
         this.state.present = present;
@@ -582,10 +595,11 @@ export class PbSettingsHub extends Component {
                           feature: k.feature || "" })),
         }));
         try {
-            const res = await this.orm.call(
-                "pb.settings", "resolve_gates", [payload]);
-            return this._floor({ categories: res.categories || {},
-                                 cards: res.cards || {} }, !!res.is_system);
+            const batches = await queryBatches(this.orm, "resolve_gates", payload, 40);
+            return this._floor({
+                categories: Object.assign({}, ...batches.map(batch => batch.categories)),
+                cards: Object.assign({}, ...batches.map(batch => batch.cards)),
+            }, Boolean(batches[0]?.is_system));
         } catch (e) {
             console.warn("pb_settings: could not ask the server who may see "
                          + "which category — falling back", e);
@@ -611,6 +625,7 @@ export class PbSettingsHub extends Component {
      * comes back.
      */
     _floor(gates, isSystem) {
+        gates.isSystem = isSystem;
         if (isSystem) { return gates; }
         for (const c of this.all) {
             if (PLATFORM_ONLY_CATEGORIES.includes(c.key)) {
@@ -657,7 +672,7 @@ export class PbSettingsHub extends Component {
         const xmlids = settingsActionXmlids();
         if (!xmlids.length) { return {}; }
         try {
-            return await this.orm.call("pb.settings", "resolve_actions", [xmlids]);
+            return Object.assign({}, ...await queryBatches(this.orm, "resolve_actions", xmlids, 50));
         } catch (e) {
             console.warn("pb_settings: could not probe the action xmlids", e);
             return {};
@@ -680,6 +695,7 @@ export class PbSettingsHub extends Component {
         if (this.state.blocked[cardKey(cat, card)] === false) {
             return false;
         }
+        if (card.nativeSection) return card.viewXmlids.some(id => this.state.present[id]);
         if (card.tag) {
             return registry.category("actions").contains(card.tag);
         }
@@ -729,13 +745,49 @@ export class PbSettingsHub extends Component {
         })).filter((g) => g.cats.length);
     }
 
+    get platformGroup() {
+        if (!this.state.platform) return null;
+        const keys = ["company", "email", "nav", "form_builder", "payai_can_act"];
+        return {key: "platform", icon: "settings", label: _t("Platform settings"),
+            cats: this.categories.filter(c => keys.includes(c.key)).map(c => c.key === "form_builder"
+                ? {...c, cards: c.cards.filter(k => k.id === "form_builder")} : c)};
+    }
+
     get currentGroup() {
         const groups = this.groups;
+        if (this.state.group === "platform" && this.platformGroup) return this.platformGroup;
         return groups.find((g) => g.key === this.state.group) || groups[0] || null;
+    }
+
+    filteredCards(cat) {
+        const term = this.state.filter.trim().toLocaleLowerCase();
+        return this.cardsOf(cat).filter(k => [cat.label,k.label,k.sub].join(" ").toLocaleLowerCase().includes(term));
+    }
+
+    async loadNativeMenus(ev) {
+        if (ev.currentTarget.open && this.state.nativeMenus === null) {
+            this.state.nativeMenus = await this.orm.call("pb.settings", "application_settings", []);
+        }
+    }
+
+    get nativeGroups() {
+        const apps = new Map();
+        for (const row of this.state.nativeMenus || []) {
+            if (!row.path.toLocaleLowerCase().includes(this.state.filter.trim().toLocaleLowerCase())) continue;
+            if (!apps.has(row.app)) apps.set(row.app, []);
+            apps.get(row.app).push(row);
+        }
+        return [...apps].map(([app, rows]) => ({app, rows}));
     }
 
     /** A rail CLICK handler. Takes a group key or a category key. */
     setGroup(key) {
+        this.state.filter = "";
+        if (key === "platform" && this.platformGroup) {
+            this.state.group = key;
+            this._publishPlace();
+            return;
+        }
         let target = key;
         if (!SETTINGS_GROUPS.some((g) => g.key === key)) {
             const cat = this.all.find((c) => c.key === key);
@@ -812,14 +864,6 @@ export class PbSettingsHub extends Component {
     }
 
     /**
-     * Open what a card names.
-     *
-     * A CLICK handler, and the only place in this file that navigates.
-     * `_opening` is not reset on success on purpose: the surface is being
-     * replaced, so there is no second click to serve — and if the navigation
-     * FAILS, the catch puts it back so the card is not left dead.
-     */
-    /**
      * (locked, sentence) for a card whose part of the product is switched off
      * and shown locked rather than taken away.
      *
@@ -835,7 +879,7 @@ export class PbSettingsHub extends Component {
                                         + "switched on for your company.")) : "";
     }
 
-    openCard(card) {
+    async openCard(card) {
         // A padlock is a door that says why. The click is answered with the
         // sentence and NEVER navigates — a card for something the company has
         // not got must not open a screen the product does not have here.
@@ -848,6 +892,13 @@ export class PbSettingsHub extends Component {
             });
             return;
         }
+        if (card.nativeSection) {
+            return this.actionService.doAction({
+                type: "ir.actions.act_window", name: card.label, res_model: "res.config.settings",
+                views: [[false, "form"]], target: "current",
+                context: { form_view_ref: "base.res_config_settings_view_form", pb_settings_section: card.nativeSection },
+            });
+        }
         if (this._opening) { return; }
         this._opening = true;
         try {
@@ -857,7 +908,7 @@ export class PbSettingsHub extends Component {
                 // descriptor, and `openHub` merges it (hub_nav.js:63). Nothing
                 // needs it today; the alternative is every future deep-linking
                 // card editing this method.
-                openHub(this.actionService, {
+                await openHub(this.actionService, {
                     tag: card.tag,
                     context: card.context || {},
                     back: this.backToSettings,
@@ -866,11 +917,10 @@ export class PbSettingsHub extends Component {
                 // Native Odoo views. `clearBreadcrumbs: false` keeps "Settings"
                 // in the trail — these render Odoo's control panel, so the crumb
                 // is visible and is the return path a back chip cannot be here.
-                this.actionService.doAction(card.xmlid, { clearBreadcrumbs: false });
+                await this.actionService.doAction(card.xmlid, { clearBreadcrumbs: false });
             }
-        } catch (e) {
+        } finally {
             this._opening = false;
-            console.warn("pb_settings: card failed to open", card.id, e);
         }
     }
 

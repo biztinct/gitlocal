@@ -1,0 +1,1145 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Workspace settings · Payobook</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font:14px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#211e39;background:#f6f7fb}button,select,input{font:inherit;color:inherit}button,select{cursor:pointer}button{background:white;border:0}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #8978ff;outline-offset:1px}button:hover{background:#f1effb}svg{width:19px;height:19px;flex:none;vertical-align:middle;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.app{display:grid;grid-template:48px 39px minmax(0,1fr) / 56px 82px minmax(0,1fr);height:100dvh}.primary{grid-area:1/1/4/2;background:#11152e;display:flex;flex-direction:column;align-items:center;color:#dbe0f4;padding:8px 0;gap:8px}.logo,.avatar{display:grid;place-items:center;background:#5945de;color:white;border-radius:10px;font-weight:800;width:34px;height:34px}.avatar{margin-top:auto;font-size:11px}.places{width:100%;min-height:0;overflow:auto;scrollbar-width:thin}.place{display:grid;place-items:center;width:40px;height:36px;margin:3px auto;color:inherit;background:transparent;border-radius:9px}.place:hover,.place[aria-current=true]{background:#302d66;color:white}.place[aria-current=true]{box-shadow:inset 3px 0 #9a96ff}header{grid-area:1/2/2/4;background:#252049;color:white;display:flex;align-items:center;gap:10px;padding:0 19px}header select{background:#252049;color:white;border:none;font-weight:700}header .end{margin-left:auto;color:#dfdcf6;font-size:12px}.review{border:1px solid #777292;border-radius:6px;color:white;background:transparent;padding:4px 10px}.review:hover{background:#443c6c}.crumb{grid-area:2/2/3/4;background:white;border-bottom:1px solid #e0e3ed;padding:9px 19px;color:#657089;font-size:12px}.crumb b{color:#252039}.crumb span{padding:0 9px}.secondary{grid-area:3/2/4/3;background:white;border-right:1px solid #dfe3ec;display:flex;flex-direction:column;min-height:0;padding:6px 4px}.work{flex:1;overflow:auto;scrollbar-width:thin}.foot{border-top:1px solid #dddfea;padding-top:5px}.navbtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:100%;min-height:49px;padding:5px 2px;border-radius:8px;font-size:9px;line-height:1.25;font-weight:700;text-transform:uppercase;color:#65748b}.navbtn[aria-current=true]{background:#edeafa;color:#5741bc}.page{grid-area:3/3/4/4;overflow:auto;min-width:0}.wrap{max-width:1130px;margin:0 auto;padding:clamp(24px,4vw,62px)}.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.14em;font-weight:750;color:#6c6591}.heading{border-bottom:1px solid #dedfeb;padding-bottom:25px}.heading h1{font-size:clamp(26px,3vw,40px);line-height:1.12;letter-spacing:-.045em;margin:10px 0}.heading p,.muted{color:#617089;margin:0}.tools{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:23px 0 18px}.tools strong{font-size:15px}.search{display:flex;align-items:center;gap:7px;border:1px solid #d9dce9;background:white;border-radius:8px;padding:6px 10px;color:#778198}.search input{width:150px;max-width:100%;border:none;outline:0;background:transparent;font-size:12px}.groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}.panel{border:1px solid #dfe2ed;background:white;border-radius:14px;overflow:hidden}.panel h2{margin:0;padding:16px 18px;background:#fbfbfd;border-bottom:1px solid #e7e8ef;font-size:14px;display:flex;align-items:center;gap:9px}.panel h2 span{color:#80799a;font-weight:500;font-size:12px}.row{width:100%;display:flex;text-align:left;padding:19px 16px;gap:12px;align-items:flex-start}.row+.row{border-top:1px solid #eeedf4}.tile{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;flex:none;color:#6253b4;background:#efedf9}.panel:nth-child(even) .tile{background:#e7f3f1;color:#37766b}.row strong,.row small{display:block}.row strong{font-size:14px}.row small{color:#626e84;margin-top:4px;font-size:12px;line-height:1.5}.arrow{margin:auto 0 auto auto;color:#89879e}.arrow svg{width:14px}.note{margin:25px 0 0;padding:15px 0;border-top:1px solid #dedfeb;color:#627086;font-size:12px}.note b{color:#48425b}.empty{padding:24px}.wide{grid-column:1/-1}dialog{color:inherit;border:1px solid #d9dae5;border-radius:15px;padding:24px;width:min(590px,92vw);max-height:85dvh}dialog::backdrop{background:#11152e68}dialog h2{margin:8px 0;font-size:23px}dialog p{color:#59657a}dialog code{overflow-wrap:anywhere;font-size:12px}dialog .close{float:right;border-radius:7px;padding:6px}details{margin:7px 0;border:1px solid #e3e4ed;border-radius:7px;padding:9px 12px}summary{cursor:pointer;font-weight:650}dt{font-weight:650;margin-top:16px}dd{margin:3px 0;color:#59657a}.action{border:1px solid #c9c3ef;color:#5646ad;border-radius:7px;padding:7px 13px}h2{font-size:18px}.guide{color:#50466f;background:#f0eef8;padding:12px;border-radius:8px}@media(max-width:850px){.groups{grid-template-columns:1fr}}@media(max-width:570px){.app{grid-template-columns:42px 63px minmax(0,1fr)}.wrap{padding:16px 10px}.tools{align-items:stretch;flex-direction:column}.row{padding:13px 9px;gap:7px}.tile{width:27px;height:27px}.navbtn{font-size:8px}.place{width:34px}.end{display:none}header .review{margin-left:auto}.panel h2{padding:12px}.heading p{font-size:12px}header{padding:0 8px}.search input{width:100%}} 
+fieldset{margin:20px 0;padding:12px 16px 16px;border:1px solid #d9d6ec;border-radius:10px}legend{font-weight:650;padding:0 4px}.choice{display:block;padding:5px 0}.choice input{accent-color:#6046cf}#saved{color:#266858;font-size:12px}.native>p,.native>details{margin:12px 16px}.native ul{list-style:none;padding-left:4px}.native li{padding:6px 0}.native small{display:block;color:#65748b;overflow-wrap:anywhere}#nativeForm label{display:grid;gap:5px;margin:13px 0 4px;font-size:13px;font-weight:650}#nativeForm label.switch{display:flex;align-items:baseline;gap:9px}#nativeForm input:not([type=checkbox]),#nativeForm select{width:100%;min-width:0;border:1px solid #cbd2de;border-radius:7px;background:white;padding:8px;font:inherit;font-weight:400}#nativeForm input[type=color]{max-width:100px;height:36px;padding:3px}#nativeForm input:read-only:not([type=checkbox]):not([type=file]):not([type=color]){background:#f6f7fb}#nativeForm input[type=checkbox]{accent-color:#594ab7}#nativeForm p{font-size:12px;margin:5px 0 14px}#nativeForm fieldset{min-width:0}#nativeForm .editor-actions{margin:20px 0 0;display:flex;align-items:center;flex-wrap:wrap;gap:8px}#nativeForm [role=status]{color:#276455;font-size:12px}</style></head><body><div class="app"><aside class="primary"><div class="logo" aria-label="Payobook">P</div><nav class="places" aria-label="Workspaces"></nav><div class="avatar" title="Design preview">PB</div></aside><header><span id="brand"></span><select id="picker" aria-label="Choose workspace"></select><span class="end">Design preview</span><button class="review" id="study">Menu study</button></header><div class="crumb"></div><nav class="secondary" aria-label="Workspace submenu"><div class="work"></div><div class="foot"></div></nav><main class="page"><div class="wrap"><div class="heading"></div><div id="content"></div></div></main></div><dialog id="dialog"><button class="close" aria-label="Close dialog">✕</button><div id="detail"></div></dialog>
+<template data-section="Attendance approvals" data-group="Payroll" data-scope="Company" data-icon="calendar" data-summary="Choose how approved weeks feed payroll and when an unapproved week blocks a run." data-source="General Settings › Weekly timesheets">
+ <label class="switch"><input type="checkbox" name="pb_timesheet_payroll" checked> Payroll reads approved timesheets</label>
+ <p>Use approved weeks for hours, worked days and overtime.</p>
+ <div data-when="pb_timesheet_payroll"><label class="switch"><input type="checkbox" name="pb_timesheet_block_run"> Block the run until every week is approved</label>
+ <p>With this switch off, an unapproved week adds a note to the run.</p></div>
+</template>
+<template data-section="Pay run review" data-group="Payroll" data-scope="Database" data-icon="receipt" data-summary="Set the change in take-home pay that sends a payslip for review." data-source="Payroll settings › Pay run review">
+ <label>Flag a big change in take-home pay (%)<input type="number" min="0" step="1" required value="30" name="pb_review_change_pct"></label>
+ <p>Compare take-home pay with the employee’s previous payslip in the same pay scheme. A change above this percentage flags the slip. New joiners are excluded. Enter 0 to switch off this flag.</p>
+</template>
+<template data-section="Employee self-service" data-group="HR" data-scope="Company" data-icon="users" data-summary="Choose whether employees can clock in and record project time on their self-service pages." data-source="Attendances › Modes · Timesheets › Time Encoding">
+ <label class="switch"><input type="checkbox" checked name="pb_ess_portal_clock"> Employees can clock in from their self-service pages</label>
+ <p>Turning this off hides the Clock page and its home button. Devices and the field app still work.</p>
+ <label class="switch"><input type="checkbox" checked name="pb_me_project_time_enabled"> Employees enter project time on their self-service pages</label>
+ <p>Turning this off hides the home tile. Previously entered project time is retained.</p>
+</template>
+<template data-section="Ask HR" data-group="HR" data-scope="Company" data-icon="users" data-summary="Choose who receives new employee questions or leave them in the HR queue." data-source="Employees › Ask HR">
+ <label>Default person assigned to new Ask HR questions<select name="pb_ask_hr_owner_id"><option value="">Unassigned · HR team queue</option><option>Alex Morgan (example)</option><option>Sam Lee (example)</option></select></label>
+ <p>Choose an internal user to receive new questions on their to-do list. Leave the assignment empty for the HR team to pick them up.</p>
+</template>
+<template data-section="Zoho single sign-on" data-group="Connect" data-scope="Database" data-icon="key" data-summary="Configure the Zoho OAuth client, account linking and login destination." data-source="General Settings › Zoho single sign-on">
+ <label class="switch"><input type="checkbox" name="pb_zoho_sso_enabled"> Allow users to sign in through Zoho People</label>
+ <div data-when="pb_zoho_sso_enabled">
+ <fieldset><legend>OAuth client</legend>
+ <label>Client ID<input name="pb_zoho_sso_client_id" placeholder="Example client ID"></label>
+ <label>Client secret<input name="pb_zoho_sso_client_secret" type="password" autocomplete="new-password" placeholder="Example secret"></label>
+ <label>Zoho data centre<select name="pb_zoho_sso_accounts_url">
+ <option value="https://accounts.zoho.com">United States / Global (.com)</option><option value="https://accounts.zoho.eu">Europe (.eu)</option><option value="https://accounts.zoho.in">India (.in)</option><option value="https://accounts.zoho.com.au">Australia (.com.au)</option><option value="https://accounts.zoho.jp">Japan (.jp)</option><option value="https://accounts.zoho.ca">Canada (.ca)</option><option value="https://accounts.zoho.com.cn">China (.com.cn)</option><option value="https://accounts.zoho.sa">Saudi Arabia (.sa)</option>
+ </select></label></fieldset>
+ <fieldset><legend>Account linking</legend>
+ <label class="switch"><input type="checkbox" name="pb_zoho_sso_auto_link_email"> Automatically link existing users</label>
+ <div data-when="pb_zoho_sso_auto_link_email"><label>Allowed email domains<input name="pb_zoho_sso_allowed_domains" placeholder="example.com, example.org"></label><p>Leave empty to require manual approval for every identity.</p></div></fieldset>
+ <fieldset><legend>Zoho People button and API console</legend>
+ <label>Default Payobook destination<input name="pb_zoho_sso_default_target" value="action-1156" placeholder="home" pattern="home|payobook|payslip_studio|action-[1-9][0-9]{0,8}" title="Use home, payobook, payslip_studio or action followed by a hyphen and a numeric ID."></label>
+ <label>Zoho People button URL<input readonly name="pb_zoho_sso_button_url"></label>
+ <label>Authorized redirect URI<input readonly name="pb_zoho_sso_callback_url" value="https://payobook.example/auth/zoho/callback"></label>
+ <label>OAuth scope<input readonly name="pb_zoho_sso_scope" value="AaaServer.profile.READ,email"></label></fieldset>
+ </div>
+</template>
+<template data-section="Branding" data-group="System" data-scope="Database · Platform administrator" data-icon="layers" data-summary="Manage the product name, website, theme colour and loading-screen logo." data-source="General Settings › Branding">
+ <label>Product brand name<input name="biz_debrand_brand_name" value="Payobook"></label>
+ <label>Brand website<input type="url" name="biz_debrand_brand_website" value="https://payobook.example"></label>
+ <label>Theme colour<input type="color" name="biz_debrand_theme_color" value="#1565c0"></label>
+ <label>Name to replace<input name="biz_debrand_product_name" placeholder="Optional"></label>
+ <p>Matching product names in screen text use your brand name. Leave empty to keep the original wording.</p>
+ <label>Loading-screen logo<input type="file" name="biz_debrand_loader_logo" accept=".png,.svg,image/png,image/svg+xml"></label>
+ <label>Loading-screen logo address<input name="biz_debrand_loader_logo_url" placeholder="/your_module/static/src/img/logo.png"></label>
+ <p>Choose a wide, transparent PNG or SVG, or enter the address of an image served by this site.</p>
+</template>
+<script>
+const menus = {
+ "Home": {
+  "icon": "home",
+  "sub": [
+   "Pulse",
+   "Inbox",
+   "Team",
+   "Announce",
+   "Wall",
+   "Policies",
+   "Ask HR"
+  ],
+  "note": "Announcement templates and ownership belong beside Announce. Approvals waiting for a decision still belong in Inbox.",
+  "groups": {
+   "Announcements": [
+    "Templates",
+    "Who looks after them"
+   ]
+  }
+ },
+ "Calendar": {
+  "icon": "calendar",
+  "sub": [
+   "My calendar",
+   "Find a time",
+   "Connect"
+  ],
+  "note": "Connect is personal. Provider credentials belong to administrators. The two routes retain separate permission checks.",
+  "groups": {
+   "My account": [
+    "Personal connections"
+   ],
+   "Company connections": [
+    "Calendar providers"
+   ]
+  }
+ },
+ "Payroll": {
+  "icon": "zap",
+  "sub": [
+   "Run",
+   "Runs",
+   "Payslips",
+   "Results",
+   "Inputs",
+   "Pay out",
+   "Adjust",
+   "Settle",
+   "Calendar",
+   "Awards",
+   "Loans",
+   "Funds & tax",
+   "Insights"
+  ],
+  "note": "Platform administrators use main Settings › Payroll for Formula Studio, Salary Structures and Payroll settings, and Settings › Connect for Integrations and Mapping.",
+  "groups": {
+   "Payment and statutory rules": [
+    "Bank layouts",
+    "Insurance & Tax"
+   ]
+  }
+ },
+ "People": {
+  "icon": "users",
+  "sub": [
+   "Employees",
+   "Org chart",
+   "Contracts",
+   "Records",
+   "Updates",
+   "Pay",
+   "Location",
+   "Assets",
+   "Joiners",
+   "Probation",
+   "Exits",
+   "Jobs",
+   "Agency staff",
+   "Family",
+   "Privacy",
+   "Insights",
+   "Plan",
+   "People reports"
+  ],
+  "note": "Pay bands and scales configure job pay. Reviews and pay changes remain daily work. Access gets its own fixed footer position.",
+  "groups": {
+   "Jobs and pay": [
+    "Job structure",
+    "Pay scales",
+    "Pay bands"
+   ],
+   "Employee lifecycle": [
+    "Journey checklists",
+    "Documents"
+   ]
+  }
+ },
+ "Hiring": {
+  "icon": "userPlus",
+  "sub": [
+   "Overview",
+   "Roles",
+   "Job boards",
+   "Applicants",
+   "Interviews",
+   "Offers",
+   "Resume bank",
+   "Insights",
+   "Staff moves"
+  ],
+  "note": "The existing Set-up and Access pair becomes the common rail pattern. Six hiring configurators share one Settings entry.",
+  "groups": {
+   "Recruitment": [
+    "Hiring set-up",
+    "Application forms",
+    "Hiring rules"
+   ],
+   "Assessment and offers": [
+    "What a panel scores on",
+    "What a background check covers",
+    "What a joiner is asked for"
+   ]
+  }
+ },
+ "Workforce": {
+  "icon": "compass",
+  "sub": [
+   "Overview",
+   "Roster",
+   "Timesheets",
+   "More"
+  ],
+  "note": "The guided studio contains Shifts, Working weeks, Who works what, Late and overtime rules, Holidays, Time clocks, and Check and go live. Attendance connectors opens the Time clocks step.",
+  "groups": {
+   "Guided setup": [
+    "Set up Workforce"
+   ],
+   "Leave and devices": [
+    "Kinds of leave",
+    "Attendance connectors"
+   ]
+  }
+ },
+ "Expenses": {
+  "icon": "wallet",
+  "sub": [
+   "Trips",
+   "Claims",
+   "Insights"
+  ],
+  "note": "Trips and Claims already have configuration actions. One footer entry brings the travel and reimbursement rules together.",
+  "groups": {
+   "Travel policy": [
+    "Per-diem policies",
+    "Trip expense categories"
+   ],
+   "Claim rules": [
+    "Yearly claim limits",
+    "How claims are paid"
+   ]
+  }
+ },
+ "Insights": {
+  "icon": "trendingUp",
+  "sub": [
+   "Pulse",
+   "Explorer",
+   "Reports",
+   "Workforce",
+   "Build a report"
+  ],
+  "note": "Saved report definitions configure future reporting. Running a report and exploring employee data stay in the working screens.",
+  "groups": {
+   "Reporting": [
+    "Report definitions"
+   ]
+  }
+ },
+ "Compliance": {
+  "icon": "shield",
+  "sub": [
+   "Filings",
+   "Bank",
+   "Safeguards",
+   "Audit"
+  ],
+  "note": "Safeguard rules belong here. Insurance and tax uses the same statutory configurator as Payroll.",
+  "groups": {
+   "Safeguards": [
+    "Young worker rules"
+   ],
+   "Statutory rules": [
+    "Insurance & Tax"
+   ]
+  }
+ },
+ "Talent": {
+  "icon": "target",
+  "sub": [
+   "Goals",
+   "Growth",
+   "Praise",
+   "Conduct",
+   "Voice"
+  ],
+  "note": "Set the review and survey instruments here. Individual goal sheets, survey responses and action plans remain operational.",
+  "groups": {
+   "Performance": [
+    "Goal years",
+    "Goal templates",
+    "Review forms"
+   ],
+   "Employee voice": [
+    "Question library"
+   ]
+  }
+ },
+ "Learning": {
+  "icon": "graduationCap",
+  "sub": [
+   "Overview",
+   "My learning",
+   "Courses",
+   "Paths",
+   "Assigned",
+   "Required",
+   "Tests",
+   "Certificates",
+   "Claims",
+   "Skills",
+   "Insights"
+  ],
+  "note": "Training reminders, feedback, regional packs and day-one enrolment configure Learning. Help owns the product guide.",
+  "groups": {
+   "Course administration": [
+    "Country packs",
+    "Day one"
+   ],
+   "Communications": [
+    "Reminders",
+    "Feedback",
+    "Report pack"
+   ]
+  }
+ },
+ "Help": {
+  "icon": "helpCircle",
+  "sub": [
+   "Lessons",
+   "Team"
+  ],
+  "note": "The existing administrator-only Setup screen becomes the Help gear. It controls the in-product guide.",
+  "groups": {
+   "Product guidance": [
+    "Guide preferences"
+   ]
+  }
+ },
+ "Settings": {
+  "icon": "settings",
+  "sub": [
+   "Company",
+   "Access",
+   "Payroll",
+   "HR",
+   "Workflows",
+   "Connect",
+   "System"
+  ],
+  "note": "The seven central groups remain the cross-product directory. Its footer gear opens platform administration.",
+  "groups": {
+   "Platform administration": [
+    "Your company",
+    "Outgoing email server",
+    "The left menu",
+    "Form builder",
+    "PayAI can act"
+   ]
+  }
+ }
+};
+const cards = {
+ "Access & delegation": [
+  "Every role in plain English, who holds it, and hand-overs that take themselves back.",
+  "biz_access/static/src/js/access_palette.js",
+  "pb_access_board",
+  "key",
+  "Access"
+ ],
+ "The left menu": [
+  "Every entry drawn as the menu itself — who can open it, why, and in what order.",
+  "biz_access/static/src/js/access_palette.js",
+  "pb_access_board",
+  "compass",
+  "Access"
+ ],
+ "Approval Matrix": [
+  "Every process that can need a sign-off, the route it follows, and where each one applies.",
+  "pb_approval_config/static/src/js/palette.js",
+  "pb_approval_config.action_pb_approval_matrix",
+  "workflow",
+  "Workflows"
+ ],
+ "Approvals inbox": [
+  "Everything waiting for a decision, from every part of the product.",
+  "pb_approval_config/static/src/js/palette.js",
+  "pb_approval_config.action_pb_approval_inbox",
+  "inbox",
+  "Workflows"
+ ],
+ "New configuration": [
+  "Six steps from a starting point to a configuration you can explain — and any setup you left half-finished is on the configurations screen, waiting to be resumed.",
+  "pb_blueprint/static/src/js/blueprint_doors.js",
+  "pb_blueprint",
+  "sparkles",
+  "System"
+ ],
+ "Attendance connectors": [
+  "Open Time clocks in the Workforce setup studio to configure attendance connections.",
+  "pb_clock/static/src/js/connector_settings.js",
+  "pb_clock.action_clock_connectors",
+  "clock",
+  "Connect"
+ ],
+ "Demo data": [
+  "Five demo people with a story each, plus the assets, budgets, suppliers and recognition around them.",
+  "pb_demo_seed/static/src/js/demo_seed_settings.js",
+  "pb_demo_seed.action_pb_demo_seed",
+  "beaker",
+  "System"
+ ],
+ "Documents": [
+  "Letters and certificates: their wording, fields, languages, page design and copies for a company or country.",
+  "pb_doc_studio/static/src/js/settings_card.js",
+  "pb_doc_studio",
+  "fileText",
+  "HR"
+ ],
+ "Form builder": [
+  "Every custom field in this company: where it appears, who can see it and what uses it.",
+  "pb_form_studio/static/src/js/settings_card.js",
+  "pb_form_library",
+  "wand",
+  "System"
+ ],
+ "My Payobook page": [
+  "Arrange the employee's My Profile page: sections, fields, headings and a banner picture.",
+  "pb_form_studio_portal/static/src/js/settings_card.js",
+  "pb_page_builder",
+  "smartphone",
+  "System"
+ ],
+ "Your group": [
+  "The companies in it, the group currency, how rates are picked, and your divisions.",
+  "pb_group/static/src/js/group_palette.js",
+  "pb_group.action_pb_group",
+  "landmark",
+  "Company"
+ ],
+ "Exchange rates": [
+  "What one currency is worth in another, by date.",
+  "pb_group/static/src/js/group_palette.js",
+  "pb_group.action_pb_exchange_rates",
+  "coins",
+  "Company"
+ ],
+ "Hiring set-up": [
+  "Manage hiring stages, scorecards, automations, messages and retention. Stages scrolls to the editable list on this page.",
+  "pb_hiring/static/src/js/hiring_palette.js",
+  "pb_hiring.action_pb_hiring_setup",
+  "sliders",
+  "HR"
+ ],
+ "Application forms": [
+  "The questions candidates answer, per role, in three languages.",
+  "pb_hiring/static/src/js/hiring_palette.js",
+  "pb_hiring.action_pb_hiring_forms",
+  "fileText",
+  "HR"
+ ],
+ "Hiring rules": [
+  "One line per company and country: the recruiter and their manager.",
+  "pb_hiring/static/src/js/hiring_palette.js",
+  "pb_hiring.action_pb_hiring_country_rule",
+  "globe",
+  "HR"
+ ],
+ "What a panel scores on": [
+  "The five lines every interviewer is asked to score, one to five.",
+  "pb_hiring/static/src/js/hiring_palette.js",
+  "pb_hiring.action_pb_hiring_criterion",
+  "checkCheck",
+  "HR"
+ ],
+ "What a background check covers": [
+  "Each line has to be answered before an offer can be drafted.",
+  "pb_hiring/static/src/js/hiring_palette.js",
+  "pb_hiring.action_pb_hiring_bgv_template",
+  "shieldCheck",
+  "HR"
+ ],
+ "What a joiner is asked for": [
+  "The list on the candidate's own page, with the sentence under each one.",
+  "pb_hiring/static/src/js/hiring_palette.js",
+  "pb_hiring.action_pb_hiring_doc_template",
+  "paperclip",
+  "HR"
+ ],
+ "Calendar providers": [
+  "Configure Google and Microsoft OAuth. This does not grant access to payroll or private meetings.",
+  "pb_hiring/static/src/js/shared_calendar.js",
+  "pb_calendar_admin",
+  "calendar",
+  "Connect"
+ ],
+ "Templates": [
+  "The town hall, the holiday notice — written once, copied onto a new announcement whenever it is needed.",
+  "pb_hr_comm/static/src/js/comm_palette.js",
+  "pb_hr_comm.action_pb_hr_comm_template",
+  "layoutList",
+  "HR"
+ ],
+ "Who looks after them": [
+  "The HR lead of each company, unless you name somebody else here.",
+  "pb_hr_comm/static/src/js/comm_palette.js",
+  "pb_hr_comm.action_pb_hr_comm_default",
+  "userCheck",
+  "HR"
+ ],
+ "Workflow Studio": [
+  "Build, try and run your processes.",
+  "pb_lifecycle/static/src/js/workflow_studio.js",
+  "pb_lifecycle.action_pb_workflow_studio",
+  "workflow",
+  "Workflows"
+ ],
+ "PayAI can act": [
+  "Switch what PayAI may do here, by kind: look, prepare, decide.",
+  "pb_payai_actions/static/src/js/settings_card.js",
+  "pb_payai_actions.action_payai_can_act",
+  "sparkles",
+  "System"
+ ],
+ "Review forms": [
+  "What the end-of-year review asks, and how the overall result is worked out.",
+  "pb_review_forms/static/src/js/review_forms_studio.js",
+  "pb_review_forms_studio",
+  "listChecks",
+  "HR"
+ ],
+ "Formula Studio": [
+  "Every configuration, its columns and its formulas, full screen.",
+  "pb_settings/static/src/js/settings_hub.js",
+  "pb_formula_studio",
+  "calculator",
+  "Payroll"
+ ],
+ "Salary Structures": [
+  "Structures, rules and the employees each one covers.",
+  "pb_settings/static/src/js/settings_hub.js",
+  "pb_structures",
+  "layers",
+  "Payroll"
+ ],
+ "Insurance & Tax": [
+  "Contribution rates, ceilings, tax brackets and actuals.",
+  "pb_settings/static/src/js/settings_hub.js",
+  "pb_statutory",
+  "shield",
+  "Payroll"
+ ],
+ "Integrations": [
+  "The only home for connectors — Import deep-links into it.",
+  "pb_settings/static/src/js/settings_hub.js",
+  "pb_integrations",
+  "database",
+  "Connect"
+ ],
+ "Mapping": [
+  "Wire any source — API feeds, spreadsheets, employee records — onto your payroll schemes.",
+  "pb_settings/static/src/js/settings_hub.js",
+  "pb_mapping_studio",
+  "gitMerge",
+  "Connect"
+ ],
+ "Payroll settings": [
+  "The native payroll configuration form — use the crumb to come back.",
+  "pb_settings/static/src/js/settings_hub.js",
+  "om_hr_payroll.action_hr_payroll_configuration",
+  "settings",
+  "Payroll"
+ ],
+ "Companies": [
+  "Legal entities, their currency and their working calendar.",
+  "pb_settings/static/src/js/settings_hub.js",
+  "base.action_res_company_form",
+  "building",
+  "Company"
+ ],
+ "Tenants": [
+  "Tenant Mission Control — one platform, many databases.",
+  "pb_settings/static/src/js/settings_hub.js",
+  "pb_tenants",
+  "server",
+  "Company"
+ ],
+ "Your company": [
+  "The details that print on payslips, filings and letters — and a preview of each one.",
+  "pb_settings/static/src/js/settings_hub.js",
+  "pb_company_profile",
+  "idCard",
+  "Company"
+ ],
+ "Outgoing email server": [
+  "Edit your company’s server, test the connection, and activate it when ready. New servers start inactive.",
+  "pb_settings/static/src/js/settings_hub.js",
+  "pb_settings.action_outgoing_email",
+  "mail",
+  "System"
+ ],
+ "What's new": [
+  "Every update we have shipped, newest first, in plain words.",
+  "pb_tenancy/static/src/js/tenancy_settings.js",
+  "pb_tenancy_whats_new",
+  "sparkles",
+  "System"
+ ],
+ "Plan & usage": [
+  "Your plan, how many employees it allows, and your invoices.",
+  "pb_tenancy/static/src/js/tenancy_settings.js",
+  "pb_tenancy_plan_usage",
+  "creditCard",
+  "System"
+ ],
+ "Support access": [
+  "Whether Payobook support may open your data, and every time we have.",
+  "pb_tenancy/static/src/js/tenancy_settings.js",
+  "pb_tenancy_support",
+  "shield",
+  "System"
+ ],
+ "Report pack": [
+  "The training numbers by email, every week or month, and who gets them.",
+  "pb_training/static/src/js/training_palette.js",
+  "pb_training.action_pb_training_settings_pack",
+  "mail",
+  "HR"
+ ],
+ "Reminders": [
+  "Who is reminded about a course or a certificate, and when.",
+  "pb_training/static/src/js/training_palette.js",
+  "pb_training.action_pb_training_settings_reminders",
+  "bell",
+  "HR"
+ ],
+ "Feedback": [
+  "Asking people how a course was, and their manager whether it worked.",
+  "pb_training/static/src/js/training_palette.js",
+  "pb_training.action_pb_training_settings_feedback",
+  "messageSquare",
+  "HR"
+ ],
+ "Country packs": [
+  "Country packs for Vietnam, India, Indonesia and Singapore.",
+  "pb_training/static/src/js/training_palette.js",
+  "pb_training.action_pb_training_settings_packs",
+  "globe",
+  "HR"
+ ],
+ "Day one": [
+  "Courses and paths a new joiner gets on their first day.",
+  "pb_training/static/src/js/training_palette.js",
+  "pb_training.action_pb_training_settings_day_one",
+  "sunrise",
+  "HR"
+ ],
+ "Vendors": [
+  "Who we use, who here looks after them, and what has been agreed.",
+  "pb_vendor_access/static/src/js/vendor_palette.js",
+  "pb_vendors_board",
+  "briefcase",
+  "Access"
+ ],
+ "Question library": [
+  "Switch questions off, change their words, or add your own.",
+  "pb_voice/static/src/js/voice_palette.js",
+  "pb_voice.action_pb_voice_library",
+  "bookOpen",
+  "HR"
+ ],
+ "Action plans": [
+  "What the company said it would do after each survey.",
+  "pb_voice/static/src/js/voice_palette.js",
+  "pb_voice.action_pb_voice_action",
+  "listChecks",
+  "HR"
+ ],
+ "Per-diem policies": [
+  "Set daily travel allowances by country, city tier and payment channel.",
+  "pb_business_trip/views/pb_trip_policy_views.xml",
+  "pb_business_trip.action_pb_trip_policy",
+  "globe",
+  ""
+ ],
+ "Trip expense categories": [
+  "Define the categories travellers can use when recording trip costs.",
+  "pb_business_trip/views/pb_trip_policy_views.xml",
+  "pb_business_trip.action_pb_trip_expense_category",
+  "list",
+  ""
+ ],
+ "Yearly claim limits": [
+  "Manage annual allowances against which employee claims are checked.",
+  "pb_expense_allowance/views/allowance_views.xml",
+  "pb_expense_allowance.action_pb_expense_allowance",
+  "sliders",
+  ""
+ ],
+ "How claims are paid": [
+  "Choose the payment channel for approved expense claims.",
+  "pb_expense_payroll/views/pay_setup_views.xml",
+  "pb_expense_payroll.action_pb_expense_pay_setup",
+  "banknote",
+  ""
+ ],
+ "Pay bands": [
+  "Define salary ranges for the jobs in each pay band.",
+  "pb_pay/views/pb_pay_action.xml",
+  "pb_pay.action_pb_pay_band",
+  "layers",
+  ""
+ ],
+ "Pay scales": [
+  "Manage the scales used to place employees within a pay structure.",
+  "pb_pay_scales/views/actions.xml",
+  "pb_pay_scales.action_pb_pay_scales",
+  "list",
+  ""
+ ],
+ "Job structure": [
+  "Maintain the job catalogue and job levels used across People.",
+  "pb_org_structure/views/org_views.xml",
+  "pb_org_structure.action_pb_org_jobs",
+  "briefcase",
+  ""
+ ],
+ "Bank layouts": [
+  "Set the layout of the payment files your bank accepts.",
+  "pb_pay_delivery/static/src/js/bank_layouts_doors.js",
+  "pb_pay_delivery.action_pb_bank_layouts",
+  "landmark",
+  "Payroll"
+ ],
+ "Kinds of leave": [
+  "Set the leave types available in each country.",
+  "pb_leave_setup/static/src/js/leave_setup_palette.js",
+  "pb_leave_setup.action_pb_leave_kinds",
+  "umbrella",
+  "HR"
+ ],
+ "Set up Workforce": [
+  "Configure shifts, working weeks, assignments, rules, holidays and clocks in the guided setup.",
+  "pb_workforce_setup/static/src/js/takeover.js",
+  "pb_workforce_setup_studio",
+  "compass",
+  "HR"
+ ],
+ "Journey checklists": [
+  "Maintain the checklists used when people join, move or leave.",
+  "pb_lifecycle/static/src/js/lifecycle_palette.js",
+  "pb_lifecycle.action_journey_template",
+  "list",
+  ""
+ ],
+ "Personal connections": [
+  "Connect your own Google or Microsoft calendar.",
+  "pb_hiring/static/src/js/shared_calendar.js",
+  "pb_shared_calendar / connections",
+  "link",
+  ""
+ ],
+ "Young worker rules": [
+  "Maintain the safeguards used when reviewing young workers.",
+  "pb_young_worker/views/young_worker_views.xml",
+  "pb_young_worker.action_pb_young_worker_rule",
+  "shield",
+  ""
+ ],
+ "Report definitions": [
+  "Choose report fields, conditions and layout, then save a reusable report.",
+  "pb_report_builder/static/src/js/report_builder.js",
+  "pb_insights_hub.action_pb_insights_hub / report_builder",
+  "table",
+  ""
+ ],
+ "Guide preferences": [
+  "Manage guidance, suggested next steps and feedback collection.",
+  "pb_learn/static/src/hub/learn_hub.js",
+  "LearnSettings",
+  "compass",
+  ""
+ ],
+ "Goal templates": [
+  "Set the starting goals for a new goal sheet.",
+  "pb_goals/static/src/js/goals_palette.js",
+  "pb_goals.action_pb_goal_template",
+  "target",
+  ""
+ ],
+ "Goal years": [
+  "Define the review cycle in which goals are tracked.",
+  "pb_goals/static/src/js/goals_palette.js",
+  "pb_goals.action_pb_goal_cycle",
+  "target",
+  ""
+ ],
+ "Journeys": [
+  "Open the journey board and review the steps assigned to each person.",
+  "pb_lifecycle/static/src/js/lifecycle_palette.js",
+  "pb_journeys",
+  "list",
+  "HR"
+ ]
+};
+const paths = {"chevron": "<path d=\"m9 18 6-6-6-6\"/>", "x": "<path d=\"M18 6 6 18M6 6l12 12\"/>", "users": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M22 21v-2a4 4 0 0 0-3-3.87\"/>", "user": "<path d=\"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2\"/><circle cx=\"12\" cy=\"7\" r=\"4\"/>", "receipt": "<path d=\"M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z\"/><path d=\"M12 17.5v-11\"/>", "fileText": "<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\"/><path d=\"M14 2v4a2 2 0 0 0 2 2h4\"/><path d=\"M10 9H8M16 13H8M16 17H8\"/>", "table": "<path d=\"M12 3v18M3 9h18M3 15h18\"/><rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\"/>", "layers": "<path d=\"m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z\"/><path d=\"m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65\"/><path d=\"m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65\"/>", "list": "<path d=\"M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01\"/>", "search": "<circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.3-4.3\"/>", "settings": "<path d=\"M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2Z\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/>", "link": "<path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\"/><path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\"/>", "gitMerge": "<circle cx=\"18\" cy=\"18\" r=\"3\"/><circle cx=\"6\" cy=\"6\" r=\"3\"/><path d=\"M6 21V9a9 9 0 0 0 9 9\"/>", "calendar": "<rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\"/><path d=\"M16 2v4M8 2v4M3 10h18\"/>", "zap": "<path d=\"M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z\"/>", "server": "<rect width=\"20\" height=\"8\" x=\"2\" y=\"2\" rx=\"2\"/><rect width=\"20\" height=\"8\" x=\"2\" y=\"14\" rx=\"2\"/><path d=\"M6 6h.01M6 18h.01\"/>", "database": "<ellipse cx=\"12\" cy=\"5\" rx=\"9\" ry=\"3\"/><path d=\"M3 5v14a9 3 0 0 0 18 0V5\"/><path d=\"M3 12a9 3 0 0 0 18 0\"/>", "briefcase": "<rect width=\"20\" height=\"14\" x=\"2\" y=\"7\" rx=\"2\"/><path d=\"M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16\"/>", "beaker": "<path d=\"M4.5 3h15M6 3v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3M6 14h12\"/>", "landmark": "<path d=\"M10 18v-7M14 18v-7M6 18v-7M18 18v-7M4 22h16M12 2 2 7h20z\"/>", "mail": "<rect width=\"20\" height=\"16\" x=\"2\" y=\"4\" rx=\"2\"/><path d=\"m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7\"/>", "banknote": "<rect width=\"20\" height=\"12\" x=\"2\" y=\"6\" rx=\"2\"/><circle cx=\"12\" cy=\"12\" r=\"2\"/><path d=\"M6 12h.01M18 12h.01\"/>", "clock": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><polyline points=\"12 6 12 12 16 14\"/>", "shieldCheck": "<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\"/><path d=\"m9 12 2 2 4-4\"/>", "plane": "<path d=\"M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z\"/>", "mapPin": "<path d=\"M20 10c0 4.4-8 12-8 12s-8-7.6-8-12a8 8 0 0 1 16 0Z\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/>", "sunrise": "<path d=\"M12 2v8M4.93 10.93 6.34 12.34M2 18h2M20 18h2M17.66 12.34l1.41-1.41M22 22H2\"/><path d=\"m8 6 4-4 4 4\"/><path d=\"M16 18a4 4 0 0 0-8 0\"/>", "umbrella": "<path d=\"M22 12a10.06 10.06 0 0 0-20 0Z\"/><path d=\"M12 12v8a2 2 0 0 0 4 0\"/><path d=\"M12 2v1\"/>", "inbox": "<polyline points=\"22 12 16 12 14 15 10 15 8 12 2 12\"/><path d=\"M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z\"/>", "compass": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><polygon points=\"16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76\"/>", "home": "<path d=\"M3 9.2 12 3l9 6.2\"/><path d=\"M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10\"/><path d=\"M9 21v-6h6v6\"/>", "send": "<path d=\"M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z\"/><path d=\"m21.854 2.147-10.94 10.939\"/>", "calculator": "<rect width=\"16\" height=\"20\" x=\"4\" y=\"2\" rx=\"2\"/><path d=\"M8 6h8\"/><path d=\"M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01\"/>", "shield": "<path d=\"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z\"/>", "trendingUp": "<path d=\"m22 7-8.5 8.5-5-5L2 17\"/><path d=\"M16 7h6v6\"/>", "bookOpen": "<path d=\"M12 7v14\"/><path d=\"M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z\"/>", "building": "<rect width=\"16\" height=\"20\" x=\"4\" y=\"2\" rx=\"2\"/><path d=\"M9 22v-4h6v4\"/><path d=\"M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01\"/>", "barChart": "<line x1=\"12\" x2=\"12\" y1=\"20\" y2=\"10\"/><line x1=\"18\" x2=\"18\" y1=\"20\" y2=\"4\"/><line x1=\"6\" x2=\"6\" y1=\"20\" y2=\"16\"/>", "sparkles": "<path d=\"M9.94 14.34 12 20l2.06-5.66L20 12l-5.94-2.34L12 4l-2.06 5.66L4 12z\"/><path d=\"M19 4v3M17.5 5.5h3\"/>", "creditCard": "<rect width=\"20\" height=\"14\" x=\"2\" y=\"5\" rx=\"2\"/><path d=\"M2 10h20\"/>", "graduationCap": "<path d=\"M22 10v6\"/><path d=\"M6 12.5V16c0 1 2.7 2.5 6 2.5s6-1.5 6-2.5v-3.5\"/><path d=\"M2 10 12 5l10 5-10 5z\"/>", "info": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 16v-4\"/><path d=\"M12 8h.01\"/>", "smartphone": "<rect width=\"14\" height=\"20\" x=\"5\" y=\"2\" rx=\"2\"/><path d=\"M12 18h.01\"/>", "idCard": "<rect width=\"20\" height=\"14\" x=\"2\" y=\"5\" rx=\"2\"/><path d=\"M9 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4\"/><path d=\"M6 16a3 3 0 0 1 6 0\"/><path d=\"M15 10h4M15 14h4\"/>", "key": "<path d=\"m15.5 7.5 3 3L22 7l-3-3\"/><path d=\"m18 10-1.5 1.5\"/><circle cx=\"7.5\" cy=\"15.5\" r=\"5.5\"/><path d=\"m21 2-9.6 9.6\"/>", "target": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><circle cx=\"12\" cy=\"12\" r=\"6\"/><circle cx=\"12\" cy=\"12\" r=\"2\"/>", "sliders": "<line x1=\"4\" x2=\"4\" y1=\"21\" y2=\"14\"/><line x1=\"4\" x2=\"4\" y1=\"10\" y2=\"3\"/><line x1=\"12\" x2=\"12\" y1=\"21\" y2=\"12\"/><line x1=\"12\" x2=\"12\" y1=\"8\" y2=\"3\"/><line x1=\"20\" x2=\"20\" y1=\"21\" y2=\"16\"/><line x1=\"20\" x2=\"20\" y1=\"12\" y2=\"3\"/><line x1=\"1\" x2=\"7\" y1=\"14\" y2=\"14\"/><line x1=\"9\" x2=\"15\" y1=\"8\" y2=\"8\"/><line x1=\"17\" x2=\"23\" y1=\"16\" y2=\"16\"/>", "globe": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 2a15 15 0 0 1 0 20a15 15 0 0 1 0-20Z\"/><path d=\"M2 12h20\"/>", "coins": "<circle cx=\"8\" cy=\"8\" r=\"6\"/><path d=\"M18.09 10.37A6 6 0 1 1 10.34 18\"/><path d=\"M7 6h1v4\"/><path d=\"m16.71 13.88.7.71-2.82 2.82\"/>", "userCheck": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"m16 11 2 2 4-4\"/>", "userPlus": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><line x1=\"19\" x2=\"19\" y1=\"8\" y2=\"14\"/><line x1=\"22\" x2=\"16\" y1=\"11\" y2=\"11\"/>", "wallet": "<path d=\"M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h15a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5\"/><path d=\"M18 12h.01\"/>", "layoutList": "<rect width=\"7\" height=\"7\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"7\" x=\"3\" y=\"14\" rx=\"1\"/><path d=\"M14 4h7M14 9h7M14 15h7M14 20h7\"/>", "checkCheck": "<path d=\"M18 6 7 17l-5-5\"/><path d=\"m22 10-7.5 7.5L13 16\"/>", "workflow": "<rect width=\"8\" height=\"8\" x=\"3\" y=\"3\" rx=\"2\"/><path d=\"M7 11v4a2 2 0 0 0 2 2h4\"/><rect width=\"8\" height=\"8\" x=\"13\" y=\"13\" rx=\"2\"/>", "bell": "<path d=\"M10.268 21a2 2 0 0 0 3.464 0\"/><path d=\"M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326\"/>", "paperclip": "<path d=\"M13.234 20.252 21 12.3\"/><path d=\"m16 6-8.414 8.586a2 2 0 0 0 0 2.828 2 2 0 0 0 2.828 0l8.414-8.586a4 4 0 0 0 0-5.656 4 4 0 0 0-5.656 0l-8.415 8.585a6 6 0 1 0 8.486 8.486\"/>", "helpCircle": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3\"/><path d=\"M12 17h.01\"/>", "messageSquare": "<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/>", "listChecks": "<path d=\"m3 17 2 2 4-4\"/><path d=\"m3 7 2 2 4-4\"/><path d=\"M13 6h8\"/><path d=\"M13 12h8\"/><path d=\"M13 18h8\"/>", "layoutGrid": "<rect width=\"7\" height=\"7\" x=\"3\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"7\" x=\"14\" y=\"3\" rx=\"1\"/><rect width=\"7\" height=\"7\" x=\"14\" y=\"14\" rx=\"1\"/><rect width=\"7\" height=\"7\" x=\"3\" y=\"14\" rx=\"1\"/>", "wand": "<path d=\"m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72\"/><path d=\"m14 7 3 3\"/><path d=\"M5 6v4\"/><path d=\"M19 14v4\"/><path d=\"M10 2v2\"/><path d=\"M7 8H3\"/><path d=\"M21 16h-4\"/><path d=\"M11 3H9\"/>"};
+const nativeSettingsMenus = [
+ ["Attendances", "Configuration › Onboarding", "hr_attendance.menu_hr_attendance_onboarding"],
+ ["Attendances", "Configuration › Overtime Rulesets", "hr_attendance.menu_hr_attendance_overtime_rulesets"],
+ ["Attendances", "Configuration › Settings", "hr_attendance.menu_hr_attendance_settings"],
+ ["CRM", "Configuration", "crm.crm_menu_config"],
+ ["CRM", "Configuration › Activities › Activity Plans", "crm.mail_activity_plan_menu_config_lead"],
+ ["CRM", "Configuration › Activities › Activity Types", "crm.crm_team_menu_config_activity_types"],
+ ["CRM", "Configuration › Lead Generation › Lead Mining Requests", "crm_iap_mine.crm_iap_lead_mining_request_menu_action"],
+ ["CRM", "Configuration › Pipeline › Lost Reasons", "crm.menu_crm_lost_reason"],
+ ["CRM", "Configuration › Pipeline › Stages", "crm.menu_crm_lead_stage_act"],
+ ["CRM", "Configuration › Pipeline › Tags", "crm.menu_crm_lead_categ"],
+ ["CRM", "Configuration › Recurring Plans", "crm.crm_recurring_plan_menu_config"],
+ ["CRM", "Configuration › Sales Teams", "crm.crm_team_config"],
+ ["CRM", "Configuration › Settings", "crm.crm_config_settings_menu"],
+ ["CRM", "Configuration › Teams Members", "crm.crm_team_member_config"],
+ ["Calendar", "Configuration", "calendar.calendar_menu_config"],
+ ["Calendar", "Configuration › Reminders", "calendar.calendar_submenu_reminders"],
+ ["Calendar", "Configuration › Settings", "calendar.menu_calendar_settings"],
+ ["Contacts", "Configuration › Bank Accounts › Bank Accounts", "contacts.menu_action_res_partner_bank_form"],
+ ["Contacts", "Configuration › Bank Accounts › Banks", "contacts.menu_action_res_bank_form"],
+ ["Contacts", "Configuration › Contact Tags", "contacts.menu_partner_category_form"],
+ ["Contacts", "Configuration › Industries", "contacts.res_partner_industry_menu"],
+ ["Contacts", "Configuration › Localization › Countries", "contacts.menu_country_partner"],
+ ["Contacts", "Configuration › Localization › Country Group", "contacts.menu_country_group"],
+ ["Contacts", "Configuration › Localization › Fed. States", "contacts.menu_country_state_partner"],
+ ["Dashboards", "Configuration › Dashboards", "spreadsheet_dashboard.spreadsheet_dashboard_menu_configuration_dashboards"],
+ ["Discuss", "Configuration › Canned Responses", "mail.menu_canned_responses"],
+ ["Discuss", "Configuration › Notifications", "mail.menu_notification_settings"],
+ ["Discuss", "Configuration › Roles", "mail.menu_roles"],
+ ["Discuss", "Configuration › Voice & Video", "mail.menu_call_settings"],
+ ["Employees", "Configuration › Challenges › Badges", "hr_gamification.gamification_badge_menu_hr"],
+ ["Employees", "Configuration › Challenges › Challenges", "hr_gamification.gamification_challenge_menu_hr"],
+ ["Employees", "Configuration › Challenges › Goals History", "hr_gamification.gamification_goal_menu_hr"],
+ ["Employees", "Configuration › Contract Types", "om_hr_payroll.menu_contract_type"],
+ ["Employees", "Configuration › Employee › Departure Reasons", "hr.menu_hr_departure_reason_tree"],
+ ["Employees", "Configuration › Employee › Onboarding / Offboarding", "hr.menu_config_plan_plan"],
+ ["Employees", "Configuration › Employee › Skill Types", "hr_skills.hr_skill_type_menu"],
+ ["Employees", "Configuration › Employee › Tags", "hr.menu_view_employee_category_form"],
+ ["Employees", "Configuration › Employee › Work Locations", "hr.menu_hr_work_location_tree"],
+ ["Employees", "Configuration › Employee › Working Schedules", "hr.menu_resource_calendar_view"],
+ ["Employees", "Configuration › Recruitment › Contract Templates", "hr.menu_hr_employee_contract_templates"],
+ ["Employees", "Configuration › Recruitment › Employment Types", "hr.menu_view_hr_contract_type"],
+ ["Employees", "Configuration › Recruitment › Job Positions", "hr.menu_view_hr_job"],
+ ["Employees", "Configuration › Resume › Sections", "hr_skills.hr_resume_line_type_menu"],
+ ["Employees", "Configuration › Settings", "hr.hr_menu_configuration"],
+ ["Expenses", "Configuration › Activity Types", "hr_expense.hr_expense_menu_config_activity_type"],
+ ["Expenses", "Configuration › Expense Categories", "hr_expense.menu_hr_product"],
+ ["Expenses", "Configuration › Settings", "hr_expense.menu_hr_expense_global_settings"],
+ ["Invoicing", "Configuration › Accounting › Cash Roundings", "account.menu_action_rounding_form_view"],
+ ["Invoicing", "Configuration › Accounting › Chart of Accounts", "account.menu_action_account_form"],
+ ["Invoicing", "Configuration › Accounting › Currencies", "account.menu_action_currency_form"],
+ ["Invoicing", "Configuration › Accounting › Fiscal Positions", "account.menu_action_account_fiscal_position_form"],
+ ["Invoicing", "Configuration › Accounting › Journals", "account.menu_action_account_journal_form"],
+ ["Invoicing", "Configuration › Accounting › Multi-Ledger", "account.menu_action_account_journal_group_list"],
+ ["Invoicing", "Configuration › Accounting › Tax Groups", "account.menu_action_tax_group"],
+ ["Invoicing", "Configuration › Accounting › Taxes", "account.menu_action_tax_form"],
+ ["Invoicing", "Configuration › Analytic Accounting › Analytic Accounts", "account.account_analytic_def_account"],
+ ["Invoicing", "Configuration › Analytic Accounting › Analytic Distribution Models", "account.menu_analytic__distribution_model"],
+ ["Invoicing", "Configuration › Analytic Accounting › Analytic Plans", "account.account_analytic_plan_menu"],
+ ["Invoicing", "Configuration › Invoicing › Incoterms", "account.menu_action_incoterm_open"],
+ ["Invoicing", "Configuration › Invoicing › Payment Terms", "account.menu_action_payment_term_form"],
+ ["Invoicing", "Configuration › Invoicing › Product Categories", "account.menu_product_product_categories"],
+ ["Invoicing", "Configuration › Online Payments › Payment Methods", "account_payment.payment_method_menu"],
+ ["Invoicing", "Configuration › Online Payments › Payment Providers", "account_payment.payment_provider_menu"],
+ ["Invoicing", "Configuration › Online Payments › Payment Tokens", "account_payment.payment_token_menu"],
+ ["Invoicing", "Configuration › Online Payments › Payment Transactions", "account_payment.payment_transaction_menu"],
+ ["Invoicing", "Configuration › Settings", "account.menu_account_config"],
+ ["PayAI", "Configuration › AI Provider Settings", "pb_payroll_ai_insights.menu_payai_config"],
+ ["Payroll", "Configuration › Contract Advantage Templates", "om_hr_payroll.hr_contract_advantage_template_menu_action"],
+ ["Payroll", "Configuration › Contribution Registers", "om_hr_payroll.menu_action_hr_contribution_register_form"],
+ ["Payroll", "Configuration › Salary Rule Categories", "om_hr_payroll.menu_hr_salary_rule_category"],
+ ["Payroll", "Configuration › Salary Rules", "om_hr_payroll.menu_action_hr_salary_rule_form"],
+ ["Payroll", "Configuration › Salary Structures", "om_hr_payroll.menu_hr_payroll_structure_view"],
+ ["Payroll", "Configuration › Settings", "om_hr_payroll.menu_hr_payroll_global_settings"],
+ ["Payroll", "Configuration › Vietnam Settings › Insurance › Contribution Analysis", "pb_hr_payroll_vietnam.menu_vietnam_insurance_analytics"],
+ ["Payroll", "Configuration › Vietnam Settings › Insurance › Insurance Adjustments", "pb_hr_payroll_vietnam.menu_vietnam_insurance_adjustments"],
+ ["Payroll", "Configuration › Vietnam Settings › Insurance › Insurance Policies", "pb_hr_payroll_vietnam.menu_vietnam_insurance_policies"],
+ ["Payroll", "Configuration › Vietnam Settings › Tax › Employee Dependents", "pb_hr_payroll_vietnam.menu_vietnam_employee_dependents"],
+ ["Payroll", "Configuration › Vietnam Settings › Tax › Tax Tables", "pb_hr_payroll_vietnam.menu_vietnam_tax_tables"],
+ ["Payroll", "Formula Engine › Configurations", "pb_hr_payroll_formula.menu_formula_configs"],
+ ["PayrollBackup", "Analytics › Analytics Configuration › Configuration Management", "payroll_analytics_approval.menu_payroll_analytics_config_main"],
+ ["PayrollBackup", "Analytics › Analytics Configuration › New Comparison", "payroll_analytics_approval.menu_payroll_comparison_wizard"],
+ ["PayrollBackup", "📋 Setup Guide", "pb_hr_payroll_base.menu_payroll_setup_guide"],
+ ["Project", "Configuration › Activity Plans", "project.mail_activity_plan_menu_config_project"],
+ ["Project", "Configuration › Activity Types", "project.project_menu_config_activity_type"],
+ ["Project", "Configuration › Project Roles", "project.project_menu_config_project_roles"],
+ ["Project", "Configuration › Project Stages", "project.menu_project_config_project_stage"],
+ ["Project", "Configuration › Projects", "project.menu_projects_config"],
+ ["Project", "Configuration › Projects", "project.menu_projects_config_group_stage"],
+ ["Project", "Configuration › Settings", "project.project_config_settings_menu_action"],
+ ["Project", "Configuration › Tags", "project.menu_project_tags_act"],
+ ["Project", "Configuration › Task Stages", "project.menu_project_config_project"],
+ ["Settings", "Gamification Tools › Badges", "gamification.gamification_badge_menu"],
+ ["Settings", "Gamification Tools › Challenges", "gamification.gamification_challenge_menu"],
+ ["Settings", "Gamification Tools › Goal Definitions", "gamification.gamification_definition_menu"],
+ ["Settings", "Gamification Tools › Goals", "gamification.gamification_goal_menu"],
+ ["Settings", "Gamification Tools › Karma Tracking", "gamification.gamification_karma_tracking_menu"],
+ ["Settings", "Gamification Tools › Ranks", "gamification.gamification_karma_ranks_menu"],
+ ["Settings", "General Settings", "base_setup.menu_config"],
+ ["Settings", "Payobook Demo › Demo Generator", "pb_demo.menu_pb_demo_generator"],
+ ["Settings", "Technical › Actions › Actions", "base.menu_ir_sequence_actions"],
+ ["Settings", "Technical › Actions › Client Actions", "base.menu_ir_client_actions_report"],
+ ["Settings", "Technical › Actions › Configuration Wizards", "base.menu_ir_actions_todo_form"],
+ ["Settings", "Technical › Actions › Embedded Actions", "base.menu_ir_embedded_action"],
+ ["Settings", "Technical › Actions › Reports", "base.menu_ir_action_report"],
+ ["Settings", "Technical › Actions › Server Actions", "base.menu_server_action"],
+ ["Settings", "Technical › Actions › User-defined Defaults", "base.ir_default_menu"],
+ ["Settings", "Technical › Actions › Window Actions", "base.menu_ir_action_window"],
+ ["Settings", "Technical › Activities › Activity Overview", "mail.menu_mail_activities"],
+ ["Settings", "Technical › Activities › Activity Plans", "mail.menu_mail_activity_plan"],
+ ["Settings", "Technical › Activities › Activity Types", "mail.menu_mail_activity_type"],
+ ["Settings", "Technical › Audit Trail › Audit Entries", "biz_audit_trail.menu_biz_audit_entry"],
+ ["Settings", "Technical › Audit Trail › Audit Rules", "biz_audit_trail.menu_biz_audit_rule"],
+ ["Settings", "Technical › Automation › Automation Rules", "base_automation.menu_base_automation_form"],
+ ["Settings", "Technical › Automation › Scheduled Actions", "base.menu_ir_cron_act"],
+ ["Settings", "Technical › Automation › Scheduled Actions Triggers", "base.ir_cron_trigger_menu"],
+ ["Settings", "Technical › Calendar › Calendar Alarm", "calendar.menu_calendar_alarm"],
+ ["Settings", "Technical › Calendar › Meeting Types", "calendar.menu_calendar_event_type"],
+ ["Settings", "Technical › Database Structure › Assets", "base.menu_action_asset"],
+ ["Settings", "Technical › Database Structure › Attachments", "base.menu_action_attachment"],
+ ["Settings", "Technical › Database Structure › Decimal Accuracy", "base.menu_decimal_precision_form"],
+ ["Settings", "Technical › Database Structure › Fields", "base.ir_model_model_fields"],
+ ["Settings", "Technical › Database Structure › Fields Selection", "base.ir_model_model_fields_selection"],
+ ["Settings", "Technical › Database Structure › Logging", "base.ir_logging_all_menu"],
+ ["Settings", "Technical › Database Structure › ManyToMany Relations", "base.ir_model_relation_menu"],
+ ["Settings", "Technical › Database Structure › Model Constraints", "base.ir_model_constraint_menu"],
+ ["Settings", "Technical › Database Structure › Models", "base.ir_model_model_menu"],
+ ["Settings", "Technical › Database Structure › Profiling", "base.menu_ir_profile"],
+ ["Settings", "Technical › Discuss › Email Blacklist", "mail.mail_blacklist_menu"],
+ ["Settings", "Technical › Discuss › Followers", "mail.menu_email_followers"],
+ ["Settings", "Technical › Discuss › GIF favorite", "mail.discuss_gif_favorite_menu"],
+ ["Settings", "Technical › Discuss › Guests", "mail.mail_guest_menu"],
+ ["Settings", "Technical › Discuss › ICE Servers", "mail.ice_servers_menu"],
+ ["Settings", "Technical › Discuss › Link Previews", "mail.mail_link_preview_menu"],
+ ["Settings", "Technical › Discuss › Message Reactions", "mail.mail_message_reaction_menu"],
+ ["Settings", "Technical › Discuss › Messages", "mail.menu_mail_message"],
+ ["Settings", "Technical › Discuss › Notifications", "mail.mail_notification_menu"],
+ ["Settings", "Technical › Discuss › RTC sessions", "mail.discuss_channel_rtc_session_menu"],
+ ["Settings", "Technical › Discuss › Ratings", "rating.rating_rating_menu_technical"],
+ ["Settings", "Technical › Discuss › Scheduled Messages", "mail.mail_message_schedule_menu"],
+ ["Settings", "Technical › Discuss › Subtypes", "mail.menu_message_subtype"],
+ ["Settings", "Technical › Discuss › Tracking Values", "mail.menu_mail_tracking_value"],
+ ["Settings", "Technical › Discuss › User Settings", "mail.res_users_settings_menu"],
+ ["Settings", "Technical › Email › Alias Domains", "mail.mail_alias_domain_menu"],
+ ["Settings", "Technical › Email › Aliases", "mail.mail_alias_menu"],
+ ["Settings", "Technical › Email › Channels", "mail.discuss_channel_menu_settings"],
+ ["Settings", "Technical › Email › Channels/Members", "mail.discuss_channel_member_menu"],
+ ["Settings", "Technical › Email › Digest Emails", "digest.digest_menu"],
+ ["Settings", "Technical › Email › Digest Tips", "digest.digest_tip_menu"],
+ ["Settings", "Technical › Email › Email Templates", "mail.menu_email_templates"],
+ ["Settings", "Technical › Email › Emails", "mail.menu_mail_mail"],
+ ["Settings", "Technical › Email › Incoming Mail Servers", "mail.menu_action_fetchmail_server_tree"],
+ ["Settings", "Technical › Email › Mail Gateway Allowed", "mail.mail_gateway_allowed_menu"],
+ ["Settings", "Technical › Email › Outgoing Mail Servers", "base.menu_mail_servers"],
+ ["Settings", "Technical › Email › Snailmail Letters", "snailmail.menu_snailmail_letters"],
+ ["Settings", "Technical › Employee Vault › Document Categories", "pb_employee_vault.menu_document_category"],
+ ["Settings", "Technical › IAP › IAP Accounts", "iap.iap_account_menu"],
+ ["Settings", "Technical › Parameters › Main Apps", "base.menu_module_tree"],
+ ["Settings", "Technical › Parameters › System Parameters", "base.ir_config_menu"],
+ ["Settings", "Technical › Phone / SMS › Phone Blacklist", "phone_validation.phone_blacklist_menu"],
+ ["Settings", "Technical › Phone / SMS › SMS", "sms.sms_sms_menu"],
+ ["Settings", "Technical › Phone / SMS › SMS Templates", "sms.sms_template_menu"],
+ ["Settings", "Technical › Privacy › Privacy Logs", "privacy_lookup.pricacy_log_menu"],
+ ["Settings", "Technical › Reporting › Paper Format", "base.paper_format_menuitem"],
+ ["Settings", "Technical › Reporting › Reports", "base.reports_menuitem"],
+ ["Settings", "Technical › Resource › Resource Time Off", "resource.menu_view_resource_calendar_leaves_search"],
+ ["Settings", "Technical › Resource › Resources", "resource.menu_resource_resource"],
+ ["Settings", "Technical › Resource › Working Schedules", "resource.menu_resource_calendar"],
+ ["Settings", "Technical › Security › Access Rights", "base.menu_ir_access_act"],
+ ["Settings", "Technical › Security › Record Rules", "base.menu_action_rule"],
+ ["Settings", "Technical › Security › User Devices", "base.menu_action_user_device"],
+ ["Settings", "Technical › Sequences & Identifiers › External Identifiers", "base.ir_model_data_menu"],
+ ["Settings", "Technical › Sequences & Identifiers › Sequences", "base.menu_ir_sequence_form"],
+ ["Settings", "Technical › User Interface › Customized Views", "base.menu_action_ui_view_custom"],
+ ["Settings", "Technical › User Interface › Menu Items", "base.menu_grant_menu_access"],
+ ["Settings", "Technical › User Interface › Onboardings", "onboarding.menu_onboarding"],
+ ["Settings", "Technical › User Interface › Onboardings Steps", "onboarding.menu_onboarding_step"],
+ ["Settings", "Technical › User Interface › Tours", "web_tour.menu_tour_action"],
+ ["Settings", "Technical › User Interface › User-defined Filters", "base.menu_ir_filters"],
+ ["Settings", "Technical › User Interface › Views", "base.menu_action_ui_view"],
+ ["Settings", "Technical › Vendor License › Audit Log", "vendor_license_core.menu_vendor_license_log"],
+ ["Settings", "Technical › Vendor License › License Status", "vendor_license_core.menu_vendor_license_status"],
+ ["Settings", "Theme Engine › Presets", "biz_theme.menu_biz_theme_preset"],
+ ["Settings", "Theme Engine › Theme Studio", "biz_theme.menu_theme_studio"],
+ ["Settings", "Theme Engine › Themes", "biz_theme.menu_biz_theme"],
+ ["Settings", "Translations › Import / Export › Export Translation", "base.menu_wizard_lang_export"],
+ ["Settings", "Translations › Import / Export › Import Translation", "base.menu_view_base_import_language"],
+ ["Settings", "Translations › Languages", "base.menu_res_lang_act_window"],
+ ["Settings", "Users & Companies › Companies", "base.menu_action_res_company_form"],
+ ["Settings", "Users & Companies › Groups", "base.menu_action_res_groups"],
+ ["Settings", "Users & Companies › Privileges", "base.menu_action_res_groups_privilege"],
+ ["Settings", "Users & Companies › Users", "base.menu_action_res_users"],
+ ["Settings", "Zoho SSO › Identity approvals", "pb_zoho_sso.menu_pb_zoho_sso_identities"],
+ ["Settings", "Zoho SSO › Sign-in audit", "pb_zoho_sso.menu_pb_zoho_sso_audit"],
+ ["Time Off", "Configuration › Absence Policy Editions", "pb_timeoff.menu_policy_editions"],
+ ["Time Off", "Configuration › Accrual Plans", "hr_holidays.hr_holidays_accrual_menu_configuration"],
+ ["Time Off", "Configuration › Activity Types", "hr_holidays.hr_holidays_menu_config_activity_type"],
+ ["Time Off", "Configuration › Mandatory Days", "hr_holidays.hr_holidays_mandatory_day_menu_configuration"],
+ ["Time Off", "Configuration › Public Holidays", "hr_holidays.hr_holidays_public_time_off_menu_configuration"],
+ ["Time Off", "Configuration › Time Off Types", "hr_holidays.hr_holidays_status_menu_configuration"],
+ ["Timesheets", "Configuration", "hr_timesheet.hr_timesheet_menu_configuration"],
+ ["Training", "Configuration › Companion settings", "pb_learn.menu_learn_companion"],
+ ["Training", "Configuration › Training wording", "pb_learn.menu_learn_override"],
+ ["Website", "Configuration › Apps", "website.menu_website_add_features"],
+ ["Website", "Configuration › Menus", "website.menu_website_menu_list"],
+ ["Website", "Configuration › Redirects", "website.menu_website_rewrite"],
+ ["Website", "Configuration › Settings", "website.menu_website_website_settings"],
+ ["Website", "Configuration › Websites", "website.menu_website_websites_list"],
+ ["Workforce", "Configuration › Attendance calculation policies", "pb_attendance_policy.menu_policy"],
+ ["Workforce", "Configuration › Employee attendance settings", "pb_attendance_policy.menu_employee_policy"],
+ ["Workforce", "Configuration › Overtime Ceilings", "pb_hr_workforce.menu_ot_ceiling_config"],
+ ["Workforce", "Configuration › Shift Templates", "pb_hr_workforce.menu_shift_templates_config"],
+ ["eLearning", "Configuration › Content Tags", "website_slides.website_slides_menu_config_content_tags"],
+ ["eLearning", "Configuration › Course Groups", "website_slides.website_slides_menu_config_course_groups"],
+ ["eLearning", "Configuration › Settings", "website_slides.website_slides_menu_config_settings"]
+];
+
+const find = s => document.querySelector(s);
+const escape = s => String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
+const icon = name => '<svg aria-hidden="true" viewBox="0 0 24 24">'+(paths[name]||paths.layers)+'</svg>';
+const access = ['Hiring','Payroll','People'];
+const proposed = ['Expenses','Workforce','Talent','Learning','Insights','Compliance'];
+const summaries = {Expenses:'Manage travel allowances, expense categories and claim payments.',People:'Configure job levels, pay ranges and employee lifecycle documents.',Hiring:'Configure recruitment stages, application forms and interview standards.',Home:'Manage the announcements that appear on Home.',Calendar:'Manage personal connections and company calendar providers.',Payroll:'Manage bank file layouts, insurance contributions and tax rules.',Workforce:'Manage working time, attendance rules and time clocks.',Insights:'Manage reusable reports for the Insights workspace.',Compliance:'Manage statutory tables and safeguards for young workers.',Talent:'Manage goal cycles, review forms and survey questions.',Learning:'Configure course enrolment, reminders and training feedback.',Help:'Manage the product guidance your team sees.',Settings:'Manage shared company details, navigation and system behaviour.'};
+const paymentPreview = {route:'By finance'};
+function paymentForm(){
+ return '<fieldset><legend>Example company · payment settings</legend><p>Which channel should pay newly approved claims?</p>'+['By finance','In the next pay run'].map(route=>'<label class="choice"><input type="radio" name="route" value="'+route+'" '+(route===paymentPreview.route?'checked':'')+'> '+route+'</label>').join('')+'<p>Previously approved claims keep their payment channel.</p><button class="action" id="applyRoute">Apply to preview</button> <span role="status" id="saved"></span></fieldset>';
+}
+const subIcons={Trips:'plane',Claims:'receipt',Insights:'barChart',Pay:'banknote',Employees:'users',Contracts:'fileText',Interviews:'calendar',Roles:'briefcase','Job boards':'globe',Overview:'layoutGrid',Settings:'settings',Access:'shield',Applicants:'list',Offers:'send','Resume bank':'bookOpen',Location:'mapPin'};
+let workspace=location.hash==='#payrun'?'Payroll':'Expenses', view='settings', term='';
+const current=()=>menus[workspace];
+const label=()=>view==='settings'?'Settings':view==='access'?'Access & delegation':view;
+function go(name,next='settings'){
+ workspace=name;view=next;term='';render();find('.page').scrollTop=0;
+}
+function navButton(text,key,symbol){
+ return '<button class="navbtn" data-view="'+escape(key)+'" aria-current="'+(key===view)+'" title="'+escape(text)+'">'+icon(symbol)+'<span>'+escape(text)+'</span></button>';
+}
+function render(){
+ const m=current();
+ find('#picker').value=workspace;
+ find('#brand').innerHTML=icon(m.icon);
+ find('.places').innerHTML=Object.entries(menus).map(([name,d])=>'<button class="place" aria-label="'+name+'" title="'+name+'" data-menu="'+name+'" aria-current="'+(workspace===name)+'">'+icon(d.icon)+'</button>').join('');
+ find('.crumb').innerHTML=workspace+'<span>›</span><b>'+escape(label())+'</b>';
+ find('.work').innerHTML=m.sub.map((s,i)=>navButton(s,s,subIcons[s]||['layoutGrid','calendar','fileText','list','table','layers'][i%6])).join('');
+ find('.foot').innerHTML=navButton('Settings','settings','settings')+((access.includes(workspace)||proposed.includes(workspace))?navButton('Access','access','shield'):'');
+ const isGear=view==='settings',isGroup=workspace==='Settings' && !isGear;
+ const title=isGear?(workspace==='Settings'?'Platform settings':workspace+' settings'):label();
+ find('.heading').innerHTML='<div class="eyebrow">'+workspace+' workspace</div><h1>'+escape(title)+'</h1><p>'+escape(isGear?summaries[workspace]:view==='access'?'Who can use this workspace and who can manage its settings.':isGroup?'Central settings directory':'Working screen · Navigation preview')+'</p>';
+ if(isGear||isGroup){
+  find('#content').innerHTML='<div class="tools"><strong>Configurators</strong><label class="search">'+icon('search')+'<input type="search" placeholder="Find a setting" aria-label="Find a setting"></label></div><div class="groups"></div><p class="note"><b>Design note</b> · '+escape(m.note)+'</p>';
+  find('input').oninput=e=>{term=e.target.value.trim().toLowerCase();drawCards()};
+  drawCards();
+ }else if(view==='access'){
+  const existing=access.includes(workspace);
+  find('#content').innerHTML='<h2>'+workspace+' access</h2><p class="guide">'+(existing?'Existing workspace in Access & delegation.':'Proposed workspace filter for Access & delegation. This scope needs a catalogue mapping before release.')+'</p><div class="panel"><h2>'+icon('shield')+'Workspace scope</h2><div class="empty">'+(existing?'Inspect roles, assignments and delegations for '+workspace+'.':'Review access to '+m.sub.slice(0,3).join(', ')+' and the local configurators.')+'</div></div><p class="note">The design inherits each destination’s company, record and action permissions. Management controls require the existing server authorisation.</p>';
+ }else{
+  find('#content').innerHTML='<h2>'+escape(workspace)+' navigation</h2><p class="muted">Use the Settings gear at the foot of this submenu to configure '+escape(workspace)+'.</p><p><button class="action" data-view="settings">'+icon('settings')+' Open '+escape(workspace)+' settings</button></p>';
+ }
+}
+function nativeDirectory(){
+ const apps = new Map();
+ for (const [app, path, id] of nativeSettingsMenus) {
+  if (!(app+' '+path+' '+id).toLowerCase().includes(term)) continue;
+  if (!apps.has(app)) apps.set(app, []);
+  apps.get(app).push('<li>'+escape(path)+'<small>'+escape(id)+'</small></li>');
+ }
+ if (!apps.size) return '';
+ return '<section class="panel wide native"><h2>Original application menus</h2><p>Platform administrator reference. Expand an application to see its existing settings paths. Availability depends on installed modules and permissions.</p>'+
+  [...apps].map(([app,items])=>'<details><summary>'+escape(app)+' ('+items.length+')</summary><ul>'+items.join('')+'</ul></details>').join('')+'</section>';
+}
+const nativeEditors = [...document.querySelectorAll('template[data-section]')];
+const exampleSettings = new Map();
+function nativeEditorPanel(){
+ const hits = nativeEditors.filter(t => t.dataset.group === view &&
+  [t.dataset.section,t.dataset.summary,t.dataset.source,t.content.textContent].join(' ').toLowerCase().includes(term));
+ if(!hits.length) return '';
+ return '<section class="panel wide"><h2>Payobook controls from Odoo Settings</h2>'+hits.map(t=>{
+  const d=t.dataset;
+  return '<button class="row" data-editor="'+escape(d.section)+'"><span class="tile">'+icon(d.icon)+'</span><span><strong>'+escape(d.section)+'</strong><small>'+escape(d.summary)+'</small></span><span class="arrow">'+icon('chevron')+'</span></button>';
+ }).join('')+'</section>';
+}
+function openNativeEditor(name){
+ const t=nativeEditors.find(entry=>entry.dataset.section===name);
+ const d=t.dataset;
+ show('<div class="eyebrow">Main Settings / '+escape(d.group)+'</div><h2>'+escape(name)+'</h2><p>'+escape(d.scope)+' settings · Example values</p><form id="nativeForm" autocomplete="off">'+t.innerHTML+'<div class="editor-actions"><button type="submit" class="action">Apply to preview</button> <span role="status"></span></div></form><p class="note">Current Odoo location · '+escape(d.source)+'</p>');
+ const form=find('#nativeForm'), fields=form.elements;
+ for(const [key,value] of Object.entries(exampleSettings.get(name)||{})){
+  const field=fields.namedItem(key);
+  if(field.type==='checkbox')field.checked=value;
+  else field.value=value;
+ }
+ function update(){
+  for(const area of form.querySelectorAll('[data-when]'))area.hidden=!fields.namedItem(area.dataset.when).checked;
+  for(const field of form.querySelectorAll('[data-when] input,[data-when] select'))field.disabled=Boolean(field.closest('[hidden]'));
+  if(fields.pb_zoho_sso_button_url){
+   const target=fields.pb_zoho_sso_default_target.value.trim()||'home';
+   fields.pb_zoho_sso_button_url.value='https://payobook.example/auth/zoho/start?target='+encodeURIComponent(target);
+  }
+  form.querySelector('[role=status]').textContent='';
+ }
+ update();form.addEventListener('input',update);
+ form.addEventListener('change',event=>{
+  const file=event.target.files?.[0];
+  if(file && fields.biz_debrand_loader_logo_url) fields.biz_debrand_loader_logo_url.value='/preview/images/'+encodeURIComponent(file.name);
+  update();
+ });
+ form.addEventListener('submit',event=>{
+  event.preventDefault();
+  const values={};
+  for(const field of fields){
+   if(field.name && !field.readOnly && field.type!=='file')values[field.name]=field.type==='checkbox'?field.checked:field.value;
+  }
+  exampleSettings.set(name,values);
+  form.querySelector('[role=status]').textContent='Applied for this preview session';
+ });
+}
+
+function drawCards(){
+ const groupMap=view==='settings'?current().groups:{[view]:Object.keys(cards).filter(k=>cards[k][4]===view)};
+ const fragments=[];
+ if(workspace==='Settings' && view!=='settings'){
+  const panel=nativeEditorPanel();
+  if(panel)fragments.push(panel);
+ }
+ for(const [group,names] of Object.entries(groupMap)){
+  const hits=names.filter(n=>(group+' '+n+' '+cards[n][0]).toLowerCase().includes(term));
+  if(!hits.length)continue;
+  fragments.push('<section class="panel"><h2>'+escape(group)+' <span>'+hits.length+'</span></h2>'+hits.map(n=>'<button class="row" data-card="'+escape(n)+'"><span class="tile">'+icon(cards[n][3])+'</span><span><strong>'+escape(n)+'</strong><small>'+escape(cards[n][0])+'</small></span><span class="arrow">'+icon('chevron')+'</span></button>').join('')+'</section>');
+ }
+ if(workspace==='Settings' && view==='System'){
+  const directory=nativeDirectory();
+  if(directory)fragments.push(directory);
+ }
+ find('.groups').innerHTML=fragments.join('')||'<p role="status">No settings match your search.</p>';
+}
+function show(html){find('#detail').innerHTML=html;find('dialog').showModal()}
+function routeDetail(name){
+ if(name==='The left menu')return '<dt>Starting view</dt><dd>Screens in Access &amp; delegation</dd>';
+ if(name==='Attendance connectors')return '<dt>Installed destination</dt><dd>Workforce setup › Time clocks</dd>';
+ if(name==='Hiring set-up')return '<dt>Inside Hiring set-up</dt><dd>Hiring connections, Stages, Application forms, Scorecards, Emails and languages, Automations, Who does what, Consent &amp; retention, Before they join, Channels and Agencies. Choosing Stages scrolls to the editor in this screen.</dd>';
+ return '';
+}
+function inspect(name){
+ const [desc,source,target,,group]=cards[name];
+ show('<div class="eyebrow">'+workspace+' / '+label()+'</div><h2>'+escape(name)+'</h2><p>'+escape(desc)+'</p>'+(name==='How claims are paid'?paymentForm():'')+'<dl><dt>Current destination</dt><dd>'+escape(group?'Settings › '+group:'Workspace configurator')+'</dd><dt>Existing action or screen</dt><dd><code>'+escape(target)+'</code></dd>'+routeDetail(name)+'<dt>Source</dt><dd><code>'+escape(source)+'</code></dd></dl><p class="guide">The proposed shortcut opens this configurator with its existing permissions and returns to '+workspace+' when closed.</p>');
+}
+find('#picker').innerHTML=Object.keys(menus).map(k=>'<option>'+k+'</option>').join('');
+find('#picker').onchange=e=>go(e.target.value);
+find('#study').onclick=()=>show('<div class="eyebrow">Navigation design</div><h2>Menu study</h2><p>The same 13 active sidebar entries appear in payobook, payobook_template, p0clone and rize. Submenus below combine core screens and optional module registrations. A person’s visible screens depend on their company and role.</p><p>The seven main Settings groups account for all 49 registered cards across the four installations, including conditional entries. Six proposed editors bring custom controls from Odoo into Payroll, HR, Connect and System. Settings › System also indexes the original application menus. Editors nested inside a configurator remain reachable through its parent screen.</p><p>Keep daily screens in the scrolling upper rail. Pin Settings and eligible Access entries below it, including on short screens. Show a settings entry only when at least one installed destination passes its visibility check. Recheck access on the server when opening it.</p><p>Use the same action in the central directory and local menu. Shared rules such as Insurance &amp; Tax can have two contextual links. Global company, tenancy and system administration stay in Settings.</p><p>Hiring, People and Payroll already have scoped Access. Six additional workspace filters are proposed. Calendar, Help and Home use the permissions of their individual settings.</p>'+Object.entries(menus).map(([n,m])=>'<details><summary>'+n+'</summary><p>'+escape(m.note)+'</p><b>Work screens</b><p>'+escape(m.sub.join(' · '))+'</p><b>Local settings</b><p>'+escape(Object.values(m.groups).flat().join(' · '))+'</p><button class="action" data-menu="'+n+'">Inspect '+n+'</button></details>').join(''));
+document.addEventListener('click',event=>{
+ const b=event.target.closest('button');if(!b)return;
+ if(b.classList.contains('close'))find('dialog').close();
+ if(b.dataset.menu){if(find('dialog').open)find('dialog').close();go(b.dataset.menu)}
+ if(b.dataset.view)go(workspace,b.dataset.view);
+ if(b.dataset.card)inspect(b.dataset.card);
+ if(b.dataset.editor)openNativeEditor(b.dataset.editor);
+ if(b.id==='applyRoute'){
+  paymentPreview.route=find('input[name=route]:checked').value;
+  find('#saved').textContent='Preview updated';
+ }
+});
+const linkedGroup=menus.Settings.sub.find(group=>location.hash==='#settings-'+group.toLowerCase());
+if(linkedGroup)go('Settings',linkedGroup);
+else render();
+</script></body></html>

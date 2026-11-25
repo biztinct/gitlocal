@@ -413,6 +413,9 @@ export class HubShell extends Component {
     // ------------------------------------------------------- RAIL FIT
     /** What the rail draws: every lens except those living inside another. */
     get railLenses() { return this.lenses.filter((l) => !this._parentShown(l)); }
+    get scrollWorkScreens() {
+        return this.railLenses.some(l => l.pinned && l.icon === "settings");
+    }
     get mainLenses() { return this.railLenses.filter((l) => !l.pinned); }
     get pinnedLenses() { return this.railLenses.filter((l) => l.pinned); }
     /** In rail order: the main list first, pinned items (Access) last. */
@@ -439,7 +442,7 @@ export class HubShell extends Component {
         if (!el) { return; }
         let folded = [];
         const phone = window.matchMedia && window.matchMedia("(max-width: 767px)").matches;
-        if (!phone && el.clientHeight > 0) {
+        if (!phone && !this.scrollWorkScreens && el.clientHeight > 0) {
             const cs = window.getComputedStyle(el);
             const avail = el.clientHeight - parseFloat(cs.paddingTop || 0)
                 - parseFloat(cs.paddingBottom || 0);

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-24 15:29+0000\n"
-"PO-Revision-Date: 2026-11-24 15:29+0000\n"
+"POT-Creation-Date: 2026-11-24 20:27+0000\n"
+"PO-Revision-Date: 2026-11-24 20:27+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -246,12 +246,6 @@ msgstr ""
 
 #. module: pb_workforce_setup
 #. odoo-python
-#: code:addons/pb_workforce_setup/models/people.py:0
-msgid "%g"
-msgstr ""
-
-#. module: pb_workforce_setup
-#. odoo-python
 #: code:addons/pb_workforce_setup/models/setup.py:0
 msgid "%s (copy)"
 msgstr ""
@@ -285,6 +279,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
 msgid "%s clock-ins received today"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "%s clocks sending clock-ins"
 msgstr ""
 
 #. module: pb_workforce_setup
@@ -659,6 +659,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
 msgid "1 already has a different week"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "1 clock sending clock-ins"
 msgstr ""
 
 #. module: pb_workforce_setup
@@ -1199,6 +1205,12 @@ msgid "Ascension Day of Jesus Christ"
 msgstr ""
 
 #. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Ask a manager to switch clock-ins on."
+msgstr ""
+
+#. module: pb_workforce_setup
 #. odoo-python
 #: code:addons/pb_workforce_setup/models/setup.py:0
 msgid "Attendance access is required."
@@ -1405,7 +1417,34 @@ msgstr ""
 #. module: pb_workforce_setup
 #. odoo-javascript
 #: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Clock-ins are also switched off for this clock."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "Clock-ins are switched on for “%s”."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Clock-ins from this clock will start arriving in attendance, including the "
+"ones it has already sent, and will be turned into paid hours by the rules in"
+" step 4."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
 msgid "Clock-ins now turn into paid hours using your rules."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "Clock-ins switched off"
 msgstr ""
 
 #. module: pb_workforce_setup
@@ -1524,6 +1563,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_workforce_setup/models/clocks.py:0
 msgid "Confirmed without a clock"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Connected, but clock-ins are switched off"
 msgstr ""
 
 #. module: pb_workforce_setup
@@ -2097,6 +2142,14 @@ msgstr ""
 
 #. module: pb_workforce_setup
 #. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Its clock-ins are kept, and your late and overtime rules read them once "
+"confirmed. They only appear in attendance after clock-ins are switched on."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
 #: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
 msgid "Its lateness lines are set in step 4."
 msgstr ""
@@ -2219,6 +2272,11 @@ msgstr ""
 #. module: pb_workforce_setup
 #: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__made
 msgid "Made"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__made_to
+msgid "Made To"
 msgstr ""
 
 #. module: pb_workforce_setup
@@ -2471,6 +2529,20 @@ msgstr ""
 #. module: pb_workforce_setup
 #. odoo-javascript
 #: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "No clock is sending clock-ins yet — paid hours will start once one is."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid ""
+"No clock is sending clock-ins yet. Paid hours start once one is. You can go "
+"live without it."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
 msgid "No clock number"
 msgstr ""
 
@@ -2620,6 +2692,18 @@ msgstr ""
 msgid ""
 "Not confirmed yet. Shifts are only paid by your rules once they are "
 "confirmed."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Not heard from since %s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Not heard from yet"
 msgstr ""
 
 #. module: pb_workforce_setup
@@ -2950,6 +3034,11 @@ msgid "People tap in and out from My Payobook on their phone."
 msgstr ""
 
 #. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__per_week
+msgid "Per Week"
+msgstr ""
+
+#. module: pb_workforce_setup
 #. odoo-javascript
 #: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
 msgid "Person"
@@ -3124,12 +3213,6 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
 msgid "Publishing…"
-msgstr ""
-
-#. module: pb_workforce_setup
-#. odoo-javascript
-#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
-msgid "Quiet since %s"
 msgstr ""
 
 #. module: pb_workforce_setup
@@ -3333,8 +3416,8 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
 msgid ""
-"See each clock and whether it is sending data. If one is not, send your IT "
-"person a ready-made setup link."
+"See each clock and whether it is sending clock-ins. If one is not, send your"
+" IT person a ready-made setup link."
 msgstr ""
 
 #. module: pb_workforce_setup
@@ -3345,8 +3428,14 @@ msgstr ""
 
 #. module: pb_workforce_setup
 #. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "See step 6"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
 #: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
-msgid "Sending data"
+msgid "Sending clock-ins"
 msgstr ""
 
 #. module: pb_workforce_setup
@@ -3575,6 +3664,18 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
 msgid "Supervisor enters hours"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Switch clock-ins on"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Switch clock-ins on for %s"
 msgstr ""
 
 #. module: pb_workforce_setup
@@ -4804,4 +4905,140 @@ msgstr ""
 #: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
 #: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
 msgid "“%s” is removed."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Disabled"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Enable %s"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Disabled on purpose. The PC stays paired and keeps new clock-ins waiting. Once enabled, it sends everything punched meanwhile."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Ask a manager to enable it."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Enable"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "“%s” is enabled. It sends what was punched meanwhile on its next sync."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "1 clock disabled"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "%s clocks disabled"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ". Overtime comes from your rules."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ". The attendance screens also work out extra hours of their own. Pay never reads them — overtime comes from your rules."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are already off."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are off: %s rules removed. Overtime comes from your rules."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are off: 1 rule removed. Overtime comes from your rules."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are on again: %s rules put back."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are on again: 1 rule put back."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Built-in extra hours count:"
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_res_company__pb_wfs_extra_hours_saved
+msgid "Built-in extra hours rules (saved while switched off)"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "On"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Switch it off"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Switch it on again"
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "The attendance app's extra hours are not installed here."
+msgstr ""
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "There are no saved extra-hours rules to put back. Add them on the attendance settings screen."
+msgstr ""
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,help:pb_workforce_setup.field_res_company__pb_wfs_extra_hours_saved
+msgid "Written by Workforce setup when the built-in extra hours count is switched off, so switching it on again restores the same rules."
 msgstr ""

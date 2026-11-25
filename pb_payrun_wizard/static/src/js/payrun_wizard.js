@@ -286,6 +286,7 @@ export class PayrunWizard extends Component {
             // computed in a savepoint and rolled back. Small metadata, so it
             // lives in `useState` (GR26) and not on the instance.
             split: { open: false, loading: false, data: null },
+            clock: null,      // WFSETUP P10b — pb_clock_readiness(): the data step's clock panel
             progress: null,   // { done, total } during chunked compute → determinate bar
             // NETROLE P3 — the month's spreadsheet.
             // VALUEKIND P4 — who this run covers. `statuses` is null until the
@@ -1175,9 +1176,26 @@ export class PayrunWizard extends Component {
             this.notif.add(this.extraRunProblem, { type: "warning" });
             return;
         }
+        // WFSETUP P10b — the "Hours from the clocks" panel of the data step.
+        this.loadClock();
         if (this.wantsPayData) { return this.gotoKey("data"); }
         return this.toCompute();
     }
+
+    /** WFSETUP P10b — who is ready for a run paid from the clocks. Absent
+     * (`active: false`) for every scheme without a clock date and for every
+     * period before it; never blocks the screen. */
+    async loadClock() {
+        this.state.clock = { loading: true, active: false };
+        try {
+            const res = await this.orm.silent.call(
+                "pb.payrun.wizard", "pb_clock_readiness", [{ ...this.state.form }]);
+            this.state.clock = res || { active: false };
+        } catch {
+            this.state.clock = { active: false };
+        }
+    }
+    get clockGroups() { return (this.state.clock && this.state.clock.groups) || []; }
 
     async toCompute() {
         // Create + compute a (draft) run, guarding existing payroll.

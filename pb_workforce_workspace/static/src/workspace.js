@@ -18,6 +18,18 @@ import { ic } from '@pb_import_kit/js/import_icons';
 import { HubBackChip, hubBack } from '@pb_hub/js/hub_nav';
 import { PbSettingsHub, SETTINGS_CATEGORIES } from '@pb_settings/js/settings_hub';
 
+import { WorkspaceSettings, WorkspaceAccess, workspaceCards } from "@pb_settings/js/workspace_settings";
+
+const workforceBack = {xmlid: "pb_mission.action_pb_workforce", label: _t("Workforce"), lensKey: "pb_shell_lens"};
+registry.category("pb_mission_lens").add("workspace_settings", {
+    key: "workspace_settings", icon: "settings", label: _t("Settings"), Component: WorkspaceSettings,
+    props: {workspace: "workforce", label: _t("Workforce"), back: {...workforceBack, lens: "workspace_settings"}},
+});
+registry.category("pb_mission_lens").add("workspace_access", {
+    key: "workspace_access", icon: "shield", label: _t("Access"), Component: WorkspaceAccess,
+    groups: ["base.group_user"], props: {workspace: "workforce", back: {...workforceBack, lens: "workspace_access"}},
+});
+
 const MODEL = 'pb.workforce.workspace';
 const GROUPS = [
     {label:'Overview', keys:['overview','today']},
@@ -240,6 +252,16 @@ patch(PbMission.prototype,{
                 this.state.lens=this.workspace.enabled && this.state.allowed?.overview!==false ? 'overview' : 'today';
         });
     },
+    async _resolveAccess(){
+        const cards = await workspaceCards(this.env, this.orm, "workforce");
+        const settings = this.allLenses.find(l => l.key === "workspace_settings");
+        if (settings) settings.props = {...settings.props, cards};
+        const hidden = new Set();
+        if (!cards.length) hidden.add("workspace_settings");
+        if (!registry.category("actions").contains("pb_access_board")) hidden.add("workspace_access");
+        this.allLenses = this.allLenses.filter(l => !hidden.has(l.key));
+        return super._resolveAccess(...arguments);
+    },
     get workspaceTrimmed(){return setupStudioInstalled();},
     get setupLabel(){return this.workspaceTrimmed ? _t("Workforce setup") : _t("Guided setup");},
     get reviewRosterShown(){return !this.workspaceTrimmed || !!this.workspace.review_rows || this.state.lens==='rosters';},
@@ -248,12 +270,20 @@ patch(PbMission.prototype,{
         return super.setLens(key);
     },
     get lenses(){return super.lenses.filter(l=>this.workspace?.enabled || !extraKeys.includes(l.key));},
+    get workspaceFooter() {
+        return ["workspace_settings", "workspace_access"].map(key => this.lenses.find(l => l.key === key)).filter(Boolean);
+    },
+    get workspaceDailyLenses() {
+        const footer = new Set(this.workspaceFooter.map(l => l.key));
+        if (footer.has("workspace_settings")) footer.add("setup");
+        return this.lenses.filter(l => !footer.has(l.key));
+    },
     get workspaceGroups(){
         const trimmed=this.workspaceTrimmed;
         const groups=trimmed?TRIMMED_GROUPS:GROUPS;
         const hidden=new Set(trimmed?[...SETUP_ONLY,'setup',...(this.reviewRosterShown?[]:['rosters'])]:['setup']);
         const visible=new Set(this.lenses.map(l=>l.key).filter(k=>!hidden.has(k)));
-        const listed=new Set([...GROUPS,...groups].flatMap(g=>g.keys));
+        const listed=new Set([...GROUPS,...groups].flatMap(g=>g.keys).concat(['workspace_settings','workspace_access']));
         return groups.map(g=>({...g,title:groupLabel(g.label),keys:(g.label==='More'?[...g.keys,...this.lenses.filter(l=>!listed.has(l.key)&&!hidden.has(l.key)).map(l=>l.key)]:g.keys).filter(k=>visible.has(k))})).filter(g=>g.keys.length);
     },
     // A lens reached by a deep link that is not in the trimmed menu (the

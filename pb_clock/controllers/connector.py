@@ -49,7 +49,13 @@ class ClockBridge(http.Controller):
             return response({'error': 'Installation access is not valid. Re-pair from Payobook.'}, 401)
         env.cr.execute('SELECT id FROM pb_clock_connector WHERE id=%s FOR UPDATE', [connector.id])
         connector.invalidate_recordset()
-        if connector.state != 'connected' or connector.token_hash != hashlib.sha256(auth[7:].encode()).hexdigest():
+        token_ok = connector.token_hash == hashlib.sha256(auth[7:].encode()).hexdigest()
+        if token_ok and connector.state == 'disabled':
+            # WFSETUP P9: reversible stop. Not 401: the PC keeps its pairing and
+            # its queue (it acknowledges nothing it was refused), so after Enable
+            # it sends everything punched meanwhile.
+            return response({'error': 'This connection is disabled in Payobook. Ask your Payobook administrator to enable it.'}, 423)
+        if connector.state != 'connected' or not token_ok:
             return response({'error': 'Installation access revoked'}, 401)
         rows = payload.get('rows')
         status = payload.get('status', {})

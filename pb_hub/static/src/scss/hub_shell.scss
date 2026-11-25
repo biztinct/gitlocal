@@ -842,3 +842,11 @@
 // else. Scoped to that primitive, so the chip stays vertically centred in a
 // flex header that is not one (the Settings hub's own bar).
 .ppl-head .pbhub-back--lite { margin-bottom: 9px; }
+
+.pbhub-rail__work { display: contents; }
+.pbhub-rail__work.is-scrollable {
+    display: flex; flex: 1 1 auto; min-height: 0; width: 100%; align-items: center;
+    flex-direction: column; gap: 4px; overflow: auto; scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+    @media (max-width: 767px) { width: auto; min-width: 0; flex-direction: row; }
+}

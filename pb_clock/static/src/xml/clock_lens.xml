@@ -251,6 +251,10 @@
                             t-att-title="tipGive(r)">
                       <span t-out="ic('userCheck', 13)"/><span t-esc="r.suggestion.name"/>
                     </button>
+                    <span class="pbck-shared" t-elif="r.shared and r.shared.length"
+                          t-att-title="r.shared.join(', ')">
+                      <span t-out="ic('users', 13)"/><span>Same number for two people</span>
+                    </span>
                     <span class="muted" t-else="">—</span>
                   </span>
                   <span class="act">

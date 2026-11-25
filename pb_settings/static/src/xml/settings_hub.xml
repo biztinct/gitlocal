@@ -67,6 +67,10 @@
               <span class="pbst-nav__ic" t-out="ic(g.icon, 20)"/>
               <span class="pbst-nav__l" t-esc="g.label"/>
             </button>
+            <button t-if="platformGroup" class="pbst-nav__b pbst-platform" t-att-class="{'is-on':state.group === 'platform'}"
+                    data-group="platform" t-att-aria-current="state.group === 'platform' ? 'page' : false" title="Platform settings" t-on-click="() => this.setGroup('platform')">
+             <span class="pbst-nav__ic" t-out="ic('settings',20)"/><span class="pbst-nav__l">Settings</span>
+            </button>
           </nav>
 
           <!-- ======================= the pane =======================
@@ -75,12 +79,14 @@
                opens that door (setCat's sole-card rule). -->
           <main class="pbst-main" t-if="currentGroup">
             <h1 class="pbst-h" t-esc="currentGroup.label"/>
-            <section t-foreach="currentGroup.cats" t-as="c" t-key="c.key"
-                     class="pbst-sec" t-att-data-cat="c.key">
+            <input class="form-control mb-3 pbst-filter" type="search" placeholder="Find a setting" aria-label="Find a setting" t-model="state.filter"/>
+            <t t-foreach="currentGroup.cats" t-as="c" t-key="c.key">
+              <t t-set="matching" t-value="filteredCards(c)"/>
+              <section t-if="matching.length" class="pbst-sec" t-att-data-cat="c.key">
               <h2 class="pbst-sec__h">
                 <button t-if="soleCard(c)" class="pbst-sec__t is-door"
                         t-att-title="c.label"
-                        t-on-click="() => this.setCat(c.key)">
+                        t-on-click="() => this.openCard(this.soleCard(c))">
                   <span class="pbst-sec__ic" t-out="ic(c.icon, 15)"/>
                   <span t-esc="c.label"/>
                   <span class="pbst-sec__go" t-out="ic('chevron', 13)"/>
@@ -93,7 +99,7 @@
               <p class="pbst-blurb" t-esc="c.blurb"/>
 
               <div class="pbst-cards">
-                <div t-foreach="cardsOf(c)" t-as="k" t-key="k.id"
+                <div t-foreach="matching" t-as="k" t-key="k.id"
                      class="pbst-card" t-att-class="{ 'is-locked': !!cardLock(k) }">
                   <span class="pbst-card__ic" t-out="ic(cardLock(k) ? 'lock' : k.icon, 17)"/>
                   <span class="pbst-card__tx">
@@ -113,7 +119,15 @@
                           t-on-click="() => this.openCard(k)">Ask Payobook</button>
                 </div>
               </div>
-            </section>
+              </section>
+            </t>
+            <details t-if="currentGroup.key === 'system' and state.platform" class="pbst-sec" t-on-toggle="loadNativeMenus">
+             <summary>Original application settings</summary>
+             <details t-foreach="nativeGroups" t-as="group" t-key="group.app" class="ms-2 my-2">
+              <summary t-esc="group.app"/>
+              <div t-foreach="group.rows" t-as="row" t-key="row.id"><button class="btn btn-link" t-on-click="() => this.actionService.doAction(row.action)" t-esc="row.path"/></div>
+             </details>
+            </details>
           </main>
         </div>
       </div>

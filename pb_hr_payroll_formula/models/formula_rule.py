@@ -408,6 +408,12 @@ class HrFormulaRule(models.Model):
             at = next((i for i, d in enumerate(out)
                        if rank.index(d['kind']) > idx), len(out))
             out.insert(at, entry)
+        # WFSETUP P10b — the clocks (`pb_clock_key`) are deliberately NOT in
+        # this list: they are not a lane and never rank against one; from the
+        # scheme's clock date they override the whole walk (`_pb_clock_apply`).
+        # Putting them here would move the record splice of
+        # `_declared_source_plan` and change pre-clock-date months. Display
+        # surfaces add them themselves (pb_formula_studio `_declared_sources`).
         return out
 
     def set_source_binding(self, kind, key, origin='user'):
@@ -432,6 +438,17 @@ class HrFormulaRule(models.Model):
             # run is stored on the rule itself (see `period_key`), never as a
             # `hr.formula.rule.source` row, so it is routed here rather than
             # given a parallel API somebody would forget to call.
+            # WFSETUP P10b — the clocks, stored on the rule like the pay run
+            # (`pb_clock_key`), never as a source row: they OVERRIDE the file
+            # from the scheme's clock date rather than rank among its lanes.
+            if kind == 'clock':
+                clean = (key or '').strip()
+                if clean not in dict(rule._pb_clock_key_selection()):
+                    raise ValidationError(_(
+                        "The clocks do not answer “%s”. Pick one of the hours or "
+                        "days the clocks work out.") % (key or ''))
+                rule.write({'pb_clock_key': clean})
+                continue
             if kind == 'pay_run':
                 clean = (key or '').strip().upper()
                 if clean not in pay_period.PERIOD_CODES:
@@ -471,7 +488,10 @@ class HrFormulaRule(models.Model):
             # on any screen.
             if kind in (None, False, 'pay_run') and rule.period_key:
                 rule.write({'period_key': False})
-            if kind == 'pay_run':
+            # WFSETUP P10b — and the clocks, for the same reason.
+            if kind in (None, False, 'clock') and rule.pb_clock_key:
+                rule.write({'pb_clock_key': False})
+            if kind in ('pay_run', 'clock'):
                 continue
             rows = rule.source_ids
             if kind:

@@ -4,3 +4,4 @@ from . import test_company_profile
 from . import test_outgoing_email
 
 from . import test_reset_password
+from . import test_native_sections

@@ -203,8 +203,17 @@ class HrPayrollImportLine(models.Model):
         config = self.formula_config_id
 
         if config:
+            # WFSETUP P10b — in a month paid from the clocks, a clock-answered
+            # column is left blank in the file on purpose ("From the clocks —
+            # leave blank"); it is not a missing required field.
+            batch = self.batch_id
+            clock_codes = set()
+            if batch and config._pb_clock_mode(batch.date_from, batch.date_to) == 'clock':
+                clock_codes = {r.code for r in config.rule_ids if r.pb_clock_key}
             # Check required input fields
             for rule in config.rule_ids.filtered(lambda r: r.column_type == 'input' and r.is_required):
+                if rule.code in clock_codes:
+                    continue
                 value = self._get_value_for_rule(raw_data, rule)
                 if value is None or value == '':
                     errors.append(_("Row %d: Missing required field '%s' (%s)") % (

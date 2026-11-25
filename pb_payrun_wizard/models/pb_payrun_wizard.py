@@ -2214,6 +2214,17 @@ class PbPayrunWizard(models.AbstractModel):
 
     @api.model
     @runner_only
+    def pb_clock_readiness(self, vals=None):
+        """WFSETUP P10b — the "Hours from the clocks" panel of the data step.
+
+        `{'active': False}` here: the late-rules module answers it for a
+        scheme paid from the clocks (`pb_attendance_policy/models/
+        clock_payrun.py`). Never raises on this base: a panel must not take
+        the Run Payroll screen down."""
+        return {'active': False}
+
+    @api.model
+    @runner_only
     def spreadsheet_gate(self, vals=None):
         """Does this payroll want a spreadsheet before it is computed?
 

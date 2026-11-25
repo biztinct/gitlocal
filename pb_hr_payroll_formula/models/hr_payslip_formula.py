@@ -872,6 +872,12 @@ class HrPayslipFormula(models.Model):
                 provenance[code] = input_provenance.entry(
                     'period', key=code, via=pay_period.PERIOD_VIA)
 
+        # WFSETUP P10b — hours from the clocks, on this path too, so a
+        # Recompute with no import line can never quietly return file-era
+        # numbers for a clock month. Returns at once before the clock date.
+        config._pb_clock_apply(self.employee_id, self.date_from, self.date_to,
+                               values, provenance)
+
         # ==============================================================
         # GROUP P5 — PEOPLE IN TWO PLACES.
         #
