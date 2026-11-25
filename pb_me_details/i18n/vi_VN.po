@@ -1642,3 +1642,28 @@ msgstr "đã quyết định trong 30 ngày qua"
 #: code:addons/pb_me_details/static/src/js/family_lens.js:0
 msgid "waiting for HR to confirm for tax"
 msgstr "chờ nhân sự xác nhận cho thuế"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "<i> optional</i>"
+msgstr "<i> không bắt buộc</i>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "<span>Bank account in</span>"
+msgstr "<span>Tài khoản ngân hàng tại</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "Choose the country"
+msgstr "Chọn quốc gia"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "MBBEMYKL"
+msgstr "MBBEMYKL"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "optional"
+msgstr "không bắt buộc"

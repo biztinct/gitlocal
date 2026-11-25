@@ -385,13 +385,33 @@
 
           <t t-if="b['state'] in ('draft', 'sent_back') and mine">
             <p class="pbmd-muted"><t t-if="b['read_ok']">We read your document. Check every detail against it, correct anything that is wrong, then send it.</t><t t-else="">The document could not be read automatically. Type the details exactly as they appear on it.</t></p>
+            <!-- NEWHIRE P7: the boxes follow the country of the account (the bank check's one definition, the same HR types on). -->
+            <form t-if="b.get('formats')" t-att-action="'/my/details/bank/' + str(b['id']) + '/country'" method="post" class="pbmd-form pbmd-bank-country" data-pbmd-autosubmit="1">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <label><span>Bank account in</span>
+                <select name="pb_bank_format">
+                  <option t-if="not b['format_code']" value="" selected="selected">Choose the country</option>
+                  <option t-foreach="b['formats']" t-as="fm" t-att-value="fm['code']" t-att-selected="fm['code'] == b['format_code']" t-esc="fm['name']"/>
+                </select>
+              </label>
+              <button type="submit" class="pbme-btn pbme-btn--ghost pbmd-bank-country-go">Change</button>
+            </form>
+            <t t-set="fmt" t-value="b.get('format') or {}"/>
             <form t-att-action="'/my/details/bank/' + str(b['id']) + '/send'" method="post" class="pbmd-form">
               <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
               <div class="pbme-form-grid">
-                <label><span>Bank</span><input type="text" name="x_bank_name" maxlength="120" t-att-value="b['bank']"/></label>
-                <label><span>Branch</span><input type="text" name="x_bank_branch" maxlength="120" t-att-value="b['branch']"/></label>
+                <label><span>Bank</span><input type="text" name="x_bank_name" maxlength="120" t-att-value="b['bank']" t-att-list="'pbmd-banks' if fmt.get('banks') else None"/></label>
+                <datalist t-if="fmt.get('banks')" id="pbmd-banks"><option t-foreach="fmt['banks']" t-as="bk" t-att-value="bk['value']" t-esc="bk['label']"/></datalist>
+                <label t-if="not fmt or fmt.get('branch') or b['branch']"><span>Branch</span><input type="text" name="x_bank_branch" maxlength="120" t-att-value="b['branch']"/></label>
+                <t t-foreach="fmt.get('codes') or []" t-as="cd">
+                  <label class="pbmd-code"><span><t t-esc="cd['label']"/><em t-if="cd['required']"> *</em><i t-if="not cd['required']"> optional</i></span>
+                    <input type="text" t-att-name="'x_' + cd['key']" t-att-value="b.get(cd['key']) or ''" t-att-maxlength="cd['max']" t-att-placeholder="cd['placeholder']" autocomplete="off" spellcheck="false" autocapitalize="characters" t-att-inputmode="'numeric' if cd['kind'] in ('digits', 'bsb') else None" t-att-data-pbmd-code="cd['kind']" t-att-required="'required' if cd['required'] else None"/>
+                    <small t-esc="cd['hint']"/>
+                  </label>
+                </t>
                 <label class="pbme-form-wide"><span>Name on the account</span><input type="text" name="x_account_name" maxlength="120" t-att-value="b['holder']"/></label>
-                <label class="pbme-form-wide"><span>Account number</span><input type="text" name="x_account_number" inputmode="numeric" autocomplete="off" required="required" maxlength="40" t-att-value="b['number']"/></label>
+                <label class="pbme-form-wide"><span>Account number</span><input type="text" name="x_account_number" t-att-inputmode="None if fmt.get('account', {}).get('letters') else 'numeric'" autocomplete="off" required="required" maxlength="40" t-att-value="b['number']"/><small t-if="fmt" t-esc="fmt['account']['hint']"/></label>
+                <label t-if="fmt.get('swift')" class="pbmd-code"><span><t t-esc="fmt['swift']['label']"/><i> optional</i></span><input type="text" name="x_swift" maxlength="11" t-att-value="b.get('swift') or ''" placeholder="MBBEMYKL" autocomplete="off" spellcheck="false" autocapitalize="characters" data-pbmd-code="swift"/><small t-esc="fmt['swift']['hint']"/></label>
               </div>
               <ul t-if="b['checks']" class="pbmd-checklist">
                 <li t-foreach="b['checks']" t-as="ck" t-att-class="'is-ok' if ck['ok'] else 'is-look'"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check-circle' if ck['ok'] else 'alert'"/><t t-set="isz" t-value="15"/></t><span t-esc="ck['text']"/></li>
@@ -407,6 +427,7 @@
             <dl class="pbmd-kv">
               <div><dt>Bank</dt><dd t-esc="b['bank'] or '—'"/></div>
               <div t-if="b['branch']"><dt>Branch</dt><dd t-esc="b['branch']"/></div>
+              <div t-foreach="b.get('code_rows') or []" t-as="cr"><dt t-esc="cr['label']"/><dd t-esc="cr['value']"/></div>
               <div><dt>Name on the account</dt><dd t-esc="b['holder'] or '—'"/></div>
               <div><dt>Account number</dt><dd t-esc="b['masked'] or '—'"/></div>
             </dl>

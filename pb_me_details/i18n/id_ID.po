@@ -1642,3 +1642,28 @@ msgstr "diputuskan dalam 30 hari terakhir"
 #: code:addons/pb_me_details/static/src/js/family_lens.js:0
 msgid "waiting for HR to confirm for tax"
 msgstr "menunggu HR mengonfirmasi untuk pajak"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "<i> optional</i>"
+msgstr "<i> opsional</i>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "<span>Bank account in</span>"
+msgstr "<span>Rekening bank di</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "Choose the country"
+msgstr "Pilih negara"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "MBBEMYKL"
+msgstr "MBBEMYKL"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "optional"
+msgstr "opsional"

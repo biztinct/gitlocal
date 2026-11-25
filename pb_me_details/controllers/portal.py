@@ -377,6 +377,22 @@ class PbMeDetailsPortal(PbMePortal):
             return self._pbmd_bank_page(req, error=message)
         return request.redirect('/my/details?done=bank_sent')
 
+    @http.route(['/my/details/bank/<int:req_id>/country'], type='http',
+                auth='user', website=True, methods=['POST'])
+    def pbmd_bank_country(self, req_id, pb_bank_format=None, **post):
+        """NEWHIRE P7: which country the account is in (its boxes follow).
+        Only the person's own draft."""
+        req = self._pbmd_bank(req_id)
+        if not req or req.pb_origin != 'self_service':
+            return request.redirect('/my/details')
+        if hasattr(req, 'pb_portal_set_format'):
+            try:
+                req.pb_portal_set_format(pb_bank_format or '')
+            except (AccessError, UserError, ValidationError) as exc:
+                message = exc.args[0] if exc.args else str(exc)
+                return self._pbmd_bank_page(req, error=message)
+        return request.redirect('/my/details/bank/%s' % req.id)
+
     @http.route(['/my/details/bank/<int:req_id>/withdraw'], type='http',
                 auth='user', website=True, methods=['POST'])
     def pbmd_bank_withdraw(self, req_id, **post):

@@ -25,7 +25,7 @@ person who proposed it (the Updates sheet's bank approvers).
 ID PAPERS are approved with their scan: the number is written to the
 employee record and the scan is filed in their documents as verified.
 """,
-    'version': '19.0.1.0.2',
+    'version': '19.0.1.0.3',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -55,6 +55,8 @@ employee record and the scan is filed in their documents as verified.
     'assets': {
         'web.assets_frontend': [
             'pb_me_details/static/src/scss/me_details.scss',
+            # NEWHIRE P7: bank codes shaped while typing
+            'pb_me_details/static/src/js/bank_format.js',
         ],
         'web.assets_backend': [
             'pb_me_details/static/src/scss/family_lens.scss',
