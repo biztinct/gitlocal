@@ -34,7 +34,7 @@ import logging
 import re
 
 from odoo import api, fields, models, tools
-from odoo.exceptions import UserError
+from odoo.exceptions import AccessError, UserError
 
 from odoo.addons.pb_form_studio.models.ir_model_fields import PREFIX
 from odoo.addons.pb_form_studio_people.models.form_studio import (
@@ -78,6 +78,19 @@ BANNER_MAGIC = (
 )
 SECTION_ID = re.compile(r'^[a-z][a-z0-9_]{0,23}$')
 HISTORY = 15
+
+#: NEWHIRE P8 H — who may build the My Payobook page besides the
+#: administrator: the HR manager role (implied, `security/page_builder.xml`).
+#: Such a builder changes the page of the company they are working in and
+#: nothing else the administrator gate guards (no other screen of the Form
+#: builder, no field settings that apply to every company, no reset, no
+#: history restore).
+BUILDER_GROUP = 'pb_form_studio_portal.group_page_builder'
+#: "This call comes from the page builder's own draft / preview path." An
+#: object, never a value JSON can carry: a client cannot set it.
+_BUILDER = object()
+_BUILDER_CTX = 'pbfp_builder_call'
+
 
 
 def _sniff(raw):
@@ -369,6 +382,59 @@ class PbFormStudioPage(models.AbstractModel):
         side += [b for b in SIDE_BLOCKS if b not in side]
         return {'header': header, 'sections': sections, 'side': side[:len(SIDE_BLOCKS)]}, placed
 
+    # ============================================================ P8 gates
+    @api.model
+    def _pbfp_can_build(self):
+        """The administrator, or a page builder (the HR manager role)."""
+        if self._pbfs_is_admin():
+            return True
+        user = self.env.user
+        return bool(user and not user._is_public() and user.has_group(BUILDER_GROUP))
+
+    @api.model
+    def _pbfp_check_build(self):
+        if not self._pbfp_can_build():
+            raise AccessError(self.env._('Only the administrator can change forms.'))
+        return True
+
+    @api.model
+    def _pbfp_limited(self):
+        """True for a page builder who is not the administrator: they change
+        their own company's page only."""
+        return not self._pbfs_is_admin()
+
+    @api.model
+    def _pbfs_check_admin(self):
+        """The page builder's own draft calls (`save_draft` / `discard_draft`
+        for this page) pass for a page builder; everything else the
+        administrator gate guards stays the administrator's."""
+        if self.env.context.get(_BUILDER_CTX) is _BUILDER and self._pbfp_can_build():
+            return True
+        return super()._pbfs_check_admin()
+
+    @api.model
+    def save_draft(self, host_key, payload):
+        if host_key == PAGE_HOST:
+            self._pbfp_check_build()
+            return super(PbFormStudioPage, self.with_context(**{_BUILDER_CTX: _BUILDER})).save_draft(
+                host_key, payload)
+        return super().save_draft(host_key, payload)
+
+    @api.model
+    def discard_draft(self, host_key):
+        if host_key == PAGE_HOST:
+            self._pbfp_check_build()
+            return super(PbFormStudioPage, self.with_context(**{_BUILDER_CTX: _BUILDER})).discard_draft(
+                host_key)
+        return super().discard_draft(host_key)
+
+    @api.model
+    def _pbfp_own_company(self):
+        """The company a limited page builder's page is for: the one they are
+        working in (it is always one of their own)."""
+        company = self.env.company
+        return company if company in self.env.user.company_ids else self.env.user.company_id
+
     @api.model
     def _pbfp_companies(self):
         """The companies a page may be made for (FS-13): active ones the
@@ -383,8 +449,9 @@ class PbFormStudioPage(models.AbstractModel):
     # ============================================================ studio
     @api.model
     def page_studio(self):
-        """Everything the page builder draws. Administrator only (R2)."""
-        self._pbfs_check_admin()
+        """Everything the page builder draws. Administrator only (R2); P8: a
+        page builder too, for their own company's page."""
+        self._pbfp_check_build()
         self._pbfp_sweep_locked()
         layout = self._pbfs_layout(PAGE_HOST)
         eligible = self._pbfp_eligible()
@@ -393,7 +460,7 @@ class PbFormStudioPage(models.AbstractModel):
         version = layout.version if layout else 0
         companies = self._pbfp_companies()
         ticked = [n for n, row in eligible.items() if (row['portal'] or {}).get('show')]
-        return {
+        out = {
             'version': version,
             'published': published,
             'standard': self._pbfp_default_spec(),
@@ -420,7 +487,28 @@ class PbFormStudioPage(models.AbstractModel):
             'caps': {'sections': MAX_SECTIONS, 'fields': MAX_FIELDS, 'title': MAX_TITLE,
                      'heading': MAX_HEADING, 'sub': MAX_SUB, 'alt': MAX_ALT,
                      'banner_mb': MAX_BANNER_BYTES // (1024 * 1024)},
+            'limited': False,
         }
+        if self._pbfp_limited():
+            out = self._pbfp_limit_studio(out)
+        return out
+
+    @api.model
+    def _pbfp_limit_studio(self, out):
+        """A page builder who is not the administrator sees ONE page: their
+        company's own (or, until it has one, the page every company sees, to
+        start from). No company switch, no history to restore, no reset, and
+        the field settings that apply to every company are read-only."""
+        own = self._pbfp_own_company()
+        published = out.get('published')
+        if published:
+            mine = (published.get('companies') or {}).get(str(own.id))
+            out['published'] = {'default': mine or published['default'], 'companies': {}}
+        out['companies'] = []
+        out['history'] = []
+        out['limited'] = True
+        out['limited_company'] = own.name or ''
+        return out
 
     @api.model
     def _pbfp_banner_urls(self, published, draft):
@@ -463,8 +551,9 @@ class PbFormStudioPage(models.AbstractModel):
     def page_employees(self, term=''):
         """People to preview the page as (administrator only): any employee
         the administrator may see, the ones with a My Payobook login first
-        (FS-13: a site where nobody has a login yet can still be previewed)."""
-        self._pbfs_check_admin()
+        (FS-13: a site where nobody has a login yet can still be previewed).
+        P8: a page builder too (their own read access decides who)."""
+        self._pbfp_check_build()
         limit = 20
         dom = [('name', 'ilike', term)] if term else []
         emps = self.env[EMP].search(dom + [('user_id', '!=', False)], limit=limit, order='name')
@@ -481,8 +570,9 @@ class PbFormStudioPage(models.AbstractModel):
     @api.model
     def page_upload_banner(self, filename, data):
         """Store a banner picture (administrator only). JPEG, PNG or WebP
-        told apart by their first bytes, at most 2 MB; never SVG."""
-        self._pbfs_check_admin()
+        told apart by their first bytes, at most 2 MB; never SVG. P8: a page
+        builder too."""
+        self._pbfp_check_build()
         _ = self.env._
         try:
             raw = base64.b64decode((data or '').split(',', 1)[-1], validate=True)
@@ -512,7 +602,7 @@ class PbFormStudioPage(models.AbstractModel):
         user = user or self.env.user
         if not user or user._is_public():
             return False
-        if user.has_group('base.group_system'):
+        if user.has_group('base.group_system') or user.has_group(BUILDER_GROUP):
             return True
         published = self._pbfp_published()
         if not published:
@@ -541,10 +631,19 @@ class PbFormStudioPage(models.AbstractModel):
         carry each field's own settings, applied through the engine exactly
         as the employee Form builder does (labels, "Employee can change it",
         "HR approves" / "Saves at once"). Then every offered field's "Show on
-        My Payobook" tick is set from the page: placed = shown."""
-        self._pbfs_check_admin()
+        My Payobook" tick is set from the page: placed = shown.
+
+        P8: a page builder who is not the administrator publishes their own
+        company's page only — the `spec` they send becomes that company's
+        page; the page every company sees, the other companies' pages and the
+        field settings that apply to every company (`updates`) are kept as
+        they are."""
+        self._pbfp_check_build()
         _ = self.env._
-        payload = payload or {}
+        payload = dict(payload or {})
+        limited = self._pbfp_limited()
+        if limited:
+            payload['updates'] = {}
         layout = self._pbfs_layout(PAGE_HOST)
         current = layout.version if layout else 0
         base = payload.get('base_version', current)
@@ -554,8 +653,16 @@ class PbFormStudioPage(models.AbstractModel):
                     'message': _('%(who)s published this page after you started your changes. '
                                  'Publishing now would replace their page with yours.', who=who)}
         eligible = self._pbfp_eligible()
-        spec, placed = self._pbfp_clean_spec(payload.get('spec'), eligible, layout)
-        companies, valid = {}, {str(c.id) for c in self._pbfp_companies()}
+        if limited:
+            own = self._pbfp_own_company()
+            old = self._pbfp_published(layout) if layout else None
+            mine, placed = self._pbfp_clean_spec(payload.get('spec'), eligible, layout)
+            payload['spec'] = old['default'] if old else self._pbfp_default_spec()
+            payload['companies'] = {str(own.id): mine}
+        spec, more_default = self._pbfp_clean_spec(payload.get('spec'), eligible, layout)
+        placed = (placed | more_default) if limited else more_default
+        companies = {}
+        valid = {str(own.id)} if limited else {str(c.id) for c in self._pbfp_companies()}
         for cid, cspec in (payload.get('companies') or {}).items():
             if cspec is None or str(cid) not in valid:
                 continue
@@ -742,7 +849,7 @@ class PbFormStudioPage(models.AbstractModel):
         Payobook" tick changes only at Publish."""
         rec = self._pbfs_portal_record(EMP, employee)
         if preview is not None:
-            self._pbfs_check_admin()
+            self._pbfp_check_build()
             if spec is None:
                 raise UserError(self.env._('There is no page to preview.'))
         if spec is None:

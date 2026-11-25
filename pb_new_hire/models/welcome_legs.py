@@ -347,8 +347,8 @@ class PbNewHireLegs(models.AbstractModel):
         if not values.get('open_case', True) or 'pb.zoho.pipeline' not in self.env:
             return False
         company = employee.company_id or self.env.company
-        template = self.env['pb.journey.template'].sudo().pick_for(
-            'onboarding', employee.country_id.id or False, company.id)
+        template = self.env['pb.journey.template'].sudo()._pbnh_pick_onboarding(
+            employee.payroll_country or False, employee.country_id.id or False, company.id)
         if not template:
             return False                        # "No joining checklist is set up."
         anchor = self._day(values)

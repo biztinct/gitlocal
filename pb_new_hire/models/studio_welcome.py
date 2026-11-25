@@ -437,13 +437,13 @@ class PbNewHireWelcome(models.AbstractModel):
 
     @api.model
     def _template_for(self, d):
-        """The joining checklist `_open_case` will pick: by NATIONALITY (the
-        employee's `country_id`), which defaults to the country of work."""
+        """The joining checklist `_open_case` will pick (P8 G): by the Country
+        of work; by nationality only when there is no Country of work."""
         company = self._company()
         nationality = self.env['res.country'].sudo().browse(_int(d.get('country_id'))).exists() \
             or self._country_record(d.get('payroll_country'))
-        return self.env['pb.journey.template'].sudo().pick_for(
-            'onboarding', nationality.id or False, company.id)
+        return self.env['pb.journey.template'].sudo()._pbnh_pick_onboarding(
+            d.get('payroll_country') or False, nationality.id or False, company.id)
 
     @api.model
     def _fallback_words(self, ctx):

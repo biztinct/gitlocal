@@ -108,17 +108,40 @@ class PbMeHomeNewHire(models.AbstractModel):
         # this row FIRST: the hook chain runs in one savepoint and any sibling
         # that raises loses every row put after it (NH41); a row already put
         # survives because `put` only fills the caller's dict
+        shown = False
         try:
-            self._pbnh_needs_row(emp, put)
+            shown = self._pbnh_needs_row(emp, put)
         except Exception:                       # noqa: BLE001 — never a 500 on /my
             _logger.warning('pb_new_hire: the joining details row failed', exc_info=True)
+        if shown and self._pbnh_asks_tax_number(emp):
+            # P8 C: the joining details row already asks for the tax number, so
+            # the tax area's own "Add your tax number" row would say it twice.
+            # It comes back by itself once the joining row is gone.
+            def put_once(key, *args, **kwargs):
+                if key == 'tax_number_missing':
+                    return None
+                return put(key, *args, **kwargs)
+            super()._pbme_needs_extra(emp, put_once)
+            return
         super()._pbme_needs_extra(emp, put)
 
     @api.model
+    def _pbnh_asks_tax_number(self, emp):
+        """True while the person's joining details still include the tax
+        number (asked and not done)."""
+        try:
+            return bool(self.env['pb.new.hire.ask'].sudo().search_count([
+                ('employee_id', '=', emp.id), ('key', '=', 'tax_number'),
+                ('state', '!=', 'done')], limit=1))
+        except Exception:                       # noqa: BLE001
+            return False
+
+    @api.model
     def _pbnh_needs_row(self, emp, put):
+        """Put the joining details row; True when it was put."""
         Ask = self.env['pb.new.hire.ask'].sudo()
         if not Ask.search_count([('employee_id', '=', emp.id), ('state', '!=', 'done')], limit=1):
-            return
+            return False
         summary = Ask.summary(emp)
         open_n, waiting = summary['open'], summary['waiting']
         if open_n:
@@ -133,3 +156,4 @@ class PbMeHomeNewHire(models.AbstractModel):
                 sub=_("Sent. HR checks them before they are saved."),
                 icon='list-checks', tone='slate',
                 sentence=_("Your joining details are with HR."))
+        return bool(open_n or waiting)
