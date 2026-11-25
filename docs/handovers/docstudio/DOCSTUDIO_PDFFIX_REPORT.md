@@ -1,6 +1,6 @@
 # DOCSTUDIO PDFFIX — report (2026-11-24 / 25)
 
-**Outcome: diagnosis confirmed; the fixed PDF engine was proven side by side but NOT switched in.**
+**Outcome (25 Nov, phase 2): LIVE x5 since 08:53 UTC — the patched PDF engine is in, with the payslip, letter, settlement and training fixes (§9–§13).** Phase 1 (24 Nov) stopped before switching; that text follows unchanged.
 The handover's stop rule fired: with the new engine a rize payslip gets worse, and the cause is in
 the payslip modules (outside the studio). Nothing on the live server changed: no install, no
 restart, no lock, no module upgrade. Downtime 0 s. Code for the studio's own part is ready on
@@ -203,3 +203,45 @@ pb_hr_payroll_formula 835, pb_hr_payroll_vietnam 29, pb_report_pdf 21, pb_traini
 **5 failed + 1 error — exactly the baseline**: the same six fail on unchanged `origin/19.1` code
 (TestRd49SyncCost 02ab + 02i, TestRecordsR1OneTime 07b, TestSchemeCtxCurrency 04, pb_training
 TestT8Ladder (error) and TestT5CommandBar). None touches a report template.
+
+## 13. Go-live (RISKY tier) — LIVE x5
+
+- Commit `9b0e4dbea` (origin/19.1 incl. NEWHIRE P5b + PDFFIX); seven trees per-module rsync; engine via
+  `dpkg-divert --local --rename --divert /usr/bin/wkhtmltopdf.ubuntu --add /usr/bin/wkhtmltopdf` +
+  symlink to `/opt/wkhtmltox-0.12.6.1-3/bin/wkhtmltopdf` (Ubuntu package 0.12.6-2build2 still installed;
+  `/etc/odoo-server.conf` unchanged).
+- Tries: 08:07 run stopped by hand during its backups (I had replaced its script file while it ran —
+  DS-PF-6; nothing changed). 08:13 run FAILED before any database changed: the upgrade could not read
+  its settings file in a root-only folder; the script put back trees + old engine, restored
+  payobook_template from its fresh dump and started the service — **91 s down**, FAILED line written.
+  08:16 tries: five refusals for signed-in activity on payobook (08:17–08:37), then go.
+- 08:43:12 stop → 08:53:08 start: **596 s down**. Backups `/odoo/backups/docstudio-pdffix-golive-20261125T0816Z/`
+  (dumps right before the stop, previous trees, step logs). Per DB `-u` of the seven modules: exit 0,
+  0 ERROR lines, 107–139 s each. Jobs: payobook_template's 45, 84, 85, 86, 87, 91 re-activated by the
+  upgrade and switched back off; active counts = before on all five (59/40/49/92/91).
+- Verified: trees = commit; versions = manifest x5; the service's PATH finds 0.12.6.1 (with patched qt);
+  real PDFs on all five through the application (letters with letterhead + page number on payobook,
+  payobook_template, p0clone, rize, sudima; standard payslip 1 page and themed unchanged in look on
+  payobook, p0clone, rize; sudima and payobook_template have no payslip); long report 171 pages, page
+  number and "Printed on" on every page; payobook.com downloads as the QA login over HTTPS (letter
+  sample, contract document 2 pages, built report 101 pages, themed + standard payslip) — page 1 and a
+  middle page looked at; the built report made for it was deleted again. Server log: 2 ERROR lines,
+  both a vendor licence check on rize/sudima at 08:41 (before the stop, not this release).
+- Rollback (in the DONE line): `sudo service odoo-server stop; sudo rm /usr/bin/wkhtmltopdf;
+  sudo dpkg-divert --local --rename --remove /usr/bin/wkhtmltopdf; sudo service odoo-server start` —
+  the template changes are made to look the same on the old engine, so they can stay.
+
+## 14. Still open / not verified — plainly
+
+1. **No real browser walk**: the Chrome tool used by this programme was held by another session's
+   browser, and the person's own Chrome would have signed the owner out of payobook.com; the walk was
+   done as HTTPS downloads with the QA login (the same server calls the screens make). Console not read.
+2. Everything except the payslips and the settlement prints ~15% larger than before (§9).
+3. The contract document now runs to 2 pages (signature block on page 2) because of the 12 mm
+   letterhead room; the long report grows (154 → 171 pages for 4,581 rows).
+4. Pay run summary (`pb_comp_ben`) sits tight under a five-line company address (no overlap).
+5. Not probed for lack of a record: budget year, conduct letter, review form, required-training matrix,
+   shadow certificate, PayAI executive report. Analytics headcount / personnel costs / statutory
+   contributions PDFs fail with "template not found" today (pre-existing). Vietnam payslip bulk print
+   now works (it failed before on the old engine).
+6. Rize payslips show the "Your logo" placeholder (no company logo set) — pre-existing.
