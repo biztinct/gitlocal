@@ -66,6 +66,8 @@ DRAFT_KEYS = (
     'remind',
     # P4 — the signed offer brought across from Hiring
     'offer_id',
+    # P5a — the date the identity card from Hiring is valid until (optional)
+    'hiring_valid_until',
 )
 
 _EMAIL = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')

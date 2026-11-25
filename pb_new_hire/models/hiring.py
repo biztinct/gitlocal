@@ -63,6 +63,11 @@ NH_JOIN_CTX = 'pb_nh_joining_employee_id'
 #: by the `_detail_items` override for the length of one call.
 RECEIVED_CTX = 'pb_nh_received'
 
+#: P5a: HR chose the buddy in step 6, so Hiring's own buddy hand-over stands
+#: aside at the close (HR's choice wins; Hiring's applies only when step 6
+#: left the buddy empty).
+NH_BUDDY_CTX = 'pb_nh_buddy_chosen'
+
 #: The seeded request lines and what they are in the studio's words.
 TEMPLATES = (
     ('pb_hiring.doc_id', 'identity'),
@@ -101,6 +106,20 @@ class PbNewHireHiring(models.AbstractModel):
             return False
         try:
             return bool(self.env['pb.hiring.offer'].has_access('read'))
+        except Exception:                       # noqa: BLE001 — a probe
+            return False
+
+    @api.model
+    def _bank_reader_on(self):
+        """Is a document reader set up for this company — the very setting
+        the bank screens read (`payroll.ai.config.get_config_for_purpose(
+        'doc_ocr')`, `pb_bank_ocr` `_provider_info`)? Feature-checked: no
+        reader model, no reader."""
+        if 'payroll.ai.config' not in self.env:
+            return False
+        try:
+            Cfg = self.env['payroll.ai.config'].sudo().with_company(self._company())
+            return bool(Cfg.get_config_for_purpose('doc_ocr'))
         except Exception:                       # noqa: BLE001 — a probe
             return False
 
@@ -332,16 +351,28 @@ class PbNewHireHiring(models.AbstractModel):
                                 'line': _("Received in Hiring · %s",
                                           self._day_words(day))}
             if item['key'] == 'bank':
-                # the paper becomes a bank request (read, then approved by a
-                # second person); typing or asking stay possible
-                item['can_hiring'] = True
-                item['default'] = 'hiring'
+                if self._bank_reader_on():
+                    # the paper becomes a bank request (read, then approved by
+                    # a second person); typing or asking stay possible
+                    item['can_hiring'] = True
+                    item['default'] = 'hiring'
+                else:
+                    # P5a: nothing here can read the paper, so it is filed on
+                    # the record and the account details are asked for
+                    item['default'] = 'ask' if item['can_ask'] else 'have'
+                    item['received']['note'] = _(
+                        "%s's bank paper will be on their record. The account details are "
+                        "asked for in the welcome link.", first)
             elif item.get('merged'):
                 # the card came across: only the number is still open
                 item['received_upload'] = item['upload']
                 item['upload'] = False
                 item['can_number'] = False
                 item['ask_label'] = item['fields'][0]['label'] if item['fields'] else item['label']
+                if item['key'] == 'id_number' and (item['received_upload'] or {}).get('needs_expiry'):
+                    # P5a: the card is filed with its own kind of paper once
+                    # HR gives the date it is valid until (Hiring never asks)
+                    item['received_until'] = True
             else:
                 item['received_upload'] = item['upload']
                 item['upload'] = False
@@ -365,7 +396,21 @@ class PbNewHireHiring(models.AbstractModel):
 
     @api.model
     def _validate_docs(self, d, files=None):
-        return super(PbNewHireHiring, self._with_received(d))._validate_docs(d, files)
+        me = self._with_received(d)
+        refused = super(PbNewHireHiring, me)._validate_docs(d, files)
+        if refused:
+            return refused
+        raw = str(d.get('hiring_valid_until') or '').strip()
+        if not raw or not (me.env.context.get(RECEIVED_CTX) or {}).get('identity'):
+            return None
+        day = self._day(raw)
+        if not day:
+            return self._refuse('docs', 'hiring_valid_until', _("That date does not look right."))
+        if day < fields.Date.context_today(self):
+            return self._refuse('docs', 'hiring_valid_until', _(
+                "That date has passed, so the card is no longer valid. Leave the date empty to file "
+                "it later, or ask %s for a card that is still valid.", self._first_of(d.get('name'))))
+        return None
 
     @api.model
     def _values_docs(self, d, vals, files=None):
@@ -380,7 +425,11 @@ class PbNewHireHiring(models.AbstractModel):
             item = items.get(ask['key']) or {}
             if item.get('received') and item.get('ask_label'):
                 ask['label'] = item['ask_label']            # only the number is asked
+                ask['kind'] = 'number'
         choices = me._doc_choices(list(items.values()), d)
+        until = self._day(str(d.get('hiring_valid_until') or '').strip())
+        if until and received.get('identity') and until >= fields.Date.context_today(self):
+            vals['pb_nh_hiring_id_until'] = fields.Date.to_string(until)
         if choices.get('bank') == 'hiring':
             vals['pb_nh_hiring_bank'] = True
             vals.setdefault('pb_nh_names', {}).setdefault('details', []).append(
@@ -484,16 +533,20 @@ class PbNewHireLegsHiring(models.AbstractModel):
         return self.env.ref(OTHER_CATEGORY, raise_if_not_found=False)
 
     @api.model
-    def _file_copy(self, employee, att, category, title):
+    def _file_copy(self, employee, att, category, title, expiry=False):
         """A COPY of a Hiring file as an unverified document of the person —
-        the shape Hiring's own `_file_signed_copy` makes."""
+        the shape Hiring's own `_file_signed_copy` makes. `expiry`: the date
+        HR typed in step 5 (P5a, the identity card)."""
         Doc = self.env['pb.employee.document'].sudo()
         copy = att.sudo().copy({'res_model': 'pb.employee.document', 'res_id': 0,
                                 'name': att.name or title})
-        doc = Doc.create({'employee_id': employee.id, 'category_id': category.id,
-                          'name': title, 'attachment_id': copy.id,
-                          'issue_date': fields.Date.context_today(self),
-                          'company_id': employee.company_id.id})
+        vals = {'employee_id': employee.id, 'category_id': category.id,
+                'name': title, 'attachment_id': copy.id,
+                'issue_date': fields.Date.context_today(self),
+                'company_id': employee.company_id.id}
+        if expiry:
+            vals['expiry_date'] = expiry
+        doc = Doc.create(vals)
         copy.write({'res_id': doc.id})
         return doc
 
@@ -560,16 +613,21 @@ class PbNewHireLegsHiring(models.AbstractModel):
                     amber = _("The bank paper came across but could not be read. Open it in Bank "
                               "requests to finish.")
                 continue
+            if key == 'bank':
+                # no reading asked for (or nothing here reads papers): the
+                # paper itself is filed on the record (P5a)
+                title = _("Bank paper")
             category = self._hiring_category(key, code)
             if not category:
                 continue
-            if category.requires_expiry:
+            expiry = values.get('pb_nh_hiring_id_until') if key == 'identity' else False
+            if category.requires_expiry and not expiry:
                 # Hiring keeps no valid-until date, and none is invented
                 held.append(title)
                 continue
             try:
                 with self.env.cr.savepoint():
-                    self._file_copy(employee, att, category, title)
+                    self._file_copy(employee, att, category, title, expiry=expiry)
                 filed += 1
             except Exception:                   # noqa: BLE001 — one paper never stops the others
                 _logger.info('new hire: Hiring paper %s not filed for %s', title, employee.id,
@@ -604,7 +662,8 @@ class PbNewHireLegsHiring(models.AbstractModel):
             link['contract_id'] = contract.id
         offer.write(link)                       # how Hiring itself links them
         day = values.get('date_start') or fields.Date.context_today(self)
-        offer.with_context(**{NH_JOIN_CTX: employee.id}).action_confirm_joined(joined_on=day)
+        ctx = {NH_JOIN_CTX: employee.id, NH_BUDDY_CTX: bool(_int(values.get('buddy_id')))}
+        offer.with_context(**ctx).action_confirm_joined(joined_on=day)
         offer.invalidate_recordset(['state'])
         if offer.state != 'joined':
             raise LegFailed(_("Hiring did not mark the offer as joined."))
@@ -656,6 +715,14 @@ class PbHiringOfferNewHire(models.Model):
         if case:
             self.sudo().write({'case_id': case.id})
         return case
+
+    def _hand_over_buddy(self):
+        """P5a ruling: when HR chose the buddy in step 6, HR's choice stands
+        (the studio's buddy leg made it); Hiring's hand-over runs only when
+        step 6 left the buddy empty."""
+        if self._pb_nh_joining() and self.env.context.get(NH_BUDDY_CTX):
+            return 'studio'
+        return super()._hand_over_buddy()
 
     def _ensure_contract(self):
         if not self._pb_nh_joining() or self.contract_id:

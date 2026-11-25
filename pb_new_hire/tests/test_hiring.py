@@ -8,6 +8,8 @@ from unittest.mock import patch
 from odoo import fields
 from odoo.tests import new_test_user, tagged
 
+from odoo.addons.pb_new_hire.models.hiring import PbNewHireHiring
+
 from .test_welcome import WelcomeCommon
 
 PNG = base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==')
@@ -30,6 +32,21 @@ class TestFromHiring(WelcomeCommon):
         cls.offer = cls._signed_offer('DEMO NH Candidate One', 'demo.nh.one@example.net',
                                       receive=('passport', 'qualification', 'bank', 'photograph'))
         cls.bare = cls._signed_offer('DEMO NH Candidate Two', 'demo.nh.two@example.net', receive=())
+        # P5a: a second colleague who can be a buddy (HR's own choice in step 6)
+        cls.mentor2 = env['hr.employee'].create({
+            'name': 'DEMO NH Mentor Two', 'company_id': cls.company.id,
+            'department_id': cls.finance.id, 'employee_type': 'employee'})
+        env['hr.contract'].create({'name': 'DEMO NH Mentor Two', 'employee_id': cls.mentor2.id,
+                                   'wage': 4000.0, 'date_start': date(2019, 3, 4),
+                                   'company_id': cls.company.id, 'state': 'open'})
+
+    def setUp(self):
+        super().setUp()
+        # P4's tests read the bank paper (a document reader is set up); the
+        # P5a tests below switch it off where they need to
+        self.reader_on = True
+        Studio = type(self.env['pb.new.hire'])
+        self.patch(Studio, '_bank_reader_on', lambda this: self.reader_on)
 
     @classmethod
     def _signed_offer(cls, name, email, receive=()):
@@ -216,7 +233,7 @@ class TestFromHiring(WelcomeCommon):
         self.assertEqual(offer.comp_id.employee_id, emp)
         if offer.document_ids:
             self.assertTrue(all(offer.document_ids.mapped('vault_doc_id')), 'signed papers filed')
-        self.assertEqual(emp.buddy_id, self.mentor, 'the buddy hand-over still ran')
+        self.assertEqual(emp.buddy_id, self.mentor, "step 6's buddy (brought across from the offer)")
         self.assertEqual(self.env['hr.contract'].sudo().search_count([]), before['hr.contract'] + 1)
 
     def test_h4_unreadable_bank_paper(self):
@@ -309,3 +326,96 @@ class TestFromHiring(WelcomeCommon):
         self.assertEqual(self.bare.sudo().state, 'joined')
         self.assertTrue(self.bare.sudo().employee_id)
         self.assertFalse(self.studio().offer_draft(self.offer.id)['ok'], 'no longer waiting')
+
+    # ------------------------------------------------------------------ P5a §6
+    def test_f1_buddy_hr_choice_wins(self):
+        """HR changed the buddy in step 6: HR's choice stands; Hiring's own
+        hand-over (the offer's first buddy) stands aside at the close."""
+        sent, emp = self._approved(self.offer, buddy_id=self.mentor2.id)
+        self.assertTrue(self.legs(sent)['buddy']['ok'], self.legs(sent)['buddy'])
+        self.assertEqual(emp.buddy_id, self.mentor2)
+        self.assertEqual(self.offer.sudo().state, 'joined')
+        Nom = self.env['pb.buddy.nomination'].sudo()
+        self.assertEqual(Nom.search([('employee_id', '=', emp.id)]).mapped('chosen_id'), self.mentor2,
+                         "Hiring's buddy was not chosen over HR's")
+
+    def test_f1b_buddy_left_empty_hiring_applies(self):
+        """Step 6 left the buddy empty: Hiring's hand-over chooses the offer's buddy."""
+        sent, emp = self._approved(self.offer, buddy_id=False)
+        self.assertEqual(self.offer.sudo().state, 'joined')
+        self.assertEqual(emp.buddy_id, self.mentor, "Hiring's buddy, from the offer")
+
+    def test_f2_bank_paper_without_a_reader(self):
+        """No document reader here: the bank row defaults to asking the
+        person, says so, and the paper is filed on the record."""
+        self.reader_on = False
+        docs = self.studio().details_options({'payroll_country': 'SG', 'name': 'DEMO NH Candidate One',
+                                              'offer_id': self.offer.id})
+        bank = {i['key']: i for i in docs['items']}['bank']
+        self.assertTrue(bank['received'])
+        self.assertFalse(bank.get('can_hiring'))
+        self.assertEqual(bank['default'], 'ask')
+        self.assertEqual(bank['received']['note'], "DEMO's bank paper will be on their record. The account "
+                                                   "details are asked for in the welcome link.")
+        sent = self.studio().send(self.draft_from(self.offer))
+        values = self.env['pb.newhire.proposal'].sudo().browse(sent['proposal_id']).payload()['values']
+        self.assertFalse(values.get('pb_nh_hiring_bank'))
+        self.assertIn('bank', [a['key'] for a in values['pb_nh_asks']], 'the account is asked')
+        self.approve(sent)
+        emp = self.hires('DEMO NH Candidate One')
+        self.assertFalse(self.env['pb.bank.change.request'].sudo().search([('employee_id', '=', emp.id)]),
+                         'nothing to read, so no bank request')
+        papers = self.env['pb.employee.document'].sudo().search([('employee_id', '=', emp.id)])
+        self.assertIn('Bank paper', papers.mapped('name'), 'the paper is on the record')
+        asks = self.env['pb.new.hire.ask'].sudo().search([('employee_id', '=', emp.id)])
+        self.assertIn('bank', asks.mapped('key'))
+
+    def test_f2b_bank_paper_with_a_reader(self):
+        """With a reader set up, P4 behaviour stays (the real check reads the
+        same setting the bank screens read)."""
+        self.reader_on = True
+        docs = self.studio().details_options({'payroll_country': 'SG', 'name': 'DEMO NH Candidate One',
+                                              'offer_id': self.offer.id})
+        bank = {i['key']: i for i in docs['items']}['bank']
+        self.assertTrue(bank['can_hiring'])
+        self.assertEqual(bank['default'], 'hiring')
+        self.assertNotIn('note', bank['received'])
+        # the probe itself, unpatched: the setting the bank screens read
+        if 'payroll.ai.config' not in self.env:
+            self.skipTest('no document reader model on this database')
+        Cfg = self.env['payroll.ai.config'].sudo()
+        Cfg.search([]).write({'is_active': False})
+        probe = lambda: PbNewHireHiring._bank_reader_on(self.studio())  # noqa: E731
+        self.assertFalse(probe(), 'no active reader')
+        Cfg.create({'provider_type': 'tesseract', 'purpose': 'doc_ocr', 'is_active': True,
+                    'company_id': self.company.id})
+        self.assertTrue(probe(), 'a reader is set up for the company')
+
+    def test_f3_identity_card_valid_until(self):
+        """The identity card from Hiring: with a valid-until date it is filed
+        in its own kind of paper; without one P4's amber sentence stays; a
+        date that has passed is refused in step 5."""
+        id_cat = self.env.ref('pb_employee_vault.cat_id_document')
+        if not id_cat.requires_expiry:
+            self.skipTest('the identity card needs no date on this database')
+        docs = self.studio().details_options({'payroll_country': 'SG', 'name': 'DEMO NH Candidate One',
+                                              'offer_id': self.offer.id})
+        item = {i['key']: i for i in docs['items']}['id_number']
+        self.assertTrue(item.get('received_until'), item)
+        past = self.studio().send(self.draft_from(self.offer, hiring_valid_until='2020-01-01'))
+        self.assertFalse(past['ok'])
+        self.assertEqual((past['step'], past['field']), ('docs', 'hiring_valid_until'))
+        self.assertIn('That date has passed', past['message'])
+        bad = self.studio().send(self.draft_from(self.offer, hiring_valid_until='not a date'))
+        self.assertEqual(bad['field'], 'hiring_valid_until')
+
+        def readable(this):
+            this.write({'x_bank_name': 'DEMO Bank', 'x_account_number': '123456789012',
+                        'x_account_name': 'DEMO NH Candidate One'})
+        sent, emp = self._approved(self.offer, ocr=readable, hiring_valid_until='2031-05-31')
+        leg = self.legs(sent)['hiring']
+        self.assertTrue(leg['ok'], leg)
+        card = self.env['pb.employee.document'].sudo().search(
+            [('employee_id', '=', emp.id), ('category_id', '=', id_cat.id)])
+        self.assertEqual(len(card), 1, 'filed in its own kind of paper')
+        self.assertEqual(card.expiry_date, date(2031, 5, 31))

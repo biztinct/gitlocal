@@ -377,6 +377,9 @@
     .pbnh-doc.is-again .pbnh-tile { background: var(--pbnh-warn-soft); color: var(--pbnh-warn); }
     .pbnh-doc-sub { animation: pbnh-fade .2s; }
     .pbnh-doc > .pbnh-ferr { flex-basis: 100%; padding-left: 46px; }
+    // P5a: the identity card from Hiring — one small optional date
+    .pbnh-doc > .pbnh-doc-until { flex-basis: 100%; padding-left: 46px; max-width: calc(46px + 240px); animation: pbnh-fade .2s; }
+    .pbnh-doc > .pbnh-doc-until i { font-style: normal; color: var(--pbnh-faint); font-weight: 400; }
     // the row opens to its own little form: a height animation that keeps
     // the closed form out of the Tab order (`inert`)
     .pbnh-doc-x { flex-basis: 100%; display: grid; grid-template-rows: 0fr; transition: grid-template-rows .24s ease-out, opacity .2s; opacity: 0; }

@@ -70,6 +70,8 @@ const P2_KEYS = {
     remind: [true, (d) => d.remind !== false],
     // P4 — the signed offer brought across from Hiring
     offer_id: [false, (d) => d.offer_id || false],
+    // P5a — the date the identity card from Hiring is valid until (optional)
+    hiring_valid_until: ["", (d) => (d.offer_id ? String(d.hiring_valid_until || "") : "")],
 };
 /** P4: changing one of these works the payslip example out again (500 ms
  *  after the last change). */

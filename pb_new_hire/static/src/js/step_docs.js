@@ -110,6 +110,14 @@ export class StepDocs extends Component {
                     { key: "have", label: _t("I have it"), on: item.can_have, why: "" },
                 ];
             }
+            if (item.key === "bank") {
+                // P5a: nothing here reads bank papers — the paper is filed on
+                // the record; the account itself is asked or typed
+                return [
+                    { key: "ask", label: _t("Ask %s", this.first), on: item.can_ask, why: item.ask_why_not },
+                    { key: "have", label: _t("I have it"), on: item.can_have, why: "" },
+                ];
+            }
             if (item.ask_label) {
                 const out = [
                     { key: "ask", label: _t("Ask for the number"), on: item.can_ask, why: item.ask_why_not },
@@ -187,6 +195,10 @@ export class StepDocs extends Component {
             if (c === "hiring") {
                 return _t("%s. It is read, then a second person approves the account.", line);
             }
+            if (item.received.note && c === "ask") {
+                // P5a: nothing here reads bank papers — filed, and the account asked
+                return item.received.note;
+            }
             if (c === "ask" && item.ask_label) {
                 return _t("%(line)s. %(first)s is asked for the %(what)s only.",
                           { line, first: this.first, what: item.ask_label });
@@ -234,6 +246,14 @@ export class StepDocs extends Component {
         return (c === "have" || c === "number") && Boolean(item.fields.length || item.upload);
     }
     showUpload(item) { return Boolean(item.upload) && this.choice(item) === "have"; }
+    // P5a: the identity card that came across from Hiring — its valid-until date
+    get untilValue() { return String(this.d.hiring_valid_until || ""); }
+    onUntil(ev) { this.api.set("hiring_valid_until", ev.target.value || ""); }
+    untilHelp(item) {
+        return this.untilValue
+            ? _t("The card is filed with %s's papers, valid until this date.", this.first)
+            : _t("Optional. Without a date the card stays in Hiring until someone files it.");
+    }
 
     // ------------------------------------------------------------ presets
     get canAskAll() { return this.items.some((i) => this.choice(i) !== (i.can_ask ? "ask" : "later")); }

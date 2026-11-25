@@ -685,6 +685,12 @@
               t-on-click="() => this.setChoice(item, opt)" t-esc="opt.label"/>
     </div>
     <t t-call="pb_new_hire.FieldErr"><t t-set="msg" t-value="err('doc-' + item.key)"/></t>
+    <label t-if="item.received_until" t-att-class="'pbnh-f pbnh-doc-until' + (err('hiring_valid_until') ? ' is-bad' : '')">
+      <span>Valid until <i>optional</i></span>
+      <input type="date" id="pbnh-f-hiring_valid_until" t-att-value="untilValue" t-on-change="(ev) => this.onUntil(ev)"/>
+      <span t-if="!err('hiring_valid_until')" class="pbnh-own-help" t-esc="untilHelp(item)"/>
+      <t t-call="pb_new_hire.FieldErr"><t t-set="msg" t-value="err('hiring_valid_until')"/></t>
+    </label>
     <div t-att-class="'pbnh-doc-x' + (isOpen(item) ? ' is-open' : '')" t-att-inert="isOpen(item) ? undefined : ''">
       <div class="pbnh-doc-in">
         <div t-if="item.fields.length" class="pbnh-grid">
