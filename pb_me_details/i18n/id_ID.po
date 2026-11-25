@@ -400,6 +400,7 @@ msgstr "Batal"
 #. module: pb_me_details
 #. odoo-javascript
 #: code:addons/pb_me_details/static/src/xml/family_lens.xml:0 model_terms:ir.ui.view,arch_db:pb_me_details.portal_breadcrumbs_details model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
 msgid "Change"
 msgstr "Ubah"
 

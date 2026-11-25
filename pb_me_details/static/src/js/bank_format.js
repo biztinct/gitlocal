@@ -38,10 +38,16 @@
             form.submit();
         }
     });
-    document.addEventListener("DOMContentLoaded", function () {
+    // the frontend bundle is loaded lazily: the page may already be complete
+    function hideChange() {
         var buttons = document.querySelectorAll("[data-pbmd-autosubmit] .pbmd-bank-country-go");
         for (var i = 0; i < buttons.length; i++) {
             buttons[i].hidden = true;
         }
-    });
+    }
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", hideChange);
+    } else {
+        hideChange();
+    }
 })();

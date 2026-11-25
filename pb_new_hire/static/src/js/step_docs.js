@@ -397,8 +397,17 @@ export class StepDocs extends Component {
         const v = ev.target.value;
         if (item && item.key === "bank") {
             if (f.name === "bank_format") {
+                // another country's codes mean nothing here: they go, the
+                // bank, the number and the name stay
                 this.ui.bankErr = {};
+                this.ui.bankAuto = {};
+                for (const name of ["bank_code", "branch_code", "bank_swift", "bank_branch"]) {
+                    if (haveValueOf(this.nh, name)) {
+                        this.api.setHave(name, "");
+                    }
+                }
                 this.api.setHave("bank_format", v);
+                this.codeFromBank(item, haveValueOf(this.nh, "bank_name"));
                 return;
             }
             if (f.kind === "code" || f.kind === "account") {
