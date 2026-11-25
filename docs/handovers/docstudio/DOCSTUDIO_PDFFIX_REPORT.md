@@ -195,3 +195,11 @@ one space per whitespace run, no whitespace between blocks or at block edges) an
 (112 PDFs, patched engine, live data on payobook): **15 lost/narrow spaces without the cure → 0 with
 it; page counts identical** (`q4`). Screen preview untouched. The static-font idea was not needed
 (the web fonts are already served as static TTF files).
+
+## 12. Local suites (phase 2)
+
+Same local copy, all seven modules upgraded: om_hr_payroll 4, pb_doc_studio 43, pb_hr_fullandfinal 8,
+pb_hr_payroll_formula 835, pb_hr_payroll_vietnam 29, pb_report_pdf 21, pb_training 728 = 1,292 tests,
+**5 failed + 1 error — exactly the baseline**: the same six fail on unchanged `origin/19.1` code
+(TestRd49SyncCost 02ab + 02i, TestRecordsR1OneTime 07b, TestSchemeCtxCurrency 04, pb_training
+TestT8Ladder (error) and TestT5CommandBar). None touches a report template.
