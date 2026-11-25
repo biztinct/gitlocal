@@ -154,6 +154,18 @@ class PbNewHireInvite(models.AbstractModel):
         return day or False
 
     @api.model
+    def _lang_of(self, user=None, employee=None):
+        """The language a person reads (P5a): their sign-in's, else the
+        employee record's, else this environment's — always an active one."""
+        installed = {code for code, _name in self.env['res.lang'].sudo().get_installed()}
+        for lang in ((user.sudo().lang if user else None),
+                     (employee.sudo().lang if employee is not None and 'lang' in employee._fields else None),
+                     self.env.lang):
+            if lang and lang in installed:
+                return lang
+        return 'en_US'
+
+    @api.model
     def _validity_hours(self):
         raw = self.env['ir.config_parameter'].sudo().get_param(
             'auth_signup.signup.validity.hours', 144)
@@ -205,7 +217,11 @@ class PbNewHireInvite(models.AbstractModel):
         emp = employee.sudo()
         first = self._first(emp)
         out = {'ok': False, 'sent': False, 'to': '', 'message': ''}
-        summary = self.env['pb.new.hire.ask'].sudo().summary(emp)
+        # P5a: the message is written in the person's language — the items'
+        # words too (the answers on this screen stay in the sender's)
+        lang = self._lang_of(self._user(emp), emp)
+        Ask = self.env['pb.new.hire.ask'].sudo().with_context(lang=lang)
+        summary = Ask.summary(emp)
         wanted = ('open',) if kind == 'reminder' else ('open', 'waiting')
         items = [i for i in summary['items'] if i['state'] in wanted]
         if not items:
@@ -234,7 +250,7 @@ class PbNewHireInvite(models.AbstractModel):
             out['message'] = _("%s signs in with the employee number, so there is no welcome link "
                                "to send.", first)
             return out
-        needs = dict(self.env['pb.new.hire.ask']._fields['need']._description_selection(self.env))
+        needs = dict(Ask._fields['need']._description_selection(Ask.env))
         day = self._first_day(emp)
         hours = self._validity_hours()
         ctx = {
@@ -249,6 +265,7 @@ class PbNewHireInvite(models.AbstractModel):
             'pb_nh_signed_in': self._signed_in(user),
             'pb_nh_login': user.login or '',
             'pb_nh_link': link,
+            'pb_nh_lang': lang,
         }
         try:
             # no document attached: the message (and the link inside it) is
@@ -428,6 +445,11 @@ class PbNewHireInvite(models.AbstractModel):
         user = self._hr_contact(employee, rows)
         if not user:
             return False
+        # P5a: the note is written in the language of the HR person it is for
+        return self.with_context(lang=self._lang_of(user))._nudge_write(employee, day, n, user)
+
+    @api.model
+    def _nudge_write(self, employee, day, n, user):
         from odoo.tools.misc import format_date
         when = format_date(self.env, day, date_format='EEE d MMM')
         sentence = _("%(name)s starts on %(day)s and 1 thing needed for the first pay is still "

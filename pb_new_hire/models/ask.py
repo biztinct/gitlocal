@@ -17,6 +17,13 @@ product's own data, every time it is asked:
 
 `refresh()` only READS the product; the one thing it writes is the ask row's
 own `state` / `done_on` (sudo, so a reader with read-only rights may call it).
+
+P5a — THE READER'S LANGUAGE. A row stores its item `key` and which of the
+item's words it is asked by (`label_kind`); the words are worked out again
+from step 5's own list (`pb.new.hire._detail_items`) at display time, in the
+language of whoever reads them: the person on `/my/welcome` and in their
+emails, HR on the New joiners board. `label` is only the fallback for an item
+the list no longer has (a paper a company later took off its list).
 """
 import logging
 
@@ -43,6 +50,26 @@ DETAILS_STEP = 'pb_onboarding.step_rize_data'
 #: The tax kinds a new person may be asked for (pb_me_tax KINDS_BY_COUNTRY).
 TAX_KEYS = ('tax_number', 'tax_status', 'tax_regime', 'tax_fund')
 
+#: Which of an item's words a row is asked by (P5a):
+#:   item    the row's own words ("KTP (identity card) and number")
+#:   card    a card whose number HR typed: the card only ("KTP (identity card)")
+#:   number  a card that came across from Hiring: its number only
+LABEL_KINDS = [('item', 'The item'), ('card', 'The card only'), ('number', 'The number only')]
+
+#: The context key `_detail_items` reads to skip what labels do not need.
+LABELS_CTX = 'pb_nh_labels_only'
+
+
+def item_label(item, kind):
+    """The words of one step 5 item for a row asked by `kind`."""
+    if not item:
+        return ''
+    if kind == 'card' and item.get('upload'):
+        return item['upload'].get('label') or item['label']
+    if kind == 'number' and item.get('fields'):
+        return item['fields'][0].get('label') or item['label']
+    return item.get('label') or ''
+
 
 class PbNewHireAsk(models.Model):
     _name = 'pb.new.hire.ask'
@@ -51,7 +78,9 @@ class PbNewHireAsk(models.Model):
 
     employee_id = fields.Many2one('hr.employee', required=True, ondelete='cascade', index=True)
     key = fields.Char(required=True)
-    label = fields.Char(required=True)
+    label = fields.Char(required=True, help='The words when the row was made: shown only when '
+                                            'the item is no longer on the list.')
+    label_kind = fields.Selection(LABEL_KINDS, default='item', required=True)
     need = fields.Selection([('first_pay', 'Needed before first pay'),
                              ('joining', 'Asked at joining'),
                              ('optional', 'Optional')], default='optional', required=True)
@@ -178,11 +207,40 @@ class PbNewHireAsk(models.Model):
             changed.sudo().write({'state': state, 'done_on': now if state == 'done' else False})
         return True
 
+    # ================================================================ the words
+    def _labels(self):
+        """`{row id: words}` in the language of this environment (the
+        reader's), from step 5's own list for each person's country of work
+        and company — one list per (country, company), however many rows."""
+        Studio = self.env['pb.new.hire'].sudo().with_context(**{LABELS_CTX: True})
+        Paper = self.env['pb.new.hire.paper'].sudo()
+        lists = {}
+        out = {}
+        for row in self:
+            emp = row.employee_id.sudo()
+            company = row.company_id or emp.company_id or self.env.company
+            code = emp.payroll_country or ''
+            if (code, company.id) not in lists:
+                try:
+                    items = Studio.with_company(company)._detail_items(code, '') if code else []
+                except Exception:               # noqa: BLE001 — words, never a crash
+                    _logger.warning('new hire: step 5 list for %s unreadable', code, exc_info=True)
+                    items = []
+                lists[(code, company.id)] = {i['key']: i for i in items}
+            words = item_label(lists[(code, company.id)].get(row.key), row.label_kind)
+            if not words and row.category_id:
+                words = Paper.plain_name(row.category_id)
+            out[row.id] = words or row.label
+        return out
+
     # ================================================================ the reader
     @api.model
-    def _shape(self, rows):
-        items = [{'key': r.key, 'label': r.label, 'state': r.state, 'need': r.need,
-                  'url': r.url or ''} for r in rows]
+    def _shape(self, rows, words=None):
+        """`words`: `{row id: words}` already worked out for a whole page of
+        people (`summaries`); else worked out here."""
+        words = rows._labels() if words is None else words
+        items = [{'key': r.key, 'label': words.get(r.id) or r.label, 'state': r.state,
+                  'need': r.need, 'url': r.url or ''} for r in rows]
         count = {s: sum(1 for i in items if i['state'] == s) for s, _l in STATES}
         return {'total': len(items), 'done': count['done'], 'waiting': count['waiting'],
                 'open': count['open'], 'items': items}
@@ -193,10 +251,11 @@ class PbNewHireAsk(models.Model):
         employees = employees.sudo()
         rows = self.sudo().search([('employee_id', 'in', employees.ids)])
         rows.refresh()
+        words = rows._labels()                  # one list per country, for the whole page
         out = {}
         for employee in employees:
             mine = rows.filtered(lambda r: r.employee_id == employee)
-            out[employee.id] = self._shape(mine)
+            out[employee.id] = self._shape(mine, words)
             if mine and not out[employee.id]['open'] and not out[employee.id]['waiting']:
                 self._tick_details_step(employee)
         return out

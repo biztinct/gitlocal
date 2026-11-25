@@ -207,6 +207,8 @@ class PbNewHireLegsDocs(models.AbstractModel):
             rows |= Ask.create({
                 'employee_id': employee.id, 'key': str(ask['key'])[:64],
                 'label': str(ask.get('label') or ask['key'])[:200],
+                'label_kind': ask.get('kind') if ask.get('kind') in ('item', 'card', 'number')
+                else 'item',
                 'need': ask.get('need') if ask.get('need') in ('first_pay', 'joining', 'optional')
                 else 'optional',
                 'url': str(ask.get('url') or '')[:200], 'sequence': _int(ask.get('sequence')) or 10,

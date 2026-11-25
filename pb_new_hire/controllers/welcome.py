@@ -8,7 +8,7 @@ sees what THEY were asked. Nothing here writes; every card is a link to the
 existing My Payobook page that collects that thing (its own form, approval,
 masks and file checks). No asks at all → the home.
 """
-from odoo import http
+from odoo import _, http
 from odoo.http import request
 
 from odoo.addons.pb_me_portal.controllers.portal import PbMePortal
@@ -25,4 +25,7 @@ class PbNewHireWelcomePortal(PbMePortal):
         if not values:
             return request.redirect('/my')
         values['page_name'] = 'my_welcome'
+        # P5a: the browser tab's title in the reader's language (the website
+        # layout would otherwise print the template's own name)
+        values['additional_title'] = _("Your joining details")
         return request.render('pb_new_hire.portal_my_welcome', values)

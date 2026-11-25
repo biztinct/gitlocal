@@ -11,6 +11,10 @@
          message is queued with no document attached (so it is on nobody's
          chatter) and deleted once sent.
 
+         P5a: written in the person's language (`ctx['pb_nh_lang']`: their
+         sign-in's, else the employee record's); the items' words come in
+         that language too.
+
          Plain words, the company's own name, no product vendor name. The
          outgoing-email debranding applies to it like any other mail. -->
     <record id="mail_template_welcome" model="mail.template">
@@ -18,7 +22,7 @@
         <field name="model_id" ref="hr.model_hr_employee"/>
         <field name="email_from">{{ (object.company_id.email_formatted or user.email_formatted) }}</field>
         <field name="subject">Welcome to {{ object.company_id.name }} — a few things before {{ ctx.get('pb_nh_day') and format_date(ctx.get('pb_nh_day'), date_format='EEEE d MMMM') or '' }}</field>
-        <field name="lang">{{ object.lang or '' }}</field>
+        <field name="lang">{{ ctx.get('pb_nh_lang') or object.lang or '' }}</field>
         <field name="auto_delete" eval="True"/>
         <field name="body_html" type="html">
 <div style="margin:0;padding:0;font-family:Inter,Arial,sans-serif;color:#1f2430;font-size:15px;line-height:1.5;max-width:560px">

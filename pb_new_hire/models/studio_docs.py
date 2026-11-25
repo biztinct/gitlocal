@@ -147,6 +147,8 @@ class PbNewHireDocs(models.AbstractModel):
     def _bank_options(self, code):
         """The banks the bank check knows, this country's first (the old
         window's own list; typing another bank is fine)."""
+        if self.env.context.get('pb_nh_labels_only'):
+            return []                           # the words of an ask need no bank list
         try:
             banks = self.env['pb.people.onboard.wizard']._pb_bank_choices()
         except Exception:                       # noqa: BLE001 — a list, never a gate
@@ -610,7 +612,8 @@ class PbNewHireDocs(models.AbstractModel):
                     details[field['name']] = clean
                     shown.append([field['label'],
                                   mask(clean) if field['name'] in SECRET_FIELDS else clean])
-                asks.append({'key': key, 'label': item['upload']['label'], 'need': item['need'],
+                asks.append({'key': key, 'label': item['upload']['label'], 'kind': 'card',
+                             'need': item['need'],
                              'url': item['card_url'] or item['ask_url'], 'sequence': (n + 1) * 10,
                              'category_id': item['category_id'] or False})
                 continue
@@ -639,7 +642,7 @@ class PbNewHireDocs(models.AbstractModel):
                     papers.append({'key': key, 'label': item['upload']['label'],
                                    'category_id': item['upload']['category_id']})
             elif choice == 'ask':
-                asks.append({'key': key, 'label': item['label'], 'need': item['need'],
+                asks.append({'key': key, 'label': item['label'], 'kind': 'item', 'need': item['need'],
                              'url': item['ask_url'], 'sequence': (n + 1) * 10,
                              'category_id': item['category_id'] or False})
             elif choice == 'later':
