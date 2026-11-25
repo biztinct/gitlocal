@@ -496,21 +496,42 @@ class PbSchemeMap(models.AbstractModel):
         them; for an employee of the team who has neither, the answer equals
         `resolve(employee)`. Never raises.
         """
-        company_id = self._as_company_id(company_id)
         dept_id = int(department_id or 0)
+        return self.resolve_for_teams([dept_id], company_id, cycle_type,
+                                      on_date).get(dept_id) or self._blank()
+
+    @api.model
+    def resolve_for_teams(self, department_ids, company_id=None,
+                          cycle_type='any', on_date=None):
+        """`{department_id: {config_id, config_name, rung, via}}` — the answer
+        of `resolve_for_team` for several teams at once, with the map, the
+        team tree, the divisions and the only-scheme lookup read ONCE
+        (NEWHIRE P7: the Add employee screen sorts every team by country).
+        Same rungs, same order. Never raises."""
+        company_id = self._as_company_id(company_id)
+        dept_ids = [int(d or 0) for d in (department_ids or [])]
         chains, _meta = self._chains([company_id])
-        chain = chains.get(dept_id) or ([dept_id] if dept_id else [])
         rows = self._map_rows([company_id], on_date)
         by_department = self._by_department(rows)
-        names = self._department_names(set(chain) | set(by_department))
-        found = self._rung_department(chain, by_department, names, cycle_type)
-        if not found:
-            found = self._rung_division(
-                chain, self._division_of_department(on_date),
-                self._by_division(rows), cycle_type)
-        if not found:
-            found = self._rung_only(company_id, cycle_type)
-        return found or self._blank()
+        team_chains = {d: chains.get(d) or ([d] if d else []) for d in dept_ids}
+        every = set(by_department)
+        for chain in team_chains.values():
+            every |= set(chain)
+        names = self._department_names(every)
+        division_of = by_division = None
+        only_cache = {}
+        out = {}
+        for dept_id, chain in team_chains.items():
+            found = self._rung_department(chain, by_department, names, cycle_type)
+            if not found:
+                if division_of is None:
+                    division_of = self._division_of_department(on_date)
+                    by_division = self._by_division(rows)
+                found = self._rung_division(chain, division_of, by_division, cycle_type)
+            if not found:
+                found = self._rung_only(company_id, cycle_type, only_cache)
+            out[dept_id] = found or self._blank()
+        return out
 
     # ============================================================== coverage
     @api.model
