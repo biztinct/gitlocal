@@ -24,18 +24,19 @@ import { router } from "@web/core/browser/router";
 import { useSetupAction } from "@web/search/action_hook";
 import { HubBackChip, hubBack, goBack } from "@pb_hub/js/hub_nav";
 import { MODEL, ACTION_XMLID, icon, errorText, isAccessError, firstName, fmtDay, money, deepClone,
-         weekNameOf, siteNameOf, ownMissingOf } from "./studio_util";
+         weekNameOf, siteNameOf, ownMissingOf, docGapsOf, docTallyOf, docItemsOf, docChoiceOf } from "./studio_util";
 import { StepWho } from "./step_who";
 import { StepRole } from "./step_role";
 import { StepPay } from "./step_pay";
 import { StepSoon } from "./step_soon";
 import { StepSched } from "./step_sched";
 import { StepWelcome } from "./step_welcome";
+import { StepDocs } from "./step_docs";
 import { StepCheck } from "./step_check";
 import { RecordPanel } from "./record_panel";
 
 const STEP_KEYS = ["who", "role", "pay", "sched", "docs", "welcome", "check"];
-const SOON = ["docs"];
+const SOON = [];
 const TOAST_MS = 7000;
 const EMPLOYEES = { label: _t("People"), xmlid: "pb_people_hub.action_pb_people_hub", lens: "employees", context: {} };
 const JOINERS_XMLID = "pb_onboarding.action_pb_onboarding_board";
@@ -60,6 +61,11 @@ const P2_KEYS = {
     letter: [true, (d) => d.letter !== false],
     open_case: [true, (d) => d.open_case !== false],
     own: [{}, (d) => ({ ...(d.own || {}) })],
+    // P3a — step 5: the answer per item, what was typed, and the names and
+    // dates of the files (their content lives in `nh.files`, memory only)
+    items: [{}, (d) => ({ ...(d.items || {}) })],
+    have: [{}, (d) => ({ ...(d.have || {}) })],
+    file_meta: [{}, null],
 };
 /** Changing one of these re-builds step 6's options and its timeline. */
 const WELCOME_INPUTS = ["name", "date_start", "work_email", "department_id", "payroll_country", "parent_id",
@@ -91,7 +97,7 @@ function blankDraft(today) {
 
 export class NewHireStudio extends Component {
     static template = "pb_new_hire.Studio";
-    static components = { HubBackChip, StepWho, StepRole, StepPay, StepSoon, StepSched, StepWelcome, StepCheck, RecordPanel };
+    static components = { HubBackChip, StepWho, StepRole, StepPay, StepSoon, StepSched, StepDocs, StepWelcome, StepCheck, RecordPanel };
     static props = { "*": true };
 
     setup() {
@@ -119,6 +125,8 @@ export class NewHireStudio extends Component {
             sched: null,        // step 4: schedule_options()
             clockCheck: null,   // step 4: check_clock()
             welcome: null,      // step 6: welcome_options() (and its timeline)
+            docs: null,         // step 5: details_options()
+            files: {},          // step 5: {item key: {name, mime, size, data}} — memory only
             sending: false, result: null, refusal: null,
             dialog: null, toast: null,
         });
@@ -140,6 +148,14 @@ export class NewHireStudio extends Component {
             initEquipment: () => this.initEquipment(),
             openWorkforceSetup: () => this.openWorkforceSetup(),
             seeJoiners: () => this.seeJoiners(),
+            orm: this.orm,
+            setChoice: (key, choice) => this.setChoices({ [key]: choice }),
+            setChoices: (map) => this.setChoices(map),
+            setHave: (name, value) => this.setHave(name, value),
+            setFile: (key, file) => this.setFile(key, file),
+            setFileDate: (key, which, value) => this.setFileDate(key, which, value),
+            refreshDocs: () => this.refreshDocs(),
+            refreshDecides: () => this.refreshDecides(),
             send: () => this.send(),
             withdraw: () => this.withdraw(),
             again: () => this.again(),
@@ -156,6 +172,7 @@ export class NewHireStudio extends Component {
             get jobName() { return studio.jobName; },
             get countryName() { return studio.countryName; },
             get scaleFound() { return studio.scaleFound; },
+            get sendFiles() { return studio.sendFiles; },
         };
         if (asked) {
             this.props.updateActionState?.({ step: this.nh.step });
@@ -294,6 +311,7 @@ export class NewHireStudio extends Component {
             this.refreshCats();
             this.refreshSched();
             this.checkClock();
+            this.refreshDocs();
         } catch (e) {
             if (isAccessError(e)) {
                 nh.denied = errorText(e);
@@ -382,6 +400,7 @@ export class NewHireStudio extends Component {
         }
         this.refreshCats();
         this.refreshSched();
+        this.refreshDocs();
     }
 
     /** The org chart's role, in words, for the "carry on?" question. */
@@ -457,6 +476,76 @@ export class NewHireStudio extends Component {
             });
         });
     }
+
+    /** P3a: step 5's list for the country of work. */
+    refreshDocs() {
+        const d = this.nh.draft;
+        if (!d.payroll_country) {
+            this.nh.docs = null;
+            return;
+        }
+        this.later("docs", 150, () => this.ask("docs", "details_options",
+            [{ payroll_country: d.payroll_country, name: d.name || "" }], (res) => {
+                if (res) {
+                    this.nh.docs = res;
+                }
+            }));
+    }
+    setChoices(map) {
+        const items = { ...(this.nh.draft.items || {}) };
+        for (const [key, choice] of Object.entries(map)) {
+            items[key] = choice;
+            delete this.nh.fieldErr[`doc-${key}`];
+        }
+        this.patch({ items });
+    }
+    setHave(name, value) {
+        const have = { ...(this.nh.draft.have || {}) };
+        if (value === "" || value === null || value === undefined) {
+            delete have[name];
+        } else {
+            have[name] = value;
+        }
+        delete this.nh.fieldErr[`have-${name}`];
+        this.patch({ have });
+    }
+    setFile(key, file) {
+        const nh = this.nh;
+        const meta = { ...(nh.draft.file_meta || {}) };
+        if (file) {
+            nh.files[key] = file;
+            meta[key] = { ...(meta[key] || {}), name: file.name, size: file.size };
+        } else {
+            // the dates typed for the paper stay; only the file goes
+            delete nh.files[key];
+            const { name, size, ...dates } = meta[key] || {};
+            meta[key] = dates;
+        }
+        delete nh.fieldErr[`file-${key}`];
+        this.patch({ file_meta: meta });
+    }
+    setFileDate(key, which, value) {
+        const meta = { ...(this.nh.draft.file_meta || {}) };
+        meta[key] = { ...(meta[key] || {}), [which]: value || "" };
+        delete this.nh.fieldErr[`file-${key}`];
+        this.patch({ file_meta: meta });
+    }
+    /** The files of rows answered "I have it", as `send` takes them. */
+    get sendFiles() {
+        const nh = this.nh;
+        const out = [];
+        for (const item of docItemsOf(nh)) {
+            const f = nh.files[item.key];
+            if (!item.upload || !f || docChoiceOf(nh, item) !== "have") {
+                continue;
+            }
+            const meta = (nh.draft.file_meta || {})[item.key] || {};
+            out.push({ key: item.key, name: f.name, mime: f.mime, data: f.data,
+                       issue_date: meta.issue_date || false, expiry_date: meta.expiry_date || false });
+        }
+        return out;
+    }
+    get docGaps() { return docGapsOf(this.nh); }
 
     checkClock() {
         const d = this.nh.draft;
@@ -622,6 +711,9 @@ export class NewHireStudio extends Component {
         if (has("department_id", "payroll_country", "date_start", "name")) {
             this.refreshSched();
         }
+        if (has("payroll_country", "name")) {
+            this.refreshDocs();
+        }
         if (has("clock_on", "clock_code")) {
             this.checkClock();
         }
@@ -736,7 +828,7 @@ export class NewHireStudio extends Component {
     }
     get ready() { return this.whoReady && this.roleReady && this.payReady; }
     /** P2: required own fields block Send (not "Skip to the end"). */
-    get sendable() { return this.ready && !this.ownMissing.length; }
+    get sendable() { return this.ready && !this.ownMissing.length && !this.docGaps.length; }
 
     status(key) {
         const nh = this.nh;
@@ -769,6 +861,22 @@ export class NewHireStudio extends Component {
             }
             const text = this.weekName || _t("Company's usual hours");
             return nh.seen.sched ? { state: "done", text } : { state: "todo", text: _t("Team defaults are ready") };
+        }
+        if (key === "docs") {
+            if (!d.payroll_country) {
+                return { state: "todo", text: _t("Needs the country of work") };
+            }
+            if (!nh.docs) {
+                return { state: "todo", text: _t("Working it out") };
+            }
+            const gaps = this.docGaps;
+            if (gaps.length) {
+                return { state: "warn", text: gaps.length === 1 ? _t("Finish: %s", gaps[0].label)
+                    : _t("%s rows to finish", gaps.length) };
+            }
+            const t = docTallyOf(nh);
+            const text = _t("%(ask)s for %(first)s, %(have)s with you", { ask: t.ask, first: this.first, have: t.have });
+            return nh.seen.docs ? { state: "done", text } : { state: "todo", text };
         }
         if (key === "welcome") {
             const missing = this.ownMissing.length;
@@ -939,7 +1047,7 @@ export class NewHireStudio extends Component {
         nh.sending = true;
         nh.refusal = null;
         try {
-            const res = await this.orm.call(MODEL, "send", [this.sendDraft]);
+            const res = await this.orm.call(MODEL, "send", [this.sendDraft, this.sendFiles]);
             if (res && res.ok === false) {
                 nh.refusal = res;
                 if (res.field) {
@@ -1006,9 +1114,11 @@ export class NewHireStudio extends Component {
         nh.usual = { configId: 0, rows: null, busy: false };
         nh.welcome = null;
         nh.clockCheck = null;
+        nh.files = {};
         nh.draft = Object.assign(blankDraft(nh.data.today), { payroll_country: nh.data.draft.payroll_country || "" });
         this.refreshCats();
         this.refreshSched();
+        this.refreshDocs();
         if (fromToast) {
             this.closeToast();
         }

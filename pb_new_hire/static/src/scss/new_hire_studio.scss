@@ -367,6 +367,76 @@
     .pbnh-ev-what small { color: var(--pbnh-muted); display: block; font-size: 12px; overflow-wrap: anywhere; }
     .pbnh-ev-who { color: var(--pbnh-ink); font-weight: 500; }
 
+
+    // ------------------------------------------------ step 5: details and documents (P3a)
+    .pbnh-presets { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pbnh-doc { transition: background .2s; }
+    .pbnh-doc .pbnh-seg button { white-space: nowrap; }
+    .pbnh-doc.is-have { background: color-mix(in srgb, var(--pbnh-p-soft) 30%, white); }
+    .pbnh-doc.is-gap .pbnh-doc-sub { color: var(--pbnh-warn); }
+    .pbnh-doc.is-again .pbnh-tile { background: var(--pbnh-warn-soft); color: var(--pbnh-warn); }
+    .pbnh-doc-sub { animation: pbnh-fade .2s; }
+    .pbnh-doc > .pbnh-ferr { flex-basis: 100%; padding-left: 46px; }
+    // the row opens to its own little form: a height animation that keeps
+    // the closed form out of the Tab order (`inert`)
+    .pbnh-doc-x { flex-basis: 100%; display: grid; grid-template-rows: 0fr; transition: grid-template-rows .24s ease-out, opacity .2s; opacity: 0; }
+    .pbnh-doc-x.is-open { grid-template-rows: 1fr; opacity: 1; }
+    .pbnh-doc-in { overflow: hidden; min-height: 0; padding-left: 46px; display: flex; flex-direction: column; gap: 10px; }
+    .pbnh-doc-x.is-open .pbnh-doc-in { padding-top: 4px; padding-bottom: 2px; }
+    .pbnh-drop {
+        display: flex; gap: 12px; align-items: center; width: 100%; text-align: left; border: 1.5px dashed var(--pbnh-p-light);
+        background: var(--pbnh-soft); border-radius: 12px; padding: 12px 14px; color: var(--pbnh-p-dark);
+        transition: border-color .15s, background .15s, transform .15s;
+    }
+    .pbnh-drop:hover, .pbnh-drop.is-over { border-color: var(--pbnh-p); background: var(--pbnh-p-soft); }
+    .pbnh-drop.is-over { transform: scale(1.01); }
+    .pbnh-drop.is-bad { border-color: var(--pbnh-warn); background: var(--pbnh-warn-soft); color: #7A3A06; }
+    .pbnh-drop > svg { color: var(--pbnh-p); }
+    .pbnh-drop b { display: block; font-weight: 600; font-size: 13.5px; }
+    .pbnh-drop small { display: block; color: var(--pbnh-muted); font-size: 12px; }
+    .pbnh-file {
+        display: flex; gap: 10px; align-items: center; border: 1px solid var(--pbnh-ok); background: var(--pbnh-ok-soft);
+        border-radius: 12px; padding: 9px 10px 9px 12px; animation: pbnh-land .25s ease-out;
+    }
+    .pbnh-file-ic { color: var(--pbnh-ok); display: grid; place-items: center; }
+    .pbnh-file-t { flex: 1; min-width: 0; }
+    .pbnh-file-t b { display: block; font-weight: 600; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pbnh-file-t small { color: var(--pbnh-muted); font-size: 12px; }
+    .pbnh-file-x { border: 0; background: transparent; color: var(--pbnh-muted); border-radius: 8px; padding: 6px; display: grid; place-items: center; }
+    .pbnh-file-x:hover { background: rgba(0, 0, 0, .06); color: var(--pbnh-ink); }
+    .pbnh-file-dates { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+    .pbnh-asksum { display: flex; gap: 14px; align-items: flex-start; }
+    .pbnh-asksum h3 { animation: pbnh-land .25s ease-out; }
+    .pbnh-asklist { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+    .pbnh-ready .is-p { color: var(--pbnh-teal); }
+    .pbnh-split { display: flex; height: 8px; border-radius: 9px; overflow: hidden; background: var(--pbnh-line2); }
+    .pbnh-split i { display: block; transition: flex .35s ease-out; }
+    .pbnh-split .is-you, .pbnh-splitl .is-you { background: var(--pbnh-p); }
+    .pbnh-split .is-them, .pbnh-splitl .is-them { background: var(--pbnh-teal); }
+    .pbnh-split .is-other, .pbnh-splitl .is-other { background: #E59A2F; }
+    .pbnh-splitl { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12.5px; color: var(--pbnh-muted); margin-top: 6px; }
+    .pbnh-splitl i { display: inline-block; width: 9px; height: 9px; border-radius: 3px; margin-right: 5px; }
+
+    // the papers editor (480 px slide-over, cloned from the Workforce setup studio)
+    .pbnh-scrim.pbnh-scrim--side { display: flex; justify-content: flex-end; place-items: initial; padding: 0; }
+    .pbnh-dr {
+        width: unquote("min(480px, 100%)"); background: var(--pbnh-card); height: 100%; display: flex; flex-direction: column;
+        animation: pbnh-slide .22s ease-out; box-shadow: -12px 0 40px rgba(16, 18, 46, .18); outline: none;
+    }
+    .pbnh-dr-h { padding: 18px 20px 12px; display: flex; gap: 10px; align-items: flex-start; border-bottom: 1px solid var(--pbnh-line2); }
+    .pbnh-dr-ht { flex: 1; min-width: 0; }
+    .pbnh-dr-h h2 { font-size: 20px; font-weight: 800; }
+    .pbnh-dr-h p { color: var(--pbnh-muted); font-size: 13px; margin-top: 2px; }
+    .pbnh-dr-body { padding: 18px 20px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 16px; }
+    .pbnh-dr-f { padding: 14px 20px; border-top: 1px solid var(--pbnh-line2); display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+    .pbnh-ed-rows { display: flex; flex-direction: column; gap: 10px; }
+    .pbnh-ed-row { border: 1px solid var(--pbnh-line); border-radius: 12px; padding: 11px 13px; display: flex; flex-direction: column; gap: 8px; transition: border-color .15s, background .15s; }
+    .pbnh-ed-row.is-changed { border-color: var(--pbnh-p-light); background: color-mix(in srgb, var(--pbnh-p-soft) 40%, white); }
+    .pbnh-ed-top b { display: block; font-weight: 600; }
+    .pbnh-ed-top small { color: var(--pbnh-muted); font-size: 12px; }
+    .pbnh-ed-row .pbnh-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+    .pbnh-ed-add { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+
     // ------------------------------------------------ the done card's welcome legs (P2)
     .pbnh-legs { display: flex; flex-direction: column; gap: 6px; width: 100%; max-width: 560px; text-align: left; margin-top: 4px; }
     .pbnh-leg { display: flex; gap: 8px; align-items: flex-start; border-radius: 10px; padding: 9px 12px; font-size: 13px; animation: pbnh-rise .25s ease-out both; }
@@ -518,6 +588,9 @@
         .pbnh-why-not, .pbnh-clock-msg { padding-left: 0; }
         .pbnh-why-not > div { flex-wrap: wrap; }
         .pbnh-wk > div { font-size: 10.5px; }
+        .pbnh-doc-in, .pbnh-doc > .pbnh-ferr { padding-left: 0; }
+        .pbnh-doc .pbnh-seg { width: 100%; }
+        .pbnh-presets { width: 100%; }
     }
     @media (prefers-reduced-motion: reduce) {
         *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -531,4 +604,5 @@
 @keyframes pbnh-turn { to { transform: rotate(360deg); } }
 @keyframes pbnh-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
 @keyframes pbnh-pop { from { transform: scale(.3); } to { transform: scale(1); } }
+@keyframes pbnh-slide { from { transform: translateX(24px); opacity: .4; } to { transform: none; opacity: 1; } }
 @keyframes pbnh-toast-in { from { transform: translate(-50%, 10px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }

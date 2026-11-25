@@ -174,6 +174,76 @@ export function ownMissingOf(nh) {
         });
 }
 
+/**
+ * P3a — step 5's shared answers (plain functions over the caller's own `nh`,
+ * NH27). The list itself is the server's (`details_options`); these only
+ * read the choices and what was typed.
+ */
+export const DOC_CHOICES = ["ask", "have", "skip", "later"];
+export const FILE_MIMES = ["image/png", "image/jpeg", "application/pdf"];
+export const FILE_MAX = 10 * 1024 * 1024;
+export const FILES_MAX = 50 * 1024 * 1024;
+
+export function docItemsOf(nh) {
+    return (nh.docs && nh.docs.items) || [];
+}
+export function docChoiceOf(nh, item) {
+    const c = (nh.draft.items || {})[item.key];
+    if (!DOC_CHOICES.includes(c) || (c === "ask" && !item.can_ask) || (c === "later" && item.can_ask)
+            || (c === "skip" && !item.can_skip) || (c === "have" && !item.can_have)) {
+        return item.default;
+    }
+    return c;
+}
+function isEmail(text) {
+    return String(text || "").includes("@");
+}
+/** A typed value; the personal phone of step 1 is the one source for it. */
+export function haveValueOf(nh, name) {
+    const have = nh.draft.have || {};
+    if (name === "private_phone" && have[name] === undefined && nh.draft.personal && !isEmail(nh.draft.personal)) {
+        return nh.draft.personal;
+    }
+    return have[name];
+}
+function blank(v) {
+    return v === undefined || v === null || v === false || String(v).trim() === "";
+}
+/** What an "I have it" row still lacks: "" | "fields" | "file" | "again" | "expiry". */
+export function docGapOf(nh, item) {
+    if (docChoiceOf(nh, item) !== "have") {
+        return "";
+    }
+    const fields = item.fields.filter((f) => !(item.key === "bank" && f.name === "account_holder"));
+    const required = fields.filter((f) => f.required);
+    if (required.some((f) => blank(haveValueOf(nh, f.name)))) {
+        return "fields";
+    }
+    if (!required.length && !item.upload && fields.length && fields.every((f) => blank(haveValueOf(nh, f.name)))) {
+        return "fields";
+    }
+    if (item.upload) {
+        const meta = (nh.draft.file_meta || {})[item.key];
+        if (!(nh.files || {})[item.key]) {
+            return meta && meta.name ? "again" : "file";
+        }
+        if (item.upload.needs_expiry && !(meta && meta.expiry_date)) {
+            return "expiry";
+        }
+    }
+    return "";
+}
+export function docGapsOf(nh) {
+    return docItemsOf(nh).filter((i) => docGapOf(nh, i));
+}
+export function docTallyOf(nh) {
+    const out = { ask: 0, have: 0, skip: 0, later: 0 };
+    for (const item of docItemsOf(nh)) {
+        out[docChoiceOf(nh, item)] += 1;
+    }
+    return out;
+}
+
 export function deepClone(value) {
     return JSON.parse(JSON.stringify(value));
 }

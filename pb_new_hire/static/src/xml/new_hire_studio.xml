@@ -104,6 +104,7 @@
         <StepRole t-elif="nh.step === 'role'" api="api"/>
         <StepPay t-elif="nh.step === 'pay'" api="api"/>
         <StepSched t-elif="nh.step === 'sched'" api="api"/>
+        <StepDocs t-elif="nh.step === 'docs'" api="api"/>
         <StepWelcome t-elif="nh.step === 'welcome'" api="api"/>
         <StepCheck t-elif="nh.step === 'check'" api="api"/>
         <StepSoon t-else="" api="api" stepKey="nh.step"/>
@@ -330,6 +331,11 @@
           <span><t t-out="icon('fileText', 13)"/>Contract letter</span>
           <b t-key="letterTile.value" t-esc="letterTile.value"/>
           <small t-if="letterTile.sub" t-esc="letterTile.sub"/>
+        </div>
+        <div t-att-class="'pbnh-dec ' + papersTile.cls">
+          <span><t t-out="icon('fileCheck', 13)"/>Papers needed</span>
+          <b t-key="papersTile.value" t-esc="papersTile.value"/>
+          <small t-if="papersTile.sub" t-esc="papersTile.sub"/>
         </div>
       </div>
       <div t-if="problem" class="pbnh-hint pbnh-hint--warn" role="status">
@@ -597,6 +603,191 @@
   </div>
 </t>
 
+<!-- ============================================================ step 5 (P3a) -->
+<t t-name="pb_new_hire.Drawer">
+  <div class="pbnh-scrim pbnh-scrim--side" t-on-click="onScrim">
+    <div class="pbnh-dr" role="dialog" aria-modal="true" t-att-aria-labelledby="titleId" tabindex="-1" t-ref="panel" t-on-keydown="onKey">
+      <header class="pbnh-dr-h">
+        <div class="pbnh-dr-ht">
+          <h2 t-att-id="titleId" t-esc="props.title"/>
+          <p t-if="props.subtitle" t-esc="props.subtitle"/>
+        </div>
+        <button type="button" class="pbnh-btn pbnh-btn--sm pbnh-btn--ghost" aria-label="Close" title="Close (Esc)" t-on-click="() => this.props.onClose()"><t t-out="icon('x', 16)"/></button>
+      </header>
+      <div class="pbnh-dr-body"><t t-slot="default"/></div>
+      <footer class="pbnh-dr-f"><t t-slot="footer"/></footer>
+    </div>
+  </div>
+</t>
+
+<t t-name="pb_new_hire.DocRow">
+  <div t-att-class="rowClass(item)" t-att-data-row="item.key">
+    <span class="pbnh-tile" t-out="icon(item.icon, 17)"/>
+    <div class="pbnh-row-t">
+      <b t-esc="item.label"/>
+      <small t-key="choice(item)" class="pbnh-doc-sub" t-esc="rowSub(item)"/>
+    </div>
+    <span t-att-class="'pbnh-chip ' + needChip(item).cls" t-esc="needChip(item).text"/>
+    <div class="pbnh-seg" role="radiogroup" tabindex="-1" t-att-aria-label="item.label" t-att-id="'pbnh-f-doc-' + item.key" t-on-keydown="(ev) => this.onSegKey(ev, item)">
+      <button t-foreach="options(item)" t-as="opt" t-key="opt.key" type="button" role="radio"
+              t-att-aria-checked="choice(item) === opt.key ? 'true' : 'false'" t-att-aria-disabled="opt.on ? 'false' : 'true'"
+              t-att-tabindex="tabIndex(item, opt)" t-att-title="opt.why or ''" t-att-class="optClass(item, opt)"
+              t-on-click="() => this.setChoice(item, opt)" t-esc="opt.label"/>
+    </div>
+    <t t-call="pb_new_hire.FieldErr"><t t-set="msg" t-value="err('doc-' + item.key)"/></t>
+    <div t-att-class="'pbnh-doc-x' + (isOpen(item) ? ' is-open' : '')" t-att-inert="isOpen(item) ? undefined : ''">
+      <div class="pbnh-doc-in">
+        <div t-if="item.fields.length" class="pbnh-grid">
+          <t t-foreach="item.fields" t-as="f" t-key="f.name">
+            <label t-if="f.kind === 'select'" t-att-class="'pbnh-f' + (err('have-' + f.name) ? ' is-bad' : '')">
+              <span><t t-esc="f.label"/><em t-if="isRequired(item, f)"> *</em></span>
+              <select t-att-id="fid(f)" t-on-change="(ev) => this.onValue(f, ev)">
+                <option value="" t-att-selected="!value(f)">Choose</option>
+                <option t-foreach="f.options" t-as="o" t-key="o.value" t-att-value="o.value" t-att-selected="o.value === value(f)" t-esc="o.label"/>
+              </select>
+              <t t-call="pb_new_hire.FieldErr"><t t-set="msg" t-value="err('have-' + f.name)"/></t>
+            </label>
+            <label t-else="" t-att-class="'pbnh-f' + (err('have-' + f.name) ? ' is-bad' : '')">
+              <span><t t-esc="f.label"/><em t-if="isRequired(item, f)"> *</em></span>
+              <input t-att-id="fid(f)" t-att-type="inputType(f)" autocomplete="off" t-att-value="value(f)"
+                     t-att-placeholder="placeholder(item, f)" t-att-list="f.kind === 'bank' ? listId(f) : undefined"
+                     t-on-change="(ev) => this.onValue(f, ev)"/>
+              <datalist t-if="f.kind === 'bank'" t-att-id="listId(f)">
+                <option t-foreach="f.options" t-as="o" t-key="o.value" t-att-value="o.value" t-esc="o.label"/>
+              </datalist>
+              <span t-if="f.hint and !err('have-' + f.name)" class="pbnh-own-help" t-esc="f.hint"/>
+              <t t-call="pb_new_hire.FieldErr"><t t-set="msg" t-value="err('have-' + f.name)"/></t>
+            </label>
+          </t>
+        </div>
+        <t t-if="item.upload">
+          <div t-if="file(item)" class="pbnh-file">
+            <span class="pbnh-file-ic" t-out="icon('fileCheck', 18)"/>
+            <span class="pbnh-file-t"><b t-esc="file(item).name"/><small t-esc="size(file(item).size)"/></span>
+            <button type="button" class="pbnh-file-x" t-att-aria-label="removeLabel(item)" t-att-title="removeLabel(item)" t-on-click="() => this.removeFile(item)"><t t-out="icon('x', 14)"/></button>
+          </div>
+          <button t-else="" type="button" t-att-id="'pbnh-f-file-' + item.key"
+                  t-att-class="'pbnh-drop' + (ui.drag === item.key ? ' is-over' : '') + (fileErr(item) or meta(item) ? ' is-bad' : '')"
+                  t-on-click="() => this.pick(item)" t-on-dragover="(ev) => this.onDragOver(item, ev)"
+                  t-on-dragleave="() => this.onDragLeave(item)" t-on-drop="(ev) => this.onDrop(item, ev)">
+            <t t-out="icon('upload', 18)"/>
+            <span><b t-esc="dropLabel(item)"/><small>PDF, JPG or PNG, up to 10 MB.</small></span>
+          </button>
+          <input type="file" class="pbnh-sr" tabindex="-1" aria-hidden="true" t-att-id="'pbnh-file-' + item.key"
+                 accept="application/pdf,image/png,image/jpeg" t-on-change="(ev) => this.onFileInput(item, ev)"/>
+          <span t-if="fileErr(item)" class="pbnh-ferr" role="alert" t-esc="fileErr(item)"/>
+          <div class="pbnh-grid pbnh-file-dates">
+            <label class="pbnh-f">
+              <span>Issued on <i>optional</i></span>
+              <input type="date" t-att-value="dateValue(item, 'issue_date')" t-on-change="(ev) => this.onDate(item, 'issue_date', ev)"/>
+            </label>
+            <label t-att-class="'pbnh-f' + (item.upload.needs_expiry and !dateValue(item, 'expiry_date') and file(item) ? ' is-bad' : '')">
+              <span><t t-esc="expiryLabel(item)"/><em t-if="item.upload.needs_expiry"> *</em></span>
+              <input type="date" t-att-id="'pbnh-f-expiry-' + item.key" t-att-value="dateValue(item, 'expiry_date')" t-on-change="(ev) => this.onDate(item, 'expiry_date', ev)"/>
+            </label>
+          </div>
+        </t>
+      </div>
+    </div>
+  </div>
+</t>
+
+<t t-name="pb_new_hire.StepDocs">
+  <div class="pbnh-step-in" t-ref="root">
+    <div class="pbnh-q">
+      <div class="pbnh-q-t">
+        <div class="pbnh-eyebrow">Step 5 of 7 · optional</div>
+        <h1 tabindex="-1" t-esc="heading"/>
+        <p t-esc="intro"/>
+      </div>
+      <div t-if="items.length" class="pbnh-presets">
+        <button type="button" class="pbnh-btn pbnh-btn--sm pbnh-btn--out" t-att-disabled="!canAskAll" t-on-click="askAll"><t t-out="icon('send', 14)"/><t t-esc="askAllLabel"/></button>
+        <button type="button" class="pbnh-btn pbnh-btn--sm" t-att-disabled="!canHaveAll" t-on-click="haveAll"><t t-out="icon('checkCheck', 14)"/>I have everything here</button>
+      </div>
+    </div>
+
+    <t t-if="!d.payroll_country">
+      <div class="pbnh-card pbnh-soon">
+        <span class="pbnh-tile pbnh-tile--big" t-out="icon('mapPin', 22)"/>
+        <div class="pbnh-col">
+          <h2>Choose the country of work first</h2>
+          <p>It decides which details and papers are needed.</p>
+          <div><button type="button" class="pbnh-btn pbnh-btn--pri" t-on-click="goRole"><t t-out="icon('back', 16)"/>Go to role and place</button></div>
+        </div>
+      </div>
+    </t>
+    <div t-elif="loading" class="pbnh-card pbnh-pad pbnh-col" aria-busy="true">
+      <span class="pbnh-skel" style="height:44px"/><span class="pbnh-skel" style="height:44px"/><span class="pbnh-skel" style="height:44px"/>
+    </div>
+    <t t-else="">
+      <div class="pbnh-card">
+        <div class="pbnh-cardh"><h3>Details</h3><span class="pbnh-sub" t-esc="detailsSub"/></div>
+        <t t-foreach="details" t-as="item" t-key="item.key"><t t-call="pb_new_hire.DocRow"/></t>
+      </div>
+      <div class="pbnh-card">
+        <div class="pbnh-cardh">
+          <div><h3 t-esc="papersTitle"/><span class="pbnh-sub">The list follows the country of work.</span></div>
+          <button t-if="editable" type="button" class="pbnh-link pbnh-doc-edit" t-on-click="openEditor"><t t-esc="editLabel"/></button>
+        </div>
+        <t t-foreach="papers" t-as="item" t-key="item.key"><t t-call="pb_new_hire.DocRow"/></t>
+        <div t-if="!papers.length" class="pbnh-row"><span class="pbnh-empty" style="flex:1">No papers are listed for this country.</span></div>
+      </div>
+      <div class="pbnh-card pbnh-pad pbnh-asksum">
+        <span class="pbnh-tile pbnh-tile--teal" t-out="icon(asked.length ? 'send' : 'checkCircle', 18)"/>
+        <div class="pbnh-col" style="gap:4px;flex:1;min-width:0">
+          <h3 t-key="asked.length" t-esc="summaryTitle"/>
+          <p class="pbnh-sub" t-esc="summaryLine"/>
+          <div t-if="asked.length" class="pbnh-asklist">
+            <span t-foreach="asked" t-as="a" t-key="a.key" class="pbnh-chip pbnh-chip--teal" t-esc="a.label"/>
+          </div>
+          <div class="pbnh-hint pbnh-hint--quiet" style="margin-top:6px"><t t-out="icon('shield', 16)"/><span class="pbnh-hint-t">The bank account still goes to a second person for approval, whoever types it.</span></div>
+        </div>
+      </div>
+    </t>
+
+    <NhDrawer t-if="ui.editor" title="editorTitle" subtitle="editorSub" onClose.bind="closeEditor">
+      <t t-set-slot="default">
+        <div class="pbnh-ed-rows">
+          <div t-foreach="ui.editor.rows" t-as="row" t-key="row.category_id" t-att-class="'pbnh-ed-row' + (changed(row) ? ' is-changed' : '')">
+            <div class="pbnh-ed-top">
+              <b t-esc="row.name"/>
+              <small t-esc="usualLine(row)"/>
+            </div>
+            <div class="pbnh-grid">
+              <label class="pbnh-f">
+                <span>Needed</span>
+                <select t-on-change="(ev) => this.setNeed(row, ev)" t-att-aria-label="row.name">
+                  <option t-foreach="ui.editor.needs" t-as="n" t-key="n.value" t-att-value="n.value" t-att-selected="n.value === row.need" t-esc="n.label"/>
+                </select>
+              </label>
+              <label class="pbnh-f">
+                <span>Called here</span>
+                <input type="text" autocomplete="off" t-att-value="row.label" t-on-change="(ev) => this.setLabel(row, ev)"/>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div t-if="ui.editor.others.length" class="pbnh-ed-add">
+          <label class="pbnh-f" style="flex:1">
+            <span>Add a paper</span>
+            <select t-on-change="(ev) => { this.ui.adding = ev.target.value; }">
+              <option value="" t-att-selected="!ui.adding">Choose a kind of paper</option>
+              <option t-foreach="ui.editor.others" t-as="o" t-key="o.category_id" t-att-value="o.category_id" t-esc="o.name"/>
+            </select>
+          </label>
+          <button type="button" class="pbnh-btn" t-att-disabled="!ui.adding" t-on-click="addRow"><t t-out="icon('plus', 15)"/>Add</button>
+        </div>
+        <div t-if="ui.editorErr" class="pbnh-hint pbnh-hint--err" role="alert"><t t-out="icon('triangleAlert', 16)"/><span class="pbnh-hint-t" t-esc="ui.editorErr"/></div>
+      </t>
+      <t t-set-slot="footer">
+        <button t-if="ui.editor.custom" type="button" class="pbnh-btn pbnh-btn--ghost" style="margin-right:auto" t-att-disabled="ui.editorBusy" t-on-click="resetEditor"><t t-out="icon('undo', 15)"/>Back to the usual list</button>
+        <button type="button" class="pbnh-btn" t-on-click="closeEditor">Cancel</button>
+        <button type="button" class="pbnh-btn pbnh-btn--pri" t-att-disabled="ui.editorBusy" t-on-click="saveEditor"><t t-out="icon('save', 15)"/>Save the list</button>
+      </t>
+    </NhDrawer>
+  </div>
+</t>
+
 <!-- ============================================================ step 6 -->
 <t t-name="pb_new_hire.StepWelcome">
   <div class="pbnh-step-in">
@@ -851,7 +1042,18 @@
       <div class="pbnh-ready">
         <div t-if="contractReady"><span class="is-y" t-out="icon('check', 15)"/><span t-esc="contractLine"/></div>
         <div t-else=""><span class="is-n" t-out="icon('clock', 15)"/><span t-esc="contractLine"/></div>
-        <div><span class="is-w" t-out="icon('shield', 15)"/><span t-esc="bankLine"/></div>
+        <div t-key="bank.text"><span t-att-class="bank.cls" t-out="icon(bank.icon, 15)"/><span t-esc="bank.text"/></div>
+      </div>
+    </div>
+    <div t-if="who">
+      <div class="pbnh-lab" style="margin-bottom:6px">Who does what</div>
+      <div class="pbnh-split" aria-hidden="true">
+        <i class="is-you" t-att-style="who.youStyle"/><i class="is-them" t-att-style="who.themStyle"/><i class="is-other" t-att-style="who.otherStyle"/>
+      </div>
+      <div class="pbnh-splitl pbnh-num">
+        <span><i class="is-you"/><t t-esc="who.youLine"/></span>
+        <span><i class="is-them"/><t t-esc="who.themLine"/></span>
+        <span><i class="is-other"/><t t-esc="who.otherLine"/></span>
       </div>
     </div>
     <div t-if="paid" t-att-class="'pbnh-pvpaid ' + paid.cls" t-key="paid.name">

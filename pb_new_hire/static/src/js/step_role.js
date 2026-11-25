@@ -195,6 +195,25 @@ export class StepRole extends Component {
         }
         return { cls: "is-set", value: _t("In %s", l.language), sub: l.name };
     }
+    /** P3a: what the country of work asks for (`pb.new.hire.paper`). */
+    get papersTile() {
+        const dec = this.dec;
+        if (!this.d.payroll_country) {
+            return { cls: "", value: _t("Choose a country first"), sub: "" };
+        }
+        if (!dec || !dec.papers) {
+            return { cls: "is-busy", value: _t("Working it out"), sub: "" };
+        }
+        const p = dec.papers;
+        if (!p.required && !p.optional) {
+            return { cls: "is-warn", value: _t("No papers listed"), sub: _t("Add them in step 5 if you need any.") };
+        }
+        return {
+            cls: "is-set",
+            value: _t("%(req)s required, %(opt)s optional", { req: p.required, opt: p.optional }),
+            sub: p.first_pay.length ? _t("Before the first pay: %s", p.first_pay.join(", ")) : "",
+        };
+    }
     get problem() { return this.dec && this.dec.problem; }
     get mismatchCountry() {
         const s = this.dec && this.dec.scheme;

@@ -12,7 +12,7 @@
  */
 import { Component, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
-import { icon, fmtDay, money, rich, weekNameOf, ownMissingOf } from "./studio_util";
+import { icon, fmtDay, money, rich, weekNameOf, ownMissingOf, docItemsOf, docChoiceOf, docGapsOf, docTallyOf } from "./studio_util";
 
 export class StepCheck extends Component {
     static template = "pb_new_hire.StepCheck";
@@ -60,8 +60,7 @@ export class StepCheck extends Component {
             out.push({ key: "pay", cls: "is-bad", icon: "alert", b: _t("The wage is missing"), s: _t("Step 3"), go: "pay", field: "wage" });
         }
         out.push(this.schedRow);
-        out.push({ key: "docs", cls: "is-soon", icon: "hourglass", b: _t("Details and documents"),
-                   s: _t("This step arrives next. Today you add them from the side panel once %s is added.", this.first), go: false });
+        out.push(this.docsRow);
         out.push(this.welcomeRow);
         return out;
     }
@@ -95,6 +94,29 @@ export class StepCheck extends Component {
         return { key: "welcome", cls: "", icon: "check", b: modes[mode] || modes.none, s: bits.join(" · "),
                  go: "welcome", field: false };
     }
+    /** P3a: step 5 in one line — who gives what. */
+    get docsRow() {
+        const items = docItemsOf(this.nh);
+        if (!items.length) {
+            return { key: "docs", cls: "is-soon", icon: "hourglass", b: _t("Details and documents"),
+                     s: _t("Choose the country of work first."), go: "docs", field: false };
+        }
+        const t = docTallyOf(this.nh);
+        const pick = (c) => items.filter((i) => docChoiceOf(this.nh, i) === c).map((i) => i.label);
+        const bits = [];
+        if (t.ask) {
+            bits.push(_t("Asked: %s", pick("ask").join(", ")));
+        }
+        if (t.have) {
+            bits.push(_t("With you: %s", pick("have").join(", ")));
+        }
+        if (t.later) {
+            bits.push(_t("Later: %s", pick("later").join(", ")));
+        }
+        return { key: "docs", cls: "", icon: "check",
+                 b: _t("%(ask)s for %(first)s, %(have)s with you", { ask: t.ask, first: this.first, have: t.have }),
+                 s: bits.join(" · ") || _t("Nothing asked for"), go: "docs", field: false };
+    }
     get siteName() {
         const s = ((this.nh.data && this.nh.data.sites) || []).find((x) => x.id === this.d.work_location_id);
         return s ? s.name : "";
@@ -123,6 +145,18 @@ export class StepCheck extends Component {
         if (clock && clock.ok === false) {
             out.push({ key: "clock", b: clock.message, s: _t("The hire is still added; only the clock number would be left out."),
                        go: "sched", field: "clock_code" });
+        }
+        for (const item of docGapsOf(this.nh)) {
+            out.push({ key: `doc-${item.key}`, b: _t("%s is not finished", item.label),
+                       s: _t("You chose I have it, so type it or attach the file, or choose another answer."),
+                       go: "docs", field: `doc-${item.key}` });
+        }
+        for (const item of docItemsOf(this.nh)) {
+            if (item.need === "first_pay" && docChoiceOf(this.nh, item) === "later") {
+                out.push({ key: `later-${item.key}`, b: _t("%s is needed before the first pay", item.label),
+                           s: _t("Nobody is asked for it. Add it on the record before the first pay run."),
+                           go: "docs", field: `doc-${item.key}` });
+            }
         }
         for (const f of ownMissingOf(this.nh)) {
             out.push({ key: `own-${f.name}`, b: _t("%s is needed", f.label),
@@ -158,9 +192,20 @@ export class StepCheck extends Component {
             out.push(rich(_t("%(when)s: %(what)s (%(who)s)."),
                           { when: e.past ? _t("Straight away") : fmtDay(e.when) }, { what: e.title, who: e.who }));
         }
-        out.push(this.approval.needs
-            ? rich(_t("Bank account: add it from the employee's side panel after approval."))
-            : rich(_t("Bank account: add it from the employee's side panel once the person is added.")));
+        const bank = docItemsOf(this.nh).find((i) => i.key === "bank");
+        const bankChoice = bank ? docChoiceOf(this.nh, bank) : "";
+        if (bankChoice === "have") {
+            out.push(rich(_t("The bank account goes to a second person for approval, as every bank change does.")));
+        } else if (bankChoice === "ask") {
+            out.push(rich(_t("%(first)s is asked for the bank account on My Payobook, and a second person approves it."), { first: this.first }));
+        } else {
+            out.push(rich(_t("Bank account: add it from the employee's side panel later.")));
+        }
+        const asks = docTallyOf(this.nh).ask;
+        if (asks) {
+            out.push(rich(_t("What %(first)s is asked for (%(n)s things) is noted on the record. The welcome message that asks for it comes in the next release."),
+                          { first: this.first, n: String(asks) }));
+        }
         return out;
     }
     /** The next three things of step 6's timeline (after the first day's own row). */
@@ -175,6 +220,9 @@ export class StepCheck extends Component {
         if (this.approval.problem) {
             return _t("This hire cannot be sent yet");
         }
+        if (this.api.ready && docGapsOf(this.nh).length) {
+            return _t("One more thing in step 5");
+        }
         if (this.api.ready && ownMissingOf(this.nh).length) {
             return _t("One more thing in step 6");
         }
@@ -186,6 +234,9 @@ export class StepCheck extends Component {
         }
         if (!this.api.ready) {
             return _t("Finish the steps marked in amber on the left, then come back.");
+        }
+        if (docGapsOf(this.nh).length) {
+            return _t("A row you have is not finished. Finish it in step 5, then send.");
         }
         if (ownMissingOf(this.nh).length) {
             return _t("Some of your own fields are required. Fill them in step 6, then send.");
@@ -200,7 +251,7 @@ export class StepCheck extends Component {
             ? _t("One last look. A second person approves every new hire, so nothing is created until they agree.")
             : _t("One last look. The person is added as soon as you press the button.");
     }
-    get canSend() { return this.api.ready && !ownMissingOf(this.nh).length && !this.approval.problem && !this.nh.sending; }
+    get canSend() { return this.api.sendable && !this.approval.problem && !this.nh.sending; }
     get refusal() { return this.nh.refusal; }
     refusalGo() {
         const r = this.refusal;
@@ -221,7 +272,7 @@ export class StepCheck extends Component {
     }
     get doneLine() {
         return this.result.applied
-            ? _t("The employee record and a running contract are ready. The bank account can be added from the side panel.")
+            ? _t("The employee record and a running contract are ready.")
             : _t("Nothing is created until the hire is approved. Then the record and the running contract are created by themselves.");
     }
     get reference() { return this.result && this.result.reference ? _t("Reference %s", this.result.reference) : ""; }
