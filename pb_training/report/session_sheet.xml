@@ -32,6 +32,11 @@
     </record>
 
     <template id="report_session_sheet">
+        <!-- Room for the company header (DOCSTUDIO PDFFIX): the PDF engine with patched Qt
+             prints it, and at this paper format's spacing it ran into the title. 52/52 is
+             the company's own A4 setting. -->
+        <t t-set="data_report_margin_top" t-value="52"/>
+        <t t-set="data_report_header_spacing" t-value="52"/>
         <t t-call="web.html_container">
             <t t-set="o" t-value="docs[:1]"/>
             <t t-call="web.external_layout">
@@ -96,6 +101,11 @@
     </record>
 
     <template id="report_session_certificate">
+        <!-- Room for the company header (DOCSTUDIO PDFFIX): the PDF engine with patched Qt
+             prints it, and at this paper format's spacing it ran into the title. 52/52 is
+             the company's own A4 setting. -->
+        <t t-set="data_report_margin_top" t-value="52"/>
+        <t t-set="data_report_header_spacing" t-value="52"/>
         <t t-call="web.html_container">
             <t t-set="o" t-value="docs[:1]"/>
             <t t-call="web.external_layout">
