@@ -245,3 +245,47 @@ TestT8Ladder (error) and TestT5CommandBar). None touches a report template.
    contributions PDFs fail with "template not found" today (pre-existing). Vietnam payslip bulk print
    now works (it failed before on the old engine).
 6. Rize payslips show the "Your logo" placeholder (no company logo set) — pre-existing.
+
+---
+
+# PDFFIX-2 (2026-11-25) — contract page count, signature never alone — LIVE x5
+
+**Fault:** after the switch the generic contract went from 1 page to 2 with the signatory block alone on
+page 2 (and the bilingual contracts had their signature tables alone on page 2 even BEFORE the switch).
+
+**Page counts, every shipped wording, payobook (pdffix/pdffix_pages_probe.py, nothing stored):**
+
+| Wording | Before the switch (old engine) | Live after the switch | Fixed |
+|---|---|---|---|
+| 13 letters / offers / certificates, en + vi | 1 | 1 | 1 (unchanged) |
+| 2-page test letter (30 paragraphs) | 2 | 2 | 2 (unchanged) |
+| Employment contract (generic) en / vi | 1 / 1 | **2 / 2, signatory alone on p2** | 1 / 1 |
+| Employment contract — Vietnam (bilingual) | 2, signatures alone on p2 | 2 | 2, last two clauses + signatures on p2 |
+| Employment contract — Indonesia (bilingual) | 2, signatures alone on p2 | 2 | 2, last clauses + signatures on p2 |
+| Real contract document (contract panel) | 1 | 2 | 1 |
+
+**Changes (`7fbe248ca`):**
+- `pb_doc_studio` 19.0.1.4.0 — `doc_common.pdf_split`: the body's last block, with its heading, plus a
+  signature table written into the wording (`pbdc-sign`) become `body_tail`; the page frame prints
+  `body_tail` and the signatory block in one `.pbds-keep { page-break-inside: avoid }` box (proved on
+  the old WebKit of the patched engine: the box moves whole to the next page). Screen preview unchanged.
+- `pb_doc_contracts` 19.0.1.1.0 — a page laid out as a contract (`pbdc-bi` / `pbdc-sign` tables) prints
+  at `data-report-dpi` 100 (the pre-switch size). **Letters keep the studio size: no shipped letter,
+  offer or certificate changed page count from the switch**, so the size was not pinned for them.
+- Tests: pb_doc_studio test_09 (keep box, last paragraph before the signatory, no dpi on a letter);
+  pb_doc_contracts test_05 (dpi 100, keep box holds the last clause table and the signature table).
+  Local: pb_doc_contracts 23, pb_doc_studio 43, pb_doc_studio_hiring 22, pb_doc_studio_me 14,
+  pb_report_pdf 21 — 0 failed. No visible string changed (no vi/id work).
+- Picture: `evidence_pdffix/r1_contracts_before_live_fixed.png` (payobook demo).
+
+**Go-live:** START 10:32 UTC; 9 refusals (signed-in activity, one lock held by another assistant);
+stop 11:18:58 → start 11:21:13, **135 s down**; backups `/odoo/backups/docstudio-pdffix-golive-20261125T1032Z/`;
+`-u` x5 exit 0, 0 ERROR lines; jobs = before x5. Verified on all five through the application: the
+table above holds on payobook, payobook_template, p0clone, rize and sudima (offers not previewable on
+the four tenants: no offer record; real contract document 1 page on payobook, p0clone, rize; sudima and
+payobook_template have no running contract). payobook.com over HTTPS as the QA login: contract 1 page,
+letter 1 page, long report 101 pages, both payslips 1 page.
+
+**Not done:** the real browser walk (Chrome MCP still held by another session's browser at 11:30 UTC);
+console not read. Contracts still print both the wording's signature table and the studio signatory
+block when the page design has "signature" on (pre-existing A2 design, not changed).
