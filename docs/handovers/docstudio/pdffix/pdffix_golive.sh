@@ -12,6 +12,7 @@
 TS=$1
 EV=/tmp/pdffix-golive-$TS
 BK=/odoo/backups/docstudio-pdffix-golive-$TS
+# PDFFIX-2: SWITCH_ENGINE=0 ships module trees only (engine already switched)
 STAGE=/tmp/deployPF
 ADD=/odoo/odoo-server/addons
 ENG=/odoo/backups/docstudio-pdffix-20261124T1020Z/engine/wkhtmltopdf-0.12.6.1-patched
@@ -89,11 +90,13 @@ for i in $(seq 1 60); do [ "$(ps -eo cmd | grep -c '[o]doo-bin -c /etc/odoo-serv
 log "service processes left: $(ps -eo cmd | grep -c '[o]doo-bin -c /etc/odoo-server.conf$')"
 for m in $MODS; do mkdir -p $ADD/$m && rsync -a --delete $STAGE/$m/ $ADD/$m/ && chown -R odoo:odoo $ADD/$m; done
 log "trees rsynced: $MODS"
+if [ "${SWITCH_ENGINE:-1}" = 1 ]; then
 install -D -m 755 $ENG $NEWBIN
 if [ "$(dpkg-divert --list /usr/bin/wkhtmltopdf | wc -l)" = 0 ]; then
   dpkg-divert --local --rename --divert /usr/bin/wkhtmltopdf.ubuntu --add /usr/bin/wkhtmltopdf >> $EV/steps.log 2>&1
 fi
 ln -sfn $NEWBIN /usr/bin/wkhtmltopdf
+fi
 log "engine: $(sudo -u odoo env PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin wkhtmltopdf --version 2>&1 | head -1); ubuntu copy $(/usr/bin/wkhtmltopdf.ubuntu --version 2>&1 | head -1)"
 FAILED=""; DONE_DBS=""
 for db in $ORDER; do
@@ -123,7 +126,7 @@ if [ -n "$FAILED" ]; then
   log "FAILED on $FAILED - previous trees, old engine, restore:$DONE_DBS $FAILED"
   for m in $MODS; do rm -rf $ADD/$m; done
   tar -C $ADD -xzf $BK/previous-trees.tgz && for m in $MODS; do chown -R odoo:odoo $ADD/$m; done
-  rm -f /usr/bin/wkhtmltopdf; dpkg-divert --local --rename --remove /usr/bin/wkhtmltopdf >> $EV/steps.log 2>&1
+  if [ "${SWITCH_ENGINE:-1}" = 1 ]; then rm -f /usr/bin/wkhtmltopdf; dpkg-divert --local --rename --remove /usr/bin/wkhtmltopdf >> $EV/steps.log 2>&1; fi
   log "engine back: $(/usr/bin/wkhtmltopdf --version 2>&1 | head -1)"
   for rdb in $DONE_DBS $FAILED; do
     sudo -u postgres dropdb --force $rdb && sudo -u postgres createdb -O odoo $rdb \

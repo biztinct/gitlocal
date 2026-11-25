@@ -303,6 +303,12 @@ class TestDocStudio(DocStudioCase):
         # ... with room above the letter for the company header (PDFFIX):
         # narrow 32 mm + 12 mm, header spacing the same
         self.assertIn('data-report-margin-top="44"', html2)
+        # PDFFIX-2: the last paragraph and the signatory print in one box;
+        # a letter keeps the studio's size (no dpi of its own)
+        self.assertIn('class="pbds-keep"', html2)
+        tail = html2[html2.index('class="pbds-keep"'):]
+        self.assertLess(tail.index('DEMO page'), tail.index('pbds-sign'))
+        self.assertNotIn('data-report-dpi', html2)
         self.assertIn('data-report-header-spacing="44"', html2)
         for margins, top in (('normal', 52), ('wide', 58)):
             self.save(self.tmpl, page=dict(self.tmpl.pbds_page, margins=margins))

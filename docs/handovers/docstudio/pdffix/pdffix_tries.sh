@@ -38,10 +38,11 @@ for w in $(seq 1 48); do
   sleep 300
 done
 [ -n "$(others_open)" ] && { echo "$(date -u +%T) gave up waiting for another deployer" >> $EV/tries.log; echo FINISHED > $EV/tries.done; exit 0; }
-note "START | -u $MODS (om_hr_payroll 19.0.1.8.7, pb_hr_payroll_formula 19.0.1.171.0, pb_hr_payroll_vietnam 19.0.1.2.6, pb_hr_fullandfinal 19.0.1.4.2, pb_training 19.0.1.14.1, pb_doc_studio 19.0.1.3.0, pb_report_pdf 19.0.1.1.0) + PDF engine switch to wkhtmltopdf 0.12.6.1 with patched Qt (dpkg-divert, Ubuntu package kept) | payobook,payobook_template,p0clone,rize,sudima | restart + per-DB upgrade | $COMMIT (origin/19.1 + DOCSTUDIO PDFFIX; also carries NEWHIRE P1's contract_fill_in refactor already on 19.1). PDFs print the company letterhead, footer and page numbers and real text; payslips unchanged in look. Backups x5 right before the stop, 15 min quiet on rize/payobook/sudima, lock /tmp/payobook-studio-deploy.lock. $ROLLBACK. ABM untouched."
+START_TEXT=${START_TEXT:-$(cat /tmp/pdffix_start.txt)}
+note "START | $START_TEXT"
 R=""
 for i in $(seq 1 $N); do
-  bash /tmp/pdffix_golive.sh $TS
+  SWITCH_ENGINE=${SWITCH_ENGINE:-1} bash /tmp/pdffix_golive.sh $TS
   R=$(cat $EV/golive.result 2>/dev/null)
   echo "$(date -u +%T) try $i: $R" >> $EV/tries.log
   case "$R" in
@@ -52,7 +53,7 @@ for i in $(seq 1 $N); do
 done
 D=$(grep -o 'downtime_seconds [0-9]*' $EV/steps.log | tail -1 | cut -d' ' -f2)
 case "$R" in
-  DONE) note "DONE | -u $MODS x5 + PDF engine patched Qt | payobook,payobook_template,p0clone,rize,sudima | $COMMIT; ${D} s down; backups /odoo/backups/docstudio-pdffix-golive-$TS/; verification follows in a NOTE line. $ROLLBACK. ABM untouched.";;
+  DONE) note "DONE | -u $MODS x5 | payobook,payobook_template,p0clone,rize,sudima | $COMMIT; ${D} s down; backups /odoo/backups/docstudio-pdffix-golive-$TS/; verification follows in a NOTE line. $ROLLBACK. ABM untouched.";;
   FAILED*) note "FAILED | $R | restored from backups, old engine and previous trees back; see $EV/steps.log | ${D} s down";;
   *) note "CALLED OFF | last result $R after $i tries; nothing changed";;
 esac
