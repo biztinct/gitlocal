@@ -38,7 +38,36 @@ def manager():
     return env['res.users'].with_context(active_test=False).search([('login', '=', LOGIN)])
 
 
-if phase == 'neutral':
+def file_row(raw):
+    """A September test case as the pay data file loader hands it to the resolver: every column under
+    its sheet-qualified heading ("Audit|Basic rate", what the scheme's columns are bound to), its plain
+    heading and its letter."""
+    out = {}
+    for r in config.rule_ids.filtered(lambda r: r.column_type == 'input'):
+        src = r.source_ids.filtered(lambda x: x.kind == 'excel')[:1]
+        if not src or r.code not in raw:
+            continue
+        key = src.key
+        out[key] = raw[r.code]
+        out[key.split('|', 1)[-1]] = raw[r.code]
+        if r.column_letter:
+            out[r.column_letter] = raw[r.code]
+    return out
+
+
+if phase == 'map':
+    Bp = env['pb.blueprint.studio']
+    by_code = {r.code: r.id for r in config.rule_ids}
+    for key, code in [('clock.paid_days', 'VNPAIDDAYS'), ('clock.ot_hours', 'VNOTHOURS'),
+                      ('clock.ot_premium_hours', 'VNPREMHOURS'), ('clock.empty', 'VNSUNDAYHOURS')]:
+        P('bind', key, Bp.bp_clock_bind(CID, key, by_code[code]).get('ok'))
+    for key in ('clock.worked_days', 'clock.paid_leave_days', 'clock.holiday_days', 'clock.paid_normal_hours',
+                'clock.actual_hours', 'clock.late_minutes', 'clock.over_limit_hours'):
+        P('bind new', key, Bp.bp_clock_bind(CID, key, 'new').get('ok'))
+    P('clock date', Bp.bp_save_settings(CID, {'pb_clock_from': '2026-11-01'}).get('ok'), config.pb_clock_from)
+    env.cr.commit()
+
+elif phase == 'neutral':
     Batch = env['hr.payroll.import.batch']
     emp_by_code = {e.barcode: e for e in env['hr.employee'].with_context(active_test=False).search([]) if e.barcode}
     batch = Batch.create({'name': 'P10b neutral probe', 'source_type': 'excel', 'formula_config_id': CID,
@@ -47,11 +76,15 @@ if phase == 'neutral':
     for s in config.sample_data_ids.filtered('active').sorted('id'):
         raw = json.loads(s.input_values_json or '{}')
         emp = emp_by_code.get(str(raw.get('VNID') or ''))
+        raw = file_row(raw)
         prov = {}
         vals = batch._transform_data_to_formula_inputs(raw, employee=emp or None, provenance=prov)
         out.append([s.id, vals, prov])
     blob = json.dumps(out, sort_keys=True, default=str)
     open(os.environ['OUT'], 'w').write(blob)
+    src = Counter(e['src'] for _i, _v, p in out for e in p.values())
+    paid = Counter(round(float(v.get('VNPAIDDAYS') or 0)) for _i, v, _p in out)
+    P('neutral sources', dict(src), 'paid days seen', dict(paid.most_common(4)))
     P('neutral rows', len(out), 'md5', hashlib.md5(blob.encode()).hexdigest(),
       'clock date', config.pb_clock_from if 'pb_clock_from' in config._fields else 'no field')
     env.cr.rollback()
@@ -60,7 +93,9 @@ elif phase == 'setup':
     groups = [env.ref(x).id for x in ('base.group_user', 'hr.group_hr_manager',
                                       'hr_attendance.group_hr_attendance_manager',
                                       'hr_holidays.group_hr_holidays_manager',
-                                      'om_hr_payroll.group_hr_payroll_manager')]
+                                      'om_hr_payroll.group_hr_payroll_manager',
+                                      'pb_hr_payroll_formula.group_formula_manager',
+                                      'pb_hr_payroll_base.group_payroll_base_manager')]
     u = manager()
     if not u:
         u = env['res.users'].with_context(no_reset_password=True, mail_create_nosubscribe=True).create({
@@ -81,6 +116,9 @@ elif phase == 'setup':
     P('rules', policy.id, policy.state, 'people on it', env['hr.employee'].search_count([('pb_attendance_policy_id', '=', policy.id)]))
     # roster 1-18 Nov from the working weeks (the engine skips past days, so the copy makes them the
     # engine's way: its own wanted-days reading with "today" = 1 Nov), 19-23 Nov drafts already exist
+    # copy only: the working-week memberships start 19 Nov; the fake December starts 1 Nov
+    env.cr.execute("update pb_shift_pattern_member set date_from=%s where date_from > %s", [D0, D0])
+    env.invalidate_all()
     Engine = env['pb.shift.pattern.engine']
     Grid = env['hr.shift.planning.grid']
     Shift = env['hr.shift.planning']
@@ -107,7 +145,9 @@ elif phase == 'setup':
     contracts = env['hr.contract'].search([('company_id', '=', 1), ('state', '=', 'draft')])
     contracts.write({'state': 'open'})
     if config.state != 'active':
-        config.action_activate()
+        # copy only: on live this goes through the scheme approval ("Propose for approval")
+        env.cr.execute("update hr_formula_config set state='active' where id=%s", [CID])
+        env.invalidate_all()
     P('scheme', config.state, 'contracts running', env['hr.contract'].search_count([('state', '=', 'open')]))
     # the clock mapping through the scheme editor's own method (bp_clock_bind -> pb_clock_bind)
     Bp = env['pb.blueprint.studio'].with_user(u).with_company(1)
@@ -199,6 +239,8 @@ elif phase == 'decide':
     facts = Facts.facts_many(emps, D0, D1)
     # time off: 3 paid + 1 unpaid, on a rostered day the person did not punch (an absence)
     picks = [(e, d) for e in emps for d in (facts[e.id]['absent'] or [])[:1]][:4]
+    # copy only: no leave allocations exist on sudima; the types take requests without one here
+    env['hr.leave.type'].browse([1, 4]).write({'requires_allocation': False})
     Leave = env['hr.leave'].with_user(u).with_company(1)
     made = []
     for i, (emp, day) in enumerate(picks):
@@ -262,7 +304,7 @@ elif phase == 'run':
     facts = Facts.facts_many(emps, D0, D1)
     ready_ids = [e.id for e in emps if not facts[e.id]['blockers']]
     P('run eligible', len(elig), 'ready', len(ready_ids))
-    prep = W.prepare_run(dict(vals, employee_ids=ready_ids))
+    prep = W.prepare_run(dict(vals, employee_ids=ready_ids, force_clean=True))
     P('prepare_run', 'blocked' if prep.get('blocked') else 'ok', (prep.get('message') or '')[:200], 'run', prep.get('run_id'))
     if prep.get('blocked'):
         raise SystemExit
@@ -290,7 +332,19 @@ elif phase == 'run':
     att = W.attach_spreadsheet(prep['run_id'], CID, base64.b64encode(buf.getvalue()).decode(), 'september-columns.xlsx',
                                str(D0), str(D1), True)
     P('file rows', att.get('rows'), 'payslips', att.get('created'), 'refused rows', len(att.get('errors') or []),
-      'ok', att.get('ok'), (att.get('msg') or '')[:200], 'seconds', round(time.time() - t, 1))
+      'ok', att.get('ok'), (att.get('msg') or '')[:200], 'seconds', round(time.time() - t, 1),
+      'waiting for approval', att.get('pending'))
+    if att.get('pending'):
+        # Sudima has an approval route for "this run only" pay data files. Copy only: the approved body
+        # runs as the approver's Yes would run it (payroll_import_approval.apply_context).
+        from odoo.addons.pb_hr_payroll_formula.models.payroll_import_approval import apply_context
+        batch = env['hr.payroll.import.batch'].browse(att['batch_id'])
+        t = time.time()
+        apply_context(batch).action_process()
+        lines = batch.import_line_ids
+        att['created'] = len(batch.created_payslip_ids)
+        att['errors'] = [{'why': l.error_message} for l in lines.filtered(lambda l: l.state == 'error')]
+        P('after approval: payslips', att['created'], 'refused rows', len(att['errors']), 'seconds', round(time.time() - t, 1))
     for er in (att.get('errors') or [])[:3]:
         P('file row refused', (er.get('why') or '')[:300])
     rest = [i for i in prep['emp_ids'] if i not in in_file]
@@ -342,6 +396,17 @@ elif phase == 'run':
         info = {k.split('.', 1)[1]: v.get(code) for k, code in codes.items() if k not in ('clock.paid_days', 'clock.ot_hours', 'clock.ot_premium_hours', 'clock.empty')}
         P('person P%s' % n, 'basis', v.get('VNBASIS'), 'clock', got, 'hand', hand, 'match', same, 'info', info,
           'file said days', json.loads(s.formula_input_sources).get('VNPAIDDAYS', {}).get('ignored', {}).get('value'))
+
+elif phase == 'probes':
+    Shift = env['hr.shift.planning']; Req = env['hr.overtime.request']
+    run = env['hr.payslip.run'].search([('name', '=', 'P10b rehearsal run')], order='id desc', limit=1)
+    slips = run.slip_ids
+    codes = {r.pb_clock_key: r.code for r in config.rule_ids if r.pb_clock_key}
+    by_code = {}
+    for s_ in config.sample_data_ids.filtered('active'):
+        raw_ = json.loads(s_.input_values_json or '{}')
+        by_code[str(raw_.get('VNID') or '')] = raw_
+    sample = [s_ for s_ in slips if json.loads(s_.formula_input_values or '{}').get(codes['clock.late_minutes'])][:1] or slips[:1]
     # double lateness: no late-minute columns, nothing held by the weekly Close, file deductions unchanged
     late_rows = env['pb.time.late'].search_count([('payslip_id', 'in', slips.ids)]) if 'pb.time.late' in env else 0
     P('double lateness: late-minute inputs on the scheme', len(config.rule_ids.filtered(lambda r: r.code in ('LATEMIN', 'EARLYMIN'))),
@@ -356,7 +421,13 @@ elif phase == 'run':
     Batch = env['hr.payroll.import.batch']
     b = Batch.create({'name': 'P10b Sunday probe', 'source_type': 'excel', 'formula_config_id': CID,
                       'payroll_period': 'custom', 'date_from': D0, 'date_to': D1})
+    prov = {}
+    vals = b._transform_data_to_formula_inputs(file_row(by_code.get(one.employee_id.barcode or '') or {}),
+                                               employee=one.employee_id, provenance=prov)
+    P('file values shown beside: paid days', vals['VNPAIDDAYS'], prov['VNPAIDDAYS'],
+      '| overtime', vals['VNOTHOURS'], prov['VNOTHOURS'].get('ignored'), '| an allowance from the file', prov.get('VNATT'))
     raw = dict(by_code.get(one.employee_id.barcode or '') or {}, VNSUNDAYHOURS=8)
+    raw = file_row(raw)
     try:
         b._transform_data_to_formula_inputs(raw, employee=one.employee_id, provenance={})
         P('sunday guard', 'NOT REFUSED')
@@ -372,20 +443,30 @@ elif phase == 'run':
                            ('date', 'not in', list(days_ot))], order='date desc', limit=1)
         if sh:
             break
+    import pytz
     ev = env['pb.clock.connector.event'].search([('id', 'in', json.loads(sh.pb_calculation_json)['source_event_ids'])], order='punch_local', limit=1)
-    ev.sudo().write({'punch_local': ev.punch_local + timedelta(minutes=20)})
+    start_local = pytz.utc.localize(sh.start_datetime).astimezone(pytz.timezone('Asia/Ho_Chi_Minh')).replace(tzinfo=None)
+    first = ev.punch_local
+    late = start_local + timedelta(minutes=15)
+    zone = pytz.timezone('Asia/Ho_Chi_Minh')
+    same = env['pb.clock.connector.event'].search([('company_id', '=', 1), ('user_code', '=', ev.user_code), ('punch_local', '=', first)])
+    same.sudo().write({'punch_local': late})
+    utc_first = zone.localize(first).astimezone(pytz.utc).replace(tzinfo=None)
+    led = env['pb.clock.punch'].search([('employee_id', '=', sh.employee_id.id), ('punch_utc', '=', utc_first)])
+    led.sudo().write({'punch_utc': zone.localize(late).astimezone(pytz.utc).replace(tzinfo=None)})
+    P('stamp: first punch moved to 15 min late on', len(same), 'received records and', len(led), 'ledger punches')
     before = sh.pb_normal_hours
     ok = sh._process_calculation()
     P('stamp: shift recalculated', ok, 'normal hours', before, '->', sh.pb_normal_hours)
     try:
         with env.cr.savepoint():
-            slip.action_payslip_verify()
+            slip.write({'state': 'verify'})
         P('stamp', 'NOT REFUSED')
     except Exception as exc:  # noqa: BLE001
         P('stamp refused:', str(exc)[:160].replace(slip.employee_id.name or '#', 'P'))
     slip.action_recompute_formula_lines()
     try:
-        slip.action_payslip_verify()
+        slip.write({'state': 'verify'})
         P('stamp after Recompute: approved, state', slip.state, 'paid days now', json.loads(slip.formula_input_values)['VNPAIDDAYS'])
     except Exception as exc:  # noqa: BLE001
         P('stamp after Recompute still refused:', str(exc)[:160])
