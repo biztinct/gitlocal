@@ -172,7 +172,7 @@ class WorkforceSetupRules(models.AbstractModel):
                     continue                     # the hidden first band
                 lo = 1
             lines.append({'from': lo, 'to': (hi - 1) if hi is not None else None,
-                          'hours': round(band.hours or 0.0, 2)})
+                          'hours': round(band.hours or 0.0, 2), **({'pay_late_minutes': True} if band.pay_late_minutes else {})})
         if lines:
             lines[-1]['to'] = None
         return lines
@@ -201,7 +201,7 @@ class WorkforceSetupRules(models.AbstractModel):
                 raise UserError(_("A late line starts at 1 minute or more."))
             if hi is not None and hi < lo:
                 raise UserError(_("Each late line must end at or after the minute it starts."))
-            out.append({'from': lo, 'to': hi, 'hours': round(hours, 2)})
+            out.append({'from': lo, 'to': hi, 'hours': round(hours, 2), 'pay_late_minutes': bool(line.get('pay_late_minutes'))})
         out.sort(key=lambda l: l['from'])
         for i, line in enumerate(out):
             last = i == len(out) - 1
@@ -218,12 +218,12 @@ class WorkforceSetupRules(models.AbstractModel):
         if not lines:
             return []
         bands = [{'category': group, 'minimum': 0.0, 'maximum': float(lines[0]['from']),
-                  'open_ended': False, 'hours': 0.0, 'confirmed': confirmed}]
+                  'open_ended': False, 'hours': 0.0, 'confirmed': confirmed, 'pay_late_minutes': lines[0]['from'] == 1 and bool(lines[0].get('pay_late_minutes'))}]
         for line in lines:
             open_ = line['to'] is None
             bands.append({'category': group, 'minimum': float(line['from']),
                           'maximum': 0.0 if open_ else float(line['to'] + 1),
-                          'open_ended': open_, 'hours': float(line['hours']), 'confirmed': confirmed})
+                          'open_ended': open_, 'hours': float(line['hours']), 'confirmed': confirmed, 'pay_late_minutes': bool(line.get('pay_late_minutes'))})
         return bands
 
     # ------------------------------------------------------------ shifts
@@ -269,6 +269,9 @@ class WorkforceSetupRules(models.AbstractModel):
             'overnight': bool(shift.is_overnight),
             'break_start': self._clock_at(shift, vals['break_start_offset']),
             'break_minutes': int(round((vals['break_hours'] or 0.0) * 60)),
+            'total_break_minutes': int(round((shift.break_duration or 0)*60)),
+            'second_break_start': self._clock_at(shift, rule.second_break_start_offset) if rule and rule.second_break_hours else self._clock_at(shift, self._span_minutes(shift)/80),
+            'second_break_minutes': int(round(rule.second_break_hours*60)) if rule else 0,
             'overtime_from': self._clock_at(shift, vals['normal_end_offset']),
             'in_weeks': in_weeks,
             'stored': stored,
@@ -284,13 +287,29 @@ class WorkforceSetupRules(models.AbstractModel):
         """Screen line -> (break_start_offset, normal_end_offset, break_hours)."""
         normal_end = self._offset_of(shift, line.get('overtime_from'))
         break_start = self._offset_of(shift, line.get('break_start'))
-        break_hours = shift.break_duration or 0.0
+        second_start, second_hours = self._clean_second_break(shift, line)
+        break_hours = max(0.0, (shift.break_duration or 0.0) - second_hours)
         span = self._span_minutes(shift) / 60.0 + 1e-9
         if not 0 < normal_end <= span:
             raise UserError(_("Overtime must start after the shift starts and no later than it ends."))
         if break_start + break_hours > span:
             raise UserError(_("The unpaid break must start after the shift starts and end before it ends."))
+        if second_hours and max(break_start, second_start) < min(break_start+break_hours, second_start+second_hours):
+            raise UserError(_("The two unpaid breaks must not overlap."))
         return round(break_start, 6), round(normal_end, 6), break_hours
+
+    @api.model
+    def _clean_second_break(self, shift, line):
+        try:
+            minutes = float(line.get('second_break_minutes') or 0)
+        except (ValueError, TypeError):
+            raise UserError(_("Second break minutes must be a number."))
+        if not math.isfinite(minutes) or minutes < 0 or minutes > (shift.break_duration or 0)*60:
+            raise UserError(_("The second break must fit within the total unpaid break set in Shifts."))
+        offset = self._offset_of(shift, line.get('second_break_start') or self._hhmm(shift.start_hour)) if minutes else 0.0
+        if offset + minutes/60 > self._span_minutes(shift)/60 + 1e-9:
+            raise UserError(_("The second unpaid break must fit inside the shift."))
+        return offset, minutes/60
 
     # ------------------------------------------------------------ rates
     @api.model
@@ -547,6 +566,8 @@ class WorkforceSetupRules(models.AbstractModel):
                 break_start, normal_end, break_hours = self._clean_shift_line(shift, line)
                 values = {'break_start_offset': break_start, 'normal_end_offset': normal_end,
                           'break_hours': break_hours}
+                second_start, second_hours = self._clean_second_break(shift, line)
+                values.update(second_break_start_offset=second_start, second_break_hours=second_hours)
                 rule = by_shift.get(shift.id)
                 if rule:
                     if any(abs((rule[k] or 0.0) - v) > 1e-6 for k, v in values.items()):
@@ -597,7 +618,7 @@ class WorkforceSetupRules(models.AbstractModel):
         get = band.get if isinstance(band, dict) else (lambda k, b=band: b[k])
         return (get('category'), round(get('minimum') or 0.0, 4),
                 None if get('open_ended') else round(get('maximum') or 0.0, 4),
-                round(get('hours') or 0.0, 4))
+                round(get('hours') or 0.0, 4), bool(get('pay_late_minutes')))
 
     # ------------------------------------------------------------ revision
     @api.model
@@ -690,6 +711,10 @@ class WorkforceSetupRules(models.AbstractModel):
         if not policy.shift_ids:
             problems.append(_("No shift is used in a working week yet. Build a working week in step 2."))
         for rule in policy.shift_ids:
+            try:
+                rule._check_rule()
+            except ValidationError as exc:
+                problems.append(str(exc))
             if not self._shift_line_ok(rule.template_id, rule.normal_end_offset, rule.break_start_offset,
                                        rule.break_hours):
                 problems.append(_("The overtime and break times of “%s” no longer fit the shift. Pick new ones.",
@@ -833,7 +858,7 @@ class WorkforceSetupRules(models.AbstractModel):
         elif policy:
             bands = [{'category': b.category, 'minimum': b.minimum,
                       'maximum': None if b.open_ended else b.maximum, 'hours': b.hours,
-                      'confirmed': True} for b in policy.band_ids]
+                      'confirmed': True, 'pay_late_minutes': b.pay_late_minutes} for b in policy.band_ids]
         else:
             for g in GROUPS:
                 bands += self._lines_to_bands(DEFAULT_LATE[g], g, confirmed=True)
@@ -842,18 +867,21 @@ class WorkforceSetupRules(models.AbstractModel):
                 b['maximum'] = None
         # step 1: this shift's line (break and overtime start)
         rule = None
+        second_start = second_hours = 0.0
         if rules is not None:
             line = next((l for l in (rules.get('shifts') or []) if isinstance(l, dict)
                          and self._int(l.get('shift_id'), 0) == shift.id), None)
             if line:
                 try:
                     rule = self._clean_shift_line(shift, line)
+                    second_start, second_hours = self._clean_second_break(shift, line)
                 except UserError as e:
                     return self._example_error(e.args[0], 'rules', **base)
         elif policy:
             stored = policy.shift_ids.filtered(lambda r: r.template_id == shift)
             if len(stored) == 1:
                 rule = (stored.break_start_offset, stored.normal_end_offset, stored.break_hours)
+                second_start, second_hours = stored.second_break_start_offset, stored.second_break_hours
         if not rule:
             return self._example_error(
                 _("“%s” has no overtime time yet. Set it in step 4.", shift.name), 'rules', **base)
@@ -869,6 +897,8 @@ class WorkforceSetupRules(models.AbstractModel):
         # step 4
         normal_end_dt = start + timedelta(hours=normal_end)
         breaks = [(start + timedelta(hours=break_start), start + timedelta(hours=break_start + break_hours))]
+        if second_hours:
+            breaks.append((start+timedelta(hours=second_start), start+timedelta(hours=second_start+second_hours)))
         # step 6: night intervals, as the calculation job builds them
         night_src = (rules or {}).get('night') if rules is not None else None
         if night_src is not None:
@@ -947,6 +977,7 @@ class WorkforceSetupRules(models.AbstractModel):
             'taken_off_hours': round(result.get('penalty_hours') or 0.0, 4),
             'worked_hours': round(result.get('worked_hours') or 0.0, 4),
             'break_hours': round(result.get('break_hours') or 0.0, 4),
+            'grace_hours': round(result.get('grace_hours') or 0.0, 4),
             'normal_hours': round(result.get('normal_hours') or 0.0, 4),
             'overtime_hours': round(result.get('overtime_hours') or 0.0, 4),
             'night_hours': round(result.get('night_hours') or 0.0, 4),
@@ -1010,7 +1041,7 @@ class WorkforceSetupRules(models.AbstractModel):
         for line in lines:
             shift = line.template_id
             span = self._span_minutes(shift) / 60.0
-            values = {'break_hours': min(shift.break_duration or 0.0, span)}
+            values = {'break_hours': max(0.0, min(shift.break_duration or 0.0, span) - line.second_break_hours)}
             normal_end = line.normal_end_offset if 0 < line.normal_end_offset <= span + 1e-9 else span
             break_start = line.break_start_offset
             if break_start + values['break_hours'] > span + 1e-9:

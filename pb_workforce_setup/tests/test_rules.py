@@ -692,3 +692,29 @@ class TestSetupRules(TransactionCase):
         two = Emp.create({'name': 'Joiner two', 'company_id': self.company.id})
         self.assertFalse(two.pb_attendance_policy_id)
         self.assertFalse(two.pb_attendance_category)
+
+    def test_paid_grace_and_second_break_round_trip(self):
+        long = self.env['hr.shift.template'].create({'name':'Long shift', 'code':'TWOBREAK',
+            'company_id':self.company.id, 'start_hour':7.5, 'end_hour':4.0,
+            'is_overnight':True, 'break_duration':2.0})
+        late = [{'from':1,'to':9,'hours':0,'pay_late_minutes':True},
+                {'from':10,'to':None,'hours':4}]
+        line = {'shift_id':long.id,'break_start':'11:30','second_break_start':'23:30',
+                'second_break_minutes':60,'overtime_from':'16:30','touched':True}
+        data=self.save(late={'worker':late},shifts=[line])
+        policy=self.policies('draft')
+        rule=policy.shift_ids.filtered(lambda x:x.template_id==long)
+        self.assertEqual(rule.normal_hours,8)
+        self.assertEqual(rule._break_offsets(),[(4,1),(16,1)])
+        self.assertTrue(all(b.pay_late_minutes for b in policy.band_ids.filtered(lambda b:b.category=='worker' and b.minimum<10)))
+        self.assertEqual(data['late']['worker'],late)
+        saved=next(x for x in data['shifts'] if x['shift_id']==long.id)
+        self.assertEqual((saved['break_minutes'],saved['second_break_minutes']),(60,60))
+        self.save(shifts=[saved])
+        self.assertEqual(rule._break_offsets(),[(4,1),(16,1)])
+        with self.assertRaises(UserError):
+            self.save(shifts=[dict(line,second_break_start='12:00')])
+        with self.assertRaises(UserError):
+            self.save(shifts=[dict(line,second_break_start='03:30')])
+        self.facade().save_shift({'name':long.name,'start':'07:30','end':'04:00','break_minutes':120},long.id)
+        self.assertEqual(rule._break_offsets(),[(4,1),(16,1)])

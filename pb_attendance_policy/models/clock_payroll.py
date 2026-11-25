@@ -251,6 +251,7 @@ class ClockPayroll(models.AbstractModel):
             in_period = published.filtered(lambda s: first <= s.date <= last)
             worked_days = paid_normal = actual = late = deduction = 0.0
             worked_dates = set()
+            late_dates = set()
             punches = sorted(times.get(emp.id) or ())
             if emp.id in bad_code:
                 blockers[bad_code[emp.id]].update(s.date for s in in_period)
@@ -281,6 +282,8 @@ class ClockPayroll(models.AbstractModel):
                     paid_normal += normal
                     actual += float(proof.get('worked_hours') or 0.0)
                     late += float(proof.get('late_minutes') or 0.0)
+                    if float(proof.get('late_minutes') or 0.0) > 0:
+                        late_dates.add(s.date)
                     deduction += float(proof.get('penalty_hours') or 0.0)
                     worked_dates.add(s.date)
                     continue
@@ -395,6 +398,7 @@ class ClockPayroll(models.AbstractModel):
                 'clock.over_limit_hours': _fact(round(over, _ROUND_INFO)),
                 'clock.actual_hours': _fact(round(actual, _ROUND_INFO)),
                 'clock.late_minutes': _fact(round(late, _ROUND_INFO)),
+                'clock.late_days': _fact(len(late_dates)),
                 'clock.deduction_hours': _fact(round(deduction, _ROUND_INFO)),
             }
             if blocks:

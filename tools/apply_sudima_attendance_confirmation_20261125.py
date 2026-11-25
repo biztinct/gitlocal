@@ -12,7 +12,7 @@ from pathlib import Path
 import pytz
 from odoo.addons.pb_attendance_policy.engine import calculate
 
-assert env.cr.dbname == 'sudima'
+assert env.cr.dbname in ('sudima', 'sudima_rules_rh_20261125')
 root = Path(os.environ['SUDIMA_RULES_DIR'])
 plan = json.loads((root / 'plan.json').read_text())
 apply = os.getenv('SUDIMA_RULES_APPLY') == '1'
@@ -130,5 +130,5 @@ if apply:
     e.cr.commit()
 else:
     e.cr.rollback()
-(root / ('applied.json' if apply else 'dry-run.json')).write_text(json.dumps(receipt, indent=2, default=str))
+(root / (('rehearsal-' if env.cr.dbname != 'sudima' else '') + ('applied.json' if apply else 'dry-run.json'))).write_text(json.dumps(receipt, indent=2, default=str))
 print('SUDIMA_RULES_RECEIPT '+json.dumps(receipt, default=str))

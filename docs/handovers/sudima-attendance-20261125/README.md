@@ -68,3 +68,44 @@ under the shared deployment lock. Back up Sudima first. Validate actual
 stored rules against the engine for all nine shift cases and both late
 threshold boundaries, verify protected tables unchanged, then check the
 deployed settings in Chrome. Report receipt and commit after verification.
+
+## Follow-up answers received during verification
+
+The owner confirmed paid grace (retain missed start minutes in paid time) below
+ten minutes, one daily Attendance allowance removed for each late working day,
+Additional attendance allowance unaffected, the existing proposed working weeks,
+and both breaks on the long 07:30–04:00 shift. Cash/excess OT belongs to the
+already deferred payment workstream; it is not enabled here.
+
+Shared opt-in changes, with screen equivalents:
+- Late-rule sentence checkbox: **Pay the missed minutes; keep the late-arrival
+  record**. Stored on a band, false by default. Actual punches/worked hours remain
+  actual; paid hours include the credit. Existing policies retain their output.
+- Shift rule: split total unpaid break into two timed parts. No overlap, negative
+  duration or out-of-shift break accepted. Native advanced form also exposes both.
+- Pay schema clock-source picker: **Late working days (for allowance rules)**,
+  counting distinct shift dates with lateness, including paid-grace arrivals.
+  This is separate from the information-only late-minutes source, preventing
+  accidental second deduction of missed minutes. No tenant rule is hard-coded.
+
+Confirmed live facts: VNATT and VNATTPLUS are workbook inputs, not formulas, and
+neither has a saved contract entitlement. VNDIVISOR is 26 on all 650 contracts.
+A one-day allowance formula needs the un-reduced entitlement and confirmation
+of its daily divisor. Do not turn a historically paid amount into an entitlement.
+
+Of the 595 current source employees, 504 have a working week and 91 do not.
+498 of those 504 have six days; six have confirmed proposed five-day weeks.
+There are contracts for 572 current people, leaving 23 without one. All contracts
+remain draft. Eleven source leavers need dates; 72 active database profiles are
+outside the current source list. Do not auto-archive or include them in a pay run.
+
+Second data application: `apply_sudima_attendance_final_rules_20261125.py`, after
+the shared release. It adds the long shift, saves both groups' paid grace, and
+marks only current employees' future draft rosters as reviewed. It keeps the
+policy draft while the allowance/employee coverage remains unresolved, and never
+publishes rosters, enables connector publication, approves overtime or runs pay.
+
+Validation in progress: 13 standalone calculation tests pass. The isolated
+application rehearsal passed 42/43 cases initially; the new late-day test correctly
+refused undecided OT. After completing the fixture's approval workflow, its
+source-to-payroll retest passed. The application behavior was not weakened.

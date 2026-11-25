@@ -754,6 +754,7 @@
             <span class="pbws-nw"><input t-if="canEdit" type="number" min="0" max="24" step="0.25" data-part="hours"
                    t-att-class="'pbws-inl pbws-num' + (bad(line_index, 'hours') ? ' is-bad' : '')"
                    t-att-value="line.hours" t-att-aria-label="lineLabel(line_index, 'hours')" t-on-input="(ev) => this.onHours(line_index, ev)"/><b t-else="" class="pbws-inl-ro pbws-num" t-esc="df(line.hours)"/> hours.</span>
+            <label class="pbws-nw"><input type="checkbox" t-att-disabled="!canEdit" t-att-checked="line.pay_late_minutes" t-on-change="(ev) => this.onPaidGrace(line_index, ev)"/> Pay the missed minutes; keep the late-arrival record</label>
             <button t-if="canEdit" type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost pbws-btn--danger pbws-sent-x"
                     t-att-aria-label="removeLabel(line_index)" t-att-title="removeLabel(line_index)" t-on-click="() => this.removeLine(line_index)">
               <t t-out="icon('trash', 14)"/>
@@ -783,7 +784,7 @@
                    time never lands on a line of its own (P3 report, weakest point) -->
               <span class="pbws-sline-s">
                 <span t-if="line.break_minutes" class="pbws-nw">
-                  Unpaid break starts at
+                  First unpaid break (<t t-esc="line.break_minutes"/> min) starts at
                   <input t-if="canEdit" type="time" class="pbws-inl pbws-inl--t pbws-num" t-att-value="line.break_start"
                          t-att-aria-label="breakLabel(line)" t-on-input="(ev) => this.onShiftTime(line, 'break_start', ev)"/>
                   <b t-else="" class="pbws-inl-ro pbws-num" t-esc="line.break_start"/>
@@ -796,6 +797,11 @@
                          t-att-aria-label="overtimeLabel(line)" t-on-input="(ev) => this.onShiftTime(line, 'overtime_from', ev)"/>
                   <b t-else="" class="pbws-inl-ro pbws-num" t-esc="line.overtime_from"/>
                 </span>
+              </span>
+              <button t-if="canEdit and !line.second_break_minutes and line.total_break_minutes" type="button" class="pbws-btn pbws-btn--sm pbws-btn--ghost" t-on-click="() => this.addSecondBreak(line)">Split the unpaid break into two</button>
+              <span t-if="line.second_break_minutes" class="pbws-sline-s">Second unpaid break (part of the total break set in Shifts):
+                <input type="time" class="pbws-inl pbws-inl--t pbws-num" t-att-disabled="!canEdit" t-att-value="line.second_break_start" t-att-aria-label="line.name + ': second break starts'" t-on-input="(ev) => this.onShiftTime(line, 'second_break_start', ev)"/>
+                <input type="number" min="0" max="1440" class="pbws-inl pbws-num" t-att-disabled="!canEdit" t-att-value="line.second_break_minutes" t-att-aria-label="line.name + ': second break minutes'" t-on-input="(ev) => this.onShiftTime(line, 'second_break_minutes', ev)"/> minutes (0 = none).
               </span>
               <p t-if="shiftProblem(line) or line.problem" class="pbws-err" role="alert"><t t-out="icon('triangleAlert', 14)"/><span t-esc="shiftProblem(line) or line.problem"/></p>
             </div>
