@@ -4262,6 +4262,42 @@ msgstr "Tim, jabatan, dan negara diperlukan"
 
 #. module: pb_new_hire
 #. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Team and job needed"
+msgstr "Tim dan jabatan diperlukan"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Team and country needed"
+msgstr "Tim dan negara diperlukan"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Job and country needed"
+msgstr "Jabatan dan negara diperlukan"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Team needed"
+msgstr "Tim diperlukan"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Job needed"
+msgstr "Jabatan diperlukan"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Country needed"
+msgstr "Negara diperlukan"
+
+#. module: pb_new_hire
+#. odoo-javascript
 #: code:addons/pb_new_hire/static/src/js/step_check.js:0
 msgid "Team, job or country is missing"
 msgstr "Tim, jabatan, atau negara belum diisi"

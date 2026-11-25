@@ -97,6 +97,24 @@ class TestNewHireStatic(TransactionCase):
             for call in re.findall(r'\b_t\(\s*([^\s)])', _code(text)):
                 self.assertIn(call, ('"', "'", '`'), '%s: _t() of a variable' % name)
 
+    def test_s6_every_screen_sentence_is_in_the_template(self):
+        """P5b: a sentence added to the screen code without a catalogue entry
+        shows in English to every Vietnamese / Indonesian reader (T1 then
+        checks both catalogues cover the template)."""
+        pot = _src(HERE, 'i18n', 'pb_new_hire.pot')
+        ids = {''.join(re.findall(r'"((?:[^"\\]|\\.)*)"', m.group(1)))
+               for m in re.finditer(r'^msgid ((?:"(?:[^"\\]|\\.)*"\n?)+)', pot, flags=re.M)}
+        calls = []
+        for root, name in _files('.js'):
+            for text in re.findall(r'\b_t\(\s*"((?:[^"\\]|\\.)*)"', _code(_src(root, name))):
+                calls.append((name, text))
+        self.assertGreater(len(calls), 300, 'the scan found the screen sentences')
+        missing = sorted({c for c in calls if c[1] not in ids})
+        self.assertFalse(missing, 'screen sentences with no catalogue entry: %s' % missing[:10])
+        for text in ('Team and job needed', 'Team and country needed', 'Job and country needed',
+                     'Team needed', 'Job needed', 'Country needed'):
+            self.assertIn(text, ids, 'step 2 names only what is missing')
+
     def test_s5_action_tags(self):
         xml = _src(HERE, 'views', 'studio_action.xml')
         self.assertIn('<field name="tag">pb_new_hire_studio</field>', xml)

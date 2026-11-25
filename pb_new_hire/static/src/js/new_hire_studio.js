@@ -1066,6 +1066,32 @@ export class NewHireStudio extends Component {
         const d = this.nh.draft;
         return Boolean(d.department_id && d.payroll_country && (d.job_id || String(d.job_title || "").trim()));
     }
+    /** P5b: step 2's rail line names only what is still missing (one whole sentence per case, so each translates). */
+    get roleMissingText() {
+        const d = this.nh.draft;
+        const team = !d.department_id;
+        const job = !(d.job_id || String(d.job_title || "").trim());
+        const country = !d.payroll_country;
+        if (team && job && country) {
+            return _t("Team, job and country needed");
+        }
+        if (team && job) {
+            return _t("Team and job needed");
+        }
+        if (team && country) {
+            return _t("Team and country needed");
+        }
+        if (job && country) {
+            return _t("Job and country needed");
+        }
+        if (team) {
+            return _t("Team needed");
+        }
+        if (job) {
+            return _t("Job needed");
+        }
+        return _t("Country needed");
+    }
     get payReady() {
         const d = this.nh.draft;
         const wageOk = (d.wage !== null && d.wage > 0) || this.scaleFound;
@@ -1086,7 +1112,7 @@ export class NewHireStudio extends Component {
         }
         if (key === "role") {
             if (!this.roleReady) {
-                return { state: "warn", text: _t("Team, job and country needed") };
+                return { state: "warn", text: this.roleMissingText };
             }
             return nh.seen.role
                 ? { state: "done", text: _t("%(job)s, %(country)s", { job: this.jobName, country: this.countryName }) }

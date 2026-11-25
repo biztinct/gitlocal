@@ -4262,6 +4262,42 @@ msgstr "Cần nhóm, công việc và quốc gia"
 
 #. module: pb_new_hire
 #. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Team and job needed"
+msgstr "Cần nhóm và công việc"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Team and country needed"
+msgstr "Cần nhóm và quốc gia"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Job and country needed"
+msgstr "Cần công việc và quốc gia"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Team needed"
+msgstr "Cần nhóm"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Job needed"
+msgstr "Cần công việc"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Country needed"
+msgstr "Cần quốc gia"
+
+#. module: pb_new_hire
+#. odoo-javascript
 #: code:addons/pb_new_hire/static/src/js/step_check.js:0
 msgid "Team, job or country is missing"
 msgstr "Thiếu nhóm, công việc hoặc quốc gia"
