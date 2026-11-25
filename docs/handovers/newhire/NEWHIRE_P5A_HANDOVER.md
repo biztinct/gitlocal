@@ -73,3 +73,14 @@ W6 console clean.
 ## Report back — `NEWHIRE_P5A_REPORT.md`
 Sections as before + the merge notes (conflicts and how resolved), string counts per language, the §5 table. Commits
 feature-scoped with explicit paths (merge commit; languages; lessons; dependants; docs). Do not push.
+
+## 6. Small P4 follow-ups (architect rulings on the P4 report's questions — the ONLY behaviour changes allowed)
+- **Buddy**: when HR chose a buddy in step 6, HR's choice wins; Hiring's `_hand_over_buddy` applies only when step 6
+  left the buddy empty. Test both ways.
+- **Bank paper with no reader**: when no document reader is configured for the company (feature-check the same setting
+  `pb_bank_ocr` uses), the From Hiring bank item defaults to "Ask the person" and the row says "<First name>'s bank paper
+  will be on their record. The account details are asked for in the welcome link." The file still comes across to the
+  record as a paper. With a reader configured, P4 behaviour stays. Test both.
+- **Identity card from Hiring**: step 5's matched row gains one small optional "Valid until" date; when filled the card
+  is filed in its proper type; when empty P4's amber sentence stays. Test both.
+- First-example speed of 1–1.5 s is accepted; no work.
