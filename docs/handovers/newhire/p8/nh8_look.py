@@ -17,6 +17,24 @@ for company in env['res.company'].sudo().search([], order='id'):
         s = d.get('scheme') or {}
         line.append('%s %s%s %.0f ms' % (code, 'several(%s)' % len(d['schemes']) if d['schemes'] else
                                           ('one' if s else 'none'), ' id=%s' % s.get('id') if s else '', ms))
+    # one team per country (the team most people of that country work in): what step 2 and the payslip
+    # example say for a new person there (team ids only, no names, no amounts)
+    Emp = env['hr.employee'].sudo()
+    for code, _label in nh._countries():
+        groups = Emp._read_group([('company_id', '=', company.id), ('active', '=', True),
+                                  ('payroll_country', '=', code), ('department_id', '!=', False)],
+                                 ['department_id'], ['__count'], order='__count desc', limit=1)
+        if not groups:
+            continue
+        team = groups[0][0]
+        d = nh.decides(team.id, code, '2026-12-07')
+        s = d.get('scheme') or {}
+        ex = nh.payslip_example({'name': 'DEMO P8 Look', 'date_start': '2026-12-07', 'department_id': team.id,
+                                 'job_title': 'DEMO', 'payroll_country': code, 'wage': 1000,
+                                 'contract_kind': 'permanent'})
+        print('PROBE team-look company %s %s team %s: scheme %s rung %s honoured %s problem %s | example ok %s lines %s %s' % (
+            company.id, code, team.id, s.get('id'), s.get('rung'), s.get('honoured'), bool(d.get('problem')),
+            ex.get('ok'), len(ex.get('lines') or []), (ex.get('error') or '')[:80]))
     try:
         sug = env['pb.scheme.map'].sudo().suggest_by_country(company.id)
         line.append('suggest %s mapped %s' % (dict(sug['counts']), sug['mapped']))

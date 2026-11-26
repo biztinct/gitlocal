@@ -152,6 +152,64 @@ class TestP8Scheme(DocsCommon):
         covered, _missed = Wizard._scheme_population(self.sg_scheme.id, second.ids)
         self.assertEqual(covered, second.ids)
 
+    # ------------------------------------------------------------ A9 one chain, the pay run's
+    def test_a9_resolver_agrees_with_the_pay_run_in_every_branch(self):
+        """`_scheme_for` (what the studio shows) and the pay run's own answer for
+        a real person with the same team, country and company agree in every
+        branch: team line, division, a rule on the map, the only scheme, none."""
+        Map = self.env['pb.scheme.map'].sudo()
+        division = self.env['pb.division'].sudo().create({'name': 'DEMO NH8 Division'})
+        self.env['pb.division.link'].sudo().create({'division_id': division.id, 'department_id': self.farm.id,
+                                                    'date_from': '2020-01-01'})
+        self.env['hr.formula.scheme.assignment'].create({'config_id': self.vn_scheme.id, 'division_id': division.id,
+                                                         'cycle_type': 'any'})
+        self.env['hr.formula.scheme.assignment'].create({'config_id': self.in_scheme.id, 'cycle_type': 'any',
+                                                         'domain': "[('payroll_country', '=', 'IN')]"})
+        cases = [(self.finance, 'SG', 'department', self.sg_scheme), (self.farm, 'VN', 'division', self.vn_scheme),
+                 (self.lonely, 'IN', 'rule', self.in_scheme), (self.lonely, 'MY', 'none', None)]
+        for team, code, rung, scheme in cases:
+            found = self.studio()._scheme_for({'department_id': team.id, 'payroll_country': code})
+            emp = self.env['hr.employee'].create({'name': 'DEMO NH8 A9 %s' % code, 'company_id': self.company.id,
+                                                  'department_id': team.id, 'payroll_country': code})
+            self.env.flush_all()
+            real = Map.resolve(emp)
+            self.assertEqual(found['pay_run'].id or 0, real['config_id'], (team.name, code))
+            self.assertEqual(found['rung'], real['rung'], (team.name, code))
+            self.assertEqual(real['rung'], rung)
+            self.assertEqual(found['pay_run'].id or 0, scheme.id if scheme else 0)
+        # the only scheme, in a company that has one
+        solo = self.env['res.company'].create({'name': 'DEMO NH8 Solo'})
+        cfg = self.env['hr.formula.config'].create({'name': 'DEMO NH8 Solo scheme', 'code': 'DEMONH8SOLO',
+                                                     'country_code': 'VN', 'state': 'active', 'company_id': solo.id})
+        team = self.env['hr.department'].create({'name': 'DEMO NH8 Solo team', 'company_id': solo.id})
+        self.maker.sudo().write({'company_ids': [(4, solo.id)]})
+        S = self.env['pb.new.hire'].with_user(self.maker).with_context(allowed_company_ids=[solo.id])
+        found = S._scheme_for({'department_id': team.id, 'payroll_country': 'VN'})
+        emp = self.env['hr.employee'].create({'name': 'DEMO NH8 Solo person', 'company_id': solo.id,
+                                              'department_id': team.id, 'payroll_country': 'VN'})
+        self.env.flush_all()
+        if not self.env['hr.formula.config'].sudo().search_count([('state', '=', 'active'),
+                                                                   ('company_id', '=', False)]):
+            self.assertEqual(found['pay_run'], cfg)
+            self.assertEqual(Map.resolve(emp)['config_id'], cfg.id)
+
+    def test_a10_unmapped_team_paid_by_a_rule_shows_and_examples(self):
+        """rize's shape: no team line, a rule per country of work. Step 2 shows the
+        scheme the rule gives, no amber line, and the payslip example works."""
+        self.env['hr.formula.scheme.assignment'].create({'config_id': self.sg_hourly.id, 'cycle_type': 'any',
+                                                         'domain': "[('payroll_country', '=', 'SG')]"})
+        out = self.dec(self.lonely, 'SG')
+        self.assertEqual(out['scheme']['id'], self.sg_hourly.id)
+        self.assertTrue(out['scheme']['honoured'])
+        self.assertFalse(out['problem'], 'the amber line only when the pay run finds nothing')
+        self.assertEqual(self.studio().team_defaults(self.lonely.id)['scheme'], False,
+                         'without a country the rule does not answer, as for a real person')
+        ex = self.studio().payslip_example(self.draft(department_id=self.lonely.id, job_id=False,
+                                                      job_title='DEMO NH Grower', parent_id=False,
+                                                      work_location_id=False))
+        self.assertTrue(ex.get('ok'), ex)
+        self.assertEqual(ex['scheme_id'], self.sg_hourly.id)
+
     # ------------------------------------------------------------ A8 example follows the pick
     def test_a8_example_and_usual_answers_follow_the_pick(self):
         Ex = self.studio()

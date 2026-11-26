@@ -4,7 +4,9 @@
 Everything the screen reads before Send is worked out here by the product's
 OWN code (ledger rule 5 — no parallel engines):
 
-  which scheme pays the team   `pb.scheme.map.resolve_for_team` (rungs 2/3/5)
+  which scheme pays the person `_scheme_for(draft)` (P8): the pay run's own chain for a
+                               person who does not exist yet (`pb.scheme.map.resolve_for_draft`:
+                               team line, division, advanced rules, only scheme) + the country
   the money of a country       `hr.formula.config.currency_by_country`
   the trial period             `pb.probation.policy.policy_for_country` +
                                `probation_common.add_months` (same day N
@@ -378,9 +380,9 @@ class PbNewHire(models.AbstractModel):
                 ['work_location_id'], ['__count'], order='__count desc', limit=1)
             if groups:
                 out['site_id'] = groups[0][0].id
-        answer = self.env['pb.scheme.map'].sudo().resolve_for_team(team.id, self._company().id)
-        if answer.get('config_id'):
-            config = self.env['hr.formula.config'].sudo().browse(answer['config_id'])
+        # P8: the one resolver (the pay run's full chain for this draft person)
+        config = self._scheme_for({'department_id': team.id})['pay_run']
+        if config:
             out['scheme'] = {'id': config.id, 'name': config.name or ''}
         # P7 §1.7: the scheme's country, else where most of the team works.
         # The screen uses it only for a team that was SENT (org chart, Hiring);

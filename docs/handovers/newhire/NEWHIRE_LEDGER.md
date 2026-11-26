@@ -53,7 +53,14 @@ Owner approved the design and the phased build on 2026-11-25.
   `pb.people.onboard.wizard.create_employee(values)`; `pb_new_hire` extends `create_employee` / `create_contract` by
   inheritance so the NEW optional keys are honoured. Signatures unchanged; every old caller (Updates joiners sheet, org chart,
   pay scales) keeps working with the old keys.
-- **D3 Team decides the pay scheme; the country is checked against it.** *(Amended P7, owner request 2026-11-25:
+- **D3 Team decides the pay scheme; the country is checked against it.** *(Amended P8, owner decisions
+  2026-11-26 A: the Country of work names the pay scheme by default — its only active scheme, or, when it has
+  several, a chooser defaulting to the team's own line, else the scheme paying most of the team, else most of the
+  country (`pb.new.hire._scheme_for`, the ONE resolver for tile, step 3, example, usual answers and values). A.1
+  gate finding: the pay run's population is the scheme map (`pb_payrun_wizard._scheme_population` →
+  `resolve_many`); the only per-person rung (an advanced rule, rung 4) ranks below a team's own line, so no
+  per-person override exists — the studio writes NO map line; when the pay run will not use the pick it says so
+  plainly and names the fix. Architect + owner ruling: keep it that way, no pay-engine change.)* *(Amended P7, owner request 2026-11-25:
   the Country of work LEADS step 2 — it is the first box, puts its own teams and jobs first (`places()`, rule in
   `models/places.py`), and decides currency, trial period, letter and papers at once. The team still decides the
   scheme; a team from another country stays pickable with the mismatch warning; changing the country clears a
@@ -342,4 +349,28 @@ Owner approved the design and the phased build on 2026-11-25.
 - **NH91** (P7) Vietnam's bank format IS the old rule (6–19 digits, no code): `pb.bank.change.request` treats a
   `VN` request exactly like an older one (same checks, same sentences — existing tests assert them). Only other
   countries get the new checks. No country at all = the old rule (every older change, every import).
+
+- **NH92** (P8) rize pays every person through advanced rules on the map (rung 4: one rule per country of work,
+  one employee list for Vietnam); every team line pointed at archived schemes. A team's own line (rung 2) beats
+  any rule, so mapping a MIXED-country team by majority would move its minority people to another country's
+  scheme. "Suggest who pays each team" offers such a team unticked with "N would move"; the rize release maps
+  only teams where nobody's paying scheme changes (proved before and after, `p8/nh8_map.py`).
+- **NH93** (P8) `_()` inside a generator expression or lambda has no `self`/env in its frame: Odoo logs a
+  traceback from `_get_lang` and the word stays English. Translate into a local first.
+- **NH94** (P8) `pb.scheme.map.accept_draft` UNLINKS the lines a new one clashes with (same team and kind of run,
+  or same team and scheme). Rows from the suggestion carry `keep_existing` and are skipped instead.
+- **NH95** (P8) `_check_one_scheme_per_kind_of_run` counts active lines whose scheme is ARCHIVED (the map ignores
+  them when answering, the check does not): an old line blocks a new one for the same kind of run. The suggestion
+  picks a free kind (`any`, else the scheme's own) or says "an older line is in the way".
+- **NH96** (P8) The first worker sign-in slip is a page the BROWSER prints (`printSignInSlips`, a table, no PDF
+  engine). There is no switch that turns the Access desk off; "off on payobook" meant the leavers job only.
+- **NH97** (P8) The My Payobook page builder was gated on `base.group_system` (not the Tenant administrator), and
+  its layout is ONE per database (default page + per-company pages; field settings are global). The HR manager
+  role builds only its own company's page.
+- **NH98** (P8) Lifecycle User sees only its own cases (record rule); Manager opens final settlements, Vendors and
+  more. The New joiners board's narrow right runs the board's own methods with system rights inside the board's
+  scope instead of adding access rules.
+- **NH99** (P8) Under `sudo()`, `env.companies` trusts `allowed_company_ids` from the context without checking the
+  user. Read `env.companies` BEFORE switching to sudo (the framework refuses a forged list there) and pass the
+  checked ids in.
 
