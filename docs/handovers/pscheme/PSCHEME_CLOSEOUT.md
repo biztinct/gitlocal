@@ -89,3 +89,49 @@ No service stop was needed.
 - Worktree `gitlocal-worktrees/pscheme`; branches `pscheme`, `pscheme-p2a`, `pscheme-p2b` (all merged into `19.1`).
 - Local databases `ps_base`, `ps2b_base` (superseded by `p3_base`, which can stay as the live-like base).
 - Server evidence `/tmp/pscheme-p3-20261126T2005Z/` (after the owner's look).
+
+## 6. Follow-ups F1 and F2 (owner card, 27 Nov)
+
+### F2 — Mapping "Who is paid by what" reads mapping a team as optional (wording; NORMAL tier ×5)
+Commit `757c16793` on `19.1`; `pb_scheme_map` 19.0.2.9.0, `pb_formula_studio` 19.0.1.217.0.
+- Strip under the arrow: the board's own sentence "N of M have their own pay scheme" + " · K teams have a usual
+  scheme" when team lines exist (was "0 mapped", the studio's generic wire count). Handed over through the board's
+  existing `onLoaded` prop (`pb_mapping_boards` seam; `pb_formula_studio` still does not depend on `pb_scheme_map`).
+- Chips (lane-specific, only the scheme lane's case in `mapping_studio.js`): "Teams" / "Teams with people" and
+  "Pay schemes" / "A team's usual pay scheme (optional)". No shared label was touched.
+- Right-panel help opens with "Optional: drag a team onto a pay scheme to make it that team's usual scheme. It
+  pre-fills new people and covers anyone without a pay scheme of their own." (hover / pull / keyboard hints kept).
+- vi_VN + id_ID for all 8 new strings; replaced msgids removed (`pb_scheme_map` help; the four old studio chip
+  words). Parse gate passes, no vendor word. Tests `/pb_scheme_map,/pb_formula_studio`: failing lines identical
+  before/after (11 pre-existing `pb_formula_studio` failures on this base; `pb_scheme_map` 99/99). Local walk en + vi
+  on a company with team lines and one without, console clean.
+- Release 26 Nov 22:16:53–22:25:13 UTC, **501 s down**: `-u` exit 0 and 0 ERROR on all five (payobook_template 81 s,
+  p0clone 76 s, sudima 79 s, rize 80 s, payobook 96 s); trees = commit; versions = manifests ×5; jobs identical ×5
+  (none re-activated, nothing new; payobook 156 still off); 0 ERROR / Traceback in the server log since the stop;
+  sites 200 ×5.
+
+### F1 — rize: the Vietnam scheme's fallback rule follows Country of work (data, owner-ordered)
+- New map line id 316: rule `[('company_id', '=', 1), ('payroll_country', '=', 'VN')]` → the Vietnam scheme, the exact
+  shape of the India / Singapore / Indonesia rules (kind of run regular, sequence 10, source manual). Written through
+  the map line model's own create (constraints + "Paid by needs working out again"). START/DONE in the deploy notes,
+  dump `/odoo/backups/pscheme-f1-20261127/apply/rize-before-rule.dump`, undo record `rize_vn_rule_undo.txt` beside it.
+- Checks (every active person, 242): with the person rule 0 changed (main + advance); without it 0 changed — every
+  person with Country of work Vietnam (70) is already on the Vietnam code-list rule, so nobody moved from "nobody" to
+  the Vietnam scheme today; the 4 without Country of work unchanged; code-list people whose Country of work is not
+  Vietnam: 0, so the code-list rules (309, and 313 which only covered August) were left in place; a throwaway new
+  person with Country of work Vietnam and no row is answered by the Vietnam scheme by the rule (rolled back).
+  "Work it out again" afterwards: 0 left to work out.
+- **Screen twin: no.** The Mapping screen shows and edits team and division lines only; a by-country rule line can
+  be neither created, seen nor removed on screen, and the approval route has no kind for it. Open item (not built).
+- Undo: `env["pb.scheme.board"].with_context(pb_schememap_approved_write=True).detach(316, 1)` in an `odoo-bin shell`
+  on rize (or restore the dump), then Mapping › Work it out again.
+
+### Found during the follow-ups (not caused by this work)
+- **rize data changed by another process at 22:10:56 UTC** (one transaction, the admin login, a separate process; no
+  deploy-notes line): 83 employee records created (23 active) and 72 archived. Of the 227 people the fill gave a scheme,
+  12 are now archived; the 23 new active people have no scheme of their own. Rize's banner now reads 215 of 242.
+  "Work it out again" filled the new people's "Paid by". Someone should confirm this was an intended data refresh; the
+  new people can be given their scheme with "Give everyone their own pay scheme" (it lists only those without one).
+- The bottom card "Nothing is attached to a scheme yet — You have been paying people for months, so the map already
+  exists…" (company with no team lines) still reads as if something were missing; not in F2's scope.
+- The interruption on 27 Nov (network error) hit only the local browser walk; nothing on the server was started.
