@@ -1354,6 +1354,7 @@ msgstr ""
 #. module: pb_scheme_map
 #. odoo-javascript
 #: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
 msgid "From %s"
 msgstr ""
 
@@ -2528,12 +2529,6 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
 msgid "Show more (%s left)"
-msgstr ""
-
-#. module: pb_scheme_map
-#. odoo-javascript
-#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
-msgid "Since %s"
 msgstr ""
 
 #. module: pb_scheme_map

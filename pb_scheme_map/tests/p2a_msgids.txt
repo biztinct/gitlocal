@@ -123,7 +123,7 @@ Set their team's usual pay scheme
 Set when the contract's Country of work followed a new pay scheme of another country: the currency changed and the amounts were kept as typed. Cleared when the wage is edited.
 Show %s more pay schemes
 Show more (%s left)
-Since %s
+From %s
 State
 That contract is not there any more.
 That fill is not there any more.

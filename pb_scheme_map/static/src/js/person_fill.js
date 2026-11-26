@@ -706,7 +706,7 @@ export class OwnPeoplePanel extends Component {
     get d() { return this.state.data || { people: [] }; }
     get title() { return _t("%s: people with a pay scheme of their own", this.d.department || ""); }
     advanceWords(r) { return _t("+ mid-month advance %s", r.advance); }
-    sinceLine(r) { return r.since_words ? _t("Since %s", r.since_words) : ""; }
+    sinceLine(r) { return r.since_words ? _t("From %s", r.since_words) : ""; }
     get moreLine() { return _t("and %s more", this.d.total - this.d.people.length); }
 }
 

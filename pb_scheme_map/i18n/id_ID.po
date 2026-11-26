@@ -470,6 +470,7 @@ msgstr "Mulai"
 #. module: pb_scheme_map
 #. odoo-javascript
 #: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
 msgid "From %s"
 msgstr "Mulai %s"
 
@@ -1645,12 +1646,6 @@ msgstr "Tampilkan %s skema gaji lagi"
 #: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
 msgid "Show more (%s left)"
 msgstr "Tampilkan lagi (sisa %s)"
-
-#. module: pb_scheme_map
-#. odoo-javascript
-#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
-msgid "Since %s"
-msgstr "Sejak %s"
 
 #. module: pb_scheme_map
 #: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme_fill__state
