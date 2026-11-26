@@ -668,8 +668,10 @@ class PbSchemeMap(models.AbstractModel):
             counts = defaultdict(int)
             for e in ids:
                 counts[country_of.get(e) or ''] += 1
+            # `_()` needs this frame (a generator's own frame has no env)
+            no_country = _("no country")
             row['split'] = ', '.join(
-                '%s %s' % (n, labels.get(c) or _("no country"))
+                '%s %s' % (n, labels.get(c) or no_country)
                 for c, n in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0])))
             top, n = max(counts.items(), key=lambda kv: (kv[1], kv[0] or '~'))
             if not top or n * 2 <= len(ids):
