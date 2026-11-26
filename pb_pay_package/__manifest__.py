@@ -20,7 +20,7 @@ The same box is on a Hiring offer: the split becomes the offer's monthly pay
 lines, so the offer letter shows basic pay and allowances, and the contract
 starts with them when the person joins.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.1.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
