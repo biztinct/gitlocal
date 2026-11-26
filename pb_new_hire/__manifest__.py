@@ -29,7 +29,12 @@ they joined" opening this studio (`static/src/js/hiring_patch.js`). P7: the
 Country of work leads step 2 (`models/places.py`: that country's teams and
 jobs first, "What this decides" follows it, a team of another country is
 cleared with Undo) and step 5's bank row follows the account's country (the
-bank check's one definition, `pb_bank_ocr` `pb.bank.format`).
+bank check's one definition, `pb_bank_ocr` `pb.bank.format`). P8 (owner
+decisions 2026-11-26): the pay scheme follows the country with a choice when
+there are several (`_scheme_for`), one tax reminder on My Payobook, the
+joining checklist by Country of work and equipment handed over ticking its
+step (`models/checklist_p8.py`), the New joiners board for HR managers
+(`models/joiners_board_p8.py`) and Access's "Print a new sign-in slip".
 
 Nothing is written before Send. Send builds ONE values dict and proposes it
 through the existing new-hire approval (`pb.newhire.proposal`, kind
@@ -41,7 +46,7 @@ Callers that do not send them are untouched.
 The old door (`pb_onboard_wizard` tag) opens this studio wherever this module
 is installed (`static/src/js/takeover.js`).
 """,
-    'version': '19.0.1.6.0',
+    'version': '19.0.1.7.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -80,6 +85,7 @@ is installed (`static/src/js/takeover.js`).
     'data': [
         'security/ir.model.access.csv',
         'security/rules.xml',
+        'security/joiners_board.xml',            # P8 E: HR managers see the New joiners board
         'data/papers.xml',
         'data/mail_template.xml',
         'views/studio_action.xml',
@@ -104,6 +110,7 @@ is installed (`static/src/js/takeover.js`).
             # P3b — the New joiners board (patched, never edited)
             'pb_new_hire/static/src/scss/joiners_board.scss',
             'pb_new_hire/static/src/js/joiners_board.js',
+            'pb_new_hire/static/src/js/joiners_gate.js',     # P8 E
             'pb_new_hire/static/src/xml/joiners_board.xml',
             # P4 — Hiring's "Confirm they joined" opens the studio (patched)
             'pb_new_hire/static/src/js/hiring_patch.js',

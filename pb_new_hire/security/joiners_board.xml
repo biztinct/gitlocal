@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- NEWHIRE P8 E (owner decision 2026-11-26, architect ruling): HR
+         managers see the New joiners board. A narrow right of its own - the
+         board, its rows, the joiner drawer and the board's own actions -
+         never the Lifecycle Manager role (models/joiners_board_p8.py). -->
+    <record id="group_joiners_board" model="res.groups">
+        <field name="name">New joiners board</field>
+        <field name="comment">See the New joiners board of your own companies, open a joiner and choose their buddy.</field>
+    </record>
+    <record id="hr.group_hr_manager" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('group_joiners_board'))]"/>
+    </record>
+</odoo>

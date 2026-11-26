@@ -14,3 +14,4 @@ from . import payslip_example
 from . import hiring
 from . import places
 from . import checklist_p8
+from . import joiners_board_p8
