@@ -9,7 +9,8 @@
  * first day) — the quiet board pattern. "Send again" and "Copy the welcome
  * link" are the invite facade's own, gated and rate-limited there.
  */
-import { useState } from "@odoo/owl";
+import { onWillStart, useState } from "@odoo/owl";
+import { user } from "@web/core/user";
 import { _t } from "@web/core/l10n/translation";
 import { patch } from "@web/core/utils/patch";
 import { PbOnboardingBoard } from "@pb_onboarding/js/onboarding_board";
@@ -21,6 +22,18 @@ patch(PbOnboardingBoard.prototype, {
     setup() {
         super.setup(...arguments);
         this.nhUi = useState({ busy: false, link: "", hint: "", forId: 0, msg: "", msgKind: "" });
+        // P8 E: a reader with only the "New joiners board" right (the HR
+        // manager role) runs the board, not the Lifecycle team's settings
+        // and daily run — those buttons stay out of their way
+        this.nhBoard = useState({ only: false });
+        onWillStart(async () => {
+            const [board, life, admin] = await Promise.all([
+                user.hasGroup("pb_new_hire.group_joiners_board"),
+                user.hasGroup("pb_lifecycle.group_lifecycle_user"),
+                user.hasGroup("base.group_system"),
+            ]);
+            this.nhBoard.only = board && !life && !admin;
+        });
     },
     nhChipCls(asked) {
         if (asked.act) {

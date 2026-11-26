@@ -232,3 +232,15 @@ msgstr "tanpa negara"
 #: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
 msgid "teams with nobody in them yet"
 msgstr "tim yang belum ada orangnya"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Set 1 team"
+msgstr "Atur 1 tim"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Can be set now: %(offers)s · Needs your choice: %(choices)s · Nobody in them yet: %(empty)s"
+msgstr "Bisa diatur sekarang: %(offers)s · Perlu pilihan Anda: %(choices)s · Belum ada orangnya: %(empty)s"

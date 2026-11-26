@@ -281,6 +281,7 @@
         background: var(--pbnh-teal-soft); color: var(--pbnh-teal);
     }
     .pbnh-dec .pbnh-scheme-differs { color: var(--pbnh-warn); }
+    .pbnh-dec .pbnh-scheme-differs .pbnh-link { margin-left: 4px; }
     @media (prefers-reduced-motion: reduce) {
         .pbnh-scheme, .pbnh-scheme-dot { transition: none; }
     }

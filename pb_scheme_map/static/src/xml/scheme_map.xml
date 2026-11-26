@@ -549,13 +549,13 @@
           </div>
 
           <div class="smp-panel__acts">
-            <button t-if="countryCanWrite" class="pbim-btn primary"
+            <button t-if="countryCanWrite and !(state.countryDone and state.countryDone.pending)" class="pbim-btn primary"
                     t-att-disabled="state.busy or !tickedCount ? 'disabled' : false"
                     t-on-click="acceptCountry">
               <t t-out="ic('check', 15)"/>
               <t t-esc="countryApplyLabel"/>
             </button>
-            <span t-else="" class="smp-panel__sub">A payroll manager can set these.</span>
+            <span t-elif="!countryCanWrite" class="smp-panel__sub">A payroll manager can set these.</span>
             <button class="pbim-btn ghost" t-on-click="closeCountry">Close</button>
           </div>
         </div>

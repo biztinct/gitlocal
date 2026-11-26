@@ -6,6 +6,26 @@
        Loop names: items `it`. -->
   <t t-name="pb_new_hire.PbOnboardingBoard" t-inherit="pb_onboarding.PbOnboardingBoard" t-inherit-mode="extension">
 
+    <!-- P8 F: a step's note on the drawer ("Requested" while the laptop is on
+         its way; "Ticked when the laptop was handed over" once it is) -->
+    <xpath expr="//div[@t-foreach='drawerOpenTasks']//div[hasclass('obb-task-m')]" position="inside">
+      <span t-if="tk.note" class="obb-nh-note" t-esc="tk.note"/>
+    </xpath>
+    <xpath expr="//div[@t-foreach='drawerDoneTasks']/div[hasclass('obb-task-l')]" position="after">
+      <div t-if="tk.note" class="obb-task-m"><span class="obb-nh-note" t-esc="tk.note"/></div>
+    </xpath>
+
+    <!-- P8 E: the Lifecycle team's settings and daily run, not the HR manager's -->
+    <xpath expr="//div[hasclass('obb-head-actions')]/button[@t-on-click='openBatches']" position="attributes">
+      <attribute name="t-if">state.canWrite and !nhBoard.only</attribute>
+    </xpath>
+    <xpath expr="//div[hasclass('obb-head-actions')]/button[@t-on-click='openRules']" position="attributes">
+      <attribute name="t-if">state.canWrite and !nhBoard.only</attribute>
+    </xpath>
+    <xpath expr="//div[hasclass('obb-head-actions')]/button[@t-on-click='runAutomation']" position="attributes">
+      <attribute name="t-if">state.canWrite and !nhBoard.only</attribute>
+    </xpath>
+
     <!-- the card: one quiet chip -->
     <xpath expr="//div[hasclass('obb-card')]//div[hasclass('obb-facts')]" position="after">
       <div t-if="row.asked" class="obb-nh" t-on-click="() => this.openJoiner(row.id)">

@@ -17,3 +17,6 @@
     .obb-nh-link input { width: 100%; border: 1px solid var(--pbim-line); border-radius: 8px; padding: 6px 8px; font: inherit; font-weight: 400; }
     .obb-nh-link small { color: var(--pbim-muted); }
 }
+
+// P8 F: a step's note (Requested / Ticked when the laptop was handed over)
+.obb-nh-note { color: var(--pbim-primary-dark, #241F52); font-weight: 500; }

@@ -818,10 +818,11 @@ export class SchemeMapBoard extends Component {
         return this.countryOffers.filter((r) => this.isTicked(r)).length;
     }
     get countryApplyLabel() {
-        return _t("Set %(count)s teams", { count: this.tickedCount });
+        const n = this.tickedCount;
+        return n === 1 ? _t("Set 1 team") : _t("Set %(count)s teams", { count: n });
     }
     get countrySummary() {
-        return _t("%(offers)s teams can be set now, %(choices)s need your choice and %(empty)s have nobody in them yet.",
+        return _t("Can be set now: %(offers)s · Needs your choice: %(choices)s · Nobody in them yet: %(empty)s",
                   { offers: this.countryOffers.length, choices: this.countryChoices.length,
                     empty: this.countryEmpty.length });
     }

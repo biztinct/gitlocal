@@ -1338,3 +1338,15 @@ msgstr "chưa có quốc gia"
 #: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
 msgid "teams with nobody in them yet"
 msgstr "nhóm chưa có ai"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Set 1 team"
+msgstr "Đặt 1 nhóm"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Can be set now: %(offers)s · Needs your choice: %(choices)s · Nobody in them yet: %(empty)s"
+msgstr "Có thể đặt ngay: %(offers)s · Cần bạn chọn: %(choices)s · Chưa có ai: %(empty)s"
