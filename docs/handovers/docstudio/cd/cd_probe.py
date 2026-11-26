@@ -8,7 +8,7 @@
 #  Z4  the designer previews the Vietnam contract, for a person whose own language differs, in the
 #      language the contract panel picks; with PROBE_PDF=1 the sample PDF in that language
 #  L   the six new lessons are in the shipped lesson file; Learn's vi_VN.po present
-import base64, io, json, os, re
+import base64, io, json, os, re, unicodedata
 from odoo.tools import file_open
 
 
@@ -23,6 +23,12 @@ def pdf_text(raw):
         from PyPDF2 import PdfFileReader as PdfReader
     r = PdfReader(io.BytesIO(raw))
     return len(r.pages), ' '.join(re.sub(r'\s+', ' ', (pg.extract_text() or '')) for pg in r.pages)
+
+
+def has(word, txt):
+    # PDF text layers may hold decomposed accents and odd spacing: compare NFC, spaces removed
+    n = lambda x: re.sub(r'\s+', '', unicodedata.normalize('NFC', x))
+    return n(word) in n(txt)
 
 
 PDF = os.environ.get('PROBE_PDF') == '1'
@@ -88,7 +94,7 @@ try:
                         if raw[:5] == b'%PDF-':
                             n, txt = pdf_text(raw)
                             line += ['| pdf pages', n, 'text chars', len(txt), 'words in the PDF',
-                                     ' '.join('%s=%s' % (k, '/'.join('y' if w in txt else 'n' for w in v)) for k, v in WORDS.items()),
+                                     ' '.join('%s=%s' % (k, '/'.join('y' if has(w, txt) else 'n' for w in v)) for k, v in WORDS.items()),
                                      'vendor word', 'odoo' in txt.lower()]
                         else:
                             line += ['| attachment is not a PDF']
@@ -96,14 +102,19 @@ try:
                 except Exception as e:
                     p('Z1', chosen or 'no choice', 'ERROR', type(e).__name__, str(e)[:200])
                 finally:
+                    try:
+                        env.flush_all()
+                    except Exception:
+                        pass
                     env.cr.execute('ROLLBACK TO SAVEPOINT z1')
+                    env.invalidate_all(flush=False)
 
     # ---- Z4
     tvn = env.ref('pb_doc_contracts.contract_template_vn', raise_if_not_found=False)
     if tvn:
         Panel = uenv['pb.contracts']
         vn = env.ref('base.vn')
-        emps = env['hr.employee'].sudo().search([('company_id', 'in', cids), ('company_id.country_id', '=', vn.id)], order='id')
+        emps = env['hr.employee'].sudo().search([('company_id', 'in', cids), ('company_id.partner_id.country_id', '=', vn.id)], order='id')
         emp = next((e for e in emps if (e.lang or '') != 'vi_VN'), None)
         if not emp:
             p('Z4 no person in a Vietnam company whose own language is not Vietnamese')
@@ -113,7 +124,7 @@ try:
             try:
                 plain = DS.preview(tvn.id, {}, emp.id)
                 auto = DS.with_context(pbds_preview_auto=True).preview(tvn.id, {}, emp.id)
-                hand = DS.with_context(pbds_preview_auto=True).preview(tvn.id, {}, emp.id, lang='en_US')
+                hand = DS.preview(tvn.id, {}, emp.id, lang='en_US')
                 p('Z4 person lang', emp.lang, 'wording langs', '/'.join(codes), 'panel picks', panel,
                   '| designer (auto)', auto.get('lang'), 'same as panel', auto.get('lang') == panel,
                   '| without the flag', plain.get('lang'), '| English picked by hand', hand.get('lang'))
