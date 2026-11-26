@@ -454,21 +454,9 @@ class PbNewHire(models.AbstractModel):
         """`(config_id, where)` — of `config_ids`, the scheme that pays most of
         the team's people today ('team'), else most people working in `code`
         ('country'); `(0, '')` when nobody is paid by any of them."""
-        Employee = self.env['hr.employee'].sudo()
-        if not config_ids or 'pb_paid_by_id' not in Employee._fields:
-            return 0, ''
-        company = self._company()
-        base = [('company_id', '=', company.id), ('active', '=', True),
-                ('pb_paid_by_id', 'in', list(config_ids))]
-        for where, extra in (('team', [('department_id', '=', team.id)] if team else None),
-                             ('country', [('payroll_country', '=', code)])):
-            if extra is None:
-                continue
-            groups = Employee._read_group(base + extra, ['pb_paid_by_id'], ['__count'])
-            if groups:
-                best = sorted(groups, key=lambda g: (-g[1], g[0].id))[0]
-                return best[0].id, where
-        return 0, ''
+        # PSCHEME P2b: one body, in the scheme map (`usual_scheme` uses it).
+        return self.env['pb.scheme.map'].sudo()._most_paid(
+            self._company().id, config_ids, team.id if team else 0, code)
 
     @api.model
     def _advance_options(self, config):
@@ -510,30 +498,27 @@ class PbNewHire(models.AbstractModel):
         options = self._scheme_options(code)
         ids = [o['id'] for o in options]
         Map = self.env['pb.scheme.map'].sudo()
-        ladder = {}
-        if team:
-            ladder = Map.resolve_for_draft(
-                team.id, {'payroll_country': code or False, 'job_id': _int(d.get('job_id')) or False},
-                company.id)
-        ladder_cfg = Config.browse(ladder.get('config_id') or 0).exists()
-        rung = ladder.get('rung') or 'none'
-        usual, why = Config, ''
-        if ladder_cfg and (not code or ladder_cfg.country_code == code):
-            usual, why = ladder_cfg, self._why(rung, team, company)
-        elif options:
-            if len(options) == 1:
-                usual = Config.browse(ids[0])
-                why = _("The only pay scheme for %(country)s.", country=codes.get(code, ''))
-            else:
-                best, where = self._most_paid(ids, team, code)
-                usual = Config.browse(best or ids[0])
-                why = (_("Pays most people in %(team)s.", team=team.name or '') if where == 'team'
-                       else _("Pays most people working in %(country)s.", country=codes.get(code, ''))
-                       if where == 'country' else
-                       _("One of %(count)s pay schemes for %(country)s.", count=len(ids),
-                         country=codes.get(code, '')))
-        elif ladder_cfg:
-            usual, why = ladder_cfg, self._why(rung, team, company)
+        # PSCHEME P2b C — the "usual" answer is shared with the joiner sheet,
+        # the job change and the hiring offer (`pb.scheme.map.usual_scheme`):
+        # one order, one answer, everywhere.
+        found = Map.usual_scheme(company.id, code, team.id if team else 0,
+                                 {'job_id': _int(d.get('job_id')) or False},
+                                 limit=MAX_SCHEMES)
+        ladder = found['ladder'] if found['reason'] in ('ladder', 'ladder_other') else {}
+        ladder_cfg = found['config'] if ladder else Config
+        rung = found['rung'] or 'none'
+        usual, why = found['config'] or Config, ''
+        if found['reason'] in ('ladder', 'ladder_other'):
+            why = self._why(rung, team, company)
+        elif found['reason'] == 'only':
+            why = _("The only pay scheme for %(country)s.", country=codes.get(code, ''))
+        elif found['reason'] == 'team':
+            why = _("Pays most people in %(team)s.", team=team.name or '')
+        elif found['reason'] == 'country':
+            why = _("Pays most people working in %(country)s.", country=codes.get(code, ''))
+        elif found['reason'] == 'one_of':
+            why = _("One of %(count)s pay schemes for %(country)s.", count=len(ids),
+                    country=codes.get(code, ''))
         chosen, hand = usual, False
         picked = _int(d.get('scheme_id'))
         if picked and picked in ids:

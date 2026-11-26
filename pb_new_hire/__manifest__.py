@@ -46,7 +46,7 @@ Callers that do not send them are untouched.
 The old door (`pb_onboard_wizard` tag) opens this studio wherever this module
 is installed (`static/src/js/takeover.js`).
 """,
-    'version': '19.0.1.8.0',
+    'version': '19.0.1.8.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

@@ -8,5 +8,7 @@ from . import hr_payslip_run
 from . import pb_scheme_board
 from . import pb_person_scheme_board
 from . import person_scheme_panel
+# PSCHEME P2b — shared seams (usual scheme, company move, take-back)
+from . import pb_person_scheme_tools
 
 from . import import_evidence
