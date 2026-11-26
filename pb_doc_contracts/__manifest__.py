@@ -22,7 +22,7 @@ Employment contract documents (DOCSTUDIO programme, phase A2).
 No e-signature. Silent install: no job, no mail, no data written on any
 existing record. See docs/handovers/docstudio/DOCSTUDIO_A2_REPORT.md.
 """,
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

@@ -1420,6 +1420,14 @@ class PbDocStudio(models.AbstractModel):
         return emp
 
     @api.model
+    def _pbds_preview_lang(self, tmpl, employee, draft, lang):
+        """The language the preview opens in for this person while nobody
+        has picked one (context `pbds_preview_auto`): `lang`, the language
+        their letter is made in. A kind of document whose real print picks
+        differently (contracts) overrides this."""
+        return lang
+
+    @api.model
     def preview(self, template_id, draft, employee_id, lang=None):
         """The finished page for one real person, from the UNSAVED draft.
         → {html, hidden, missing, values, lang}. Nothing is stored."""
@@ -1428,6 +1436,8 @@ class PbDocStudio(models.AbstractModel):
         emp = self._pbds_person_for(employee_id)
         active = self._pbds_active_langs()
         lang = lang if lang in active else self.env['pb.hr.letter']._pbds_default_lang(tmpl, emp)
+        if self.env.context.get('pbds_preview_auto'):
+            lang = self._pbds_preview_lang(tmpl, emp, draft, lang)
         asked = lang
         body, heading, rules, page, lang = self._pbds_draft_parts(tmpl, draft, lang)
         _groups, flat = self._pbds_catalogue(tmpl)
@@ -1501,6 +1511,8 @@ class PbDocStudio(models.AbstractModel):
         emp = self._pbds_person_for(employee_id)
         active = self._pbds_active_langs()
         lang = lang if lang in active else self.env['pb.hr.letter']._pbds_default_lang(tmpl, emp)
+        if self.env.context.get('pbds_preview_auto'):
+            lang = self._pbds_preview_lang(tmpl, emp, draft, lang)
         body, heading, rules, page, lang = self._pbds_draft_parts(tmpl, draft, lang)
         letter = self._pbds_preview_letter(tmpl, emp)
         try:
