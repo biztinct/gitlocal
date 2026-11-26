@@ -548,6 +548,10 @@ export class Contract360Drawer extends Component {
         const w = this.ps && this.ps.waiting;
         return w ? _t("Waiting for approval: %(scheme)s from %(date)s", { scheme: w.scheme, date: w.date_words }) : "";
     }
+    get psMismatch() {
+        const m = this.ps && this.ps.country_mismatch;
+        return m ? m.line || "" : "";
+    }
     get canChangePayScheme() {
         return Boolean(this.ps && this.ps.can_propose && this.ps.employee && this.ps.employee.active);
     }

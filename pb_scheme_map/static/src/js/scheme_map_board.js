@@ -125,6 +125,10 @@ export class SchemeMapBoard extends Component {
             ticked: [],          // department ids the reader keeps ticked
             countryDone: null,   // { created, teams } after Apply
 
+            // PSCHEME P2a — the person drawers: { kind: 'fill'|'team'|
+            // 'mismatch'|'own', id, ids }
+            drawer: null,
+
             paths: [],           // the drawn wires, measured from the DOM
 
             // GROUP P7 — the wires as a GESTURE (polish item P2).
@@ -149,6 +153,9 @@ export class SchemeMapBoard extends Component {
             }
             if ((this.props.focus || "") === "country") {
                 this.startCountry();
+            }
+            if ((this.props.focus || "") === "fill") {
+                this.openFill();
             }
         });
         onPatched(() => { this.measure(); });
@@ -224,6 +231,42 @@ export class SchemeMapBoard extends Component {
     get hasSchemes() { return this.schemes.length > 0; }
     get hasWires() { return this.wires.length > 0; }
     get staleCount() { return this.board.stale || 0; }
+
+    // ======================== PSCHEME P2a — the pay scheme is the person's
+    get persons() { return this.board.persons || {}; }
+    get mismatchCount() { return this.persons.mismatch || 0; }
+    get bannerLine() {
+        const n = this.persons.without || 0;
+        return n === 1
+            ? _t("1 person still follows their team.")
+            : _t("%(count)s people still follow their team.", { count: this.num(n) });
+    }
+    get attachLead() {
+        const team = this.attachSegmentLabel;
+        return _t("New people in %(team)s start on this pay scheme. People with a pay scheme of their own keep it.",
+                  { team });
+    }
+    usualWords(item) {
+        return _t("%(count)s on the usual scheme", { count: this.num(item.usual) });
+    }
+    ownWords(item) {
+        return _t("%(count)s have their own", { count: this.num(item.own) });
+    }
+    setForLabel(segment) {
+        return _t("Set for everyone in %(team)s", { team: segment.label });
+    }
+    openFill(ids) {
+        this.state.showExceptions = false;
+        this.state.drawer = { kind: "fill", ids: ids && ids.length ? ids : undefined };
+    }
+    openFillForExceptions() {
+        this.openFill(this.exceptionPeople.map((p) => p.employee_id));
+    }
+    openTeamSet(departmentId) { this.state.drawer = { kind: "team", id: Number(departmentId) }; }
+    openMismatch() { this.state.drawer = { kind: "mismatch" }; }
+    openOwn(departmentId) { this.state.drawer = { kind: "own", id: Number(departmentId) }; }
+    closeDrawer() { this.state.drawer = null; }
+    async afterPersonChange() { await this.load(); }
 
     /** The headline sentence: how much of this company the map reaches. */
     get coverLine() {
@@ -656,7 +699,7 @@ export class SchemeMapBoard extends Component {
             this._saidSoFar(
                 this.state.board,
                 done === 1
-                    ? _t("Attached. The people in that team are paid by this scheme from now on.")
+                    ? _t("Attached. New people in that team start on this pay scheme; people with their own keep it.")
                     : _t("Attached %(count)s teams to this scheme.",
                          { count: done }));
         } catch (e) {
@@ -915,6 +958,9 @@ export class SchemeMapBoard extends Component {
 
     onEscape(ev) {
         if (ev.key !== "Escape") { return; }
+        // a dialog above a drawer (Change pay scheme) owns its own Escape
+        if (document.querySelector(".o_dialog")) { return; }
+        if (this.state.drawer) { this.closeDrawer(); return; }
         if (this.state.attaching) { this.closeAttach(); return; }
         if (this.state.drafting) { this.closeDraft(); return; }
         if (this.state.countrying) { this.closeCountry(); return; }

@@ -41,6 +41,17 @@
         </div>
       </div>
 
+      <div t-if="mismatch" class="smp-ps-amber" role="status">
+        <t t-out="ic('globe', 14)"/>
+        <span t-esc="mismatch.line"/>
+        <button t-if="canChange and !d.blocked" type="button" class="smp-ps-link" t-on-click="openFix"><t t-out="ic('pencil', 13)"/> Change pay scheme</button>
+      </div>
+      <div t-if="contractNote" class="smp-ps-note-c" role="status">
+        <t t-out="ic('banknote', 14)"/>
+        <span t-esc="contractNote.line"/>
+        <button type="button" class="smp-ps-link" t-on-click="openContract"><t t-out="ic('fileText', 13)"/> Open the contract</button>
+        <button t-if="canChange" type="button" class="smp-ps-link" t-on-click="dismissNote">Got it</button>
+      </div>
       <div t-if="advance" class="smp-ps-line"><t t-out="ic('calendar', 14)"/><span t-esc="advanceLine"/></div>
       <div t-if="nextLine" class="smp-ps-line smp-ps--next"><t t-out="ic('arrowRight', 14)"/><span t-esc="nextLine"/></div>
       <div t-if="waitingLine" class="smp-ps-line smp-ps--wait" role="status">
@@ -103,6 +114,7 @@
         </t>
 
         <t t-else="">
+          <p t-if="props.lead" class="smp-ps-prompt" role="status"><t t-out="ic('globe', 15)"/><span t-esc="props.lead"/></p>
           <p class="smp-ps-lead"><t t-out="ic('globe', 14)"/><span t-esc="lead"/></p>
 
           <div t-if="noneForCountry" class="smp-ps-empty">
@@ -153,12 +165,13 @@
             <input type="date" class="smp-ps-in" t-att-value="state.date" t-on-change="onDate"/>
           </label>
           <p t-attf-class="smp-ps-dateline {{ dateIsMid ? 'smp-ps--mid' : '' }}" aria-live="polite"><t t-out="ic('calendar', 13)"/><span t-esc="dateLine"/></p>
+          <p t-if="currencyLine" class="smp-ps-note" role="status"><t t-out="ic('banknote', 13)"/><span t-esc="currencyLine"/></p>
 
           <p t-if="state.error" class="smp-ps-err" role="alert" t-esc="state.error"/>
           <p t-elif="disabledReason" class="smp-ps-why" t-esc="disabledReason"/>
 
           <div class="smp-ps-foot">
-            <button type="button" class="smp-ps-btn smp-ps--ghost" t-on-click="props.close">Cancel</button>
+            <button type="button" class="smp-ps-btn smp-ps--ghost" t-on-click="props.close" t-esc="cancelLabel"/>
             <button type="button" class="smp-ps-btn smp-ps--primary" t-att-disabled="canSave ? false : true" t-att-aria-busy="state.busy ? 'true' : 'false'" t-on-click="save">
               <t t-out="ic(route ? 'send' : 'check', 15)"/> <t t-esc="primaryLabel"/>
             </button>

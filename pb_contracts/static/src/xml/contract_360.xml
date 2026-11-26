@@ -372,6 +372,8 @@
                   <!-- PSCHEME P1 F.4: whose pay scheme it is, and since when -->
                   <span class="pbc-scope-since" t-if="psSince" t-esc="psSince"/>
                   <span class="pbc-scope-wait" t-if="psWaiting" t-esc="psWaiting"/>
+                  <!-- PSCHEME P2a D.1: Country of work and pay scheme disagree -->
+                  <span class="pbc-scope-wait pbc-scope-mismatch" t-if="psMismatch" t-esc="psMismatch"/>
                 </div>
                 <button class="pbim-btn ghost pbc-scope-change" t-if="canChangePayScheme"
                         t-on-click="(ev) => this.openChangePayScheme(ev)">

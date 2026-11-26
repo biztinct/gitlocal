@@ -193,6 +193,11 @@ class TestSchemeMapStaticContract(TransactionCase):
             'pb_scheme_map/static/src/scss/person_scheme.scss',
             'pb_scheme_map/static/src/js/person_scheme.js',
             'pb_scheme_map/static/src/xml/person_scheme.xml',
+            # PSCHEME P2a: the board's person drawers, the save prompt
+            'pb_scheme_map/static/src/scss/person_fill.scss',
+            'pb_scheme_map/static/src/js/person_fill.js',
+            'pb_scheme_map/static/src/xml/person_fill.xml',
+            'pb_scheme_map/static/src/js/person_scheme_prompt.js',
         ])
 
     def test_t12_every_icon_exists_in_the_shared_registry(self):

@@ -71,9 +71,11 @@ export class PaidByChip extends Component {
         if (!d.config_id) {
             return _t("No team, division or rule on the scheme map reaches this person, so no pay run would include them.");
         }
-        return d.via
+        const how = d.via
             ? _t("Worked out %(via)s.", { via: d.via })
             : _t("Worked out from the scheme map.");
+        // PSCHEME P2a D.1: the amber line, in full
+        return d.mismatch ? `${d.mismatch} ${how}` : how;
     }
 }
 
