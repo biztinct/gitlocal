@@ -472,7 +472,8 @@ class PbNewHireExample(models.AbstractModel):
             notes.append(_("Some values on this scheme come from the connected system; the example "
                            "uses the usual ones."))
         scheme = decided.get('scheme') or {}
-        if scheme and not scheme.get('match') and decided.get('problem'):
+        if scheme and decided.get('problem') and (not scheme.get('match') or not scheme.get('honoured')):
+            # P8: the pay run would not use this scheme for them yet - say so beside the example
             notes.append(decided['problem'])
         if data.get('net') is None:
             notes.append(_("This pay scheme has no take-home line, so take-home is not shown."))

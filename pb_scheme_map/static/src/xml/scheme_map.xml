@@ -525,7 +525,7 @@
 
             <p t-if="countryChoices.length" class="smp-country__group">Needs your choice</p>
             <div t-foreach="countryChoices" t-as="row" t-key="'c' + row.department_id"
-                 class="smp-draft smp-country is-choice">
+                 class="smp-draft smp-country smp-country--choice">
               <span class="smp-country__mark"><t t-out="ic('helpCircle', 16)"/></span>
               <div class="smp-draft__body">
                 <p class="smp-draft__wire">

@@ -672,7 +672,7 @@
         transition: opacity .16s ease, background-color .16s ease;
 
         &:hover { background: var(--pbim-soft); }
-        &.is-choice { cursor: default; &:hover { background: transparent; } }
+        &.smp-country--choice { cursor: default; &:hover { background: transparent; } }
     }
 
     .smp-country__tick {

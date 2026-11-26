@@ -187,9 +187,14 @@ class TestPayslipExample(NewHireCommon):
 
     # ------------------------------------------------------------------ P4
     def test_p4_errors(self):
-        none = self.example(department_id=self.lonely.id)
+        # P8 A: no scheme for the team AND none for the country -> no example
+        none = self.example(department_id=self.lonely.id, payroll_country='MY')
         self.assertEqual((none['ok'], none['reason'], none['step']),
                          (False, 'No pay scheme pays this team yet.', 'role'))
+        # P8 A: the country's only scheme gives the example, and it says the pay run would not use it yet
+        country = self.example(department_id=self.lonely.id)
+        if country.get('ok'):
+            self.assertIn('No pay scheme pays DEMO NH Lonely yet.', country['notes'])
         missing = self.studio().payslip_example(self.draft(wage=''))
         self.assertEqual((missing['ok'], missing['step']), (False, 'pay'))
         nameless = self.studio().payslip_example(self.draft(name='  '))
