@@ -8702,7 +8702,7 @@ const LESSONS = {
                  "Nó mở Thiết kế bản PDF cho báo cáo này. Khi báo cáo chưa được lưu, nút có màu xám và nói lý do."),
         affects: B("The PDF is always the reader's own table: the rows and columns they see on screen.",
                    "Bản PDF luôn là bảng của chính người đọc: các dòng và cột họ thấy trên màn hình."),
-        press: B("PDF.", "PDF."),
+        press: B("PDF, to open Design the PDF.", "Nút PDF, để mở Thiết kế bản PDF."),
       },
       {
         screen: "reportpdf", anchor: "pd-top",

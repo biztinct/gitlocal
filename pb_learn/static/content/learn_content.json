@@ -28322,8 +28322,8 @@
               "moment_to": "",
               "moment_which": "",
               "press": {
-                "en": "PDF.",
-                "vi": "PDF."
+                "en": "PDF, to open Design the PDF.",
+                "vi": "Nút PDF, để mở Thiết kế bản PDF."
               },
               "screen": "reportpdf",
               "tip": "",
@@ -44504,5 +44504,5 @@
       }
     }
   ],
-  "version": "b4043362724f"
+  "version": "93b68e0a7454"
 }
