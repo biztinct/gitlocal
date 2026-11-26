@@ -461,8 +461,10 @@ class HrPayslipFormula(models.Model):
         if self.employee_id and 'pb.scheme.map' in self.env:
             wanted = self.env.context.get('pb_cycle_type') or 'any'
             try:
+                # PSCHEME A.4: judged on the payslip's own first day, the
+                # same day the pay run judges its population on.
                 answer = self.env['pb.scheme.map'].resolve(
-                    self.employee_id, wanted)
+                    self.employee_id, wanted, on_date=self.date_from)
             except Exception:       # noqa: BLE001 — a map that cannot be read
                 # must never stop a payslip computing; the rungs below still
                 # answer, exactly as they did before this rung existed.

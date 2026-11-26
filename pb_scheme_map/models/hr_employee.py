@@ -33,6 +33,8 @@ import logging
 
 from odoo import api, fields, models
 
+from .pb_scheme_map import ADVANCE_RUNGS
+
 _logger = logging.getLogger(__name__)
 
 #: How many people one nightly pass refreshes. A group with 40,000 people
@@ -58,6 +60,12 @@ class HrEmployee(models.Model):
     pb_paid_by_stale = fields.Boolean(
         string='Needs working out again', default=True, index=True,
         readonly=True)
+    #: PSCHEME B.4 — "Paid by" comes from the person's OWN pay scheme (the
+    #: resolver's `person` rung), not from their team, a rule or the company's
+    #: only scheme. Stored so a screen can tell the two apart without reading
+    #: the sentence in `pb_paid_by_rung` (trap T11).
+    pb_paid_by_own = fields.Boolean(
+        string='Their own pay scheme', readonly=True, index=True)
 
     # ------------------------------------------------------- which kind of run
     @api.model
@@ -153,19 +161,20 @@ class HrEmployee(models.Model):
                 # make the end-of-month scheme pay the advance too, which is
                 # the same person paid twice on paper.
                 advance_id = (second.get('config_id') or 0
-                              if second.get('rung') in ('department',
-                                                        'division', 'rule')
+                              if second.get('rung') in ADVANCE_RUNGS
                               else 0)
                 key = (answer.get('config_id') or 0, advance_id,
-                       answer.get('via') or '')
+                       answer.get('via') or '',
+                       answer.get('rung') == 'person')
                 buckets.setdefault(key, []).append(employee_id)
-            for (config_id, advance_id, via), bucket in buckets.items():
+            for (config_id, advance_id, via, own), bucket in buckets.items():
                 rows = self.sudo().browse(bucket)
                 stale = rows.filtered(
-                    lambda r, c=config_id, a=advance_id, v=via: (
+                    lambda r, c=config_id, a=advance_id, v=via, o=own: (
                         r.pb_paid_by_id.id != c
                         or r.pb_paid_by_advance_id.id != a
                         or (r.pb_paid_by_rung or '') != v
+                        or bool(r.pb_paid_by_own) != o
                         or r.pb_paid_by_stale))
                 if not stale:
                     continue
@@ -181,6 +190,7 @@ class HrEmployee(models.Model):
                     'pb_paid_by_id': config_id or False,
                     'pb_paid_by_advance_id': advance_id or False,
                     'pb_paid_by_rung': via,
+                    'pb_paid_by_own': own,
                     'pb_paid_by_stale': False,
                 })
         if newly_known:
@@ -208,6 +218,20 @@ class HrEmployee(models.Model):
                             '"Paid by" became known', len(employee_ids),
                             exc_info=True)
             return 0
+
+    def write(self, vals):
+        """PSCHEME B.2 / A7 — a Country of work change can change who pays
+        this person (rules on the map read it), so "Paid by" is marked to be
+        worked out again. That is ALL it does: the server never changes a pay
+        scheme because a country changed; the screens ask first (R4)."""
+        res = super().write(vals)
+        if 'payroll_country' in vals and self.ids:
+            try:
+                self.sudo()._pb_mark_paid_by_stale(employee_ids=self.ids)
+            except Exception:       # noqa: BLE001 — never block an HR edit
+                _logger.exception('Could not flag "paid by" after a Country '
+                                  'of work change')
+        return res
 
     @api.model
     def _pb_cron_recompute_paid_by(self):

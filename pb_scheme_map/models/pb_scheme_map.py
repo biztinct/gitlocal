@@ -57,6 +57,7 @@ import time
 from collections import defaultdict
 
 from odoo import _, api, fields, models
+from odoo.tools.misc import format_date
 
 from .formula_scheme_assignment import CYCLE_WORDS
 
@@ -64,7 +65,23 @@ _logger = logging.getLogger(__name__)
 
 #: The rungs, in the order they are tried. Exported so a test can assert the
 #: order rather than a behaviour that happens to look like it.
-RUNGS = ('segment', 'department', 'division', 'rule', 'only', 'none')
+#: PSCHEME A2: `'person'` — the person's own pay scheme (`pb.person.scheme`),
+#: below a work segment and above everything a team decides.
+RUNGS = ('segment', 'person', 'department', 'division', 'rule', 'only', 'none')
+
+#: PSCHEME A6 — the rungs whose answer to "who pays the mid-month advance?"
+#: counts as a real advance. "The only scheme in this company" (rung `only`)
+#: would make the end-of-month scheme pay the advance too, and a work segment
+#: answers every kind of run with the same scheme. ONE constant: "Paid by"
+#: (`hr_employee.py`) and the side panel chip (`pb_scheme_board.py`) read it;
+#: the copy in `pb_hr_payroll_formula/models/scheme_component_scope.py` stays a
+#: literal (dependency rail) and `test_person_scheme` asserts the three agree.
+ADVANCE_RUNGS = ('person', 'department', 'division', 'rule')
+
+#: The context key that makes `resolve_many` answer as if nobody had a pay
+#: scheme of their own (PSCHEME A.2: the pay run's "paid elsewhere" list and
+#: the one-time fill). Read nowhere else.
+SKIP_PERSON = 'pb_scheme_skip_person'
 
 #: Caps on anything a caller controls — this model is reachable over JSON-RPC.
 MAX_EMPLOYEES = 20000
@@ -269,6 +286,100 @@ class PbSchemeMap(models.AbstractModel):
         configs = Config.search(domain, limit=2)
         return configs if len(configs) == 1 else Config.browse()
 
+    # ========================================================= the person
+    @api.model
+    def _person_rows_for(self, rows, day):
+        """PSCHEME A4 — of ONE person's rows, the row that counts on `day`
+        for each kind of run: the row in force on `day`; else, when nothing
+        of that kind started before `day`, their EARLIEST row of that kind (a
+        first pay scheme counts backwards, so a joiner hired on the 15th is
+        found by a pay run judged on the 1st); else nothing.
+
+        Returns `({cycle_type: row}, {cycle_type, …} that have rows but none
+        counting on `day`)`.
+        """
+        by_kind = defaultdict(list)
+        for row in rows:
+            by_kind[row.cycle_type or 'regular'].append(row)
+        counting, ended = {}, set()
+        for kind, kind_rows in by_kind.items():
+            kind_rows.sort(key=lambda r: (r.date_from, r.id))
+            in_force = [r for r in kind_rows if r.date_from <= day
+                        and (not r.date_to or r.date_to >= day)]
+            if in_force:
+                counting[kind] = in_force[-1]
+            elif not any(r.date_from < day for r in kind_rows):
+                counting[kind] = kind_rows[0]
+            else:
+                ended.add(kind)
+        return counting, ended
+
+    @api.model
+    def _person_schemes(self, employee_ids, on_date=None):
+        """`{employee_id: {'has_rows': True, 'rows': {cycle_type: row},
+        'ended': {cycle_type}}}` for every person with at least one active
+        row — ONE search for the whole roster, through the ORM (trap T4: the
+        ORM flushes pending writes before it searches). A person with no row
+        is simply absent, so a database that has never written a row answers
+        exactly as it did before this rung existed."""
+        if not employee_ids or 'pb.person.scheme' not in self.env \
+                or self.env.context.get(SKIP_PERSON):
+            return {}
+        day = fields.Date.to_date(on_date) if on_date else \
+            fields.Date.context_today(self)
+        rows = self.env['pb.person.scheme'].sudo().search([
+            ('employee_id', 'in', list(employee_ids)),
+            ('active', '=', True),
+        ], order='date_from, id')
+        grouped = defaultdict(list)
+        for row in rows:
+            grouped[row.employee_id.id].append(row)
+        out = {}
+        for employee_id, person_rows in grouped.items():
+            counting, ended = self._person_rows_for(person_rows, day)
+            out[employee_id] = {'has_rows': True, 'rows': counting,
+                                'ended': ended}
+        return out
+
+    @api.model
+    def _person_answer(self, config, date_from):
+        """The answer the person rung gives for one scheme of their own."""
+        return {
+            'config_id': config.id,
+            'config_name': config.name or '',
+            'rung': 'person',
+            'via': _("their own pay scheme, from %(date)s",
+                     date=format_date(self.env, date_from) if date_from
+                     else ''),
+            'date_from': fields.Date.to_string(date_from) if date_from
+            else False,
+        }
+
+    @api.model
+    def _rung_person(self, entry, cycle_type):
+        """Rung 2 (PSCHEME A3): authoritative once the person has ANY
+        active row — it answers their own row for the asked kind, or nobody;
+        it never falls through to the team (owner ruling R7: no advance from
+        the team for a person with a pay scheme of their own). The caller
+        lets `full_final` fall through before reaching here."""
+        row = self._pick(entry.get('rows') or {}, cycle_type)
+        if row and row.config_id.state == 'active':
+            return self._person_answer(row.config_id, row.date_from)
+        blank = self._blank()
+        if row:
+            blank['via'] = _("Their own pay scheme, %(scheme)s, is switched "
+                             "off.", scheme=row.config_id.name or '')
+        elif cycle_type == 'mid_cycle':
+            blank['via'] = _("They have their own pay scheme and no mid-month "
+                             "advance of their own.")
+        elif cycle_type in (entry.get('ended') or set()):
+            blank['via'] = _("Their own pay scheme has ended and no new one "
+                             "follows.")
+        else:
+            blank['via'] = _("They have their own pay scheme, but none for "
+                             "this kind of pay run.")
+        return blank
+
     # =============================================================== resolve
     @api.model
     def resolve(self, employee, cycle_type='any', on_date=None):
@@ -376,6 +487,8 @@ class PbSchemeMap(models.AbstractModel):
         # module that owns them is installed; an empty answer costs one
         # search that returns nothing.
         by_segment = self._segment_schemes(ids, on_date)
+        # 2 — the person's own pay scheme (PSCHEME). ONE search for the roster.
+        by_person = self._person_schemes(ids, on_date)
 
         only_cache = {}
         out = {}
@@ -388,21 +501,28 @@ class PbSchemeMap(models.AbstractModel):
                 out[employee_id] = segment
                 continue
 
-            # 2 — the department map, deepest first.
+            # 2 — their own pay scheme (PSCHEME A3). A final settlement always
+            # falls through to the rest of the ladder.
+            person = by_person.get(employee_id)
+            if person and cycle_type != 'full_final':
+                out[employee_id] = self._rung_person(person, cycle_type)
+                continue
+
+            # 3 — the department map, deepest first.
             found = self._rung_department(chain, by_department, names,
                                           cycle_type)
             if found:
                 out[employee_id] = found
                 continue
 
-            # 3 — the division the team belongs to.
+            # 4 — the division the team belongs to.
             found = self._rung_division(chain, division_of, by_division,
                                         cycle_type)
             if found:
                 out[employee_id] = found
                 continue
 
-            # 4 — an advanced rule.
+            # 5 — an advanced rule.
             hit = None
             for row, matched in rule_hits:
                 if employee_id in matched:
@@ -417,13 +537,13 @@ class PbSchemeMap(models.AbstractModel):
                 }
                 continue
 
-            # 5 — the company's only scheme. Rule 8.
+            # 6 — the company's only scheme. Rule 8.
             found = self._rung_only(company_id, cycle_type, only_cache)
             if found:
                 out[employee_id] = found
                 continue
 
-            # 6 — nobody, and it says so.
+            # 7 — nobody, and it says so.
             out[employee_id] = self._blank()
         return out
 
@@ -546,6 +666,13 @@ class PbSchemeMap(models.AbstractModel):
         (no kind-of-run filter on a rule). Writes nothing; never raises."""
         company_id = self._as_company_id(company_id)
         dept_id = int(department_id or 0)
+        # PSCHEME A.3 — a draft that carries the pay scheme chosen for the
+        # person answers on the person rung first, by the same rules as a real
+        # person with those rows (ledger A3 / A5). Without `scheme_id` the
+        # draft is answered exactly as before.
+        own = self._draft_person(values, cycle_type, on_date)
+        if own is not None:
+            return own
         try:
             chains, _meta = self._chains([company_id])
             rows = self._map_rows([company_id], on_date)
@@ -565,6 +692,46 @@ class PbSchemeMap(models.AbstractModel):
                             exc_info=True)
             found = None
         return found or self._blank()
+
+    @api.model
+    def _draft_person(self, values, cycle_type='any', on_date=None):
+        """The person rung for somebody who does not exist yet, or None when
+        the draft carries no pay scheme of its own (`values['scheme_id']`,
+        optionally `values['advance_scheme_id']`). The main kind is the chosen
+        scheme's own kind. Never raises."""
+        values = dict(values or {})
+        try:
+            main_id = int(values.get('scheme_id') or 0)
+        except (TypeError, ValueError):
+            main_id = 0
+        if not main_id or cycle_type == 'full_final':
+            return None
+        Config = self.env['hr.formula.config'].sudo()
+        main = Config.browse(main_id).exists()
+        if not main:
+            return None
+        try:
+            advance_id = int(values.get('advance_scheme_id') or 0)
+        except (TypeError, ValueError):
+            advance_id = 0
+        advance = Config.browse(advance_id).exists() if advance_id else Config
+        start = fields.Date.to_date(values.get('date_from')) \
+            if values.get('date_from') else (
+                fields.Date.to_date(on_date) if on_date
+                else fields.Date.context_today(self))
+
+        class _Row:
+            # the shape `_pick` and `_rung_person` read off a stored row
+            def __init__(self, config):
+                self.config_id = config
+                self.date_from = start
+
+        rows = {main.cycle_type or 'regular': _Row(main)}
+        if advance and advance.cycle_type == 'mid_cycle' \
+                and 'mid_cycle' not in rows:
+            rows['mid_cycle'] = _Row(advance)
+        return self._rung_person({'has_rows': True, 'rows': rows,
+                                  'ended': set()}, cycle_type)
 
     @api.model
     def _rung_rule_draft(self, rows, dept_id, values, company_id):

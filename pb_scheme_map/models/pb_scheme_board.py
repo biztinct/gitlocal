@@ -39,6 +39,7 @@ from odoo.addons.pb_hr_payroll_formula.models.schememap_approval import (
 )
 
 from .formula_scheme_assignment import CYCLE_SELECTION, CYCLE_WORDS
+from .pb_scheme_map import ADVANCE_RUNGS
 
 _logger = logging.getLogger(__name__)
 
@@ -688,8 +689,7 @@ class PbSchemeBoard(models.AbstractModel):
             main = Map.resolve(employee.id, cycle)
             advance = Map.resolve(employee.id, 'mid_cycle')
             advance_id = (advance.get('config_id') or 0
-                          if advance.get('rung') in ('department', 'division',
-                                                     'rule') else 0)
+                          if advance.get('rung') in ADVANCE_RUNGS else 0)
             name = main.get('config_name') or ''
             via = main.get('via') or ''
         else:

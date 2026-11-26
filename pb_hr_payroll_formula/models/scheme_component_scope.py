@@ -110,8 +110,13 @@ class HrFormulaConfig(models.Model):
             second = Map.resolve(person, 'mid_cycle') or {}
             # The same narrowing `_pb_recompute_paid_by` applies: "the only
             # scheme in this company" answering the advance question would make
-            # the end-of-month scheme pay the advance too.
-            if second.get('rung') in ('segment', 'department', 'division',
+            # the end-of-month scheme pay the advance too. PSCHEME A6: this
+            # literal equals `pb_scheme_map.models.pb_scheme_map.ADVANCE_RUNGS`
+            # (asserted by `test_person_scheme`; a literal because this module
+            # must not import the map — dependency rail). `segment` was dropped:
+            # a work segment answers every kind of run with ONE scheme, which
+            # the main answer above already added, so it never added anything.
+            if second.get('rung') in ('person', 'department', 'division',
                                       'rule') \
                     and second.get('config_id') \
                     and int(second['config_id']) not in found:
