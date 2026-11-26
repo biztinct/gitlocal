@@ -189,6 +189,10 @@ class TestSchemeMapStaticContract(TransactionCase):
             'pb_scheme_map/static/src/js/scheme_map_chip.js',
             'pb_scheme_map/static/src/js/scheme_map_palette.js',
             'pb_scheme_map/static/src/xml/scheme_map.xml',
+            # PSCHEME P1 F: the person's pay scheme block and dialog
+            'pb_scheme_map/static/src/scss/person_scheme.scss',
+            'pb_scheme_map/static/src/js/person_scheme.js',
+            'pb_scheme_map/static/src/xml/person_scheme.xml',
         ])
 
     def test_t12_every_icon_exists_in_the_shared_registry(self):

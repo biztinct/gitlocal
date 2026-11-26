@@ -481,6 +481,7 @@ export class Contract360Drawer extends Component {
             busy: false,       // a lifecycle action is running
             asking: false,     // a confirmation dialog owns Escape
             takeHome: false,   // WDGAP W2-C — the take-home card owns Escape
+            ps: null,          // PSCHEME P1 F.4 — the person's own pay scheme
         });
         // Non-reactive: the cell a popover floats beside. Putting a DOM node in
         // reactive state makes OWL proxy it, and a proxied element is not the
@@ -517,6 +518,55 @@ export class Contract360Drawer extends Component {
         } finally {
             this.state.loaded = true;
         }
+        await this.loadPersonScheme();
+    }
+
+    // -------------------------------------------- PSCHEME P1 F.4: their own
+    // The person's own pay scheme, when the module that owns it is installed
+    // — found through a registry, never imported, so this drawer has no
+    // dependency on it and is exactly as before without it.
+    get personSchemeApi() { return registry.category("pb_person_scheme").get("api", null); }
+    async loadPersonScheme() {
+        const api = this.personSchemeApi;
+        const id = this.header.employee_id;
+        if (!api || !id) {
+            this.state.ps = null;
+            return;
+        }
+        try {
+            this.state.ps = await api.load(this.orm, id);
+        } catch {
+            this.state.ps = null;       // the strip stays as it always was
+        }
+    }
+    get ps() { return (this.state.ps && this.state.ps.found) ? this.state.ps : null; }
+    get psSince() {
+        const main = this.ps && this.ps.main;
+        return main ? main.from_words || "" : "";
+    }
+    get psWaiting() {
+        const w = this.ps && this.ps.waiting;
+        return w ? _t("Waiting for approval: %(scheme)s from %(date)s", { scheme: w.scheme, date: w.date_words }) : "";
+    }
+    get canChangePayScheme() {
+        return Boolean(this.ps && this.ps.can_propose && this.ps.employee && this.ps.employee.active);
+    }
+    openChangePayScheme(ev) {
+        const api = this.personSchemeApi;
+        if (!api || !this.ps) {
+            this.openWhoIsPaidBy();
+            return;
+        }
+        this.state.asking = true;       // the dialog owns Escape while it is up
+        api.open(this.dialog, {
+            employeeId: this.ps.employee.id, data: this.state.ps,
+            opener: ev && ev.currentTarget,
+            onSaved: async () => {
+                await this.load();
+                if (this.props.onChanged) { this.props.onChanged(); }
+            },
+            onClose: () => { this.state.asking = false; },
+        });
     }
     _err(e) {
         return (e && e.message && e.message.data && e.message.data.message)

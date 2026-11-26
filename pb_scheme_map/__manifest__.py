@@ -34,7 +34,7 @@ WHAT IT DOES NOT CHANGE
   A company with exactly one scheme and no map notices nothing at all: its
   pay run covers exactly the people it always did.
 """,
-    'version': '19.0.2.5.6',
+    'version': '19.0.2.6.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -46,11 +46,15 @@ WHAT IT DOES NOT CHANGE
         'pb_group',                # divisions, and the group the map lives in
         'pb_hub',                  # the global palette
         'pb_import_kit',           # pbim tokens/primitives + the shared ic() set
+        # PSCHEME P1 F.1: the person's "Pay scheme" block on the employee side
+        # panel is drawn here (no cycle: the vault never reaches this module).
+        'pb_employee_vault',
     ],
-    # No `ir.model.access.csv`: this module declares no table of its own. It
-    # adds fields to models that already carry their access rules, and two
-    # AbstractModel facades, which have no rows to grant access to.
+    # PSCHEME P1: ONE table of its own, `pb.person.scheme` — READ for the
+    # groups that read the map, WRITE for nobody (every row is written by the
+    # board under sudo, behind the approval route).
     'data': [
+        'security/ir.model.access.csv',
         'data/ir_cron.xml',
     ],
     'assets': {
@@ -60,6 +64,9 @@ WHAT IT DOES NOT CHANGE
             'pb_scheme_map/static/src/js/scheme_map_chip.js',
             'pb_scheme_map/static/src/js/scheme_map_palette.js',
             'pb_scheme_map/static/src/xml/scheme_map.xml',
+            'pb_scheme_map/static/src/scss/person_scheme.scss',
+            'pb_scheme_map/static/src/js/person_scheme.js',
+            'pb_scheme_map/static/src/xml/person_scheme.xml',
         ],
     },
     'installable': True,

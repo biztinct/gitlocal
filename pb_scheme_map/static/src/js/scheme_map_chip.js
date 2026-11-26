@@ -22,11 +22,13 @@
  */
 import { Component, onWillStart, useState } from "@odoo/owl";
 import { registry } from "@web/core/registry";
-import { useService } from "@web/core/utils/hooks";
+import { useBus, useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
 import { ic } from "@pb_import_kit/js/import_icons";
 
 const MODEL = "pb.scheme.board";
+/** PSCHEME P1: a person's own pay scheme changed on screen. */
+export const PERSON_SCHEME_CHANGED = "PB_PERSON_SCHEME_CHANGED";
 
 export class PaidByChip extends Component {
     static template = "pb_scheme_map.PaidByChip";
@@ -37,18 +39,28 @@ export class PaidByChip extends Component {
     setup() {
         this.orm = useService("orm");
         this.state = useState({ data: { found: false } });
-        onWillStart(async () => {
-            try {
-                // `silent` on purpose: a chip is an extra on somebody else's
-                // drawer, and a failed extra must never put a loading bar or an
-                // error dialog over the drawer that DID load.
-                const answer = await this.orm.silent.call(
-                    MODEL, "paid_by", [Number(this.props.empId) || 0]);
-                this.state.data = answer || { found: false };
-            } catch {
-                this.state.data = { found: false };
+        onWillStart(() => this.load());
+        // PSCHEME P1 F.3: the person's pay scheme changed on this screen (the
+        // "Pay scheme" block or the contract drawer) — say the new answer here
+        // too, so one panel never shows two different schemes.
+        useBus(this.env.bus, PERSON_SCHEME_CHANGED, (ev) => {
+            if (Number((ev.detail || {}).empId) === Number(this.props.empId)) {
+                this.load();
             }
         });
+    }
+
+    async load() {
+        try {
+            // `silent` on purpose: a chip is an extra on somebody else's
+            // drawer, and a failed extra must never put a loading bar or an
+            // error dialog over the drawer that DID load.
+            const answer = await this.orm.silent.call(
+                MODEL, "paid_by", [Number(this.props.empId) || 0]);
+            this.state.data = answer || { found: false };
+        } catch {
+            this.state.data = { found: false };
+        }
     }
 
     ic(n, s = 14) { return ic(n, s); }

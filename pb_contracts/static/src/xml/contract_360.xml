@@ -369,7 +369,14 @@
                             t-esc="schemeRoleLabel(scheme)"/>
                     </span>
                   </t>
+                  <!-- PSCHEME P1 F.4: whose pay scheme it is, and since when -->
+                  <span class="pbc-scope-since" t-if="psSince" t-esc="psSince"/>
+                  <span class="pbc-scope-wait" t-if="psWaiting" t-esc="psWaiting"/>
                 </div>
+                <button class="pbim-btn ghost pbc-scope-change" t-if="canChangePayScheme"
+                        t-on-click="(ev) => this.openChangePayScheme(ev)">
+                  <t t-out="ic('pencil',14)"/> Change pay scheme
+                </button>
               </div>
 
               <!-- FILLIN P2 A3 — one quiet line while anything Payobook
@@ -402,7 +409,11 @@
                 <p>No payroll scheme pays this person yet.</p>
                 <small>Components follow the scheme that pays somebody, so until
                   one does there is nothing here to show.</small>
-                <button class="pbim-btn primary" t-on-click="openWhoIsPaidBy">
+                <button class="pbim-btn primary" t-if="canChangePayScheme"
+                        t-on-click="(ev) => this.openChangePayScheme(ev)">
+                  <t t-out="ic('pencil',14)"/> Change pay scheme
+                </button>
+                <button class="pbim-btn primary" t-else="" t-on-click="openWhoIsPaidBy">
                   <t t-out="ic('gitMerge',14)"/> Choose who is paid by what
                 </button>
               </div>

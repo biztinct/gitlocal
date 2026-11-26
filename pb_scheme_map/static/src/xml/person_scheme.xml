@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       PSCHEME P1 F.1: the person's "Pay scheme" block, drawn INSIDE the
+       side panel's own section (the section and its heading stay the
+       panel's; only the key/value list is swapped). The section's own t-if
+       is left alone: the Bank block sets it, and inherit order is not fixed.
+       No double hyphen in a comment; one class attribute per element; every
+       sentence on one line.
+       ==================================================================== -->
+  <t t-name="pb_scheme_map.Employee360Drawer" t-inherit="pb_employee_vault.Employee360Drawer" t-inherit-mode="extension">
+    <xpath expr="//t[@t-foreach='groups(state.tab)']/section[hasclass('pev-sec')]/dl[hasclass('pev-kv')]" position="attributes">
+      <attribute name="t-if">grp.kind !== 'pb_scheme'</attribute>
+    </xpath>
+    <xpath expr="//t[@t-foreach='groups(state.tab)']/section[hasclass('pev-sec')]/dl[hasclass('pev-kv')]" position="before">
+      <PersonSchemeBlock t-if="grp.kind === 'pb_scheme' and grp.pb_scheme" block="grp.pb_scheme" employeeId="props.empId"/>
+    </xpath>
+  </t>
+
+  <t t-name="pb_scheme_map.PersonSchemeBlock">
+    <div class="pbim smp-ps smp-ps-block" aria-live="polite">
+      <div t-if="main" t-attf-class="smp-ps-now {{ state.flash ? 'smp-ps--new' : '' }}" t-key="'now-' + state.flash">
+        <span class="smp-ps-tile" t-out="ic('banknote', 18)"/>
+        <div class="smp-ps-now-t">
+          <div class="smp-ps-now-name">
+            <b t-esc="main.name"/>
+            <span t-if="main.currency" class="smp-ps-chip" t-esc="main.currency"/>
+          </div>
+          <span t-attf-class="smp-ps-from {{ main.own ? 'smp-ps--own' : '' }}">
+            <t t-out="ic(main.own ? 'user' : 'users', 13)"/>
+            <span t-esc="main.from_words"/>
+          </span>
+        </div>
+      </div>
+      <div t-else="" class="smp-ps-now smp-ps--none">
+        <span class="smp-ps-tile is-warn" t-out="ic('alert', 18)"/>
+        <div class="smp-ps-now-t">
+          <div class="smp-ps-now-name"><b>No pay scheme yet</b></div>
+          <span class="smp-ps-from" t-esc="d.none_words"/>
+        </div>
+      </div>
+
+      <div t-if="advance" class="smp-ps-line"><t t-out="ic('calendar', 14)"/><span t-esc="advanceLine"/></div>
+      <div t-if="nextLine" class="smp-ps-line smp-ps--next"><t t-out="ic('arrowRight', 14)"/><span t-esc="nextLine"/></div>
+      <div t-if="waitingLine" class="smp-ps-line smp-ps--wait" role="status">
+        <t t-out="ic('clock', 14)"/>
+        <span><span t-esc="waitingLine"/><small t-if="waitingWho" t-esc="waitingWho"/></span>
+      </div>
+
+      <div class="smp-ps-acts">
+        <button t-if="canChange" t-ref="change" type="button" class="smp-ps-btn" t-att-disabled="d.blocked ? true : false" t-att-title="d.blocked or ''" t-on-click="openChange">
+          <t t-out="ic('pencil', 14)"/> Change pay scheme
+        </button>
+        <button t-if="(d.history || []).length" type="button" class="smp-ps-link" t-att-aria-expanded="state.history ? 'true' : 'false'" t-on-click="toggleHistory">
+          <t t-out="ic('history', 14)"/> <t t-esc="historyLabel"/>
+          <span t-attf-class="smp-ps-chev {{ state.history ? 'smp-ps--open' : '' }}" t-out="ic('chevronDown', 14)"/>
+        </button>
+      </div>
+      <p t-if="canChange and d.blocked" class="smp-ps-why" t-esc="d.blocked"/>
+
+      <ol t-if="state.history" class="smp-ps-hist">
+        <li t-foreach="d.history" t-as="h" t-key="h.id" t-attf-class="{{ h.now ? 'smp-ps--now' : '' }}">
+          <b t-esc="h.scheme"/>
+          <span t-esc="h.kind_words"/>
+          <span t-esc="historyDates(h)"/>
+          <small t-esc="h.source_words"/>
+        </li>
+      </ol>
+    </div>
+  </t>
+
+  <!-- ====================================================================
+       PSCHEME P1 F.2: "Change pay scheme". One component, reused by the
+       contract drawer. Enter or Space picks a card, the arrows move, Ctrl or
+       Cmd + Enter saves, Esc closes (the dialog's own key).
+       ==================================================================== -->
+  <t t-name="pb_scheme_map.ChangePaySchemeDialog">
+    <Dialog title="title" size="'md'" footer="false" contentClass="'smp-ps-dlg'">
+      <div class="pbim smp-ps smp-ps-dlg-body" t-on-keydown="onKeydown">
+
+        <t t-if="state.loading">
+          <div class="smp-ps-skel" aria-busy="true">
+            <span class="smp-ps-skel-l"/>
+            <span class="smp-ps-skel-c"/>
+            <span class="smp-ps-skel-c"/>
+            <span class="smp-ps-skel-l smp-ps--short"/>
+          </div>
+        </t>
+
+        <t t-elif="state.done">
+          <div class="smp-ps-done" role="status">
+            <span t-attf-class="smp-ps-done-ic {{ state.done.saved ? '' : 'smp-ps--wait' }}" t-out="ic(state.done.saved ? 'check' : 'send', 22)"/>
+            <b t-esc="state.done.head"/>
+            <p t-esc="state.done.line"/>
+            <button type="button" class="smp-ps-btn smp-ps--primary smp-ps-done-go" t-on-click="props.close">Done</button>
+          </div>
+        </t>
+
+        <t t-elif="!d.found">
+          <p t-if="state.error" class="smp-ps-err" role="alert" t-esc="state.error"/>
+          <p t-else="" class="smp-ps-err" role="alert">This person could not be found. Close this and open them again.</p>
+        </t>
+
+        <t t-else="">
+          <p class="smp-ps-lead"><t t-out="ic('globe', 14)"/><span t-esc="lead"/></p>
+
+          <div t-if="noneForCountry" class="smp-ps-empty">
+            <span class="smp-ps-tile is-warn" t-out="ic('alert', 18)"/>
+            <div>
+              <b t-esc="noneLine"/>
+              <p>Add a pay scheme for this country in Mapping, or pick one of another country below.</p>
+              <button type="button" class="smp-ps-link" t-on-click="openMapping"><t t-out="ic('mapPin', 14)"/> Open Mapping</button>
+            </div>
+          </div>
+
+          <div class="smp-ps-cards" role="radiogroup" aria-label="Pay scheme" t-ref="cards">
+            <div t-foreach="shownCards" t-as="c" t-key="c.id" t-attf-class="smp-ps-card {{ state.pick === c.id ? 'is-on' : '' }}" role="radio" t-att-aria-checked="state.pick === c.id ? 'true' : 'false'" t-att-tabindex="(state.pick === c.id or (!state.pick and c_first)) ? '0' : '-1'" t-on-click="() => this.pick(c)" t-on-keydown="(ev) => this.onCardKey(c, ev)">
+              <span class="smp-ps-dot" aria-hidden="true"><t t-if="state.pick === c.id" t-out="ic('check', 11)"/></span>
+              <span class="smp-ps-card-t">
+                <b t-esc="c.name"/>
+                <small t-esc="meta(c)"/>
+              </span>
+              <span t-if="isCurrent(c)" class="smp-ps-tag">Now</span>
+              <span t-elif="isOther(c)" class="smp-ps-tag smp-ps--other" t-esc="c.country_name"/>
+            </div>
+          </div>
+          <p t-if="pickedIsOther" class="smp-ps-note"><t t-out="ic('alert', 13)"/><span>Tax and insurance boxes follow the Country of work, not the pay scheme. Change the Country of work too if this person moved.</span></p>
+
+          <button t-if="countryName and others.length" type="button" class="smp-ps-link" t-att-aria-expanded="state.others ? 'true' : 'false'" t-on-click="toggleOthers">
+            <t t-out="ic('globe', 14)"/> <t t-esc="othersLabel"/>
+          </button>
+
+          <div t-if="advances.length" class="smp-ps-adv">
+            <t t-if="oneAdvance">
+              <label class="smp-ps-switch">
+                <input type="checkbox" role="switch" t-att-checked="advanceOn" t-att-aria-checked="advanceOn ? 'true' : 'false'" t-on-change="toggleAdvance"/>
+                <span class="smp-ps-switch-ui" aria-hidden="true"/>
+                <span t-esc="advanceLine"/>
+              </label>
+            </t>
+            <label t-else="" class="smp-ps-f">
+              <span>Mid-month advance</span>
+              <select class="smp-ps-in" t-on-change="onAdvanceSelect">
+                <option value="" t-att-selected="!state.advance">None</option>
+                <option t-foreach="advances" t-as="a" t-key="a.id" t-att-value="a.id" t-att-selected="isAdvance(a)" t-esc="a.name"/>
+              </select>
+            </label>
+          </div>
+
+          <label class="smp-ps-f">
+            <span>From</span>
+            <input type="date" class="smp-ps-in" t-att-value="state.date" t-on-change="onDate"/>
+          </label>
+          <p t-attf-class="smp-ps-dateline {{ dateIsMid ? 'smp-ps--mid' : '' }}" aria-live="polite"><t t-out="ic('calendar', 13)"/><span t-esc="dateLine"/></p>
+
+          <p t-if="state.error" class="smp-ps-err" role="alert" t-esc="state.error"/>
+          <p t-elif="disabledReason" class="smp-ps-why" t-esc="disabledReason"/>
+
+          <div class="smp-ps-foot">
+            <button type="button" class="smp-ps-btn smp-ps--ghost" t-on-click="props.close">Cancel</button>
+            <button type="button" class="smp-ps-btn smp-ps--primary" t-att-disabled="canSave ? false : true" t-att-aria-busy="state.busy ? 'true' : 'false'" t-on-click="save">
+              <t t-out="ic(route ? 'send' : 'check', 15)"/> <t t-esc="primaryLabel"/>
+            </button>
+          </div>
+        </t>
+      </div>
+    </Dialog>
+  </t>
+</templates>
