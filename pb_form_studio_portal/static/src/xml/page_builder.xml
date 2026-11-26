@@ -94,6 +94,7 @@
             </t>
             <t t-else="">
               <div class="pbpb-pane">
+                <div t-if="limited" class="pbfb-note lock"><t t-out="ic('building',15)"/> <span t-esc="limitedLine"/></div>
                 <t t-if="companies.length">
                   <div class="pbpb-h">Page for</div>
                   <label class="pbpb-lab">
@@ -108,6 +109,7 @@
                     <button t-else="" type="button" class="pbfb-btn sm outline" t-on-click="dropCompanyPage"><t t-out="ic('undo',13)"/> <span>Use the page for all companies again</span></button>
                   </t>
                 </t>
+                <t t-if="!limited">
                 <div class="pbpb-h">History</div>
                 <p t-if="!history.length" class="pbfb-hint flush">Nothing published yet: employees see the standard page.</p>
                 <div t-foreach="history" t-as="h" t-key="h.id" class="pbpb-hist">
@@ -118,6 +120,7 @@
                   <button type="button" class="pbfb-btn sm outline" t-att-disabled="!canUndo" t-on-click="undo"><t t-out="ic('undo',13)"/> <span>Undo the last publish</span></button>
                   <button type="button" class="pbfb-btn sm danger" t-att-disabled="!data.published" t-on-click="() => this.openSheet('reset')"><t t-out="ic('rotate',13)"/> <span>Reset to the standard page</span></button>
                 </div>
+                </t>
                 <button type="button" class="pbfb-link" t-on-click="openMyProfile"><t t-out="ic('external',13)"/> <span>Open my own My Profile</span></button>
               </div>
             </t>
@@ -272,10 +275,13 @@
               <div class="pbfb-prop">
                 <div class="pbfb-stdname"><b t-esc="label(f)"/><span t-esc="f.type_label"/></div>
                 <div t-if="(f.countries || []).length" class="pbfb-note lock"><t t-out="ic('globe',15)"/> <span>Shown only to people whose Country of Work is <t t-esc="countryText(f)"/>.</span></div>
+                <t t-if="!limited">
                 <div class="pbpb-h">Label</div>
                 <label t-foreach="langs" t-as="lang" t-key="lang"><span t-esc="langName(lang)"/>
                   <input type="text" maxlength="60" t-att-value="labelValue(f, lang)" t-att-placeholder="f.field_label" t-on-change="(ev) => this.onLabel(f, lang, ev)"/></label>
                 <p class="pbfb-hint flush">The label is the field's own: it changes on every screen, as in the Form builder.</p>
+                </t>
+                <div t-else="" class="pbfb-note lock"><t t-out="ic('lock',15)"/> <span>Its label and what the employee can change apply to every company, so an administrator changes them.</span></div>
                 <t t-if="selItem">
                   <div class="pbpb-h">Width</div>
                   <div class="pbfb-seg" role="group" aria-label="Width">
@@ -288,7 +294,7 @@
                     </select>
                   </label>
                 </t>
-                <div class="pbfb-portal">
+                <div t-if="!limited" class="pbfb-portal">
                   <div class="pbfb-portal-h"><t t-out="ic('smartphone',14)"/> <span>The employee</span></div>
                   <t t-if="f.request">
                     <div class="pbfb-row">

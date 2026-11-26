@@ -27,7 +27,7 @@ from odoo.http import request
 
 from odoo.addons.pb_form_studio_reach.controllers.portal import PREFIX, PbFormBuilderMyDetails
 
-from ..models.page_builder import EMP, PAGE_HOST, PROFILE_BOXES
+from ..models.page_builder import BUILDER_GROUP, EMP, PAGE_HOST, PROFILE_BOXES
 from ..models.res_users import CONTACT_FIELDS, _is_employee_self, _refusal
 
 _logger = logging.getLogger(__name__)
@@ -43,8 +43,12 @@ class PbFormBuilderMyPage(PbFormBuilderMyDetails):
         return request.env['pb.form.studio']
 
     def _pbfp_is_admin(self):
+        """May build the page: the administrator or (NEWHIRE P8 H) a page
+        builder, the HR manager role. What a page builder may change is
+        decided by the model (`pb.form.studio._pbfp_limited`)."""
         user = request.env.user
-        return bool(user and not user._is_public() and user.has_group(ADMIN))
+        return bool(user and not user._is_public()
+                    and (user.has_group(ADMIN) or user.has_group(BUILDER_GROUP)))
 
     def _pbfp_builder_url(self):
         Mod = request.env['ir.module.module'].sudo()

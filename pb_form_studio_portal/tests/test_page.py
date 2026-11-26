@@ -37,8 +37,9 @@ CSRF = re.compile(r'[0-9a-f]{40}o[0-9]+')
 PNG = base64.b64encode(b'\x89PNG\r\n\x1a\n' + b'\x00' * 64).decode()
 
 
-@tagged('post_install', '-at_install', 'pb_form_studio_portal', 'fs12')
-class TestFs12Page(HttpCase):
+class Fs12Common(HttpCase):
+    """The FS-12 fixtures and helpers (NEWHIRE P8 split them out of
+    TestFs12Page so the page-builder role tests reuse them)."""
 
     @classmethod
     def setUpClass(cls):
@@ -51,6 +52,10 @@ class TestFs12Page(HttpCase):
                                   groups='base.group_user,base.group_system,hr.group_hr_manager')
         cls.hr = new_test_user(cls.env, 'fs12_hr', name='DEMO FS12 HR', password=PASSWORD,
                                groups='base.group_user,hr.group_hr_user,hr.group_hr_manager')
+        # NEWHIRE P8 H: the HR manager role builds the page (own company);
+        # an HR officer is refused exactly as before
+        cls.officer = new_test_user(cls.env, 'fs12_officer', name='DEMO FS12 Officer', password=PASSWORD,
+                                    groups='base.group_user,hr.group_hr_user')
         cls.me = new_test_user(cls.env, 'fs12_me', name='DEMO FS12 Lan', password=PASSWORD,
                                groups='base.group_portal')
         cls.other = new_test_user(cls.env, 'fs12_other', name='DEMO FS12 Arjun', password=PASSWORD,
@@ -108,6 +113,11 @@ class TestFs12Page(HttpCase):
 
     def meta(self, name):
         return self.env['pb.form.field.meta'].sudo().search([('model', '=', EMP), ('name', '=', name)])
+
+
+
+@tagged('post_install', '-at_install', 'pb_form_studio_portal', 'fs12')
+class TestFs12Page(Fs12Common):
 
     # ------------------------------------------------------------------ 6
     def test_06_no_page_is_byte_identical(self):
@@ -237,7 +247,7 @@ class TestFs12Page(HttpCase):
 
     # ------------------------------------------------------------------ 11
     def test_11_access(self):
-        for user in (self.hr, self.me):
+        for user in (self.officer, self.me):
             with self.assertRaises(AccessError):
                 self.S(user).page_studio()
             with self.assertRaises(AccessError):
@@ -306,7 +316,7 @@ class TestFs12Page(HttpCase):
         self.assertIn('is-preview', html)
         self.authenticate('fs12_me', PASSWORD)
         self.assertEqual(self.url_open(url).status_code, 404)
-        self.authenticate('fs12_hr', PASSWORD)
+        self.authenticate('fs12_officer', PASSWORD)
         self.assertEqual(self.url_open(url).status_code, 404)
 
     # ------------------------------------------------------------------ 14
@@ -367,7 +377,7 @@ class TestFs12Page(HttpCase):
         self.assertEqual([f['name'] for f in page['sections'][0]['fields']], [self.shirt],
                          'Country of Work honoured: the India-only field is not drawn for Vietnam')
         with self.assertRaises(AccessError):
-            self.S(self.hr).portal_page_render(self.emp.sudo(), spec=self.spec([]), preview={})
+            self.S(self.officer).portal_page_render(self.emp.sudo(), spec=self.spec([]), preview={})
 
     def test_22_preview_of_the_standard_page_before_any_publish(self):
         """No page yet: the preview shows today's seven fields (none ticked)."""
@@ -387,7 +397,7 @@ class TestFs12Page(HttpCase):
         img = self.url_open(src)
         self.assertEqual(img.status_code, 200)
         self.assertTrue(img.headers.get('Content-Type', '').startswith('image/'))
-        for login in ('fs12_me', 'fs12_hr'):
+        for login in ('fs12_me', 'fs12_officer'):
             self.authenticate(login, PASSWORD)
             self.assertEqual(self.url_open(src).status_code, 404, login)
         # the employee's own page keeps its own photo route
@@ -580,8 +590,11 @@ class TestFs12Page(HttpCase):
         """FS-14 test 7: only the administrator switches; HR writing their
         own record is not stopped; another person's record is unreachable."""
         with self.assertRaises(AccessError):
-            self.S(self.hr).page_publish({'spec': self._profile_spec(),
-                                          'updates': {'private_phone': {'profile_edit': False}}})
+            self.S(self.officer).page_publish({'spec': self._profile_spec(),
+                                               'updates': {'private_phone': {'profile_edit': False}}})
+        # NEWHIRE P8 H: an HR manager's publish keeps every company's switches
+        self.S(self.hr).page_publish({'spec': self._profile_spec(),
+                                      'updates': {'private_phone': {'profile_edit': False}}})
         with self.assertRaises(AccessError):
             self.env['ir.config_parameter'].with_user(self.hr).set_param(self.PARAM, 'x_phone')
         self.assertEqual(self._param(), self.ALL)
@@ -682,3 +695,97 @@ class TestFs12Page(HttpCase):
         res = self.url_open('/my/profile/page/send', data={
             'x_phone': '+84 4343', 'csrf_token': self._csrf(html)})
         self.assertIn('/my/profile/request/', res.url)
+
+
+@tagged('post_install', '-at_install', 'pb_form_studio_portal', 'fs12', 'newhire')
+class TestP8PageBuilderRole(Fs12Common):
+    """NEWHIRE P8 H1-H5: the HR manager role builds its own company's page;
+    nothing else the administrator gate guards opens for it."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.c2 = cls.env['res.company'].sudo().create({'name': 'DEMO FS P8 Branch'})
+        cls.admin.sudo().write({'company_ids': [(4, cls.c2.id)]})
+
+    def _ids(self, published, cid):
+        spec = (published.get('companies') or {}).get(str(cid))
+        return [f['name'] for sec in (spec or {}).get('sections', []) for f in sec['fields']]
+
+    # H1 the role and the button
+    def test_h1_role_implied_and_edit_button(self):
+        self.assertTrue(self.hr.has_group('pb_form_studio_portal.group_page_builder'))
+        self.assertFalse(self.officer.has_group('pb_form_studio_portal.group_page_builder'))
+        self.assertTrue(self.env.ref('hr.group_hr_manager') in
+                        self.env.ref('pb_form_studio_portal.group_page_builder').implied_by_ids)
+        data = self.S(self.hr).page_studio()
+        self.assertTrue(data['limited'])
+        self.assertEqual(data['companies'], [])
+        self.assertEqual(data['history'], [])
+        self.assertFalse(self.S().page_studio()['limited'], 'the administrator is unchanged')
+
+    # H2 publish: own company's page only
+    def test_h2_publish_own_company_only(self):
+        self.publish(self.spec([{'name': 'work_email', 'width': 'half'}]),
+                     companies={str(self.c2.id): self.spec([{'name': 'private_phone', 'width': 'half'}])})
+        S = self.S(self.hr)
+        data = S.page_studio()
+        res = S.page_publish({'spec': self.spec([{'name': self.shirt, 'width': 'half'}]),
+                              'companies': {str(self.c2.id): self.spec([])},
+                              'updates': {self.shirt: {'labels': {'en_US': 'DEMO Forged'}}},
+                              'base_version': data['version'], 'changes': ['DEMO hr']})
+        self.assertTrue(res['ok'])
+        published = self.S()._pbfp_published()
+        self.assertEqual([f['name'] for sec in published['default']['sections'] for f in sec['fields']],
+                         ['work_email'], 'the page for every company is kept')
+        self.assertEqual(self._ids(published, self.c2.id), ['private_phone'], 'another company is kept')
+        self.assertEqual(self._ids(published, self.company.id), [self.shirt], 'their own company')
+        self.assertNotEqual(self.env[EMP]._fields[self.shirt].string, 'DEMO Forged',
+                            'field settings for every company are ignored')
+        self.assertTrue(self.meta(self.shirt).portal_show, 'placed = shown')
+        # their next look starts from their own page
+        again = S.page_studio()
+        self.assertEqual([f['name'] for sec in again['published']['default']['sections'] for f in sec['fields']],
+                         [self.shirt])
+
+    # H3 drafts, banner, employees, preview
+    def test_h3_builder_tools(self):
+        S = self.S(self.hr)
+        self.assertTrue(S.save_draft(PAGE, {'spec': self.spec([]), 'changes': ['x']}))
+        self.assertTrue(S.discard_draft(PAGE))
+        self.assertTrue(S.page_upload_banner('a.png', PNG)['id'])
+        self.assertTrue(S.page_employees(''))
+        page = S.portal_page_render(self.emp.sudo(), spec=self.spec([{'name': 'work_email', 'width': 'half'}]),
+                                    preview={})
+        self.assertTrue(page)
+        url = '/my/profile/preview?employee_id=%s&source=live' % self.emp.id
+        self.assertIn('DEMO FS12 Lan', self.html(url, login='fs12_hr'))
+
+    # H4 nothing else opens
+    def test_h4_everything_else_refused(self):
+        S = self.S(self.hr)
+        with self.assertRaises(AccessError):
+            S.page_reset()
+        self.publish(self.spec([]))
+        hist = self.S().page_studio()['history']
+        with self.assertRaises(AccessError):
+            S.page_version(hist[0]['id'])
+        with self.assertRaises(AccessError):
+            S.save_draft(HOST, {'sections': []})
+        with self.assertRaises(AccessError):
+            S.get_studio(HOST)
+        with self.assertRaises(AccessError):
+            S.create_field(HOST, {'type': 'text', 'label': 'DEMO P8 forged', 'vis': 'hr'})
+        with self.assertRaises(AccessError):
+            S.update_field(EMP, self.shirt, {'labels': {'en_US': 'DEMO Forged'}})
+        with self.assertRaises(AccessError):
+            S.with_context(pbfp_builder_call=True).update_field(EMP, self.shirt, {'labels': {'en_US': 'X'}})
+
+    # H5 employees and HR officers unchanged
+    def test_h5_officer_and_employee_unchanged(self):
+        for user in (self.officer, self.me):
+            with self.assertRaises(AccessError):
+                self.S(user).page_studio()
+            with self.assertRaises(AccessError):
+                self.S(user).save_draft(PAGE, {'spec': self.spec([])})
+        self.assertNotIn('Edit this page', self.html())

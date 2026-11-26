@@ -27,7 +27,7 @@ Bridge module: My Profile is drawn from outside (template inheritance and
 the portal controller); it creates nothing at install, and without a
 published page My Profile is exactly as before.
 """,
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -40,6 +40,7 @@ published page My Profile is exactly as before.
         'pb_me_details',            # the "Family, ID papers…" door
     ],
     'data': [
+        'security/page_builder.xml',            # P8: the HR manager role builds the page
         'views/page_builder_actions.xml',
         'views/portal_templates.xml',
     ],

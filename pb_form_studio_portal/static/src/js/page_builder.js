@@ -140,6 +140,13 @@ export class PbPageBuilder extends Component {
     get spec() { return this.state.specs[this.state.scope] || this.state.specs.default; }
     get ownPage() { return this.state.scope === "default" || Boolean(this.state.specs[this.state.scope]); }
     get companies() { return this.data.companies || []; }
+    /** NEWHIRE P8 H: a page builder who is not the administrator changes
+     *  their own company's page only; field settings stay read-only. */
+    get limited() { return Boolean(this.data.limited); }
+    get limitedLine() {
+        return _t("You are changing the page for %s. Labels and what employees can change apply to every company, so an administrator changes those.",
+                  this.data.limited_company || "");
+    }
     get changeCount() { return this.state.changes.length; }
     get changeText() {
         const n = this.changeCount;
@@ -352,6 +359,7 @@ export class PbPageBuilder extends Component {
     isItemSection(sec) { const hit = this.selItem; return Boolean(hit) && hit.sec.id === sec.id; }
     // settings of a field (the engine's own ticks and labels)
     upd(f, vals, what) {
+        if (this.limited) { return; }
         this.state.updates[f.name] = { ...(this.state.updates[f.name] || {}), ...vals };
         this.noteOnce("u:" + f.name + ":" + Object.keys(vals).join(","), _t("%(f)s: %(what)s", { f: f.label, what }));
     }
