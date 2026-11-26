@@ -298,6 +298,10 @@ class PbJobChangeBoard(models.AbstractModel):
             'companies': [{'id': c.id, 'label': c.name or '',
                            'sub': c.currency_id.name or ''}
                           for c in self.env.companies],
+            # PSCHEME P2b — the Countries of work a person can have.
+            'countries': [{'id': code, 'label': label}
+                          for code, label in self._jc()._fields[
+                              'new_payroll_country']._description_selection(self.env)],
         }
 
     # ============================================================ the flow
@@ -357,6 +361,13 @@ class PbJobChangeBoard(models.AbstractModel):
             'has_contract': bool(contract),
             'contract': contract.name or '',
             'scheme': scheme.get('config_name') or '',
+            # PSCHEME P2b — Country of work and the person's own pay scheme.
+            'scheme_id': scheme.get('config_id') or 0,
+            'scheme_own': scheme.get('rung') == 'person',
+            'payroll_country': emp.payroll_country or '',
+            'country': dict(self._jc()._fields['new_payroll_country']
+                            ._description_selection(self.env)).get(
+                                emp.payroll_country or '', ''),
         }
         draft = self._draft_payload(rec) if rec else self._prefill(vals, emp)
         return {
@@ -384,6 +395,9 @@ class PbJobChangeBoard(models.AbstractModel):
             'new_work_location_id': rec.new_work_location_id.id,
             'new_resource_calendar_id': rec.new_resource_calendar_id.id,
             'new_company_id': rec.new_company_id.id,
+            'new_payroll_country': rec.new_payroll_country or '',
+            'new_scheme_id': rec.new_scheme_id.id,
+            'new_advance_scheme_id': rec.new_advance_scheme_id.id,
             'change_pay': bool(rec.change_pay),
             'new_wage': float(rec.new_wage or 0.0),
             'lines': [{'code': l.code, 'name': l.name or l.code,
@@ -409,8 +423,11 @@ class PbJobChangeBoard(models.AbstractModel):
                           ('parent_id', 'new_parent_id'),
                           ('work_location_id', 'new_work_location_id'),
                           ('resource_calendar_id', 'new_resource_calendar_id'),
-                          ('company_id', 'new_company_id')):
+                          ('company_id', 'new_company_id'),
+                          ('scheme_id', 'new_scheme_id'),
+                          ('advance_scheme_id', 'new_advance_scheme_id')):
             out[mine] = int(vals.get(key) or 0) or False
+        out['new_payroll_country'] = vals.get('payroll_country') or ''
         if out.get('new_parent_id'):
             boss = self.env['hr.employee'].sudo().browse(
                 out['new_parent_id']).exists()
@@ -440,11 +457,18 @@ class PbJobChangeBoard(models.AbstractModel):
         }
         for key in ('new_job_id', 'new_department_id', 'new_parent_id',
                     'new_work_location_id', 'new_resource_calendar_id',
-                    'new_company_id'):
+                    'new_company_id', 'new_scheme_id', 'new_advance_scheme_id'):
             try:
                 out[key] = int(vals.get(key) or 0) or False
             except (TypeError, ValueError):
                 out[key] = False
+        # PSCHEME P2b — a Country of work this product knows, or unchanged.
+        countries = dict(self._jc()._fields['new_payroll_country']
+                         ._description_selection(self.env))
+        code = str(vals.get('new_payroll_country') or '')
+        out['new_payroll_country'] = code if code in countries else False
+        if out['new_advance_scheme_id'] and not out['new_scheme_id']:
+            out['new_advance_scheme_id'] = False
         if out['new_company_id'] and \
                 out['new_company_id'] not in self.env.companies.ids:
             raise UserError(_("You can only move people to a company you "
@@ -521,8 +545,13 @@ class PbJobChangeBoard(models.AbstractModel):
             steps.append({'key': 'fin', 'label': _('Finance approver'),
                           'who': ''})
         pct = facts['pay_rise_pct']['value']
+        words = draft._scheme_words()
         return {
             'ok': not problems, 'problems': problems,
+            # PSCHEME P2b A.1 / A.3 — the pay scheme, in one or two lines.
+            'scheme_line': words['line'], 'scheme_r6': words['r6'],
+            'scheme_stays': words['stays'],
+            'scheme_needed': 'company_id' in draft._employee_vals(),
             'timing': timing,
             'start': draft._day(draft.effective_date),
             'pct': pct,
@@ -563,6 +592,63 @@ class PbJobChangeBoard(models.AbstractModel):
         saved = self.save(vals, change_id)
         rec = self._change(saved['id'])
         return rec.action_send()
+
+    # ===================================================== PSCHEME P2b: choices
+    @api.model
+    def scheme_options(self, employee_id, country_code='', company_id=0,
+                       department_id=0, change_id=0):
+        """The pay schemes this person could be moved to: those of the
+        Country of work (new, else their own) in the company they will work in
+        (new, else theirs), the usual one first — the same answer Add employee
+        gives (`pb.scheme.map.usual_scheme`). Read-only."""
+        self._require()
+        Change = self._jc()
+        emp = self._change(change_id).employee_id.sudo() if change_id \
+            else self._employee(employee_id)
+        try:
+            company_id = int(company_id or 0)
+            department_id = int(department_id or 0)
+        except (TypeError, ValueError):
+            company_id, department_id = 0, 0
+        if company_id and company_id not in self.env.companies.ids:
+            raise UserError(_("You can only move people to a company you work in."))
+        company = self.env['res.company'].browse(company_id) if company_id \
+            else emp.company_id
+        countries = dict(Change._fields['new_payroll_country']._description_selection(self.env))
+        code = country_code if country_code in countries else (emp.payroll_country or '')
+        team = department_id or (emp.department_id.id if emp.company_id == company else 0)
+        Map = self.env['pb.scheme.map'].sudo()
+        Board = self.env['pb.scheme.board'].sudo()
+        found = Map.usual_scheme(company.id, code, team, {'job_id': emp.job_id.id or False})
+        options = found['options'].filtered(lambda c: c.cycle_type in ('regular', 'end_cycle'))
+        if not code:
+            # No Country of work at all: every scheme that can pay the month.
+            options = self.env['hr.formula.config'].sudo().search([
+                ('state', '=', 'active'), ('cycle_type', 'in', ('regular', 'end_cycle')),
+                '|', ('company_id', '=', False), ('company_id', '=', company.id)],
+                order='name, id', limit=80)
+        now = Map.resolve(emp)
+        cards = [Board._scheme_card(c) for c in options]
+        default = found['config'] if found['config'] in options else \
+            self.env['hr.formula.config']
+        advances = Board._advance_pairs([c['id'] for c in cards])
+        return {
+            'country': code, 'country_name': countries.get(code, ''),
+            'company_id': company.id, 'company': company.name or '',
+            'cards': cards,
+            'default_id': default.id if default and not (found['ask'] and len(cards) > 1) else 0,
+            'ask': bool(found['ask']),
+            'advances': advances,
+            'advance_default': {str(c['id']): (Board.advance_default(
+                self.env['hr.formula.config'].sudo().browse(c['id'])).id or 0)
+                for c in cards},
+            'now_id': now.get('config_id') or 0,
+            'now_name': now.get('config_name') or '',
+            'none_words': '' if cards else _(
+                "No pay scheme for %(country)s in %(company)s yet. Add one in "
+                "Mapping first.", country=countries.get(code, '') or code,
+                company=company.name or ''),
+        }
 
     # ============================================================ one change
     @api.model

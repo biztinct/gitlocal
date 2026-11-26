@@ -191,7 +191,7 @@
                   </button>
                   <button class="pbjc-section" t-att-class="f.sections.team ? 'on' : ''" t-on-click="() => this.toggleSection('team')">
                     <span class="pbjc-section-ic"><t t-out="icon('building', 20)"/></span>
-                    <span class="pbjc-section-tx"><b>Team and place</b><small>Team, manager, place of work, working hours or company</small></span>
+                    <span class="pbjc-section-tx"><b>Team and place</b><small>Team, manager, place of work, working hours, company or Country of work</small></span>
                     <span class="pbjc-tick"><t t-if="f.sections.team" t-out="icon('check', 14)"/></span>
                   </button>
                   <button class="pbjc-section" t-att-class="(f.sections.pay ? 'on ' : '') + (f.d.can_pay ? '' : 'off')" t-att-disabled="!f.d.can_pay" t-on-click="() => this.toggleSection('pay')">
@@ -234,6 +234,15 @@
                       <option t-foreach="f.d.options.companies" t-as="op" t-key="op.id" t-att-value="op.id" t-att-selected="f.draft.new_company_id === op.id" t-esc="op.label"/>
                     </select>
                   </div>
+                  <div class="pbjc-pair">
+                    <span class="k">Country of work</span>
+                    <span class="now" t-esc="f.d.now.country or '—'"/>
+                    <select class="pbjc-in" t-on-change="(ev) => this.onField('new_payroll_country', ev)" aria-label="New Country of work">
+                      <option value="" t-att-selected="!f.draft.new_payroll_country">Unchanged</option>
+                      <option t-foreach="f.d.options.countries || []" t-as="op" t-key="op.id" t-att-value="op.id" t-att-selected="f.draft.new_payroll_country === op.id" t-esc="op.label"/>
+                    </select>
+                  </div>
+                  <t t-call="pb_job_change.SchemePick"/>
                   <div class="pbjc-pair">
                     <span class="k">Team</span>
                     <span class="now" t-esc="f.d.now.team or '—'"/>
@@ -348,7 +357,9 @@
                   </span>
                 </div>
 
-                <div t-if="P.changes_scheme" class="pbjc-note is-amber"><t t-out="icon('layers', 15)"/> <span>Paid by changes from <b t-esc="P.scheme_now or '—'"/> to <b t-esc="P.scheme_after or '—'"/>. Check their next payslip with the pay team.</span></div>
+                <div t-if="P.scheme_line" class="pbjc-note is-blue pbjc-scheme-note"><t t-out="icon('layers', 15)"/> <span><t t-esc="P.scheme_line"/><t t-if="P.scheme_r6"> <b t-esc="P.scheme_r6"/></t></span></div>
+                <div t-elif="P.changes_scheme" class="pbjc-note is-amber"><t t-out="icon('layers', 15)"/> <span>Paid by changes from <b t-esc="P.scheme_now or '—'"/> to <b t-esc="P.scheme_after or '—'"/>. Check their next payslip with the pay team.</span></div>
+                <div t-if="P.scheme_stays and !schemeShown" class="pbjc-note pbjc-scheme-note"><t t-out="icon('layers', 15)"/> <span><t t-esc="P.scheme_stays"/> <button type="button" class="pbjc-link" t-on-click="openScheme">Change pay scheme</button></span></div>
                 <div t-if="P.reads.length" class="pbjc-note"><t t-out="icon('layers', 15)"/> <span>Their pay scheme reads what this changes, in: <b><t t-foreach="P.reads" t-as="rd" t-key="rd_index"><t t-if="rd_index">, </t><t t-esc="rd"/></t></b>.</span></div>
                 <div t-if="P.above_band" class="pbjc-note is-amber"><t t-out="icon('trendingUp', 15)"/> <span>The new pay is above the top of the band for this job.</span></div>
 
@@ -443,6 +454,65 @@
           </div>
         </t>
       </div>
+    </div>
+  </t>
+
+  <!-- PSCHEME P2b — the pay scheme a permanent move brings, from the start
+       date: the usual scheme of the (new) Country of work pre-filled, the
+       others as cards, "keep" unless the company changes (ledger A9). -->
+  <t t-name="pb_job_change.SchemePick">
+    <div t-if="schemeShown" class="pbjc-scheme" role="group" aria-label="Pay scheme">
+      <div class="pbjc-scheme-h">
+        <span class="pbjc-scheme-ic"><t t-out="icon('layers', 16)"/></span>
+        <span class="pbjc-scheme-tx">
+          <b>Pay scheme</b>
+          <small t-if="f.scheme.opts" t-esc="schemeSub"/>
+        </span>
+        <button t-if="f.scheme.open and !f.draft.new_payroll_country and !schemeNeeded" type="button" class="pbjc-x" t-on-click="closeScheme" title="Leave the pay scheme out of this change" aria-label="Leave the pay scheme out of this change"><t t-out="icon('x', 14)"/></button>
+      </div>
+      <div t-if="f.scheme.loading and !f.scheme.opts" class="pbjc-scheme-skel" aria-label="Loading"><span/><span/></div>
+      <t t-elif="f.scheme.opts">
+        <p t-if="!schemeCards.length" class="pbjc-scheme-none"><t t-out="icon('alert', 14)"/> <span t-esc="f.scheme.opts.none_words"/></p>
+        <p t-elif="f.scheme.opts.ask and !f.draft.new_scheme_id and !f.scheme.keep" class="pbjc-scheme-ask"><t t-out="icon('info', 14)"/> <span>This country has several pay schemes. Pick the one that pays them.</span></p>
+        <div class="pbjc-scheme-cards" role="radiogroup" aria-label="Pay scheme" t-on-keydown="onSchemeKey">
+          <button t-if="!schemeNeeded" type="button" role="radio" data-scheme="0"
+                  t-att-aria-checked="f.scheme.keep ? 'true' : 'false'" t-att-tabindex="f.scheme.keep ? '0' : '-1'"
+                  class="pbjc-scard is-keep" t-att-class="{ on: f.scheme.keep }" t-on-click="keepScheme">
+            <span class="pbjc-scard-dot"/>
+            <span class="pbjc-scard-tx"><b t-esc="keepLabel"/><small>Their pay scheme does not change</small></span>
+          </button>
+          <button t-foreach="schemeCards" t-as="sc" t-key="sc.id" type="button" role="radio" t-att-data-scheme="sc.id"
+                  t-att-aria-checked="f.draft.new_scheme_id === sc.id ? 'true' : 'false'"
+                  t-att-tabindex="f.draft.new_scheme_id === sc.id or (!f.draft.new_scheme_id and !f.scheme.keep and sc_index === 0) ? '0' : '-1'"
+                  class="pbjc-scard" t-att-class="{ on: f.draft.new_scheme_id === sc.id, usual: f.scheme.opts.default_id === sc.id }"
+                  t-on-click="() => this.pickScheme(sc.id)">
+            <span class="pbjc-scard-dot"/>
+            <span class="pbjc-scard-tx">
+              <b t-esc="sc.name"/>
+              <small><t t-esc="sc.kind_words"/><t t-if="sc.id === f.scheme.opts.now_id"> · <span>their pay scheme now</span></t><t t-elif="sc.id === f.scheme.opts.default_id"> · <span>usual for this country</span></t></small>
+            </span>
+            <span t-if="sc.currency" class="pbjc-scard-cur" t-esc="sc.currency"/>
+          </button>
+        </div>
+        <div t-if="pickedAdvances.length === 1" class="pbjc-adv">
+          <button type="button" role="switch" class="pbjc-switch" t-att-class="{ on: f.draft.new_advance_scheme_id }"
+                  t-att-aria-checked="f.draft.new_advance_scheme_id ? 'true' : 'false'" t-on-click="toggleAdvance"
+                  aria-label="Mid-month advance"><span/></button>
+          <span t-esc="advanceLine"/>
+        </div>
+        <div t-elif="pickedAdvances.length > 1" class="pbjc-adv">
+          <label class="pbjc-adv-l" for="pbjc-adv-sel">Mid-month advance</label>
+          <select id="pbjc-adv-sel" class="pbjc-in" t-on-change="onAdvance">
+            <option value="0" t-att-selected="!f.draft.new_advance_scheme_id">No mid-month advance</option>
+            <option t-foreach="pickedAdvances" t-as="ad" t-key="ad.id" t-att-value="ad.id" t-att-selected="f.draft.new_advance_scheme_id === ad.id" t-esc="ad.name"/>
+          </select>
+        </div>
+      </t>
+    </div>
+    <div t-elif="f.sections.team and f.d.now.scheme" class="pbjc-pair pbjc-scheme-stay">
+      <span class="k">Pay scheme</span>
+      <span class="now" t-esc="f.d.now.scheme"/>
+      <button type="button" class="pbjc-link" t-on-click="openScheme"><t t-out="icon('pencil', 13)"/> Change pay scheme</button>
     </div>
   </t>
 
