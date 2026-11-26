@@ -174,3 +174,6 @@ and %s more
 and %s more pay schemes
 no change
 paid by another country's scheme
+Fits their Country of work: %s
+Give their pay scheme
+No pay scheme for %s yet. Add one

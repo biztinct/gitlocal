@@ -320,6 +320,7 @@ class PbSchemeMapProposalMany(models.Model):
         result = self._board().fill_undo_write(payload.get('fill_id'),
                                                asked_by=self.user_id.id)
         return {'removed': (result or {}).get('removed', 0),
+                'people': (result or {}).get('people', 0),
                 'kept': (result or {}).get('kept', 0)}
 
     def _proposal_rows(self):

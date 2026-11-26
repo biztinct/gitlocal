@@ -465,11 +465,16 @@ class PbSchemeBoardTeam(models.AbstractModel):
                 'target': Config.browse(target).name if target else '',
             })
         one = list(targets) if len(targets) == 1 and sum(targets.values()) == len(rows) else []
+        # "Change these N" per pay scheme that fits a group of them
+        groups = [{'target_id': t, 'target': Config.browse(t).name or '',
+                   'employee_ids': [r['employee_id'] for r in rows if r['target_id'] == t]}
+                  for t in sorted(targets, key=lambda t: -targets[t])]
         company = self.env['res.company'].sudo().browse(company_id)
         first_next = fields.Date.context_today(self).replace(day=1) + relativedelta(months=1)
         return {'people': rows, 'total': len(ids),
                 'one_target_id': one[0] if one else 0,
                 'one_target': Config.browse(one[0]).name if one else '',
+                'groups': groups,
                 'date': fields.Date.to_string(first_next),
                 'date_words': self._day_words(first_next),
                 'lane': self._person_lane(company),

@@ -193,7 +193,7 @@
                 <small><t t-esc="segment.sublabel"/> · <t t-esc="num(segment.people)"/> <t t-esc="peopleWord(segment.people)"/></small>
                 <small t-if="segment.kind === 'department' and (segment.usual or segment.own)" class="smp-seg__split">
                   <span t-if="segment.usual" t-esc="usualWords(segment)"/>
-                  <button t-if="segment.own" type="button" t-on-click.stop="() => this.openOwn(segment.id)" t-esc="ownWords(segment)"/>
+                  <button t-if="segment.own" type="button" t-on-mouseup="(ev) => this.openOwnClick(ev, segment.id)" t-on-keydown="(ev) => this.openOwnKey(ev, segment.id)" t-esc="ownWords(segment)"/>
                 </small>
                 <small t-if="segment.suggestion and segment.missing"
                        class="smp-seg__suggestion">
@@ -219,7 +219,8 @@
               <button t-if="segment.kind === 'department' and segment.people and persons.can_propose" type="button" class="smp-icon"
                       title="Set for everyone in this team…"
                       t-att-aria-label="setForLabel(segment)"
-                      t-on-click.stop="() => this.openTeamSet(segment.id)">
+                      t-on-mouseup="(ev) => this.openTeamSetClick(ev, segment.id)"
+                      t-on-keydown="(ev) => this.openTeamSetKey(ev, segment.id)">
                 <t t-out="ic('userCheck', 14)"/>
               </button>
               <button t-if="segment.children.length" type="button" class="smp-icon"

@@ -45,8 +45,14 @@ patch(FormController.prototype, {
         const out = await super.onRecordSaved(...arguments);
         if (record && record.resModel === "hr.employee" && record.resId
                 && changes && Object.prototype.hasOwnProperty.call(changes, "payroll_country")) {
-            // after the save, never inside it: the form keeps its own flow
-            setTimeout(() => askAfterCountryChange(this.env, this.orm, this.dialogService, record.resId), 0);
+            // after the save, never inside it: the form keeps its own flow.
+            // The panel's Pay scheme block and the "Paid by" chip read again
+            // first, so the amber line is there whatever the answer is.
+            const empId = record.resId;
+            setTimeout(() => {
+                this.env.bus.trigger("PB_PERSON_SCHEME_CHANGED", { empId, source: "country" });
+                askAfterCountryChange(this.env, this.orm, this.dialogService, empId);
+            }, 0);
         }
         return out;
     },

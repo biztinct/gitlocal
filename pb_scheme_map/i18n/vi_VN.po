@@ -167,16 +167,6 @@ msgstr ""
 "một quy tắc. Hãy chọn một trong ba."
 
 #. module: pb_scheme_map
-#. odoo-javascript
-#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
-msgid ""
-"A pay run will leave them out until their team is attached to a\n"
-"          scheme. Fixing the team fixes everybody in it at once."
-msgstr ""
-"Kỳ trả lương sẽ bỏ sót họ cho tới khi bộ phận của họ được gắn với một\n"
-"          phương án lương. Sửa cho bộ phận là sửa cho tất cả mọi người trong đó cùng một lúc."
-
-#. module: pb_scheme_map
 #. odoo-python
 #: code:addons/pb_scheme_map/models/formula_scheme_assignment.py:0
 msgid "A rule"
@@ -264,14 +254,6 @@ msgstr "Gắn vào một phương án lương"
 #: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
 msgid "Attached %(count)s teams to this scheme."
 msgstr "Đã gắn %(count)s bộ phận vào phương án lương này."
-
-#. module: pb_scheme_map
-#. odoo-javascript
-#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
-msgid "Attached. The people in that team are paid by this scheme from now on."
-msgstr ""
-"Đã gắn. Từ giờ những người trong bộ phận đó được trả theo phương án lương "
-"này."
 
 #. module: pb_scheme_map
 #. odoo-javascript
@@ -389,16 +371,6 @@ msgstr "Mọi người đều đã được cập nhật rồi."
 #: code:addons/pb_scheme_map/models/formula_scheme_assignment.py:0
 msgid "Everyone"
 msgstr "Tất cả mọi người"
-
-#. module: pb_scheme_map
-#. odoo-javascript
-#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
-msgid ""
-"Everyone in this part of the business will be paid by the scheme you\n"
-"          pick, for the kind of run you pick."
-msgstr ""
-"Mọi người trong phần này của doanh nghiệp sẽ được trả theo phương án lương bạn\n"
-"          chọn, cho loại kỳ trả lương bạn chọn."
 
 #. module: pb_scheme_map
 #: model:ir.model,name:pb_scheme_map.model_hr_formula_config
@@ -702,24 +674,10 @@ msgid "The payroll schemes this company runs"
 msgstr "Các phương án lương công ty này đang dùng"
 
 #. module: pb_scheme_map
-#. odoo-python
-#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
-msgid "Their team is not attached to a scheme yet."
-msgstr "Bộ phận của họ chưa được gắn với phương án lương nào."
-
-#. module: pb_scheme_map
 #. odoo-javascript
 #: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
 msgid "There is nothing to read yet"
 msgstr "Chưa có gì để đọc"
-
-#. module: pb_scheme_map
-#. odoo-python
-#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
-msgid "They are not in a team, so no team map can reach them."
-msgstr ""
-"Họ không thuộc bộ phận nào, nên không dòng bản đồ theo bộ phận nào chạm tới "
-"họ được."
 
 #. module: pb_scheme_map
 #. odoo-javascript
@@ -1313,12 +1271,6 @@ msgstr "Gợi ý chương trình trả lương cho từng nhóm"
 #: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
 msgid "The teams could not be read."
 msgstr "Không đọc được các nhóm."
-
-#. module: pb_scheme_map
-#. odoo-javascript
-#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
-msgid "Who pays each team, by country of work"
-msgstr "Ai trả lương cho từng nhóm, theo quốc gia làm việc"
 
 #. module: pb_scheme_map
 #. odoo-python
@@ -1974,3 +1926,1110 @@ msgstr "tạm ứng giữa tháng"
 #: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
 msgid "regular payroll"
 msgstr "kỳ lương thường"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "%(base)s %(kept)s changed since keep theirs: %(names)s."
+msgstr "%(base)s %(kept)s đã được thay đổi từ đó vẫn giữ chương trình của mình: %(names)s."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "%(base)s %(open)s still follow their team."
+msgstr "%(base)s %(open)s vẫn theo nhóm của mình."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "%(count)s from %(date)s"
+msgstr "%(count)s từ %(date)s"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "%(count)s have their own"
+msgstr "%(count)s có chương trình riêng"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "%(count)s on the usual scheme"
+msgstr "%(count)s theo chương trình thường dùng"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_many.py:0
+msgid "%(count)s people from %(date)s"
+msgstr "%(count)s người từ %(date)s"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "%(count)s people still follow their team."
+msgstr "%(count)s người vẫn theo nhóm của mình."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "%(country)s has %(count)s pay schemes. Pick theirs."
+msgstr "%(country)s có %(count)s chương trình lương. Hãy chọn chương trình của họ."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_follow.py:0
+msgid "%(name)s works in %(country)s but is paid by %(scheme)s."
+msgstr "%(name)s làm việc tại %(country)s nhưng được trả lương theo %(scheme)s."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_many.py:0
+msgid "%(names)s and %(count)s more"
+msgstr "%(names)s và %(count)s người khác"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "%(own)s of %(people)s people have a pay scheme"
+msgstr "%(own)s trên %(people)s người đã có chương trình lương"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "%(own)s of %(people)s people have a pay scheme of their own."
+msgstr "%(own)s trên %(people)s người đã có chương trình lương riêng."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "%(people)s will be paid by %(scheme)s: %(when)s."
+msgstr "%(people)s sẽ được trả lương theo %(scheme)s: %(when)s."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "%(people)s will get their own pay scheme from %(date)s."
+msgstr "%(people)s sẽ có chương trình lương riêng từ %(date)s."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_many.py:0
+msgid "%(words)s, with the mid-month advance %(advance)s"
+msgstr "%(words)s, kèm tạm ứng giữa tháng %(advance)s"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "%s follow their team's usual pay scheme again."
+msgstr "%s lại theo chương trình lương thường dùng của nhóm."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "%s people"
+msgstr "%s người"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "%s people, and nobody has a pay scheme of their own yet."
+msgstr "%s người, và chưa ai có chương trình lương riêng."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "%s: people with a pay scheme of their own"
+msgstr "%s: những người có chương trình lương riêng"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "+ mid-month advance %s"
+msgstr "+ tạm ứng giữa tháng %s"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "1 person"
+msgstr "1 người"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "1 person has a pay scheme"
+msgstr "1 người đã có chương trình lương"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "1 person has a pay scheme of their own."
+msgstr "1 người đã có chương trình lương riêng."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "1 person still follows their team."
+msgstr "1 người vẫn theo nhóm của mình."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid ""
+"A change during a month starts with the next pay run. Their current pay "
+"scheme still pays %s."
+msgstr "Thay đổi giữa tháng bắt đầu từ kỳ lương sau. Chương trình lương hiện tại vẫn trả lương %s."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"A pay run leaves them out until they have a pay scheme. Give them one of "
+"their own, or set their team's usual pay scheme."
+msgstr "Kỳ lương sẽ bỏ qua họ cho đến khi họ có chương trình lương. Hãy cho họ chương trình riêng, hoặc đặt chương trình thường dùng của nhóm."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Add a pay scheme"
+msgstr "Thêm chương trình lương"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "All"
+msgstr "Tất cả"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "All %(count)s in %(country)s"
+msgstr "Tất cả %(count)s người ở %(country)s"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "All %s people have a pay scheme"
+msgstr "Cả %s người đều đã có chương trình lương"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "All %s people have a pay scheme of their own."
+msgstr "Cả %s người đều đã có chương trình lương riêng."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Already have their own (%s)"
+msgstr "Đã có chương trình riêng (%s)"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Already have their own: %s"
+msgstr "Đã có chương trình riêng: %s"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Also move these %s people"
+msgstr "Chuyển luôn %s người này"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Ask to change these %s"
+msgstr "Đề nghị đổi %s người này"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme_fill__user_id
+msgid "Asked by"
+msgstr "Người đề nghị"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid ""
+"Attached. New people in that team start on this pay scheme; people with "
+"their own keep it."
+msgstr "Đã gắn. Người mới của nhóm đó bắt đầu với chương trình lương này; người có chương trình riêng vẫn giữ nguyên."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "Back to the list"
+msgstr "Quay lại danh sách"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "Back to the team"
+msgstr "Quay lại nhóm"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme_fill__counts_json
+msgid "By group (JSON)"
+msgstr "Theo nhóm (JSON)"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme_fill__done_by_id
+msgid "Carried out by"
+msgstr "Người thực hiện"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Change these %(count)s to %(scheme)s"
+msgstr "Đổi %(count)s người này sang %(scheme)s"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Changed. Their new pay scheme starts on %s."
+msgstr "Đã đổi. Chương trình lương mới bắt đầu từ %s."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Check these"
+msgstr "Kiểm tra những người này"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme_prompt.js:0
+msgid "Country of work is now %s. Change the pay scheme too?"
+msgstr "Quốc gia làm việc nay là %s. Đổi cả chương trình lương?"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"Each person has their own pay scheme. A team's usual scheme is the starting "
+"point for new people and for anyone without one."
+msgstr "Mỗi người có chương trình lương riêng. Chương trình thường dùng của nhóm là điểm khởi đầu cho người mới và cho ai chưa có chương trình riêng."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid ""
+"Each person keeps the pay scheme that pays them today, written down as their"
+" own from %s. Nothing changes in anybody's pay."
+msgstr "Mỗi người giữ chương trình lương đang trả lương cho họ hôm nay, được ghi là của riêng họ từ %s. Lương của không ai thay đổi."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"Each person keeps the pay scheme that pays them today, written down as their"
+" own. Nothing changes in anybody's pay."
+msgstr "Mỗi người giữ chương trình lương đang trả lương cho họ hôm nay, được ghi là của riêng họ. Lương của không ai thay đổi."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Each team's usual pay scheme, by country of work"
+msgstr "Chương trình lương thường dùng của mỗi nhóm, theo quốc gia làm việc"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "Everybody here already has a pay scheme of their own."
+msgstr "Mọi người ở đây đã có chương trình lương riêng."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "Everybody is paid by a pay scheme of their Country of work"
+msgstr "Mọi người đều được trả lương theo chương trình của quốc gia làm việc"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Fewer pay schemes"
+msgstr "Ít chương trình lương hơn"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Fill empty Country of Work"
+msgstr "Điền Quốc gia làm việc còn trống"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__pb_person_scheme_fill__state__done
+msgid "Filled"
+msgstr "Đã điền"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "Find a person"
+msgstr "Tìm một người"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "Find a person…"
+msgstr "Tìm một người…"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "First pay run on the new pay scheme: %s."
+msgstr "Kỳ lương đầu tiên theo chương trình mới: %s."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "For everyone here:"
+msgstr "Cho mọi người ở đây:"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "From %s, the first day of this month."
+msgstr "Từ %s, ngày đầu tiên của tháng này."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid ""
+"From %s. Each person's mid-month advance stays only when it is of the same "
+"country."
+msgstr "Từ %s. Tạm ứng giữa tháng của mỗi người chỉ được giữ khi cùng quốc gia."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "From their Country of work"
+msgstr "Theo quốc gia làm việc"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_fill.py:0
+msgid "Give %(count)s people their own pay scheme from %(date)s"
+msgstr "Cho %(count)s người chương trình lương riêng từ %(date)s"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Give %s people their pay scheme"
+msgstr "Cho %s người chương trình lương của họ"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Give 1 person their pay scheme"
+msgstr "Cho 1 người chương trình lương của họ"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Give everyone their own pay scheme"
+msgstr "Cho mọi người chương trình lương riêng"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Give them a pay scheme"
+msgstr "Cho họ chương trình lương"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Give these people their own pay scheme"
+msgstr "Cho những người này chương trình lương riêng"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_scheme.xml:0
+msgid "Got it"
+msgstr "Đã hiểu"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid ""
+"Its usual pay scheme is where new people start. Set it with the plus button "
+"on the team."
+msgstr "Chương trình lương thường dùng là nơi người mới bắt đầu. Hãy đặt bằng nút cộng trên nhóm."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Keep %s"
+msgstr "Giữ %s"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "Keep it"
+msgstr "Giữ lại"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "Keep today's"
+msgstr "Giữ chương trình hiện tại"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Last fill: %(date)s by %(who)s, %(people)s."
+msgstr "Lần điền gần nhất: %(date)s bởi %(who)s, %(people)s."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid ""
+"New people get theirs when they are added. Change one person's from their "
+"record."
+msgstr "Người mới nhận chương trình khi được thêm vào. Đổi cho từng người từ hồ sơ của họ."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid ""
+"New people in %(team)s start on this pay scheme. People with a pay scheme of"
+" their own keep it."
+msgstr "Người mới trong %(team)s bắt đầu với chương trình lương này. Người có chương trình riêng vẫn giữ nguyên."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "No Country of work"
+msgstr "Chưa có quốc gia làm việc"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "No Country of work yet, so nobody can tell which pay scheme is theirs."
+msgstr "Chưa có quốc gia làm việc, nên không xác định được chương trình lương của họ."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "No pay scheme for %s yet."
+msgstr "Chưa có chương trình lương cho %s."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid ""
+"Nobody can tell which pay scheme is theirs. Pick one, or fix the reason "
+"first."
+msgstr "Không xác định được chương trình lương của họ. Hãy chọn một, hoặc xử lý nguyên nhân trước."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "Nobody here matches that name."
+msgstr "Không ai ở đây khớp với tên đó."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "Nobody in this team has a pay scheme of their own yet."
+msgstr "Chưa ai trong nhóm này có chương trình lương riêng."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_team.py:0
+msgid ""
+"Nobody is ticked who needs this change. Tick the people to give this pay "
+"scheme first."
+msgstr "Không ai được chọn cần thay đổi này. Hãy chọn những người sẽ nhận chương trình lương này trước."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Nobody is ticked yet."
+msgstr "Chưa chọn ai."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_fill.py:0
+msgid ""
+"Nobody is ticked, so nobody is given a pay scheme. Tick a group or pick a "
+"pay scheme for someone first."
+msgstr "Chưa chọn ai, nên không ai nhận chương trình lương. Hãy chọn một nhóm hoặc chọn chương trình lương cho ai đó trước."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_team.py:0
+msgid "Nobody on this list needs the change any more. Reload the screen."
+msgstr "Không ai trong danh sách còn cần thay đổi. Hãy tải lại màn hình."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Nobody pays them today"
+msgstr "Hôm nay chưa ai trả lương cho họ"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Nobody pays them today, and their Country of work has one pay scheme."
+msgstr "Hôm nay chưa ai trả lương cho họ, và quốc gia làm việc của họ có một chương trình lương."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_many.py:0
+msgid "Nobody was ticked. Tick the people to change first."
+msgstr "Chưa chọn ai. Hãy chọn những người cần đổi trước."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "Nobody works in this company yet"
+msgstr "Chưa có ai làm việc ở công ty này"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Nobody works in this company yet."
+msgstr "Chưa có ai làm việc ở công ty này."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "Nobody works in this team yet"
+msgstr "Chưa có ai trong nhóm này"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_follow.py:0
+msgid "Only HR and payroll can do this."
+msgstr "Chỉ nhân sự và bộ phận lương làm được việc này."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_fill.py:0
+msgid ""
+"Only the latest fill can be undone, and this is not it any more. Reload the "
+"screen."
+msgstr "Chỉ có thể hoàn tác lần điền gần nhất, và đây không còn là lần đó. Hãy tải lại màn hình."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_scheme.xml:0
+msgid "Open the contract"
+msgstr "Mở hợp đồng"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "Paid by a pay scheme of another country"
+msgstr "Được trả lương theo chương trình của quốc gia khác"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Paid today by %s"
+msgstr "Hôm nay được trả lương theo %s"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid ""
+"Paid today by a pay scheme of another country. Keep it, or give them their "
+"country's."
+msgstr "Hôm nay được trả lương theo chương trình của quốc gia khác. Giữ nguyên, hoặc cho họ chương trình của quốc gia họ."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Paid today by a pay scheme of their Country of work. They keep it."
+msgstr "Hôm nay được trả lương theo chương trình của quốc gia làm việc. Họ giữ nguyên."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_team.py:0
+msgid ""
+"Pay %(count)s people by %(scheme)s, the pay scheme of their Country of work"
+msgstr "Trả lương cho %(count)s người theo %(scheme)s, chương trình của quốc gia làm việc"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_team.py:0
+msgid "Pay %(count)s people of %(team)s by %(scheme)s"
+msgstr "Trả lương cho %(count)s người của %(team)s theo %(scheme)s"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_contract__pb_ps_check_amounts
+msgid "Pay amounts to check"
+msgstr "Số tiền lương cần kiểm tra"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Pay scheme fill"
+msgstr "Lần điền chương trình lương"
+
+#. module: pb_scheme_map
+#: model:ir.model,name:pb_scheme_map.model_pb_person_scheme_fill
+msgid "Pay scheme fill — who, when, how many, which rows"
+msgstr "Lần điền chương trình lương — ai, khi nào, bao nhiêu, những dòng nào"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "People added from now on get their pay scheme in Add employee."
+msgstr "Người được thêm từ nay sẽ nhận chương trình lương trong Thêm nhân viên."
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme_fill__people_count
+msgid "People given a pay scheme"
+msgstr "Số người được nhận chương trình lương"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme_fill__kept_json
+msgid "People kept (JSON)"
+msgstr "Người được giữ nguyên (JSON)"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "Pick a pay scheme…"
+msgstr "Chọn chương trình lương…"
+
+#. module: pb_scheme_map
+#: model:ir.model,name:pb_scheme_map.model_pb_schememap_proposal
+msgid "Proposed change to who is paid by what"
+msgstr "Đề xuất thay đổi ai được trả lương theo chương trình nào"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Ready"
+msgstr "Sẵn sàng"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme_fill__reference
+msgid "Request"
+msgstr "Đề nghị"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme_fill__rows_json
+msgid "Rows made (JSON)"
+msgstr "Các dòng đã tạo (JSON)"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme_fill__removed_count
+msgid "Rows taken off"
+msgstr "Số dòng đã gỡ"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme_fill__row_count
+msgid "Rows written"
+msgstr "Số dòng đã ghi"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Set for %s"
+msgstr "Đã đặt cho %s"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Set for %s people"
+msgstr "Đặt cho %s người"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Set for 1 person"
+msgstr "Đặt cho 1 người"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Set for everyone in %(team)s"
+msgstr "Đặt cho mọi người trong %(team)s"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Set for everyone in %s"
+msgstr "Đặt cho mọi người trong %s"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "Set for everyone in this team"
+msgstr "Đặt cho mọi người trong nhóm này"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Set for everyone in this team…"
+msgstr "Đặt cho mọi người trong nhóm này…"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Set their team's usual pay scheme"
+msgstr "Đặt chương trình lương thường dùng của nhóm"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,help:pb_scheme_map.field_hr_contract__pb_ps_check_amounts
+msgid ""
+"Set when the contract's Country of work followed a new pay scheme of another"
+" country: the currency changed and the amounts were kept as typed. Cleared "
+"when the wage is edited."
+msgstr "Được bật khi quốc gia làm việc của hợp đồng theo chương trình lương mới của quốc gia khác: đơn vị tiền đã đổi và các số tiền được giữ như đã nhập. Tự tắt khi sửa mức lương."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Show %s more pay schemes"
+msgstr "Hiện thêm %s chương trình lương"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Show more (%s left)"
+msgstr "Hiện thêm (còn %s)"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Since %s"
+msgstr "Từ %s"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme_fill__state
+msgid "State"
+msgstr "Trạng thái"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_follow.py:0
+msgid "That contract is not there any more."
+msgstr "Hợp đồng đó không còn nữa."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_fill.py:0
+msgid "That fill is not there any more."
+msgstr "Lần điền đó không còn nữa."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_team.py:0
+msgid "That team is not in this company. Reload the screen and try again."
+msgstr "Nhóm đó không thuộc công ty này. Hãy tải lại màn hình và thử lại."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_many.py:0
+msgid "The fill is not there any more"
+msgstr "Lần điền không còn nữa"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "The fill is undone"
+msgstr "Đã hoàn tác lần điền"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "The fill of %(date)s by %(who)s was undone on %(undone)s."
+msgstr "Lần điền ngày %(date)s bởi %(who)s đã được hoàn tác ngày %(undone)s."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_fill.py:0
+msgid "The fill of %(date)s by %(who)s: %(count)s people"
+msgstr "Lần điền ngày %(date)s bởi %(who)s: %(count)s người"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "The list could not be read. Try again."
+msgstr "Không đọc được danh sách. Hãy thử lại."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "The names could not be read. Try again."
+msgstr "Không đọc được tên. Hãy thử lại."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_many.py:0
+msgid ""
+"The pay schemes this fill gave are taken off again. People somebody changed "
+"since keep theirs."
+msgstr "Các chương trình lương do lần điền này cấp sẽ được gỡ lại. Người đã được ai đó thay đổi từ đó vẫn giữ chương trình của mình."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "The people could not be read. Try again."
+msgstr "Không đọc được danh sách người. Hãy thử lại."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid ""
+"The people of %(team)s and of %(count)s teams below it that have no usual "
+"pay scheme of their own. The team's usual pay scheme stays as it is."
+msgstr "Những người của %(team)s và của %(count)s nhóm bên dưới chưa có chương trình lương thường dùng riêng. Chương trình thường dùng của nhóm giữ nguyên."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid ""
+"The people of %s get a pay scheme of their own. The team's usual pay scheme "
+"stays as it is."
+msgstr "Những người của %s nhận chương trình lương riêng. Chương trình thường dùng của nhóm giữ nguyên."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "The team could not be read. Try again."
+msgstr "Không đọc được nhóm. Hãy thử lại."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Their Country of work and their pay scheme disagree"
+msgstr "Quốc gia làm việc và chương trình lương của họ không khớp"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid ""
+"Their Country of work and their pay scheme disagree. Tax and insurance "
+"follow the Country of work, so the pay scheme usually should too. Nothing "
+"changes until you press a button."
+msgstr "Quốc gia làm việc và chương trình lương của họ không khớp. Thuế và bảo hiểm theo quốc gia làm việc, nên chương trình lương thường cũng vậy. Không có gì thay đổi cho đến khi bạn bấm nút."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_follow.py:0
+msgid "Their contract is now in %s. Check their pay amounts."
+msgstr "Hợp đồng của họ nay tính bằng %s. Hãy kiểm tra các số tiền lương."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "Their country's"
+msgstr "Của quốc gia họ"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "Their country's…"
+msgstr "Của quốc gia họ…"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid ""
+"Their own pay scheme starts on %s. Nobody's pay changes: each person keeps "
+"the pay scheme that pays them today."
+msgstr "Chương trình lương riêng bắt đầu từ %s. Lương của không ai thay đổi: mỗi người giữ chương trình đang trả lương cho họ hôm nay."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_many.py:0
+msgid ""
+"These people work for more than one company. Change one company's people at "
+"a time."
+msgstr "Những người này làm cho nhiều công ty. Hãy đổi người của từng công ty một."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "They are paid by %s. People who were not ticked keep what they had."
+msgstr "Họ được trả lương theo %s. Người không được chọn giữ nguyên như cũ."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "They have no pay scheme of their own and are not in a team."
+msgstr "Họ không có chương trình lương riêng và không thuộc nhóm nào."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid ""
+"They have no pay scheme of their own, and their team has no usual pay scheme"
+" yet."
+msgstr "Họ không có chương trình lương riêng, và nhóm của họ chưa có chương trình lương thường dùng."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "They keep their own pay scheme whatever this team's usual one is."
+msgstr "Họ giữ chương trình lương riêng dù chương trình thường dùng của nhóm là gì."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid ""
+"This also changes their contract's currency to %(currency)s from %(date)s."
+msgstr "Việc này cũng đổi đơn vị tiền của hợp đồng sang %(currency)s từ %(date)s."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "This company has no pay scheme yet. Build one first."
+msgstr "Công ty này chưa có chương trình lương. Hãy tạo một chương trình trước."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_fill.py:0
+msgid "This fill was already undone."
+msgstr "Lần điền này đã được hoàn tác rồi."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_many.py:0
+msgid "Undo"
+msgstr "Hoàn tác"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_many.py:0
+msgid "Undo a pay scheme fill"
+msgstr "Hoàn tác lần điền chương trình lương"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid ""
+"Undo takes off the pay schemes this fill gave %s. They go back to their "
+"team's usual pay scheme."
+msgstr "Hoàn tác sẽ gỡ các chương trình lương mà lần điền này cấp cho %s. Họ quay lại chương trình lương thường dùng của nhóm."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_fill.py:0
+msgid "Undo the pay scheme fill for %s people"
+msgstr "Hoàn tác lần điền chương trình lương cho %s người"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "Undo this fill"
+msgstr "Hoàn tác lần điền này"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__pb_person_scheme_fill__state__undone
+msgid "Undone"
+msgstr "Đã hoàn tác"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme_fill__undone_by_id
+msgid "Undone by"
+msgstr "Người hoàn tác"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme_fill__undone_at
+msgid "Undone on"
+msgstr "Ngày hoàn tác"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Usual"
+msgstr "Thường dùng"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_many.py:0
+msgid "What happens"
+msgstr "Điều gì xảy ra"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Who got a pay scheme of their own in the one-time fill, and undo it"
+msgstr "Ai đã nhận chương trình lương riêng trong lần điền một lần, và hoàn tác nó"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Without a pay scheme (%s)"
+msgstr "Chưa có chương trình lương (%s)"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid ""
+"Works in %(country)s and is paid today by %(scheme)s, a pay scheme of "
+"%(other)s."
+msgstr "Làm việc tại %(country)s và hôm nay được trả lương theo %(scheme)s, một chương trình của %(other)s."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Works in %(country)s · paid by %(scheme)s (%(other)s)"
+msgstr "Làm việc tại %(country)s · được trả lương theo %(scheme)s (%(other)s)"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Works in %(country)s. %(scheme)s is a pay scheme of %(other)s."
+msgstr "Làm việc tại %(country)s. %(scheme)s là chương trình lương của %(other)s."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_follow.py:0
+msgid "Works in %s"
+msgstr "Làm việc tại %s"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_fill.py:0
+#: code:addons/pb_scheme_map/models/pb_person_scheme_team.py:0
+msgid "You cannot see who pays this company's people."
+msgstr "Bạn không xem được ai trả lương cho người của công ty này."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "and %s more"
+msgstr "và %s người khác"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_many.py:0
+msgid "and %s more pay schemes"
+msgstr "và %s chương trình lương khác"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_fill.xml:0
+msgid "no change"
+msgstr "không đổi"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "paid by another country's scheme"
+msgstr "được trả lương theo chương trình của quốc gia khác"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Fits their Country of work: %s"
+msgstr "Phù hợp với quốc gia làm việc: %s"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "Give their pay scheme"
+msgstr "Cho họ chương trình lương"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_fill.js:0
+msgid "No pay scheme for %s yet. Add one"
+msgstr "Chưa có chương trình lương cho %s. Thêm một chương trình"

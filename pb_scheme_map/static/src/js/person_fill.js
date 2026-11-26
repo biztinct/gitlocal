@@ -279,6 +279,7 @@ export class PersonFillDrawer extends Component {
     }
     get applyLabel() {
         if (this.route) { return _t("Ask for this change"); }
+        if (!this.chosen) { return _t("Give their pay scheme"); }
         return this.chosen === 1 ? _t("Give 1 person their pay scheme")
             : _t("Give %s people their pay scheme", num(this.chosen));
     }
@@ -640,13 +641,15 @@ export class MismatchDrawer extends Component {
     }
     get d() { return this.state.data || { people: [] }; }
     get route() { return this.d.lane === "route"; }
+    fitsLine(r) { return _t("Fits their Country of work: %s", r.target); }
     line(r) {
         return _t("Works in %(country)s · paid by %(scheme)s (%(other)s)",
             { country: r.country_name, scheme: r.scheme, other: r.scheme_country_name });
     }
-    get bulkLabel() {
-        return this.route ? _t("Ask to change these %s", this.d.people.length)
-            : _t("Change these %(count)s to %(scheme)s", { count: this.d.people.length, scheme: this.d.one_target });
+    get groups() { return this.d.groups || []; }
+    bulkLabel(g) {
+        return this.route ? _t("Ask to change these %s", g.employee_ids.length)
+            : _t("Change these %(count)s to %(scheme)s", { count: g.employee_ids.length, scheme: g.target });
     }
     get bulkLine() { return _t("From %s. Each person's mid-month advance stays only when it is of the same country.", this.d.date_words); }
     get canChange() { return this.d.can_propose && !this.d.blocked; }
@@ -658,11 +661,11 @@ export class MismatchDrawer extends Component {
             onSaved: async () => { await this.load(); if (this.props.onChanged) { await this.props.onChanged(); } },
         });
     }
-    async changeAll() {
+    async changeAll(g) {
         this.state.busy = true;
         try {
             const answer = await this.orm.call(BOARD, "mismatch_change", [
-                this.d.people.map((r) => r.employee_id), this.d.one_target_id, this.d.date, this.props.companyId]);
+                g.employee_ids, g.target_id, this.d.date, this.props.companyId]);
             const saved = Boolean(answer && (answer.applied || answer.saved));
             this.state.done = {
                 saved, failed: answer && answer.ok === false,

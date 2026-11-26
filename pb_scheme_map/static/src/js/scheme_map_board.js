@@ -263,6 +263,16 @@ export class SchemeMapBoard extends Component {
         this.openFill(this.exceptionPeople.map((p) => p.employee_id));
     }
     openTeamSet(departmentId) { this.state.drawer = { kind: "team", id: Number(departmentId) }; }
+    // The row is a drag source: a press there is read on mouseup, like the
+    // attach button beside it (a click never reaches it).
+    openTeamSetClick(ev, id) { ev.preventDefault(); ev.stopPropagation(); this.openTeamSet(id); }
+    openTeamSetKey(ev, id) {
+        if (ev.key === "Enter" || ev.key === " ") { this.openTeamSetClick(ev, id); }
+    }
+    openOwnClick(ev, id) { ev.preventDefault(); ev.stopPropagation(); this.openOwn(id); }
+    openOwnKey(ev, id) {
+        if (ev.key === "Enter" || ev.key === " ") { this.openOwnClick(ev, id); }
+    }
     openMismatch() { this.state.drawer = { kind: "mismatch" }; }
     openOwn(departmentId) { this.state.drawer = { kind: "own", id: Number(departmentId) }; }
     closeDrawer() { this.state.drawer = null; }

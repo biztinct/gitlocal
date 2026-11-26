@@ -196,6 +196,7 @@
         </div>
 
         <t t-else="">
+          <div class="smp-pf-body">
           <p class="smp-panel__sub" t-esc="lead"/>
           <p class="smp-pf-label">Pay scheme</p>
           <div t-if="!p.choices.length" class="smp-pf-confirm"><p>This company has no pay scheme yet. Build one first.</p></div>
@@ -260,6 +261,7 @@
               </label>
             </div>
           </section>
+          </div>
 
           <div class="smp-pf-foot">
             <p class="smp-pf-sum" aria-live="polite"><t t-out="ic('sigma', 14)"/><span t-esc="sumLine"/></p>
@@ -305,16 +307,17 @@
                 <b t-esc="r.name"/>
                 <small><t t-esc="r.team or ''"/></small>
                 <small class="smp-pf-why" t-esc="line(r)"/>
+                <small t-if="r.target" t-esc="fitsLine(r)"/>
               </span>
               <button t-if="canChange" type="button" class="pbim-btn outline sm" t-on-click="(ev) => this.openOne(r, ev)">
                 <t t-out="ic('pencil', 14)"/> Change pay scheme
               </button>
             </div>
           </div>
-          <div t-if="d.one_target_id and d.people.length and canChange" class="smp-pf-foot">
+          <div t-if="groups.length and canChange" class="smp-pf-foot">
             <p class="smp-pf-sum"><t t-out="ic('calendar', 14)"/><span t-esc="bulkLine"/></p>
             <div class="smp-panel__acts">
-              <button type="button" class="pbim-btn primary" t-att-disabled="state.busy ? 'disabled' : false" t-on-click="changeAll"><t t-out="ic(route ? 'send' : 'check', 15)"/> <t t-esc="bulkLabel"/></button>
+              <button t-foreach="groups" t-as="g" t-key="g.target_id" type="button" class="pbim-btn primary" t-att-disabled="state.busy ? 'disabled' : false" t-on-click="() => this.changeAll(g)"><t t-out="ic(route ? 'send' : 'check', 15)"/> <t t-esc="bulkLabel(g)"/></button>
             </div>
           </div>
           <p t-if="d.blocked" class="smp-ps-why" t-esc="d.blocked"/>

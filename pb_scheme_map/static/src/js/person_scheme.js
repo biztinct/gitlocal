@@ -110,8 +110,11 @@ export class ChangePaySchemeDialog extends Component {
         this.state.date = d.default_date;
         const wanted = this.props.pick
             || (d.country_mismatch && d.country_mismatch.target_id) || 0;
+        // a person paid by another country's scheme: never preselect the
+        // scheme that is wrong for them — the fitting one, or nothing
+        const fallback = d.country_mismatch ? 0 : ((d.main && d.main.id) || 0);
         const mine = (wanted && d.choices.concat(d.others).some((c) => c.id === wanted))
-            ? wanted : ((d.main && d.main.id) || 0);
+            ? wanted : fallback;
         const inMine = d.choices.some((c) => c.id === mine);
         const inOthers = d.others.some((c) => c.id === mine);
         this.state.pick = mine && (inMine || inOthers) ? mine : 0;
