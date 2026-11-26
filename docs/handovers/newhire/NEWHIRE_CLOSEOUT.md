@@ -14,6 +14,12 @@
   bank row, the employee's own My Payobook bank page and Bank Verification all show the account country's own
   boxes (IFSC, BSB, bank / branch code, SWIFT) from ONE definition (`pb_bank_ocr` `pb.bank.format`). Release
   status: see the P7 report §5.
+- P8 (owner decisions 2026-11-26, `NEWHIRE_P8_REPORT.md`): LIVE on all five (`3d038fcc9`, 195 s down) — pay
+  scheme follows the country of work with a chooser when there are several (one resolver following the pay
+  run's own chain); Mapping "Suggest who pays each team"; one tax reminder; Access "Print a new sign-in slip";
+  HR managers: New joiners board (narrow right) and My Payobook page builder (own company); checklist by country
+  of work; laptop handed over ticks its step. The rize team mapping is ON HOLD (owner): dry run on the hidden
+  copy only, client workbook in `outputs/` (never committed).
 - Architect live look after P5b: `/bizapp/add-employee` on payobook.com opens the seven-step studio, console clean.
 - Demo record left on payobook on purpose: "DEMO NH P5b Live Check". Nothing created on the four other sites.
 - `docs/deploy/PENDING.md`: the "pending on the other four" row is removed.
@@ -30,9 +36,12 @@ Owner decisions / setup
    the New joiners board and equipment screens' own labels (almost no Indonesian screen translations in those
    modules; a few Vietnamese labels missing too), the "Tell us about you" questions, reminder email step names.
 5. Learn has no Indonesian lessons (en + vi only).
-6. Tax module's own "Add your tax number" home row shows next to the studio's asked-items row.
-7. Earlier parked: print a new sign-in slip from Access; HR managers on the New joiners board by default; equipment
-   requests ticking the laptop step; checklist by country of work vs nationality.
+6. ~~Tax module's own "Add your tax number" home row shows next to the studio's asked-items row.~~ — done in P8.
+7. ~~Earlier parked: print a new sign-in slip from Access; HR managers on the New joiners board by default; equipment
+   requests ticking the laptop step; checklist by country of work vs nationality.~~ — done in P8.
+10. P8 open items: rize team mapping on hold (14 clean teams, workbook for the client); rize's Vietnam rule
+    reads employee codes, not the country of work (new Vietnamese joiners reach no scheme); confirm the E and H
+    splits (P8 report §8).
 8. Contract letter with the new PDF tool is 2 pages (signatures alone on page 2; was 1 page) — for the document /
    PDF session (P6 report §2.7).
 9. Architect call: a shipped step a company renamed in English would still get our translations from the upgrade's
@@ -50,4 +59,4 @@ Not verified live
 - ~~Contract letter PDF after the other session's PDF change~~ — produced and opened in P6 (see item 8).
 
 ## 3. Cleanup
-Worktrees `gitlocal-worktrees/newhire`, `gitlocal-worktrees/nh-release`, `gitlocal-worktrees/nh-p6` and `gitlocal-worktrees/nh-p7` can be removed.
+Worktrees `gitlocal-worktrees/newhire`, `gitlocal-worktrees/nh-release`, `gitlocal-worktrees/nh-p6`, `gitlocal-worktrees/nh-p7` and `gitlocal-worktrees/nh-p8` can be removed.
