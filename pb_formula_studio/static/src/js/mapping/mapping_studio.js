@@ -206,6 +206,7 @@ export class MappingStudio extends Component {
 
         this.state = useState({
             loaded: false, busy: false,
+            schemeStrip: "",      // PSCHEME P3 F2 — the scheme board's own sentence
             // J5 — cold start lands on the Journey. `askedMode` is still king:
             // a link that names a mode gets that mode, which is what keeps every
             // pre-existing door (the Integrations cockpit's `api`, the connector
@@ -566,8 +567,10 @@ export class MappingStudio extends Component {
                 return { kind: "config", title: this.configName,
                          sub: this.toSub, icon: "calculator" };
             case "scheme":
-                return { kind: "static", title: _t("Employee segments"),
-                         sub: _t("Departments with employees"), icon: "users" };
+                // PSCHEME P3 F2 — mapping a team is OPTIONAL: each person has
+                // their own pay scheme; a team's line is only its usual one.
+                return { kind: "static", title: _t("Teams"),
+                         sub: _t("Teams with people"), icon: "users" };
             case "treatment":
                 return { kind: "static", title: _t("Every component"),
                          sub: _t("However its value reaches the scheme"),
@@ -600,8 +603,8 @@ export class MappingStudio extends Component {
                          sub: _t("Written on import · read back on a pay run"),
                          icon: "users" };
             case "scheme":
-                return { kind: "static", title: _t("Payroll schemes"),
-                         sub: _t("The scheme that pays each segment"), icon: "layers" };
+                return { kind: "static", title: _t("Pay schemes"),
+                         sub: _t("A team's usual pay scheme (optional)"), icon: "layers" };
             default:      // cycle
                 return { kind: "static",
                          title: (d.end && d.end.name) || _t("End-cycle scheme"),
@@ -711,7 +714,12 @@ export class MappingStudio extends Component {
         // this child measures the DOM on every patch.
         const focus = this.state.focus || "";
         if (!this._schemeProps || this._schemeProps.focus !== focus) {
-            this._schemeProps = { focus };
+            // PSCHEME P3 F2 — the board hands its own sentence for the strip
+            // ("227 of 231 have their own pay scheme · 3 teams have a usual
+            // scheme"); the generic "N mapped" wire count means nothing here.
+            this._schemeProps = { focus, onLoaded: (board) => {
+                this.state.schemeStrip = ((board && board.persons) || {}).strip || "";
+            } };
         }
         return this._schemeProps;
     }

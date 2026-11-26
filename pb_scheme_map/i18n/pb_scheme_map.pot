@@ -249,15 +249,6 @@ msgstr ""
 #. module: pb_scheme_map
 #. odoo-javascript
 #: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
-msgid ""
-"Drag a team onto a scheme to attach it. Hover a line to follow it. Pull a "
-"line off to take it away — or use the keyboard: Enter on a team attaches it,"
-" Delete on a line takes it off."
-msgstr ""
-
-#. module: pb_scheme_map
-#. odoo-javascript
-#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
 msgid "Drag this team onto a scheme on the right"
 msgstr ""
 
@@ -3047,4 +3038,28 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
 msgid "· Matched in staging; import not completed for this person."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_team.py:0
+msgid "%(own)s of %(people)s have their own pay scheme"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_team.py:0
+msgid "%(teams)s teams have a usual scheme"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_team.py:0
+msgid "1 team has a usual scheme"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Optional: drag a team onto a pay scheme to make it that team's usual scheme. It pre-fills new people and covers anyone without a pay scheme of their own. Hover a line to follow it. Pull a line off to take it away — or use the keyboard: Enter on a team attaches it, Delete on a line takes it off."
 msgstr ""

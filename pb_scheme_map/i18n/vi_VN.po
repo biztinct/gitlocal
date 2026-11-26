@@ -947,18 +947,6 @@ msgstr "· kỳ gần nhất"
 #. module: pb_scheme_map
 #. odoo-javascript
 #: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
-msgid ""
-"Drag a team onto a scheme to attach it. Hover a line to follow it. Pull a "
-"line off to take it away — or use the keyboard: Enter on a team attaches it,"
-" Delete on a line takes it off."
-msgstr ""
-"Kéo một bộ phận thả vào một phương án lương để gắn. Di chuột lên một đường "
-"nối để dõi theo nó. Kéo đường nối ra để gỡ — hoặc dùng bàn phím: nhấn Enter "
-"trên một bộ phận để gắn, nhấn Delete trên một đường nối để gỡ."
-
-#. module: pb_scheme_map
-#. odoo-javascript
-#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
 msgid "Drag this team onto a scheme on the right"
 msgstr "Kéo bộ phận này thả vào một phương án lương ở bên phải"
 
@@ -3192,3 +3180,27 @@ msgstr "· Đã lưu trữ hoặc ngừng dùng — hãy chọn phương án tha
 #: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
 msgid "· Matched in staging; import not completed for this person."
 msgstr "· Đã khớp ở bước chuẩn bị; việc nhập chưa hoàn tất cho người này."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_team.py:0
+msgid "%(own)s of %(people)s have their own pay scheme"
+msgstr "%(own)s trên %(people)s người có chương trình lương riêng"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_team.py:0
+msgid "%(teams)s teams have a usual scheme"
+msgstr "%(teams)s bộ phận có chương trình lương thường dùng"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_team.py:0
+msgid "1 team has a usual scheme"
+msgstr "1 bộ phận có chương trình lương thường dùng"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Optional: drag a team onto a pay scheme to make it that team's usual scheme. It pre-fills new people and covers anyone without a pay scheme of their own. Hover a line to follow it. Pull a line off to take it away — or use the keyboard: Enter on a team attaches it, Delete on a line takes it off."
+msgstr "Không bắt buộc: kéo một bộ phận thả vào một chương trình lương để đặt làm chương trình lương thường dùng của bộ phận đó. Nó điền sẵn cho người mới và áp dụng cho bất kỳ ai chưa có chương trình lương riêng. Di chuột lên một đường nối để dõi theo nó. Kéo đường nối ra để gỡ — hoặc dùng bàn phím: nhấn Enter trên một bộ phận để gắn, nhấn Delete trên một đường nối để gỡ."

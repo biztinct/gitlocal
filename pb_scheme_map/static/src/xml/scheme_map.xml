@@ -313,7 +313,7 @@
             <h3 class="smp-col__title">Paid by</h3>
             <p class="smp-col__sub">The payroll schemes this company runs</p>
             <p t-if="canEdit" class="smp-col__hint">
-              Drag a team onto a scheme to attach it. Hover a line to follow it. Pull a line off to take it away — or use the keyboard: Enter on a team attaches it, Delete on a line takes it off.
+              Optional: drag a team onto a pay scheme to make it that team's usual scheme. It pre-fills new people and covers anyone without a pay scheme of their own. Hover a line to follow it. Pull a line off to take it away — or use the keyboard: Enter on a team attaches it, Delete on a line takes it off.
             </p>
           </div>
 

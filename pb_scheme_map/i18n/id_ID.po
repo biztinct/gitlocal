@@ -2250,15 +2250,6 @@ msgstr "Divisi dan tim di perusahaan ini"
 #. module: pb_scheme_map
 #. odoo-javascript
 #: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
-msgid ""
-"Drag a team onto a scheme to attach it. Hover a line to follow it. Pull a "
-"line off to take it away — or use the keyboard: Enter on a team attaches it,"
-" Delete on a line takes it off."
-msgstr "Seret tim ke skema gaji untuk memasangnya. Arahkan kursor ke garis untuk mengikutinya. Tarik garis untuk melepasnya — atau gunakan keyboard: Enter pada tim untuk memasang, Delete pada garis untuk melepas."
-
-#. module: pb_scheme_map
-#. odoo-javascript
-#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
 msgid "Drag this team onto a scheme on the right"
 msgstr "Seret tim ini ke skema gaji di sebelah kanan"
 
@@ -3065,3 +3056,27 @@ msgstr "· Cocok di tahap persiapan; impor belum selesai untuk orang ini."
 #: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
 msgid "· last run"
 msgstr "· penggajian terakhir"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_team.py:0
+msgid "%(own)s of %(people)s have their own pay scheme"
+msgstr "%(own)s dari %(people)s orang memiliki skema gaji sendiri"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_team.py:0
+msgid "%(teams)s teams have a usual scheme"
+msgstr "%(teams)s tim memiliki skema gaji biasa"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_team.py:0
+msgid "1 team has a usual scheme"
+msgstr "1 tim memiliki skema gaji biasa"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Optional: drag a team onto a pay scheme to make it that team's usual scheme. It pre-fills new people and covers anyone without a pay scheme of their own. Hover a line to follow it. Pull a line off to take it away — or use the keyboard: Enter on a team attaches it, Delete on a line takes it off."
+msgstr "Opsional: seret tim ke skema gaji untuk menjadikannya skema gaji biasa tim itu. Skema itu terisi otomatis untuk orang baru dan berlaku bagi siapa pun yang belum memiliki skema gaji sendiri. Arahkan kursor ke garis untuk mengikutinya. Tarik garis untuk melepasnya — atau gunakan keyboard: Enter pada tim untuk memasang, Delete pada garis untuk melepas."

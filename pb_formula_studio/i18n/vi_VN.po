@@ -2981,14 +2981,14 @@ msgstr "Chưa có tập tin nào"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:506
-msgid "Employee segments"
-msgstr "Phân khúc nhân viên"
+msgid "Teams"
+msgstr "Bộ phận"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:507
-msgid "Departments with employees"
-msgstr "Các phòng ban có nhân viên"
+msgid "Teams with people"
+msgstr "Bộ phận có nhân viên"
 
 #. module: pb_formula_studio
 #. odoo-javascript
@@ -3029,14 +3029,14 @@ msgstr "Được viết khi nhập · đọc lại khi tính lương"
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:540
-msgid "Payroll schemes"
-msgstr "Chế độ trả lương"
+msgid "Pay schemes"
+msgstr "Chương trình lương"
 
 #. module: pb_formula_studio
 #. odoo-javascript
 #: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:541
-msgid "The scheme that pays each segment"
-msgstr "Chương trình thanh toán cho từng phân khúc"
+msgid "A team's usual pay scheme (optional)"
+msgstr "Chương trình lương thường dùng của bộ phận (không bắt buộc)"
 
 #. module: pb_formula_studio
 #. odoo-javascript

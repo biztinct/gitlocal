@@ -25,3 +25,27 @@ msgstr "Dari mesin absensi — mulai %s"
 #: code:addons/pb_formula_studio/models/pb_formula_studio.py:0
 msgid "Answered by the clocks: %(fact)s. Pay periods from %(day)s take this value from the clocks, not the pay data file; earlier pay periods read it as before."
 msgstr "Dijawab oleh mesin absensi: %(fact)s. Periode gaji mulai %(day)s mengambil nilai ini dari mesin absensi, bukan dari file data gaji; periode gaji sebelumnya dibaca seperti sebelumnya."
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:506
+msgid "Teams"
+msgstr "Tim"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:507
+msgid "Teams with people"
+msgstr "Tim yang memiliki orang"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:540
+msgid "Pay schemes"
+msgstr "Skema gaji"
+
+#. module: pb_formula_studio
+#. odoo-javascript
+#: code:addons/pb_formula_studio/static/src/js/mapping/mapping_studio.js:541
+msgid "A team's usual pay scheme (optional)"
+msgstr "Skema gaji biasa sebuah tim (opsional)"

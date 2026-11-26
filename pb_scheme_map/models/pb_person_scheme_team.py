@@ -26,6 +26,7 @@ from dateutil.relativedelta import relativedelta
 
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
+from odoo.tools.misc import formatLang
 
 from .pb_scheme_map import ADVANCE_RUNGS, MAIN_QUESTION, SKIP_PERSON
 
@@ -120,7 +121,18 @@ class PbSchemeBoardTeam(models.AbstractModel):
                 item['usual'] = usual.get(item['id'], 0)
                 item['own'] = mine.get(item['id'], 0)
         company = self.env['res.company'].sudo().browse(company_id)
+        # PSCHEME P3 F2 — the Mapping strip's sentence: who has their own pay
+        # scheme, and (only when there are any) how many teams have a usual one.
+        teams = len({w['segment'] for w in board.get('wires') or []
+                     if str(w.get('segment') or '').startswith('department-')})
+        strip = _("%(own)s of %(people)s have their own pay scheme",
+                  own=formatLang(self.env, len(own), digits=0),
+                  people=formatLang(self.env, len(roster), digits=0))
+        if teams:
+            strip += ' · ' + (_("1 team has a usual scheme") if teams == 1 else
+                              _("%(teams)s teams have a usual scheme", teams=formatLang(self.env, teams, digits=0)))
         return {
+            'strip': strip,
             'people': len(roster),
             'own': len(own),
             'without': len(roster) - len(own),

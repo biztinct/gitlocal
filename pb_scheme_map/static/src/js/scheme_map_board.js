@@ -145,6 +145,7 @@ export class SchemeMapBoard extends Component {
 
         onWillStart(async () => { await this.load(); });
         onMounted(() => {
+            this._notifyLoaded();
             window.addEventListener("keydown", this._escape, { capture: true });
             this.watchSize();
             this.measure();
@@ -158,7 +159,7 @@ export class SchemeMapBoard extends Component {
                 this.openFill();
             }
         });
-        onPatched(() => { this.measure(); });
+        onPatched(() => { this.measure(); this._notifyLoaded(); });
         onWillUnmount(() => {
             window.removeEventListener("keydown", this._escape,
                                        { capture: true });
@@ -174,6 +175,16 @@ export class SchemeMapBoard extends Component {
         return Number(value || 0) === 1 ? _t("person") : _t("people");
     }
 
+    /** Tell the screen around this board (the Mapping strip) that the board
+     *  changed - after a load, an attach, a take-off or a person change alike. */
+    _notifyLoaded() {
+        const board = this.state.board;
+        if (board && board !== this._notified && this.props.onLoaded) {
+            this._notified = board;
+            this.props.onLoaded(board);
+        }
+    }
+
     // ================================================================ reading
     async load() {
         this.state.busy = true;
@@ -182,9 +193,6 @@ export class SchemeMapBoard extends Component {
                                                    [this.state.companyId || 0]);
             this.state.companyId = this.state.board.company_id || 0;
             this.state.failed = "";
-            if (this.props.onLoaded) {
-                this.props.onLoaded(this.state.board);
-            }
         } catch (e) {
             this.state.board = null;
             this.state.failed = this._msg(

@@ -92,6 +92,7 @@
               <!-- VALUEKIND P5 — a board with no wires has nothing to count
                    and nothing to flash. It names what it holds instead. -->
               <span t-elif="isTreatment" class="pbms-count is-static"><b t-esc="treatmentCount"/> components</span>
+              <span t-elif="isSchemeBoard" class="pbms-count is-static" t-esc="state.schemeStrip"/>
               <button t-else="" class="pbms-count" t-att-disabled="mappedCount ? false : 'disabled'"
                       title="Flash every mapped wire on the board"
                       t-on-click="flashWires"><b t-esc="mappedCount"/> mapped</button>
