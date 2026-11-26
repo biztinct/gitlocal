@@ -23,7 +23,7 @@
   </t>
 
   <t t-name="pb_doc_studio.DocToolbar">
-    <div class="pbds-tb" role="toolbar" aria-label="Formatting" t-att-class="{ 'is-off': props.disabled }">
+    <div class="pbds-tb" data-coach="ds-toolbar" role="toolbar" aria-label="Formatting" t-att-class="{ 'is-off': props.disabled }">
       <div class="pbds-tb-group">
         <button type="button" class="pbds-tb-btn" t-att-disabled="!props.ui.canUndo" t-att-title="tips.undo" aria-label="Undo"
                 t-on-mousedown.prevent="() => this.call('undo')"><t t-out="ic('undo')"/></button>

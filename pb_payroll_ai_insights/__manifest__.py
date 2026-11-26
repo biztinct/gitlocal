@@ -19,7 +19,7 @@
     # 19.0.3.13.0 — WDGAP QF1: daily alerts carry a company (record rule),
     # one open alert per thing (refreshed, auto-resolved), `home_alerts`
     # feeds Home's "PayAI noticed" card.
-    'version': '19.0.3.13.1',
+    'version': '19.0.3.13.2',
     'category': 'Human Resources/Payroll',
     'summary': 'AI-powered payroll analytics with conversational charts, dashboards, and insights',
     'description': """

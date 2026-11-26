@@ -2270,6 +2270,253 @@
       "file": "pb_new_hire/static/src/xml/new_hire_studio.xml",
       "desc": "Check and add's Send button. Where a second person approves new people it sends the hire for approval and nothing is created until they approve; otherwise it adds the person at once.",
       "reserved": true
+    },
+    "rb-top": {
+      "screen": [
+        "reportbuilder",
+        "excellayout",
+        "reportpdf"
+      ],
+      "shared": true,
+      "file": "pb_report_builder/static/src/xml/report_builder.xml",
+      "desc": "Build a report, the top bar: back to All reports, the report's name and Not saved, then its tools."
+    },
+    "rb-tools": {
+      "screen": [
+        "reportbuilder",
+        "excellayout",
+        "reportpdf"
+      ],
+      "shared": true,
+      "file": "pb_report_builder/static/src/xml/report_builder.xml",
+      "desc": "Build a report, the tools on the top bar: Undo, Share, Make a copy, Delete, Excel, My Excel layout, PDF and Save."
+    },
+    "rb-rowis": {
+      "screen": "reportbuilder",
+      "file": "pb_report_builder/static/src/xml/report_builder.xml",
+      "desc": "Build a report, Each row is: what one row of the report is (People, Contracts, Time off requests and the rest)."
+    },
+    "rb-fields": {
+      "screen": "reportbuilder",
+      "file": "pb_report_builder/static/src/xml/report_builder.xml",
+      "desc": "Build a report, the field list by section (the subject's own fields, About the person, Counts from other areas, Your own fields); a click adds a column."
+    },
+    "rb-bar": {
+      "screen": "reportbuilder",
+      "file": "pb_report_builder/static/src/xml/report_builder.xml",
+      "desc": "Build a report, the filter bar: filters written as sentences, the period and which date, Group by, Summary only and the row count."
+    },
+    "rb-table": {
+      "screen": "reportbuilder",
+      "file": "pb_report_builder/static/src/xml/report_builder.xml",
+      "desc": "Build a report, the table: each heading's menu (sort, Filter by this, Total, Group by this, Hide), groups with subtotals and the total row."
+    },
+    "xl-button": {
+      "screen": "excellayout",
+      "file": "pb_excel_layout/static/src/xml/excel_layout.xml",
+      "desc": "My Excel layout, the button beside Excel / Download Excel; grey with its reason until the report or view is saved."
+    },
+    "xl-pop": {
+      "screen": "excellayout",
+      "file": "pb_excel_layout/static/src/xml/excel_layout.xml",
+      "desc": "My Excel layout, the list under the button: the layouts with Download in my layout, or Use my Excel layout when there is none."
+    },
+    "xl-steps": {
+      "screen": "excellayout",
+      "file": "pb_excel_layout/static/src/xml/excel_layout.xml",
+      "desc": "The Excel layout set-up window, its three steps: Your file, Where the figures go, Try it and save."
+    },
+    "xl-grid": {
+      "screen": "excellayout",
+      "file": "pb_excel_layout/static/src/xml/excel_layout.xml",
+      "desc": "The Excel layout set-up window, the customer's own sheet as a grid with the lit area, the outline chip and the sheet tabs."
+    },
+    "xl-side": {
+      "screen": "excellayout",
+      "file": "pb_excel_layout/static/src/xml/excel_layout.xml",
+      "desc": "The Excel layout set-up window, the fields on the right: Name, The figures start at, Write the column headings, Share."
+    },
+    "xl-foot": {
+      "screen": "excellayout",
+      "file": "pb_excel_layout/static/src/xml/excel_layout.xml",
+      "desc": "The Excel layout set-up window, the footer: Cancel, Try it, Save layout."
+    },
+    "xl-sendas": {
+      "screen": "excellayout",
+      "file": "pb_excel_layout/static/src/xml/excel_layout.xml",
+      "desc": "Explorer, Send regularly drawer: the Send as row (Standard Excel or a layout)."
+    },
+    "pd-button": {
+      "screen": "reportpdf",
+      "file": "pb_report_pdf/static/src/xml/report_pdf.xml",
+      "desc": "The PDF button beside My Excel layout; grey with its reason until the report or view is saved."
+    },
+    "pd-top": {
+      "screen": "reportpdf",
+      "file": "pb_report_pdf/static/src/xml/report_pdf.xml",
+      "desc": "Design the PDF, the top bar: the report's name, the look it prints with, Save look and Download PDF."
+    },
+    "pd-paper": {
+      "screen": "reportpdf",
+      "file": "pb_report_pdf/static/src/xml/report_pdf.xml",
+      "desc": "Design the PDF, Paper: A4 / A3 and Fit / Upright / Sideways."
+    },
+    "pd-page": {
+      "screen": "reportpdf",
+      "file": "pb_report_pdf/static/src/xml/report_pdf.xml",
+      "desc": "Design the PDF, Page: Company letterhead, Font and Text size."
+    },
+    "pd-cols": {
+      "screen": "reportpdf",
+      "file": "pb_report_pdf/static/src/xml/report_pdf.xml",
+      "desc": "Design the PDF, Columns: a tick and a width per column, the drag hint."
+    },
+    "pd-look": {
+      "screen": "reportpdf",
+      "file": "pb_report_pdf/static/src/xml/report_pdf.xml",
+      "desc": "Design the PDF, This look: share it, the company look (administrators), back to the standard look.",
+      "reserved": true
+    },
+    "pd-stage": {
+      "screen": "reportpdf",
+      "file": "pb_report_pdf/static/src/xml/report_pdf.xml",
+      "desc": "Design the PDF, the real first page with its chips (pages, rows, paper and turn)."
+    },
+    "pd-sendpdf": {
+      "screen": "reportpdf",
+      "file": "pb_report_pdf_send/static/src/xml/send.xml",
+      "desc": "Explorer, Send regularly drawer, Send as: PDF in my look (pb_report_pdf_send)."
+    },
+    "ds-hero": {
+      "screen": "docstudio",
+      "file": "pb_doc_studio/static/src/xml/doc_studio.xml",
+      "desc": "Settings › Documents, the hero: Documents, its line and New document."
+    },
+    "ds-filter": {
+      "screen": "docstudio",
+      "file": "pb_doc_studio/static/src/xml/doc_studio.xml",
+      "desc": "Settings › Documents, Find a document and the kind chips with their counts.",
+      "reserved": true
+    },
+    "ds-group": {
+      "screen": "docstudio",
+      "file": "pb_doc_studio/static/src/xml/doc_studio.xml",
+      "desc": "Settings › Documents, a group of the gallery with one card per document (wording pill, who it is for, languages, Copy badge, menu)."
+    },
+    "ds-top": {
+      "screen": "docdesigner",
+      "file": "pb_doc_studio/static/src/xml/doc_studio.xml",
+      "desc": "The Document studio designer, the top bar: All documents, the name, Make a copy for…, Built-in wording and Save."
+    },
+    "ds-fields": {
+      "screen": [
+        "docdesigner",
+        "offerletters"
+      ],
+      "shared": true,
+      "file": "pb_doc_studio/static/src/xml/doc_studio.xml",
+      "desc": "The Document studio designer, Fields: grouped, each with the preview person's (or offer's) value; click or drag to add."
+    },
+    "ds-langs": {
+      "screen": "docdesigner",
+      "file": "pb_doc_studio/static/src/xml/doc_studio.xml",
+      "desc": "The Document studio designer, the language tabs (Main wording · …) and Written in."
+    },
+    "ds-toolbar": {
+      "screen": "docdesigner",
+      "file": "pb_doc_studio/static/src/xml/doc_editor.xml",
+      "desc": "The Document studio designer, the formatting bar above the page, with Show only when…."
+    },
+    "ds-paper": {
+      "screen": [
+        "docdesigner",
+        "offerletters"
+      ],
+      "shared": true,
+      "file": "pb_doc_studio/static/src/xml/doc_studio.xml",
+      "desc": "The Document studio designer, the page itself: letterhead, heading, the wording with field chips and Only when pills, the signature block.",
+      "reserved": true
+    },
+    "ds-preview": {
+      "screen": [
+        "docdesigner",
+        "offerletters"
+      ],
+      "shared": true,
+      "file": "pb_doc_studio/static/src/xml/doc_studio.xml",
+      "desc": "The Document studio designer, the Preview tab: the person (or offer), the language, hidden paragraphs, missing values, Download a sample PDF."
+    },
+    "ds-page": {
+      "screen": "docdesigner",
+      "file": "pb_doc_studio/static/src/xml/doc_studio.xml",
+      "desc": "The Document studio designer, the Page tab: Letterhead, Margins, Font, Text size, Signature block."
+    },
+    "dh-prints": {
+      "screen": "docstudio",
+      "file": "pb_doc_studio_hiring/static/src/xml/offer_studio.xml",
+      "desc": "Settings › Documents, an offer letter's card: Printed when an offer is prepared in Hiring, Used by N offers (pb_doc_studio_hiring)."
+    },
+    "dh-with": {
+      "screen": "offerletters",
+      "file": "pb_doc_studio_hiring/static/src/xml/offer_studio.xml",
+      "desc": "The designer on an offer letter: Preview with · An offer (pb_doc_studio_hiring)."
+    },
+    "dh-sign": {
+      "screen": "offerletters",
+      "file": "pb_doc_studio_hiring/static/src/xml/offer_studio.xml",
+      "desc": "The designer on an offer letter: the candidate's Signature and date line under the company's (pb_doc_studio_hiring)."
+    },
+    "dh-lang": {
+      "screen": "offerletters",
+      "file": "pb_doc_studio_hiring/static/src/xml/offer_board.xml",
+      "desc": "Hiring, the offer panel: the letter's language beside Which letter (automatic or a language); shown while the letter can still change."
+    },
+    "dm-prints": {
+      "screen": "docstudio",
+      "file": "pb_doc_studio_me/static/src/xml/cert_studio.xml",
+      "desc": "Settings › Documents, a certificate's card: when it prints and how often it was issued (pb_doc_studio_me)."
+    },
+    "dc-button": {
+      "screen": "contractdocs",
+      "file": "pb_doc_contracts/static/src/xml/contract_doc.xml",
+      "desc": "The contract panel: Contract document, in Next step (may change the contract) or its own Paperwork row (may only read it)."
+    },
+    "dc-note": {
+      "screen": "contractdocs",
+      "file": "pb_doc_contracts/static/src/xml/contract_doc.xml",
+      "desc": "The Document studio designer on a shipped contract: Sample wording. Have your own lawyer check it before you use it. Not printed.",
+      "reserved": true
+    },
+    "dc-head": {
+      "screen": "contractdocs",
+      "file": "pb_doc_contracts/static/src/xml/contract_doc.xml",
+      "desc": "The contract document sheet, its head: the document, the person, the reference, the copy's note, the document and language switches.",
+      "reserved": true
+    },
+    "dc-sample": {
+      "screen": "contractdocs",
+      "file": "pb_doc_contracts/static/src/xml/contract_doc.xml",
+      "desc": "The contract document sheet: the amber Sample wording line with Not printed and Make it yours."
+    },
+    "dc-missing": {
+      "screen": "contractdocs",
+      "file": "pb_doc_contracts/static/src/xml/contract_doc.xml",
+      "desc": "The contract document sheet: the amber box of missing values; each chip opens the field to fill it in."
+    },
+    "dc-acts": {
+      "screen": "contractdocs",
+      "file": "pb_doc_contracts/static/src/xml/contract_doc.xml",
+      "desc": "The contract document sheet: Download PDF, Save to documents · vN and Change the wording."
+    },
+    "dc-versions": {
+      "screen": "contractdocs",
+      "file": "pb_doc_contracts/static/src/xml/contract_doc.xml",
+      "desc": "The contract document sheet: Saved versions, each one downloadable."
+    },
+    "dc-paper": {
+      "screen": "contractdocs",
+      "file": "pb_doc_contracts/static/src/xml/contract_doc.xml",
+      "desc": "The contract document sheet: the finished contract on paper (two languages side by side on the Vietnam and Indonesia copies)."
     }
   },
   "pattern": {
@@ -2439,7 +2686,17 @@
       "pb_hiring/static/src/xml/hiring_setup.xml",
       "pb_hiring/static/src/xml/hiring_numbers.xml",
       "pb_form_studio_reach/static/src/xml/learn_anchors.xml",
-      "pb_new_hire/static/src/xml/new_hire_studio.xml"
+      "pb_new_hire/static/src/xml/new_hire_studio.xml",
+      "pb_report_builder/static/src/xml/report_builder.xml",
+      "pb_excel_layout/static/src/xml/excel_layout.xml",
+      "pb_report_pdf/static/src/xml/report_pdf.xml",
+      "pb_report_pdf_send/static/src/xml/send.xml",
+      "pb_doc_studio/static/src/xml/doc_studio.xml",
+      "pb_doc_studio/static/src/xml/doc_editor.xml",
+      "pb_doc_studio_hiring/static/src/xml/offer_studio.xml",
+      "pb_doc_studio_hiring/static/src/xml/offer_board.xml",
+      "pb_doc_studio_me/static/src/xml/cert_studio.xml",
+      "pb_doc_contracts/static/src/xml/contract_doc.xml"
     ],
     "replica": [
       "pb_learn/static/src/engine/screens.js",

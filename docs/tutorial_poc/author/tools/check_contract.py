@@ -420,7 +420,10 @@ ANCHOR_RE = re.compile(
     r'|oc'
     # FORM STUDIO (2026-11-20): Settings › Form builder (pb_form_studio's
     # Field library; anchors laid from outside by pb_form_studio_reach).
-    r'|fb)'
+    r'|fb'
+    # DOCSTUDIO close-out (2026-11-26): Build a report, My Excel layout, the
+    # PDF designer, the Document studio and its bridges, the contract document.
+    r'|rb|xl|pd|ds|dh|dm|dc)'
     r'-[a-z0-9][a-z0-9-]*)"')
 
 # A bridge module lays an anchor on a template it does not own with a

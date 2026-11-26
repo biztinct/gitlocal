@@ -5,7 +5,7 @@
        Shown while the letter can still change (not once it went out). -->
   <t t-inherit="pb_hiring.RoleDetails" t-inherit-mode="extension">
     <xpath expr="//select[hasclass('pbhr-tpl')]" position="after">
-      <select t-if="state.canRecruit and offer.letter_lang_open and offer.letter_langs" class="pbhr-in pbhr-tpl pbdh-lang"
+      <select t-if="state.canRecruit and offer.letter_lang_open and offer.letter_langs" class="pbhr-in pbhr-tpl pbdh-lang" data-coach="dh-lang"
               aria-label="Language of the letter" title="Language of the letter" t-on-change="(ev) =&gt; this.setLetterLang(ev)">
         <option value="" t-att-selected="!offer.letter_lang" t-esc="letterLangAutoText(offer)"/>
         <t t-foreach="offer.letter_langs" t-as="lg" t-key="lg.code">

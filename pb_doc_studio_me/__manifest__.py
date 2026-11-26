@@ -21,7 +21,8 @@ Bridge only: pb_me_letters and pb_doc_studio are extended by inheritance,
 never edited. A certificate nobody touched in the studio prints byte for byte
 as before. See docs/handovers/docstudio/DOCSTUDIO_A1_REPORT.md.
 """,
-    'version': '19.0.1.0.0',
+    # 1.0.1: Learn anchors (data-coach) for the DOCSTUDIO lessons, no behaviour change.
+    'version': '19.0.1.0.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

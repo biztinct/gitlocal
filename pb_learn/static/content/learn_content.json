@@ -23319,6 +23319,288 @@
       ]
     },
     {
+      "action_tags": "pb_insights_hub",
+      "blurb": {
+        "en": "Build a report: pick what each row is, click the fields you want, filter, group and total, then save, share or take it to Excel.",
+        "vi": "Tạo báo cáo: chọn mỗi dòng là gì, bấm các trường bạn cần, lọc, nhóm và tính tổng, rồi lưu, chia sẻ hoặc xuất ra Excel."
+      },
+      "hub": null,
+      "key": "reportbuilder",
+      "live_fallback": "",
+      "models": [],
+      "name": {
+        "en": "Build your own report",
+        "vi": "Tự tạo báo cáo"
+      },
+      "navs": [],
+      "next_step": {
+        "en": "Start from an example if one is close, then change it and save it as your own. Each reader sees only the rows they may see.",
+        "vi": "Hãy bắt đầu từ một ví dụ nếu có ví dụ gần giống, rồi sửa và lưu thành báo cáo của bạn. Mỗi người đọc chỉ thấy các dòng họ được xem."
+      },
+      "open": "",
+      "places": [
+        "pb_insights_hub:report_builder"
+      ],
+      "sequence": 550,
+      "sidebar_key": "",
+      "suggest": [
+        {
+          "key": "whatpage",
+          "label": {
+            "en": "What is this screen for?",
+            "vi": "Màn hình này để làm gì?"
+          }
+        },
+        {
+          "key": "whatnext",
+          "label": {
+            "en": "What should I do next here?",
+            "vi": "Tôi nên làm gì tiếp theo ở đây?"
+          }
+        }
+      ]
+    },
+    {
+      "action_tags": "pb_insights_hub",
+      "blurb": {
+        "en": "My Excel layout: your own Excel file, filled with this report's figures each time you download it.",
+        "vi": "Mẫu Excel của tôi: tệp Excel của chính bạn, được điền số liệu của báo cáo này mỗi lần bạn tải về."
+      },
+      "hub": null,
+      "key": "excellayout",
+      "live_fallback": "",
+      "models": [],
+      "name": {
+        "en": "Fill my own Excel layout",
+        "vi": "Điền vào mẫu Excel của tôi"
+      },
+      "navs": [],
+      "next_step": {
+        "en": "Save the report or the view first. Then drop your file, click the cell where the figures start, Try it, and Save layout.",
+        "vi": "Hãy lưu báo cáo hoặc dạng xem trước. Rồi thả tệp của bạn vào, bấm vào ô nơi số liệu bắt đầu, Thử ngay, và Lưu mẫu."
+      },
+      "open": "",
+      "places": [],
+      "sequence": 560,
+      "sidebar_key": "",
+      "suggest": [
+        {
+          "key": "whatpage",
+          "label": {
+            "en": "What is this screen for?",
+            "vi": "Màn hình này để làm gì?"
+          }
+        },
+        {
+          "key": "whatnext",
+          "label": {
+            "en": "What should I do next here?",
+            "vi": "Tôi nên làm gì tiếp theo ở đây?"
+          }
+        }
+      ]
+    },
+    {
+      "action_tags": "pb_insights_hub",
+      "blurb": {
+        "en": "Design the PDF: the paper, letterhead, columns and widths a report prints with, on its real first page.",
+        "vi": "Thiết kế bản PDF: khổ giấy, tiêu đề thư, các cột và độ rộng mà báo cáo in ra, trên trang đầu tiên thật của nó."
+      },
+      "hub": null,
+      "key": "reportpdf",
+      "live_fallback": "",
+      "models": [],
+      "name": {
+        "en": "Design the PDF of a report",
+        "vi": "Thiết kế bản PDF của báo cáo"
+      },
+      "navs": [],
+      "next_step": {
+        "en": "Untick the columns nobody reads, drag the widths on the page, then Save look before you Download PDF.",
+        "vi": "Hãy bỏ chọn các cột không ai đọc, kéo độ rộng trên trang, rồi Lưu kiểu trước khi Tải PDF."
+      },
+      "open": "",
+      "places": [],
+      "sequence": 570,
+      "sidebar_key": "",
+      "suggest": [
+        {
+          "key": "whatpage",
+          "label": {
+            "en": "What is this screen for?",
+            "vi": "Màn hình này để làm gì?"
+          }
+        },
+        {
+          "key": "whatnext",
+          "label": {
+            "en": "What should I do next here?",
+            "vi": "Tôi nên làm gì tiếp theo ở đây?"
+          }
+        }
+      ]
+    },
+    {
+      "action_tags": "pb_doc_studio",
+      "blurb": {
+        "en": "Documents: every letter Payobook prepares, by group, with its wording, languages and who it is for.",
+        "vi": "Tài liệu: mọi lá thư Payobook lập, theo nhóm, với nội dung, ngôn ngữ và đối tượng của nó."
+      },
+      "hub": null,
+      "key": "docstudio",
+      "live_fallback": "",
+      "models": [],
+      "name": {
+        "en": "Design a letter",
+        "vi": "Thiết kế một lá thư"
+      },
+      "navs": [],
+      "next_step": {
+        "en": "Open a card to change its wording. For one company or country only, use Make a copy for… instead of changing the original.",
+        "vi": "Hãy mở một thẻ để sửa nội dung. Nếu chỉ cho một công ty hoặc quốc gia, hãy dùng Tạo bản sao cho… thay vì sửa bản gốc."
+      },
+      "open": "pb_doc_studio.action_pb_doc_studio",
+      "places": [],
+      "sequence": 580,
+      "sidebar_key": "",
+      "suggest": [
+        {
+          "key": "whatpage",
+          "label": {
+            "en": "What is this screen for?",
+            "vi": "Màn hình này để làm gì?"
+          }
+        },
+        {
+          "key": "whatnext",
+          "label": {
+            "en": "What should I do next here?",
+            "vi": "Tôi nên làm gì tiếp theo ở đây?"
+          }
+        }
+      ]
+    },
+    {
+      "action_tags": "pb_doc_studio",
+      "blurb": {
+        "en": "The designer: fields on the left, the page in the middle, Preview with a real person and Page on the right.",
+        "vi": "Trình thiết kế: các trường bên trái, trang giấy ở giữa, Xem trước với một người thật và Trang ở bên phải."
+      },
+      "hub": null,
+      "key": "docdesigner",
+      "live_fallback": "",
+      "models": [],
+      "name": {
+        "en": "Documents — the designer",
+        "vi": "Tài liệu — trình thiết kế"
+      },
+      "navs": [],
+      "next_step": {
+        "en": "Pick a real person in Preview before you save. Hidden paragraphs and missing values show there.",
+        "vi": "Hãy chọn một người thật ở Xem trước trước khi lưu. Các đoạn bị ẩn và giá trị còn thiếu hiện ra ở đó."
+      },
+      "open": "",
+      "places": [],
+      "sequence": 590,
+      "sidebar_key": "",
+      "suggest": [
+        {
+          "key": "whatpage",
+          "label": {
+            "en": "What is this screen for?",
+            "vi": "Màn hình này để làm gì?"
+          }
+        },
+        {
+          "key": "whatnext",
+          "label": {
+            "en": "What should I do next here?",
+            "vi": "Tôi nên làm gì tiếp theo ở đây?"
+          }
+        }
+      ]
+    },
+    {
+      "action_tags": "pb_doc_studio",
+      "blurb": {
+        "en": "An offer letter in the designer: previewed with a real offer, with the candidate's signature line and the pay lines table.",
+        "vi": "Thư mời trong trình thiết kế: xem trước với một lời mời thật, có dòng chữ ký của ứng viên và bảng các khoản lương."
+      },
+      "hub": null,
+      "key": "offerletters",
+      "live_fallback": "",
+      "models": [],
+      "name": {
+        "en": "Offer letters and certificates",
+        "vi": "Thư mời làm việc và giấy xác nhận"
+      },
+      "navs": [],
+      "next_step": {
+        "en": "Preview with a real offer in the candidate's language. In Hiring, choose the letter's language before it goes to the candidate.",
+        "vi": "Hãy xem trước với một lời mời thật bằng ngôn ngữ của ứng viên. Trong Tuyển dụng, chọn ngôn ngữ của thư trước khi gửi cho ứng viên."
+      },
+      "open": "",
+      "places": [],
+      "sequence": 600,
+      "sidebar_key": "",
+      "suggest": [
+        {
+          "key": "whatpage",
+          "label": {
+            "en": "What is this screen for?",
+            "vi": "Màn hình này để làm gì?"
+          }
+        },
+        {
+          "key": "whatnext",
+          "label": {
+            "en": "What should I do next here?",
+            "vi": "Tôi nên làm gì tiếp theo ở đây?"
+          }
+        }
+      ]
+    },
+    {
+      "action_tags": "pb_people_hub",
+      "blurb": {
+        "en": "Contract document: this contract written on paper, in its country's two languages, with what is still missing.",
+        "vi": "Văn bản hợp đồng: hợp đồng này được viết ra giấy, bằng hai ngôn ngữ của quốc gia đó, kèm những gì còn thiếu."
+      },
+      "hub": null,
+      "key": "contractdocs",
+      "live_fallback": "",
+      "models": [],
+      "name": {
+        "en": "Contract documents per country",
+        "vi": "Văn bản hợp đồng theo quốc gia"
+      },
+      "navs": [],
+      "next_step": {
+        "en": "Fill in every amber chip first. Then Download PDF, or Save to documents to file it as the next version.",
+        "vi": "Hãy điền mọi nhãn màu hổ phách trước. Rồi Tải PDF, hoặc Lưu vào tài liệu để lưu thành phiên bản tiếp theo."
+      },
+      "open": "",
+      "places": [],
+      "sequence": 610,
+      "sidebar_key": "",
+      "suggest": [
+        {
+          "key": "whatpage",
+          "label": {
+            "en": "What is this screen for?",
+            "vi": "Màn hình này để làm gì?"
+          }
+        },
+        {
+          "key": "whatnext",
+          "label": {
+            "en": "What should I do next here?",
+            "vi": "Tôi nên làm gì tiếp theo ở đây?"
+          }
+        }
+      ]
+    },
+    {
       "action_tags": "pb_access_board",
       "blurb": {
         "en": "Access & delegation: who can do what, as roles, and handing your access over while you are away.",
@@ -23339,7 +23621,7 @@
       },
       "open": "biz_access.action_pb_access_board",
       "places": [],
-      "sequence": 550,
+      "sequence": 620,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23379,7 +23661,7 @@
       },
       "open": "pb_govt_reports.action_pb_filing_flow",
       "places": [],
-      "sequence": 560,
+      "sequence": 630,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23423,7 +23705,7 @@
         "pb_compliance_hub:young",
         "pb_compliance_hub:audit"
       ],
-      "sequence": 570,
+      "sequence": 640,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23545,7 +23827,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 580,
+      "sequence": 650,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23728,7 +24010,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 590,
+      "sequence": 660,
       "sidebar_key": "",
       "suggest": [
         {
@@ -23921,7 +24203,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 600,
+      "sequence": 670,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24040,7 +24322,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 610,
+      "sequence": 680,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24206,7 +24488,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 620,
+      "sequence": 690,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24288,7 +24570,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 630,
+      "sequence": 700,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24399,6 +24681,16 @@
               "vi": "Tổng quan"
             }
           },
+          "report_builder": {
+            "line": {
+              "en": "Your own report from people, contracts, time off and more: pick the fields, group, total, save and share.",
+              "vi": "Báo cáo riêng của bạn từ nhân sự, hợp đồng, nghỉ phép và hơn thế: chọn trường, nhóm, tính tổng, lưu và chia sẻ."
+            },
+            "name": {
+              "en": "Build a report",
+              "vi": "Tạo báo cáo"
+            }
+          },
           "training": {
             "line": {
               "en": "Who has taken which course, and how they did.",
@@ -24437,7 +24729,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 640,
+      "sequence": 710,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24539,7 +24831,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 650,
+      "sequence": 720,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24631,7 +24923,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 660,
+      "sequence": 730,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24810,7 +25102,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 670,
+      "sequence": 740,
       "sidebar_key": "",
       "suggest": [
         {
@@ -24902,7 +25194,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 680,
+      "sequence": 750,
       "sidebar_key": "",
       "suggest": [
         {
@@ -25020,6 +25312,16 @@
               "vi": "Dữ liệu mẫu"
             }
           },
+          "documents": {
+            "line": {
+              "en": "The wording, languages and look of every letter.",
+              "vi": "Nội dung, ngôn ngữ và giao diện của mọi lá thư."
+            },
+            "name": {
+              "en": "Documents",
+              "vi": "Tài liệu"
+            }
+          },
           "formula": {
             "line": {
               "en": "How pay is calculated: configurations, components and test runs.",
@@ -25062,8 +25364,8 @@
           },
           "hr": {
             "line": {
-              "en": "Hiring set-up, Announcements, and Journeys for joining, moving and leaving.",
-              "vi": "Thiết lập tuyển dụng, Thông báo, và Hành trình khi vào làm, chuyển vị trí và nghỉ việc."
+              "en": "Hiring set-up, Announcements, Journeys for joining, moving and leaving, and Documents: the wording and look of every letter.",
+              "vi": "Thiết lập tuyển dụng, Thông báo, Hành trình khi vào làm, chuyển vị trí và nghỉ việc, và Tài liệu: nội dung và giao diện của mọi lá thư."
             },
             "name": {
               "en": "HR",
@@ -25178,7 +25480,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 690,
+      "sequence": 760,
       "sidebar_key": "",
       "suggest": [
         {
@@ -25337,7 +25639,7 @@
       },
       "open": "",
       "places": [],
-      "sequence": 700,
+      "sequence": 770,
       "sidebar_key": "",
       "suggest": [
         {
@@ -25712,7 +26014,7 @@
         "vi": "báo cáo nộp cơ quan, nộp báo cáo bảo hiểm hằng tháng, tạo hồ sơ, bảo hiểm xã hội"
       },
       "section": "payroll",
-      "sequence": 320,
+      "sequence": 370,
       "sidebar_key": "pb_sidebar.item_govt_reports",
       "star": true,
       "summary": {
@@ -25994,7 +26296,7 @@
         "vi": "xác minh ngân hàng, yêu cầu đổi ngân hàng, lao động chưa thành niên, nhật ký kiểm toán, ai đã sửa gì"
       },
       "section": "payroll",
-      "sequence": 330,
+      "sequence": 380,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -26315,7 +26617,7 @@
         "vi": "phân tích, tổng quan, diễn biến chi phí, lương thực chi, bình quân đầu người"
       },
       "section": "payroll",
-      "sequence": 280,
+      "sequence": 300,
       "sidebar_key": "pb_sidebar.item_analytics",
       "star": false,
       "summary": {
@@ -26639,7 +26941,7 @@
         "vi": "khám phá dữ liệu, chỉ tiêu, chia theo, so sánh chương trình lương, bộ lọc, giải thích biến động"
       },
       "section": "payroll",
-      "sequence": 290,
+      "sequence": 310,
       "sidebar_key": "pb_sidebar.item_explorer",
       "star": false,
       "summary": {
@@ -26929,7 +27231,7 @@
         "vi": "phân tích lực lượng lao động, nhân viên được trả lương, người vào, người nghỉ, chi phí bình quân"
       },
       "section": "payroll",
-      "sequence": 300,
+      "sequence": 320,
       "sidebar_key": "pb_sidebar.item_workforce_insights",
       "star": false,
       "summary": {
@@ -27255,12 +27557,1041 @@
         "vi": "báo cáo lương, ngân sách, đúng nhịp, đang nóng lên, đã chi so với ngân sách"
       },
       "section": "payroll",
-      "sequence": 310,
+      "sequence": 330,
       "sidebar_key": "",
       "star": false,
       "summary": {
         "en": "One run's report against the run before, and whether each function's spending is on pace for the year.",
         "vi": "Báo cáo của một đợt so với đợt trước, và chi tiêu của từng bộ phận có đúng nhịp cả năm không."
+      }
+    },
+    {
+      "after": "explorer",
+      "duration_min": 6,
+      "icon": "table",
+      "key": "reportbuilder",
+      "kind": "lesson",
+      "lessons": [
+        {
+          "duration_min": 6,
+          "goal": {
+            "en": "Build a report from people's records: pick what each row is, add fields, filter, group and total, then save it.",
+            "vi": "Tạo một báo cáo từ hồ sơ nhân sự: chọn mỗi dòng là gì, thêm trường, lọc, nhóm và tính tổng, rồi lưu lại."
+          },
+          "key": "L43",
+          "name": {
+            "en": "Build your own report",
+            "vi": "Tự tạo báo cáo"
+          },
+          "quizzes": [
+            {
+              "kind": "choice",
+              "options": [
+                {
+                  "correct": true,
+                  "feedback": {
+                    "en": "Yes. A shared report never widens what someone may see. The pay column is left out, and the screen says so.",
+                    "vi": "Đúng vậy. Báo cáo được chia sẻ không bao giờ mở rộng những gì một người được xem. Cột lương bị bỏ ra, và màn hình nói rõ điều đó."
+                  },
+                  "label": {
+                    "en": "The report without the pay column, and a line saying a column is hidden",
+                    "vi": "Báo cáo không có cột lương, kèm một dòng báo có cột bị ẩn"
+                  }
+                },
+                {
+                  "correct": false,
+                  "feedback": {
+                    "en": "Let's rethink that. Sharing shares the layout of the report, not your access.",
+                    "vi": "Hãy nghĩ lại một chút. Chia sẻ là chia sẻ cách dựng báo cáo, không phải quyền của bạn."
+                  },
+                  "label": {
+                    "en": "Everyone's pay, because you shared the report",
+                    "vi": "Lương của mọi người, vì bạn đã chia sẻ báo cáo"
+                  }
+                }
+              ],
+              "prompt": {
+                "en": "You share a report with a Contract pay column. An HR officer who may not see pay opens it. What do they see?",
+                "vi": "Bạn chia sẻ một báo cáo có cột Lương hợp đồng. Một nhân viên nhân sự không được xem lương mở nó. Họ thấy gì?"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "affects": {
+                "en": "It decides which fields you can add. A locked choice says why, and whom to ask.",
+                "vi": "Nó quyết định bạn thêm được những trường nào. Một lựa chọn bị khoá sẽ nói lý do, và cần hỏi ai."
+              },
+              "anchor": "rb-rowis",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "What each row is",
+                "vi": "Mỗi dòng là gì"
+              },
+              "lines": [],
+              "look": {
+                "en": "Each row is, at the top of the field list. Here it says People.",
+                "vi": "Mục Mỗi dòng là, ở đầu danh sách trường. Ở đây là Nhân sự."
+              },
+              "means": {
+                "en": "A report starts with one thing per row: People, Contracts, Time off requests, Attendance, Open roles, Applicants, Assets, Training, Expense claims or Goals.",
+                "vi": "Báo cáo bắt đầu bằng một thứ cho mỗi dòng: Nhân sự, Hợp đồng, Đơn xin nghỉ, Chấm công, Vị trí đang tuyển, Ứng viên, Tài sản, Đào tạo, Yêu cầu hoàn ứng chi phí hoặc Mục tiêu."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "Each row is, to pick something else.",
+                "vi": "Mỗi dòng là, để chọn thứ khác."
+              },
+              "screen": "reportbuilder",
+              "tip": "",
+              "title": {
+                "en": "Start with what each row is",
+                "vi": "Bắt đầu từ việc mỗi dòng là gì"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Only fields you may read are listed. A field marked Pay shows only to people who may see pay.",
+                "vi": "Chỉ những trường bạn được đọc mới có trong danh sách. Trường có nhãn Lương chỉ hiện với người được xem lương."
+              },
+              "anchor": "rb-fields",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Click the fields",
+                "vi": "Bấm vào các trường"
+              },
+              "lines": [],
+              "look": {
+                "en": "The field list: People fields, then Counts from other areas. A tick marks a field already in the table.",
+                "vi": "Danh sách trường: Trường của Nhân sự, rồi Số liệu từ các mục khác. Dấu tích đánh dấu trường đã có trong bảng."
+              },
+              "means": {
+                "en": "Click a field to add its column, and the real values fill in at once. Counts from other areas add, per person, time off days taken, days attended or assets held now.",
+                "vi": "Bấm một trường để thêm cột của nó, và giá trị thật hiện ra ngay. Số liệu từ các mục khác thêm cho mỗi người số ngày nghỉ đã dùng, số ngày đi làm hoặc tài sản đang giữ."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "A field with a plus, to add its column.",
+                "vi": "Một trường có dấu cộng, để thêm cột của nó."
+              },
+              "screen": "reportbuilder",
+              "tip": "",
+              "title": {
+                "en": "A column appears the moment you click",
+                "vi": "Cột hiện ra ngay khi bạn bấm"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Money is totalled per currency, never two currencies added together.",
+                "vi": "Tiền được cộng theo từng loại tiền, không bao giờ cộng hai loại tiền với nhau."
+              },
+              "anchor": "rb-table",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Shape the table",
+                "vi": "Sắp xếp bảng"
+              },
+              "lines": [],
+              "look": {
+                "en": "The arrow beside each column heading. Time off days taken shows Sum.",
+                "vi": "Mũi tên cạnh tiêu đề mỗi cột. Cột Số ngày nghỉ đã dùng hiện chữ Tổng."
+              },
+              "means": {
+                "en": "The menu sorts the column, filters by it, totals it with Sum, Average or Count, groups by it or hides it. Drag a heading to move its column.",
+                "vi": "Menu này sắp xếp cột, lọc theo cột, tính tổng bằng Tổng, Trung bình hoặc Đếm, nhóm theo cột hoặc ẩn cột. Kéo một tiêu đề để dời cột của nó."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "The arrow beside a heading, then Total.",
+                "vi": "Mũi tên cạnh một tiêu đề, rồi chọn Tổng."
+              },
+              "screen": "reportbuilder",
+              "tip": "",
+              "title": {
+                "en": "Each column has its own menu",
+                "vi": "Mỗi cột có menu riêng"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "The row count on the right follows every change. Summary only keeps just the groups. Nothing in the records changes.",
+                "vi": "Số dòng bên phải đổi theo mọi thay đổi. Chỉ xem tóm tắt chỉ giữ lại các nhóm. Không có gì trong hồ sơ bị thay đổi."
+              },
+              "anchor": "rb-bar",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Filter and group",
+                "vi": "Lọc và nhóm"
+              },
+              "lines": [],
+              "look": {
+                "en": "The bar above the table: Country of Work is one of Vietnam, This year, and Group by Department.",
+                "vi": "Thanh phía trên bảng: Quốc gia làm việc là một trong Việt Nam, Năm nay, và Nhóm theo Phòng ban."
+              },
+              "means": {
+                "en": "Each filter is written as a sentence, and the period picks which date counts. Group by puts the rows under headings with a count and subtotals.",
+                "vi": "Mỗi bộ lọc được viết thành một câu, và khoảng thời gian chọn ngày nào được tính. Nhóm theo xếp các dòng dưới tiêu đề, kèm số lượng và tổng phụ."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "Filter, to add another sentence.",
+                "vi": "Lọc, để thêm một câu nữa."
+              },
+              "screen": "reportbuilder",
+              "tip": "",
+              "title": {
+                "en": "Filters read as sentences",
+                "vi": "Bộ lọc đọc như một câu"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Until you save, the report is not under My reports and nobody else can open it.",
+                "vi": "Cho tới khi bạn lưu, báo cáo chưa nằm trong Báo cáo của tôi và chưa ai khác mở được."
+              },
+              "anchor": "rb-top",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Name it",
+                "vi": "Đặt tên"
+              },
+              "lines": [],
+              "look": {
+                "en": "The top bar: the arrow back to All reports and the report's name.",
+                "vi": "Thanh trên cùng: mũi tên quay về Tất cả báo cáo và tên báo cáo."
+              },
+              "means": {
+                "en": "Type a name of up to 80 characters. Not saved shows beside it after a change, and Undo or ⌘Z takes back the last change.",
+                "vi": "Gõ một tên dài tối đa 80 ký tự. Chữ Chưa lưu hiện bên cạnh sau mỗi thay đổi, và Hoàn tác hoặc ⌘Z lấy lại thay đổi gần nhất."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "reportbuilder",
+              "tip": "",
+              "title": {
+                "en": "A name, and nothing kept until you save",
+                "vi": "Một cái tên, và chưa có gì được giữ cho tới khi lưu"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Others open a shared report read-only, each seeing only their own rows. To change it, they make a copy.",
+                "vi": "Người khác mở báo cáo được chia sẻ ở chế độ chỉ xem, mỗi người chỉ thấy các dòng của mình. Muốn sửa, họ tạo một bản sao."
+              },
+              "anchor": "rb-tools",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Save and share",
+                "vi": "Lưu và chia sẻ"
+              },
+              "lines": [],
+              "look": {
+                "en": "The buttons on the right of the top bar: Share, Make a copy, Excel, My Excel layout, PDF and Save.",
+                "vi": "Các nút bên phải thanh trên cùng: Chia sẻ, Tạo bản sao, Excel, Mẫu Excel của tôi, PDF và Lưu."
+              },
+              "means": {
+                "en": "Save keeps the report under My reports. Share shows it to everyone who can open reports. Excel downloads the whole table, up to 10,000 rows.",
+                "vi": "Lưu giữ báo cáo trong Báo cáo của tôi. Chia sẻ cho mọi người mở được báo cáo cùng thấy. Excel tải về cả bảng, tối đa 10.000 dòng."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "Save, or ⌘S, once the report has a name.",
+                "vi": "Lưu, hoặc ⌘S, khi báo cáo đã có tên."
+              },
+              "screen": "reportbuilder",
+              "tip": "",
+              "title": {
+                "en": "Keep it, share it, take it to Excel",
+                "vi": "Giữ lại, chia sẻ, xuất ra Excel"
+              },
+              "visual": "none"
+            }
+          ]
+        }
+      ],
+      "line": "insights",
+      "name": {
+        "en": "Build your own report",
+        "vi": "Tự tạo báo cáo"
+      },
+      "outline": {
+        "mistakes": [
+          {
+            "en": "Sharing a report and expecting everyone to see the same rows. A shared report shows each reader only what they may see.",
+            "vi": "Chia sẻ một báo cáo và nghĩ ai cũng thấy cùng các dòng. Báo cáo được chia sẻ chỉ hiện cho mỗi người những gì họ được xem."
+          },
+          {
+            "en": "Forgetting the period. This year and Any time give different rows.",
+            "vi": "Quên khoảng thời gian. Năm nay và Mọi lúc cho ra các dòng khác nhau."
+          }
+        ],
+        "prereq": {
+          "en": "HR access or an Insights role. Each person sees only the rows and fields they may read, and pay only if they may see pay.",
+          "vi": "Quyền nhân sự hoặc một vai trò Phân tích. Mỗi người chỉ thấy các dòng và trường họ được đọc, và chỉ thấy lương nếu được xem lương."
+        },
+        "what": {
+          "en": "Insights › Build a report. My reports, examples to start from, and the builder: Each row is and the fields on the left, the filter bar and the table on the right.",
+          "vi": "Phân tích › Tạo báo cáo. Báo cáo của tôi, các ví dụ để bắt đầu, và phần dựng báo cáo: Mỗi dòng là và các trường ở bên trái, thanh lọc và bảng ở bên phải."
+        },
+        "when": {
+          "en": "When someone asks for a list no screen shows. When the same list is asked for every month: save it once and open it again.",
+          "vi": "Khi ai đó cần một danh sách chưa màn hình nào có. Khi cùng một danh sách được hỏi mỗi tháng: lưu một lần rồi mở lại."
+        },
+        "why": {
+          "en": "HR is asked for lists every week: people, contracts, time off, attendance, hiring, assets, training, claims or goals. This answers them without a spreadsheet beside Payobook.",
+          "vi": "Mỗi tuần nhân sự đều được hỏi các danh sách: nhân sự, hợp đồng, nghỉ phép, chấm công, tuyển dụng, tài sản, đào tạo, chi phí hoặc mục tiêu. Màn hình này trả lời mà không cần bảng tính bên ngoài Payobook."
+        }
+      },
+      "required": false,
+      "roles": [
+        "hr",
+        "owner",
+        "officer"
+      ],
+      "search": {
+        "en": "build a report, my reports, report builder, own report, fields, group by, total, share a report, excel",
+        "vi": "tạo báo cáo, báo cáo của tôi, báo cáo riêng, trường, nhóm theo, tổng, chia sẻ báo cáo, excel"
+      },
+      "section": "payroll",
+      "sequence": 340,
+      "sidebar_key": "",
+      "star": false,
+      "summary": {
+        "en": "Insights › Build a report: pick what each row is, click the fields you want, group and total them, then save, share or take it to Excel.",
+        "vi": "Phân tích › Tạo báo cáo: chọn mỗi dòng là gì, bấm các trường bạn cần, nhóm và tính tổng, rồi lưu, chia sẻ hoặc xuất ra Excel."
+      }
+    },
+    {
+      "after": "reportbuilder",
+      "duration_min": 6,
+      "icon": "file-spreadsheet",
+      "key": "excellayout",
+      "kind": "lesson",
+      "lessons": [
+        {
+          "duration_min": 6,
+          "goal": {
+            "en": "Set up your own Excel file once, so every download of a saved report or view comes back in it with fresh figures.",
+            "vi": "Thiết lập tệp Excel của bạn một lần, để mỗi lần tải một báo cáo hoặc dạng xem đã lưu đều trở về trong tệp đó với số liệu mới."
+          },
+          "key": "L44",
+          "name": {
+            "en": "Fill my own Excel layout",
+            "vi": "Điền vào mẫu Excel của tôi"
+          },
+          "quizzes": [
+            {
+              "kind": "choice",
+              "options": [
+                {
+                  "correct": true,
+                  "feedback": {
+                    "en": "Yes. Payobook fills the rows, and your formulas count them as long as they cover the whole column or the table.",
+                    "vi": "Đúng vậy. Payobook điền các dòng, và công thức của bạn tính được chúng miễn là chúng bao cả cột hoặc cả bảng."
+                  },
+                  "label": {
+                    "en": "Formulas that point at whole columns or an Excel table",
+                    "vi": "Công thức trỏ tới cả cột hoặc một bảng Excel"
+                  }
+                },
+                {
+                  "correct": false,
+                  "feedback": {
+                    "en": "Let's rethink that. Payobook never writes a formula into your file. Only the cells where the figures go change.",
+                    "vi": "Hãy nghĩ lại một chút. Payobook không bao giờ viết công thức vào tệp của bạn. Chỉ những ô ghi số liệu thay đổi."
+                  },
+                  "label": {
+                    "en": "Nothing to do: Payobook rewrites the formulas for you",
+                    "vi": "Không cần làm gì: Payobook tự viết lại công thức"
+                  }
+                }
+              ],
+              "prompt": {
+                "en": "Your board pack's totals are formulas. Next month the report has two more rows. What keeps the totals right?",
+                "vi": "Các tổng trong bộ báo cáo của bạn là công thức. Tháng sau báo cáo có thêm hai dòng. Điều gì giữ cho các tổng đúng?"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "affects": {
+                "en": "A layout belongs to one saved report or view. The figures are always read fresh, as the person downloading.",
+                "vi": "Mỗi mẫu thuộc về một báo cáo hoặc dạng xem đã lưu. Số liệu luôn được đọc mới, theo quyền của người tải về."
+              },
+              "anchor": "xl-button",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Where it is",
+                "vi": "Ở đâu"
+              },
+              "lines": [],
+              "look": {
+                "en": "My Excel layout, beside Excel in the report's top bar. On Explorer it sits beside Download Excel.",
+                "vi": "Nút Mẫu Excel của tôi, cạnh nút Excel trên thanh trên cùng của báo cáo. Ở Khám phá dữ liệu, nó nằm cạnh Tải Excel."
+              },
+              "means": {
+                "en": "It fills your own Excel file with this report's figures. Until the report or the view is saved, it is grey and says why.",
+                "vi": "Nó điền số liệu của báo cáo này vào tệp Excel của chính bạn. Khi báo cáo hoặc dạng xem chưa được lưu, nút có màu xám và nói lý do."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "My Excel layout.",
+                "vi": "Mẫu Excel của tôi."
+              },
+              "screen": "excellayout",
+              "tip": "",
+              "title": {
+                "en": "Beside Excel, once the report is saved",
+                "vi": "Cạnh nút Excel, khi báo cáo đã được lưu"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Deleting a layout never touches the file on your computer.",
+                "vi": "Xóa một mẫu không bao giờ ảnh hưởng tới tệp trên máy tính của bạn."
+              },
+              "anchor": "xl-pop",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Your layouts",
+                "vi": "Các mẫu của bạn"
+              },
+              "lines": [],
+              "look": {
+                "en": "The list under the button: Your own Excel file, filled with these figures. With no layout yet, it offers Use my Excel layout.",
+                "vi": "Danh sách dưới nút: Tệp Excel của chính bạn, điền sẵn số liệu này. Khi chưa có mẫu nào, nó đưa ra Dùng mẫu Excel của tôi."
+              },
+              "means": {
+                "en": "Each saved layout has Download in my layout. Its menu changes where the figures go, replaces the file, renames, shares or deletes it.",
+                "vi": "Mỗi mẫu đã lưu có nút Tải về theo mẫu của tôi. Menu của nó đổi chỗ ghi số liệu, thay tệp, đổi tên, chia sẻ hoặc xóa mẫu."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "Use my Excel layout.",
+                "vi": "Dùng mẫu Excel của tôi."
+              },
+              "screen": "excellayout",
+              "tip": "",
+              "title": {
+                "en": "One list for each report",
+                "vi": "Mỗi báo cáo một danh sách"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Macros are never run. A file that cannot be used says why, and what to do.",
+                "vi": "Macro không bao giờ được chạy. Một tệp không dùng được sẽ nói lý do và cách xử lý."
+              },
+              "anchor": "xl-steps",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Your file",
+                "vi": "Tệp của bạn"
+              },
+              "lines": [],
+              "look": {
+                "en": "The steps at the top of the window: Your file, Where the figures go, Try it and save.",
+                "vi": "Các bước ở đầu cửa sổ: Tệp của bạn, Chỗ ghi số liệu, Thử và lưu."
+              },
+              "means": {
+                "en": "Drop an .xlsx or .xlsm file of up to 10 MB. Only the cells where the figures go change; charts, pictures, pivot tables and macros stay as they are.",
+                "vi": "Thả một tệp .xlsx hoặc .xlsm tối đa 10 MB. Chỉ những ô ghi số liệu thay đổi; biểu đồ, hình ảnh, bảng tổng hợp và macro được giữ nguyên."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "excellayout",
+              "tip": "",
+              "title": {
+                "en": "Three steps, and your file stays yours",
+                "vi": "Ba bước, và tệp vẫn là của bạn"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Point your formulas and charts at whole columns or an Excel table, so they pick up new rows.",
+                "vi": "Hãy cho công thức và biểu đồ trỏ tới cả cột hoặc một bảng Excel, để chúng nhận cả các hàng mới."
+              },
+              "anchor": "xl-grid",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Where the figures go",
+                "vi": "Chỗ ghi số liệu"
+              },
+              "lines": [],
+              "look": {
+                "en": "Your own sheet as a grid, the lit area, and the line 4 columns × 4 rows from B6 under it.",
+                "vi": "Trang tính của bạn dạng lưới, vùng được tô sáng, và dòng 4 cột × 4 hàng từ B6 bên dưới."
+              },
+              "means": {
+                "en": "The lit area is where this report's figures go, and the values it replaces are struck through. Your title rows and headings above it stay.",
+                "vi": "Vùng tô sáng là nơi số liệu của báo cáo này được ghi, và các giá trị bị thay sẽ bị gạch ngang. Các dòng tiêu đề của bạn phía trên vẫn giữ nguyên."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "A cell in the grid, or type one like B6.",
+                "vi": "Một ô trong lưới, hoặc gõ một ô như B6."
+              },
+              "screen": "excellayout",
+              "tip": "",
+              "title": {
+                "en": "Click the cell where the figures start",
+                "vi": "Bấm vào ô nơi số liệu bắt đầu"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "People you share it with get their own figures in it, never yours.",
+                "vi": "Người được chia sẻ nhận số liệu của chính họ trong đó, không bao giờ là của bạn."
+              },
+              "anchor": "xl-side",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Name and headings",
+                "vi": "Tên và tiêu đề"
+              },
+              "lines": [],
+              "look": {
+                "en": "The fields on the right: Name, The figures start at, Write the column headings, and Share with everyone who can open this view.",
+                "vi": "Các trường bên phải: Tên, Số liệu bắt đầu tại, Ghi tiêu đề cột, và Chia sẻ với mọi người mở được dạng xem này."
+              },
+              "means": {
+                "en": "With Write the column headings off, your own headings stay and the figures start right at the cell. Share lets others use the layout.",
+                "vi": "Khi tắt Ghi tiêu đề cột, tiêu đề của bạn được giữ và số liệu bắt đầu ngay tại ô đó. Chia sẻ cho phép người khác dùng mẫu."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "excellayout",
+              "tip": "",
+              "title": {
+                "en": "Your headings, or ours",
+                "vi": "Tiêu đề của bạn, hay của chúng tôi"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "After saving, Download in my layout brings the file back with fresh figures at any time.",
+                "vi": "Sau khi lưu, Tải về theo mẫu của tôi trả lại tệp với số liệu mới bất cứ lúc nào."
+              },
+              "anchor": "xl-foot",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Try it and save",
+                "vi": "Thử và lưu"
+              },
+              "lines": [],
+              "look": {
+                "en": "The buttons at the bottom: Cancel, Try it and Save layout.",
+                "vi": "Các nút ở cuối: Hủy, Thử ngay và Lưu mẫu."
+              },
+              "means": {
+                "en": "Try it downloads your own file filled with today's figures. Open it and check, then save the layout.",
+                "vi": "Thử ngay tải về tệp của bạn đã điền số liệu hôm nay. Hãy mở ra kiểm tra, rồi lưu mẫu."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "Save layout, after Try it.",
+                "vi": "Lưu mẫu, sau khi Thử ngay."
+              },
+              "screen": "excellayout",
+              "tip": "",
+              "title": {
+                "en": "Check the real file before you save",
+                "vi": "Kiểm tra tệp thật trước khi lưu"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "If the layout ever cannot be used, the standard Excel goes instead and the history says why.",
+                "vi": "Nếu có lúc không dùng được mẫu, tệp Excel chuẩn sẽ được gửi thay và lịch sử ghi rõ lý do."
+              },
+              "anchor": "xl-sendas",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "By email, every month",
+                "vi": "Qua email, mỗi tháng"
+              },
+              "lines": [],
+              "look": {
+                "en": "Send as, in Explorer's Send regularly drawer: Standard Excel, or your layout's name.",
+                "vi": "Gửi dưới dạng, trong ngăn Gửi định kỳ của Khám phá dữ liệu: Excel chuẩn, hoặc tên mẫu của bạn."
+              },
+              "means": {
+                "en": "A schedule can send your layout instead of the standard Excel. Each person gets your file filled with their own figures.",
+                "vi": "Một lịch gửi có thể gửi mẫu của bạn thay cho Excel chuẩn. Mỗi người nhận tệp của bạn với số liệu của chính họ."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "excellayout",
+              "tip": "",
+              "title": {
+                "en": "Send it on a schedule",
+                "vi": "Gửi theo lịch"
+              },
+              "visual": "none"
+            }
+          ]
+        }
+      ],
+      "line": "insights",
+      "name": {
+        "en": "Fill my own Excel layout",
+        "vi": "Điền vào mẫu Excel của tôi"
+      },
+      "outline": {
+        "mistakes": [
+          {
+            "en": "Pointing formulas at fixed cells. Point them at whole columns or an Excel table, so new rows are counted.",
+            "vi": "Cho công thức trỏ tới các ô cố định. Hãy trỏ tới cả cột hoặc một bảng Excel, để các hàng mới cũng được tính."
+          },
+          {
+            "en": "Leaving merged cells where the figures go. Unmerge them in Excel, or start the figures somewhere else.",
+            "vi": "Để ô gộp ở chỗ ghi số liệu. Hãy bỏ gộp trong Excel, hoặc cho số liệu bắt đầu ở chỗ khác."
+          }
+        ],
+        "prereq": {
+          "en": "A saved report or a saved Explorer view, and an .xlsx or .xlsm file of 10 MB or less.",
+          "vi": "Một báo cáo đã lưu hoặc một dạng xem Khám phá dữ liệu đã lưu, và một tệp .xlsx hoặc .xlsm tối đa 10 MB."
+        },
+        "what": {
+          "en": "My Excel layout, beside Excel on a saved report and beside Download Excel on a saved Explorer view. Upload your own Excel file once, click the cell where the figures start, try it and save the layout.",
+          "vi": "Mẫu Excel của tôi, cạnh nút Excel trên một báo cáo đã lưu và cạnh Tải Excel trên một dạng xem Khám phá dữ liệu đã lưu. Tải tệp Excel của bạn lên một lần, bấm vào ô nơi số liệu bắt đầu, thử rồi lưu mẫu."
+        },
+        "when": {
+          "en": "At every month end, for the pack finance or the board reads, and for a pack sent by email on a schedule.",
+          "vi": "Vào mỗi cuối tháng, cho bộ báo cáo mà bộ phận tài chính hoặc ban lãnh đạo đọc, và cho bộ báo cáo gửi qua email theo lịch."
+        },
+        "why": {
+          "en": "Teams keep their own pack, with headings, formulas and charts. Copying figures into it by hand every month is slow and goes wrong.",
+          "vi": "Mỗi nhóm có bộ báo cáo riêng, với tiêu đề, công thức và biểu đồ. Chép số liệu vào đó bằng tay mỗi tháng vừa chậm vừa dễ sai."
+        }
+      },
+      "required": false,
+      "roles": [
+        "owner",
+        "officer",
+        "hr"
+      ],
+      "search": {
+        "en": "my excel layout, board pack, my own excel file, fill my template, excel template, download in my layout",
+        "vi": "mẫu excel của tôi, bộ báo cáo, tệp excel của tôi, điền vào mẫu, mẫu excel, tải về theo mẫu của tôi"
+      },
+      "section": "payroll",
+      "sequence": 350,
+      "sidebar_key": "",
+      "star": false,
+      "summary": {
+        "en": "Your own board pack, filled with fresh figures from a saved report or a saved Explorer view: downloaded at any time, or sent on a schedule.",
+        "vi": "Bộ báo cáo của riêng bạn, điền số liệu mới từ một báo cáo đã lưu hoặc một dạng xem Khám phá dữ liệu đã lưu: tải về bất cứ lúc nào, hoặc gửi định kỳ."
+      }
+    },
+    {
+      "after": "reportbuilder",
+      "duration_min": 6,
+      "icon": "file-text",
+      "key": "reportpdf",
+      "kind": "lesson",
+      "lessons": [
+        {
+          "duration_min": 6,
+          "goal": {
+            "en": "Give a saved report its PDF look: paper, letterhead, columns and widths, save the look, and send it regularly as a PDF.",
+            "vi": "Đặt kiểu PDF cho một báo cáo đã lưu: giấy, tiêu đề thư, các cột và độ rộng, lưu kiểu, và gửi định kỳ dạng PDF."
+          },
+          "key": "L48",
+          "name": {
+            "en": "Design the PDF of a report",
+            "vi": "Thiết kế bản PDF của báo cáo"
+          },
+          "quizzes": [
+            {
+              "kind": "choice",
+              "options": [
+                {
+                  "correct": true,
+                  "feedback": {
+                    "en": "Yes. Fit turns the page sideways from eight columns on A4. Untick a few columns to keep it upright.",
+                    "vi": "Đúng vậy. Vừa trang xoay ngang trang từ tám cột trở lên trên khổ A4. Bỏ chọn bớt vài cột để giữ trang đứng."
+                  },
+                  "label": {
+                    "en": "Sideways, because more than seven columns print",
+                    "vi": "Nằm ngang, vì in hơn bảy cột"
+                  }
+                },
+                {
+                  "correct": false,
+                  "feedback": {
+                    "en": "Let's rethink that. Fit turns the page instead of shrinking the text.",
+                    "vi": "Hãy nghĩ lại một chút. Vừa trang xoay trang chứ không thu nhỏ chữ."
+                  },
+                  "label": {
+                    "en": "Upright, with tiny text",
+                    "vi": "Đứng, với chữ rất nhỏ"
+                  }
+                }
+              ],
+              "prompt": {
+                "en": "Your report prints nine columns, and the paper is A4 on Fit. How does the page print?",
+                "vi": "Báo cáo của bạn in chín cột, giấy A4 và chọn Vừa trang. Trang được in thế nào?"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "affects": {
+                "en": "The PDF is always the reader's own table: the rows and columns they see on screen.",
+                "vi": "Bản PDF luôn là bảng của chính người đọc: các dòng và cột họ thấy trên màn hình."
+              },
+              "anchor": "pd-button",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Where it is",
+                "vi": "Ở đâu"
+              },
+              "lines": [],
+              "look": {
+                "en": "PDF in the report's top bar, beside My Excel layout. Explorer has it too, once a view is saved.",
+                "vi": "Nút PDF trên thanh trên cùng của báo cáo, cạnh Mẫu Excel của tôi. Khám phá dữ liệu cũng có, khi dạng xem đã được lưu."
+              },
+              "means": {
+                "en": "It opens Design the PDF for this report. Until the report is saved it is grey, and says why.",
+                "vi": "Nó mở Thiết kế bản PDF cho báo cáo này. Khi báo cáo chưa được lưu, nút có màu xám và nói lý do."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "PDF, to open Design the PDF.",
+                "vi": "Nút PDF, để mở Thiết kế bản PDF."
+              },
+              "screen": "reportpdf",
+              "tip": "",
+              "title": {
+                "en": "PDF, beside My Excel layout",
+                "vi": "Nút PDF, cạnh Mẫu Excel của tôi"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Download PDF gives the true file, with every page. A company look, set by an administrator, starts each new report.",
+                "vi": "Tải PDF cho ra tệp thật, đủ mọi trang. Kiểu của công ty, do quản trị viên đặt, là điểm bắt đầu của mỗi báo cáo mới."
+              },
+              "anchor": "pd-top",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Your look",
+                "vi": "Kiểu của bạn"
+              },
+              "lines": [],
+              "look": {
+                "en": "The top of Design the PDF: the report's name, Standard look, Save look and Download PDF.",
+                "vi": "Phần đầu của Thiết kế bản PDF: tên báo cáo, Kiểu trình bày chuẩn, Lưu kiểu và Tải PDF."
+              },
+              "means": {
+                "en": "Standard look is where every report starts. Save look keeps your choices for this report, and the label then says Your look.",
+                "vi": "Kiểu trình bày chuẩn là nơi mọi báo cáo bắt đầu. Lưu kiểu giữ các lựa chọn của bạn cho báo cáo này, và nhãn khi đó ghi Kiểu của bạn."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "Save look, or Ctrl+S.",
+                "vi": "Lưu kiểu, hoặc Ctrl+S."
+              },
+              "screen": "reportpdf",
+              "tip": "",
+              "title": {
+                "en": "A look is how a report prints",
+                "vi": "Kiểu là cách một báo cáo được in"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "The page and row chips above the page follow at once.",
+                "vi": "Các nhãn số trang và số dòng phía trên trang đổi theo ngay."
+              },
+              "anchor": "pd-paper",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Paper",
+                "vi": "Giấy"
+              },
+              "lines": [],
+              "look": {
+                "en": "Paper: A4 or A3, then Fit, Upright or Sideways.",
+                "vi": "Giấy: A4 hoặc A3, rồi Vừa trang, Đứng hoặc Nằm ngang."
+              },
+              "means": {
+                "en": "Fit turns the page sideways when more than 7 columns print. Upright and Sideways keep the page the way you chose.",
+                "vi": "Vừa trang sẽ xoay ngang trang khi in hơn 7 cột. Đứng và Nằm ngang giữ trang theo cách bạn chọn."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "reportpdf",
+              "tip": "",
+              "title": {
+                "en": "The paper and which way up",
+                "vi": "Khổ giấy và chiều in"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Report PDFs offer only these two fonts, because they print the same on every page of a long report.",
+                "vi": "Bản PDF của báo cáo chỉ có hai phông này, vì chúng in giống nhau trên mọi trang của một báo cáo dài."
+              },
+              "anchor": "pd-page",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Page",
+                "vi": "Trang"
+              },
+              "lines": [],
+              "look": {
+                "en": "Page: Company letterhead, the fonts Clean and Classic serif, and the text size.",
+                "vi": "Trang: Tiêu đề thư của công ty, hai phông Gọn gàng và Có chân cổ điển, và cỡ chữ."
+              },
+              "means": {
+                "en": "The letterhead prints your company's own header and footer, page numbers included. Without it, every page ends with Page 1 of 3.",
+                "vi": "Tiêu đề thư in đầu trang và chân trang của chính công ty bạn, kèm số trang. Khi tắt, cuối mỗi trang ghi Trang 1 / 3."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "reportpdf",
+              "tip": "",
+              "title": {
+                "en": "Letterhead, font and size",
+                "vi": "Tiêu đề thư, phông chữ và cỡ chữ"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "The report on screen keeps all its columns. Let the widths fit the text again undoes the widths you dragged.",
+                "vi": "Báo cáo trên màn hình vẫn giữ đủ các cột. Cho độ rộng tự vừa với chữ lại sẽ bỏ các độ rộng bạn đã kéo."
+              },
+              "anchor": "pd-cols",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Columns",
+                "vi": "Cột"
+              },
+              "lines": [],
+              "look": {
+                "en": "Columns, 5/5: each column with its tick and its width, such as Auto · 30%.",
+                "vi": "Cột, 5/5: mỗi cột có ô chọn và độ rộng, ví dụ Tự động · 30%."
+              },
+              "means": {
+                "en": "Untick a column to leave it out of the PDF only. Drag a column edge on the page to change its width.",
+                "vi": "Bỏ chọn một cột để chỉ bỏ nó khỏi bản PDF. Kéo mép cột trên trang để đổi độ rộng."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "reportpdf",
+              "tip": "",
+              "title": {
+                "en": "Tick, untick and drag the widths",
+                "vi": "Chọn, bỏ chọn và kéo độ rộng"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Download PDF has every page, and a long report prints the heading row again at the top of each one.",
+                "vi": "Tải PDF có đủ mọi trang, và một báo cáo dài in lại hàng tiêu đề ở đầu mỗi trang."
+              },
+              "anchor": "pd-stage",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "The real first page",
+                "vi": "Trang đầu tiên thật"
+              },
+              "lines": [],
+              "look": {
+                "en": "The first page on the right, with the chips 1 page, 4 rows and A4 · Upright (fit).",
+                "vi": "Trang đầu tiên bên phải, với các nhãn 1 trang, 4 dòng và A4 · Đứng (vừa trang)."
+              },
+              "means": {
+                "en": "The server draws the page from the same table the PDF prints, a moment after each change.",
+                "vi": "Máy chủ vẽ trang từ chính bảng mà bản PDF in ra, ngay sau mỗi thay đổi."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "The edge between two column headings, to drag a column wider.",
+                "vi": "Mép giữa hai tiêu đề cột, để kéo một cột rộng hơn."
+              },
+              "screen": "reportpdf",
+              "tip": "",
+              "title": {
+                "en": "The page you see is the PDF",
+                "vi": "Trang bạn thấy chính là bản PDF"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "If the PDF ever cannot be made, the standard Excel goes instead and the history says why.",
+                "vi": "Nếu có lúc không tạo được bản PDF, tệp Excel chuẩn sẽ được gửi thay và lịch sử ghi rõ lý do."
+              },
+              "anchor": "pd-sendpdf",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Every month as a PDF",
+                "vi": "Mỗi tháng dạng PDF"
+              },
+              "lines": [],
+              "look": {
+                "en": "Send as, in Explorer's Send regularly drawer: PDF in my look.",
+                "vi": "Gửi dưới dạng, trong ngăn Gửi định kỳ của Khám phá dữ liệu: PDF theo kiểu của tôi."
+              },
+              "means": {
+                "en": "A schedule can send a PDF in your look instead of an Excel file. Each person gets a PDF of their own figures.",
+                "vi": "Một lịch gửi có thể gửi bản PDF theo kiểu của bạn thay cho tệp Excel. Mỗi người nhận một bản PDF với số liệu của riêng họ."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "reportpdf",
+              "tip": "",
+              "title": {
+                "en": "Send regularly, as a PDF",
+                "vi": "Gửi định kỳ, dạng PDF"
+              },
+              "visual": "none"
+            }
+          ]
+        }
+      ],
+      "line": "insights",
+      "name": {
+        "en": "Design the PDF of a report",
+        "vi": "Thiết kế bản PDF của báo cáo"
+      },
+      "outline": {
+        "mistakes": [
+          {
+            "en": "Ticking every column on A4. With more than seven columns, Fit turns the page sideways; untick the ones nobody reads.",
+            "vi": "Chọn hết mọi cột trên khổ A4. Khi in hơn bảy cột, Vừa trang sẽ xoay ngang trang; hãy bỏ chọn những cột không ai đọc."
+          },
+          {
+            "en": "Expecting the same rows for every reader. Each person's PDF holds only the figures they may see.",
+            "vi": "Nghĩ rằng ai cũng nhận cùng các dòng. Bản PDF của mỗi người chỉ có số liệu họ được xem."
+          }
+        ],
+        "prereq": {
+          "en": "A saved report or a saved Explorer view. Only the person who saved a report shares its look; administrators set the company look.",
+          "vi": "Một báo cáo đã lưu hoặc một dạng xem Khám phá dữ liệu đã lưu. Chỉ người đã lưu báo cáo mới chia sẻ được kiểu của nó; quản trị viên đặt kiểu của công ty."
+        },
+        "what": {
+          "en": "PDF opens Design the PDF: the choices on the left, the real first page on the right. Save look keeps your choices for that report; Download PDF gives the true file.",
+          "vi": "Nút PDF mở Thiết kế bản PDF: các lựa chọn ở bên trái, trang đầu tiên thật ở bên phải. Lưu kiểu giữ lựa chọn của bạn cho báo cáo đó; Tải PDF cho ra tệp thật."
+        },
+        "when": {
+          "en": "Before you send a report outside HR, and when a report goes out by email every month.",
+          "vi": "Trước khi gửi một báo cáo ra ngoài bộ phận nhân sự, và khi một báo cáo được gửi qua email mỗi tháng."
+        },
+        "why": {
+          "en": "A report sent to a manager or the board should look like the company's own paper, not a screen print.",
+          "vi": "Một báo cáo gửi cho quản lý hoặc ban lãnh đạo nên trông như giấy tờ của chính công ty, không phải ảnh chụp màn hình."
+        }
+      },
+      "required": false,
+      "roles": [
+        "owner",
+        "officer",
+        "hr"
+      ],
+      "search": {
+        "en": "pdf of a report, design the pdf, print a report, letterhead, column widths, landscape, send as pdf",
+        "vi": "bản pdf của báo cáo, thiết kế bản pdf, in báo cáo, tiêu đề thư, độ rộng cột, nằm ngang, gửi dạng pdf"
+      },
+      "section": "payroll",
+      "sequence": 360,
+      "sidebar_key": "",
+      "star": false,
+      "summary": {
+        "en": "The PDF button on a saved report or a saved Explorer view: paper, letterhead, columns and their widths, kept as your look, and sent regularly as a PDF.",
+        "vi": "Nút PDF trên một báo cáo đã lưu hoặc một dạng xem Khám phá dữ liệu đã lưu: giấy, tiêu đề thư, các cột và độ rộng, giữ thành kiểu của bạn, và gửi định kỳ dạng PDF."
       }
     },
     {
@@ -27700,7 +29031,7 @@
         "vi": "tuyển dụng, mở một vị trí, đề xuất tuyển dụng, nhờ quản lý, vị trí mới, yêu cầu đã được đồng ý"
       },
       "section": "payroll",
-      "sequence": 340,
+      "sequence": 390,
       "sidebar_key": "",
       "star": true,
       "summary": {
@@ -28180,7 +29511,7 @@
         "vi": "ứng viên, chuyển ứng viên, giai đoạn, danh sách chọn, chia sẻ ứng viên, phiếu đánh giá, so sánh ứng viên cuối, đăng tin vị trí, chờ nhận việc, xác nhận đã vào làm"
       },
       "section": "payroll",
-      "sequence": 350,
+      "sequence": 400,
       "sidebar_key": "",
       "star": true,
       "summary": {
@@ -28513,7 +29844,7 @@
         "vi": "nhân viên mới, ngày đầu tiên, người đồng hành, nhận việc, sắp vào làm"
       },
       "section": "payroll",
-      "sequence": 360,
+      "sequence": 410,
       "sidebar_key": "",
       "star": true,
       "summary": {
@@ -28809,7 +30140,7 @@
         "vi": "thử việc, hết thử việc, xác nhận chính thức, kéo dài thử việc"
       },
       "section": "payroll",
-      "sequence": 370,
+      "sequence": 420,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -29094,7 +30425,7 @@
         "vi": "kế hoạch phát triển, kèm cặp, kế hoạch cải thiện, mục tiêu có rủi ro"
       },
       "section": "payroll",
-      "sequence": 380,
+      "sequence": 430,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -29373,7 +30704,7 @@
         "vi": "hợp đồng sắp hết hạn, gia hạn hợp đồng, chuyển chính thức"
       },
       "section": "payroll",
-      "sequence": 390,
+      "sequence": 440,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -29706,7 +31037,7 @@
         "vi": "nghỉ việc, thôi việc, đơn nghỉ việc, bàn giao, quyết toán, ngày làm cuối"
       },
       "section": "payroll",
-      "sequence": 400,
+      "sequence": 450,
       "sidebar_key": "",
       "star": true,
       "summary": {
@@ -30115,12 +31446,323 @@
         "vi": "thiết lập tuyển dụng, giai đoạn, cột, mẫu đơn ứng tuyển, phiếu đánh giá, email ứng viên, tự động hoá, đơn vị tuyển dụng, kênh đăng tin, số liệu tuyển dụng, số ngày tuyển"
       },
       "section": "payroll",
-      "sequence": 410,
+      "sequence": 460,
       "sidebar_key": "",
       "star": false,
       "summary": {
         "en": "Shape hiring without a ticket: stages, columns, forms, scorecards, emails and rules. Then read how long hiring really takes.",
         "vi": "Tự chỉnh việc tuyển dụng mà không cần yêu cầu hỗ trợ: giai đoạn, cột, mẫu đơn, phiếu đánh giá, email và quy tắc. Rồi đọc xem tuyển dụng thật sự mất bao lâu."
+      }
+    },
+    {
+      "after": "hiringsetup",
+      "duration_min": 6,
+      "icon": "briefcase",
+      "key": "offerletters",
+      "kind": "lesson",
+      "lessons": [
+        {
+          "duration_min": 6,
+          "goal": {
+            "en": "Know where offer letters and certificates are designed, preview an offer letter with a real offer, and choose the language of an offer.",
+            "vi": "Biết thư mời và giấy xác nhận được thiết kế ở đâu, xem trước thư mời với một lời mời thật, và chọn ngôn ngữ cho một lời mời."
+          },
+          "key": "L46",
+          "name": {
+            "en": "Offer letters and certificates",
+            "vi": "Thư mời làm việc và giấy xác nhận"
+          },
+          "quizzes": [
+            {
+              "kind": "choice",
+              "options": [
+                {
+                  "correct": true,
+                  "feedback": {
+                    "en": "Yes. Automatic follows the language they applied in. The company's language is used only when that is not known.",
+                    "vi": "Đúng vậy. Tự động theo ngôn ngữ họ dùng khi ứng tuyển. Ngôn ngữ của công ty chỉ được dùng khi chưa biết điều đó."
+                  },
+                  "label": {
+                    "en": "Vietnamese, the language they applied in",
+                    "vi": "Tiếng Việt, ngôn ngữ họ dùng khi ứng tuyển"
+                  }
+                },
+                {
+                  "correct": false,
+                  "feedback": {
+                    "en": "Let's rethink that. The company's language is the fallback, used only when the candidate's language is not known.",
+                    "vi": "Hãy nghĩ lại một chút. Ngôn ngữ của công ty chỉ là lựa chọn dự phòng, dùng khi chưa biết ngôn ngữ của ứng viên."
+                  },
+                  "label": {
+                    "en": "The company's language, always",
+                    "vi": "Luôn là ngôn ngữ của công ty"
+                  }
+                }
+              ],
+              "prompt": {
+                "en": "A candidate applied in Vietnamese. The recruiter leaves the letter's language on automatic. Which language is the offer letter in?",
+                "vi": "Một ứng viên ứng tuyển bằng tiếng Việt. Người tuyển dụng để ngôn ngữ của thư là tự động. Thư mời được viết bằng ngôn ngữ nào?"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "affects": {
+                "en": "Offers prepared after you save use your wording. A company's or country's own copy wins for its offers.",
+                "vi": "Các lời mời soạn sau khi bạn lưu sẽ dùng nội dung của bạn. Bản sao riêng của một công ty hoặc quốc gia được ưu tiên cho lời mời của nó."
+              },
+              "anchor": "dh-prints",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Hiring first",
+                "vi": "Tuyển dụng đứng đầu"
+              },
+              "lines": [],
+              "look": {
+                "en": "The Hiring group at the top of Documents: Printed when an offer is prepared in Hiring, Used by 2 offers.",
+                "vi": "Nhóm Tuyển dụng ở đầu trang Tài liệu: Được in khi soạn lời mời trong Tuyển dụng, Dùng cho 2 lời mời."
+              },
+              "means": {
+                "en": "Offer letters are designed here like every other letter. The line says when the letter prints and how many offers use it.",
+                "vi": "Thư mời được thiết kế ở đây như mọi lá thư khác. Dòng chữ cho biết khi nào thư được in và bao nhiêu lời mời đang dùng nó."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "docstudio",
+              "tip": "",
+              "title": {
+                "en": "Offer letters are documents too",
+                "vi": "Thư mời cũng là tài liệu"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "You see that offer's real figures. Without Hiring access no offer is listed, but you can still change the wording.",
+                "vi": "Bạn thấy số liệu thật của lời mời đó. Không có quyền Tuyển dụng thì không có lời mời nào trong danh sách, nhưng bạn vẫn sửa được nội dung."
+              },
+              "anchor": "dh-with",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Preview with an offer",
+                "vi": "Xem trước với một lời mời"
+              },
+              "lines": [],
+              "look": {
+                "en": "Preview with · An offer, and the offer OF-2026-0003 for Trần Thu Hà.",
+                "vi": "Xem trước với · Một lời mời, và lời mời OF-2026-0003 cho Trần Thu Hà."
+              },
+              "means": {
+                "en": "An offer letter is previewed with a real offer, not a person. The language starts as the candidate's own.",
+                "vi": "Thư mời được xem trước với một lời mời thật, không phải một người. Ngôn ngữ ban đầu là ngôn ngữ của ứng viên."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "Change, to preview with another offer.",
+                "vi": "Đổi, để xem trước với lời mời khác."
+              },
+              "screen": "offerletters",
+              "tip": "",
+              "title": {
+                "en": "A real offer, in the candidate's language",
+                "vi": "Một lời mời thật, bằng ngôn ngữ của ứng viên"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "The table prints in the letter's own language. Show only when on an offer can use the country, company, department, job position or employment type.",
+                "vi": "Bảng được in bằng ngôn ngữ của thư. Chỉ hiện khi trên thư mời có thể dùng quốc gia, công ty, phòng ban, vị trí công việc hoặc loại hình làm việc."
+              },
+              "anchor": "ds-fields",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "The offer's fields",
+                "vi": "Các trường của lời mời"
+              },
+              "lines": [],
+              "look": {
+                "en": "Fields on an offer letter: Candidate, Job, Pay and Dates, with Pay lines table under Pay.",
+                "vi": "Danh sách Trường của thư mời: Ứng viên, Công việc, Lương và Ngày tháng, với Bảng các khoản lương trong nhóm Lương."
+              },
+              "means": {
+                "en": "Pay lines table adds the offer's pay lines as one table, with how often each one is paid.",
+                "vi": "Bảng các khoản lương thêm các khoản lương của lời mời thành một bảng, kèm mỗi khoản được trả bao lâu một lần."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "offerletters",
+              "tip": "",
+              "title": {
+                "en": "Candidate, job, pay and dates",
+                "vi": "Ứng viên, công việc, lương và ngày tháng"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "The Page tab still decides the company's block: a name and title, or a signature image.",
+                "vi": "Tab Trang vẫn quyết định phần của công ty: tên và chức danh, hoặc ảnh chữ ký."
+              },
+              "anchor": "dh-sign",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Two signatures",
+                "vi": "Hai chữ ký"
+              },
+              "lines": [],
+              "look": {
+                "en": "The end of the page: the company's signature, then Trần Thu Hà with Signature and date.",
+                "vi": "Cuối trang: chữ ký của công ty, rồi Trần Thu Hà với Chữ ký và ngày."
+              },
+              "means": {
+                "en": "An offer letter always keeps a line for the candidate to sign and date, under the company's own block.",
+                "vi": "Thư mời luôn có một dòng để ứng viên ký và ghi ngày, bên dưới phần của công ty."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "offerletters",
+              "tip": "",
+              "title": {
+                "en": "The candidate signs under the company",
+                "vi": "Ứng viên ký bên dưới công ty"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Once the letter has gone to the candidate, its language can no longer change.",
+                "vi": "Khi thư đã được gửi cho ứng viên, ngôn ngữ của nó không thể đổi nữa."
+              },
+              "anchor": "dh-lang",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "The letter's language",
+                "vi": "Ngôn ngữ của thư"
+              },
+              "lines": [],
+              "look": {
+                "en": "In Hiring, the offer panel: the letter, then Language: Tiếng Việt, automatic (the language they applied in).",
+                "vi": "Trong Tuyển dụng, bảng lời mời: lá thư, rồi Ngôn ngữ: Tiếng Việt, tự động (ngôn ngữ họ dùng khi ứng tuyển)."
+              },
+              "means": {
+                "en": "Left on automatic, the letter uses the language the candidate applied in, else the company's language. Pick another to write it in that one.",
+                "vi": "Để tự động, thư dùng ngôn ngữ ứng viên dùng khi ứng tuyển, nếu không thì dùng ngôn ngữ của công ty. Chọn ngôn ngữ khác để viết thư bằng ngôn ngữ đó."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "The language box, to pick another language.",
+                "vi": "Ô ngôn ngữ, để chọn ngôn ngữ khác."
+              },
+              "screen": "offerletters",
+              "tip": "",
+              "title": {
+                "en": "Choose the language beside the letter",
+                "vi": "Chọn ngôn ngữ cạnh lá thư"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Monthly pay on a certificate prints only the employee's own pay, on their own certificate.",
+                "vi": "Lương tháng trên giấy xác nhận chỉ in lương của chính nhân viên đó, trên giấy xác nhận của họ."
+              },
+              "anchor": "dm-prints",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Certificates",
+                "vi": "Giấy xác nhận"
+              },
+              "lines": [],
+              "look": {
+                "en": "The Certificates group: Printed at once when an employee asks for it on My Payobook, Issued 3 times.",
+                "vi": "Nhóm Giấy xác nhận: Được in ngay khi nhân viên yêu cầu trên My Payobook, Đã cấp 3 lần."
+              },
+              "means": {
+                "en": "Certificates are designed here and printed when an employee asks on My Payobook, in the language they ask in.",
+                "vi": "Giấy xác nhận được thiết kế ở đây và được in khi nhân viên yêu cầu trên My Payobook, bằng ngôn ngữ họ chọn khi yêu cầu."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "docstudio",
+              "tip": "",
+              "title": {
+                "en": "The certificates employees ask for",
+                "vi": "Giấy xác nhận nhân viên yêu cầu"
+              },
+              "visual": "none"
+            }
+          ]
+        }
+      ],
+      "line": "lifecycle",
+      "name": {
+        "en": "Offer letters and certificates",
+        "vi": "Thư mời làm việc và giấy xác nhận"
+      },
+      "outline": {
+        "mistakes": [
+          {
+            "en": "Choosing the letter's language after it has gone. Once the candidate has it, its language can no longer change.",
+            "vi": "Chọn ngôn ngữ của thư sau khi thư đã đi. Khi ứng viên đã nhận thư, ngôn ngữ không thể đổi nữa."
+          },
+          {
+            "en": "Expecting a colleague's pay on someone's certificate. Monthly pay prints only the employee's own pay, on their own certificate.",
+            "vi": "Nghĩ rằng lương của đồng nghiệp sẽ hiện trên giấy xác nhận của người khác. Lương tháng chỉ in lương của chính nhân viên đó, trên giấy xác nhận của họ."
+          }
+        ],
+        "prereq": {
+          "en": "Letter rights for the wording. Previewing an offer letter also needs Hiring access.",
+          "vi": "Quyền về thư để sửa nội dung. Xem trước thư mời còn cần quyền Tuyển dụng."
+        },
+        "what": {
+          "en": "Settings › HR › Documents: Hiring comes first in the gallery, Certificates further down. An offer letter is previewed with a real offer, in the candidate's language.",
+          "vi": "Cài đặt › Nhân sự › Tài liệu: Tuyển dụng đứng đầu thư viện, Giấy xác nhận ở phía dưới. Thư mời được xem trước với một lời mời thật, bằng ngôn ngữ của ứng viên."
+        },
+        "when": {
+          "en": "Before the first offer in a new country, when pay lines change, and when employees ask for certificates in another language.",
+          "vi": "Trước lời mời đầu tiên ở một quốc gia mới, khi các khoản lương thay đổi, và khi nhân viên yêu cầu giấy xác nhận bằng ngôn ngữ khác."
+        },
+        "why": {
+          "en": "An offer is the first letter a candidate gets. Its wording, its language and its pay table should be right before it is sent.",
+          "vi": "Lời mời là lá thư đầu tiên ứng viên nhận được. Nội dung, ngôn ngữ và bảng lương của nó phải đúng trước khi gửi đi."
+        }
+      },
+      "required": false,
+      "roles": [
+        "hr"
+      ],
+      "search": {
+        "en": "offer letter, offer letter language, candidate letter, certificate, employment certificate, salary certificate, pay lines table",
+        "vi": "thư mời làm việc, ngôn ngữ thư mời, thư cho ứng viên, giấy xác nhận, giấy xác nhận công tác, giấy xác nhận lương, bảng các khoản lương"
+      },
+      "section": "payroll",
+      "sequence": 470,
+      "sidebar_key": "",
+      "star": false,
+      "summary": {
+        "en": "The offer letters Hiring prints and the certificates employees ask for on My Payobook, designed in the same place as every other letter.",
+        "vi": "Thư mời làm việc mà Tuyển dụng in ra và giấy xác nhận nhân viên yêu cầu trên My Payobook, được thiết kế cùng chỗ với mọi lá thư khác."
       }
     },
     {
@@ -30562,7 +32204,7 @@
       "roles": [],
       "search": "",
       "section": "payroll",
-      "sequence": 200,
+      "sequence": 210,
       "sidebar_key": "pb_sidebar.item_dashboard",
       "star": true,
       "summary": {
@@ -31104,7 +32746,7 @@
       "roles": [],
       "search": "",
       "section": "payroll",
-      "sequence": 210,
+      "sequence": 220,
       "sidebar_key": "pb_sidebar.item_approvals",
       "star": true,
       "summary": {
@@ -34537,7 +36179,7 @@
         "vi": "nhân viên, hợp đồng, ngăn hợp đồng, sẵn sàng trả lương, thông tin ngân hàng, lương tháng"
       },
       "section": "payroll",
-      "sequence": 220,
+      "sequence": 230,
       "sidebar_key": "pb_sidebar.item_employees",
       "star": false,
       "summary": {
@@ -35013,7 +36655,7 @@
         "vi": "sơ đồ tổ chức, ai báo cáo cho ai, quản lý, đổi quản lý, cấp trên, nhóm, tái cơ cấu, lập kế hoạch"
       },
       "section": "payroll",
-      "sequence": 230,
+      "sequence": 240,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -35356,7 +36998,7 @@
         "vi": "khoảng lương, dải lương, công bằng, chênh lệch lương, ai được trả dưới khoảng lương"
       },
       "section": "payroll",
-      "sequence": 240,
+      "sequence": 250,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -35803,7 +37445,7 @@
         "vi": "xét lương, tăng lương, ai ký đợt xét lương, thay đổi lương"
       },
       "section": "payroll",
-      "sequence": 250,
+      "sequence": 260,
       "sidebar_key": "",
       "star": true,
       "summary": {
@@ -36135,7 +37777,7 @@
         "vi": "phòng quyết định, kế hoạch năm sau, nếu như, kế hoạch nhân sự, chi phí chính xác"
       },
       "section": "payroll",
-      "sequence": 260,
+      "sequence": 270,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -36401,12 +38043,331 @@
         "vi": "bảng vinh danh, khen ngợi, cảm ơn, thông báo, tài sản, mục tiêu, nơi làm việc, địa điểm"
       },
       "section": "payroll",
-      "sequence": 270,
+      "sequence": 280,
       "sidebar_key": "",
       "star": false,
       "summary": {
         "en": "Praise on the Wall, messages in Announce, the People tabs for where people work and what they hold, and Goals and Praise on Talent.",
         "vi": "Lời khen trên Bảng vinh danh, thông báo ở Thông báo, các tab của Con người về nơi mọi người làm và họ giữ gì, cùng Mục tiêu và Khen ngợi ở Nhân tài."
+      }
+    },
+    {
+      "after": "employees",
+      "duration_min": 6,
+      "icon": "file-signature",
+      "key": "contractdocs",
+      "kind": "lesson",
+      "lessons": [
+        {
+          "duration_min": 6,
+          "goal": {
+            "en": "Open a contract's document, fill in what is missing, download it or file it in the person's documents.",
+            "vi": "Mở văn bản của một hợp đồng, điền những gì còn thiếu, tải về hoặc lưu vào tài liệu của người đó."
+          },
+          "key": "L47",
+          "name": {
+            "en": "Contract documents per country",
+            "vi": "Văn bản hợp đồng theo quốc gia"
+          },
+          "quizzes": [
+            {
+              "kind": "choice",
+              "options": [
+                {
+                  "correct": true,
+                  "feedback": {
+                    "en": "Yes. Filing it in the person's documents is for people who may change the contract.",
+                    "vi": "Đúng vậy. Lưu vào tài liệu của người đó là việc của người được sửa hợp đồng."
+                  },
+                  "label": {
+                    "en": "Download the PDF, but not file it",
+                    "vi": "Tải PDF về, nhưng không lưu được"
+                  }
+                },
+                {
+                  "correct": false,
+                  "feedback": {
+                    "en": "Let's rethink that. They find Contract document under Paperwork and can download it.",
+                    "vi": "Hãy nghĩ lại một chút. Họ thấy Văn bản hợp đồng ở mục Giấy tờ và tải về được."
+                  },
+                  "label": {
+                    "en": "Nothing: the button is hidden from them",
+                    "vi": "Không làm được gì: họ không thấy nút"
+                  }
+                }
+              ],
+              "prompt": {
+                "en": "A colleague may only read contracts, not change them. What can they do with the contract document?",
+                "vi": "Một đồng nghiệp chỉ được xem hợp đồng, không được sửa. Họ làm được gì với văn bản hợp đồng?"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "affects": {
+                "en": "Opening it saves nothing. A change typed in the panel and not saved yet is asked about first.",
+                "vi": "Mở nó không lưu gì cả. Nếu bảng còn thay đổi chưa lưu, bạn được hỏi trước."
+              },
+              "anchor": "dc-button",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Where it is",
+                "vi": "Ở đâu"
+              },
+              "lines": [],
+              "look": {
+                "en": "Contract document in the contract panel, beside Next step. People who may only read the contract find it under Paperwork.",
+                "vi": "Nút Văn bản hợp đồng trong bảng hợp đồng, cạnh Bước tiếp theo. Người chỉ được xem hợp đồng thấy nó ở mục Giấy tờ."
+              },
+              "means": {
+                "en": "It writes this contract on paper from its own details: names, dates, pay and the person's papers.",
+                "vi": "Nó viết hợp đồng này ra giấy từ chính thông tin của nó: tên, ngày tháng, lương và giấy tờ của người đó."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "Contract document.",
+                "vi": "Văn bản hợp đồng."
+              },
+              "screen": "contractdocs",
+              "tip": "",
+              "title": {
+                "en": "Contract document, in the contract panel",
+                "vi": "Văn bản hợp đồng, trong bảng hợp đồng"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Make it yours opens the designer, for people who may change letters.",
+                "vi": "Sửa thành nội dung của bạn mở trình thiết kế, cho những người được sửa thư."
+              },
+              "anchor": "dc-sample",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Sample wording",
+                "vi": "Nội dung mẫu"
+              },
+              "lines": [],
+              "look": {
+                "en": "The amber line: Sample wording. Have your own lawyer check it before you use it. Not printed.",
+                "vi": "Dòng màu hổ phách: Nội dung mẫu. Hãy nhờ luật sư của bạn kiểm tra trước khi sử dụng. Không in ra."
+              },
+              "means": {
+                "en": "The contracts that come with Payobook are sample wording. The line never prints, and it goes once your own wording is saved.",
+                "vi": "Các hợp đồng đi kèm Payobook là nội dung mẫu. Dòng này không bao giờ được in, và sẽ mất khi nội dung của bạn được lưu."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "Make it yours.",
+                "vi": "Sửa thành nội dung của bạn."
+              },
+              "screen": "contractdocs",
+              "tip": "",
+              "title": {
+                "en": "Have your own lawyer check it",
+                "vi": "Hãy nhờ luật sư của bạn kiểm tra"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Paragraphs follow the contract: a fixed term or open-ended, and the trial period only with a trial end date.",
+                "vi": "Các đoạn đi theo hợp đồng: có thời hạn hay không xác định thời hạn, và phần thử việc chỉ có khi có ngày kết thúc thử việc."
+              },
+              "anchor": "dc-paper",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "The country's copy",
+                "vi": "Bản của quốc gia"
+              },
+              "lines": [],
+              "look": {
+                "en": "The paper: Employment contract — Vietnam, Vietnamese and English side by side, clause by clause.",
+                "vi": "Trang giấy: Hợp đồng lao động — Việt Nam, tiếng Việt và tiếng Anh đặt cạnh nhau, từng điều khoản."
+              },
+              "means": {
+                "en": "Payobook picks the copy for the person's country of work. Vietnam and Indonesia come with two-language copies; everyone else gets the English original.",
+                "vi": "Payobook chọn bản theo quốc gia làm việc của người đó. Việt Nam và Indonesia có bản song ngữ; những người khác nhận bản gốc tiếng Anh."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "contractdocs",
+              "tip": "",
+              "title": {
+                "en": "The right copy, two languages side by side",
+                "vi": "Đúng bản, hai ngôn ngữ đặt cạnh nhau"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Once the value is filled in, Check again draws the contract with it.",
+                "vi": "Khi giá trị đã được điền, Kiểm tra lại sẽ vẽ hợp đồng với giá trị đó."
+              },
+              "anchor": "dc-missing",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "What is missing",
+                "vi": "Những gì còn thiếu"
+              },
+              "lines": [],
+              "look": {
+                "en": "The amber box: 1 thing is missing, with the chip No ID number.",
+                "vi": "Ô màu hổ phách: Còn thiếu 1 thông tin, với nhãn Chưa có số giấy tờ tùy thân."
+              },
+              "means": {
+                "en": "Each chip is a value this contract has no answer for yet. Press it to go straight to that field, or to the employee.",
+                "vi": "Mỗi nhãn là một giá trị hợp đồng này chưa có. Bấm vào để đi thẳng tới trường đó, hoặc tới hồ sơ nhân viên."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "No ID number, to fill it in.",
+                "vi": "Chưa có số giấy tờ tùy thân, để điền vào."
+              },
+              "screen": "contractdocs",
+              "tip": "",
+              "title": {
+                "en": "An amber chip prints as nothing",
+                "vi": "Nhãn màu hổ phách sẽ in ra trống"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "People who may only read the contract can download it but not file it. Someone who may not see pay can do neither, and is told why.",
+                "vi": "Người chỉ được xem hợp đồng tải về được nhưng không lưu được. Người không được xem lương thì không làm được cả hai, và được báo lý do."
+              },
+              "anchor": "dc-acts",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Download or file",
+                "vi": "Tải về hoặc lưu"
+              },
+              "lines": [],
+              "look": {
+                "en": "The buttons: Download PDF, Save to documents · v2 and Change the wording.",
+                "vi": "Các nút: Tải PDF, Lưu vào tài liệu · v2 và Sửa nội dung."
+              },
+              "means": {
+                "en": "Download PDF gives the file and files nothing. Save to documents files it in the person's documents as the next version.",
+                "vi": "Tải PDF cho ra tệp mà không lưu gì. Lưu vào tài liệu lưu nó vào tài liệu của người đó thành phiên bản tiếp theo."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "Save to documents, or ⌘S.",
+                "vi": "Lưu vào tài liệu, hoặc ⌘S."
+              },
+              "screen": "contractdocs",
+              "tip": "",
+              "title": {
+                "en": "Download PDF, or Save to documents",
+                "vi": "Tải PDF, hoặc Lưu vào tài liệu"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "The person's documents hold every version, each named with its number and date.",
+                "vi": "Tài liệu của người đó giữ mọi phiên bản, mỗi bản mang số và ngày của nó."
+              },
+              "anchor": "dc-versions",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Versions",
+                "vi": "Phiên bản"
+              },
+              "lines": [],
+              "look": {
+                "en": "Saved versions: v1, with the day it was saved.",
+                "vi": "Các phiên bản đã lưu: v1, với ngày được lưu."
+              },
+              "means": {
+                "en": "Each save adds a new version. Earlier versions are kept, and each one can be downloaded again.",
+                "vi": "Mỗi lần lưu thêm một phiên bản mới. Các phiên bản trước được giữ, và mỗi bản đều tải lại được."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "contractdocs",
+              "tip": "",
+              "title": {
+                "en": "Every saved version is kept",
+                "vi": "Mọi phiên bản đã lưu đều được giữ"
+              },
+              "visual": "none"
+            }
+          ]
+        }
+      ],
+      "line": "people",
+      "name": {
+        "en": "Contract documents per country",
+        "vi": "Văn bản hợp đồng theo quốc gia"
+      },
+      "outline": {
+        "mistakes": [
+          {
+            "en": "Using the shipped wording as it is. It is sample wording: have your own lawyer check it, then make it yours.",
+            "vi": "Dùng nguyên nội dung có sẵn. Đó là nội dung mẫu: hãy nhờ luật sư của bạn kiểm tra, rồi sửa thành nội dung của bạn."
+          },
+          {
+            "en": "Printing with a value missing. An amber chip prints as nothing; press it to fill the value in first.",
+            "vi": "In khi còn thiếu một giá trị. Một nhãn màu hổ phách sẽ in ra trống; hãy bấm vào để điền giá trị trước."
+          }
+        ],
+        "prereq": {
+          "en": "People who may change the contract save it to the person's documents; people who may only read it download it. Pay shows only to people who may see pay.",
+          "vi": "Người được sửa hợp đồng lưu nó vào tài liệu của người đó; người chỉ được xem thì tải về. Lương chỉ hiện với người được xem lương."
+        },
+        "what": {
+          "en": "People › Employees › a contract › Contract document. The sheet shows this person's contract on paper, what is missing, and Download PDF and Save to documents.",
+          "vi": "Con người › Nhân viên › một hợp đồng › Văn bản hợp đồng. Trang này cho thấy hợp đồng của người đó trên giấy, những gì còn thiếu, cùng Tải PDF và Lưu vào tài liệu."
+        },
+        "when": {
+          "en": "When a contract is made, renewed or changed, and before it is signed.",
+          "vi": "Khi một hợp đồng được lập, gia hạn hoặc thay đổi, và trước khi ký."
+        },
+        "why": {
+          "en": "A contract is signed on paper. Payobook writes it from the contract's own details, so nobody copies names, dates and pay into a word file.",
+          "vi": "Hợp đồng được ký trên giấy. Payobook viết nó từ chính thông tin của hợp đồng, nên không ai phải chép tên, ngày tháng và lương sang một tệp văn bản."
+        }
+      },
+      "required": false,
+      "roles": [
+        "hr"
+      ],
+      "search": {
+        "en": "contract document, employment contract, print a contract, contract pdf, bilingual contract, sample wording, save to documents",
+        "vi": "văn bản hợp đồng, hợp đồng lao động, in hợp đồng, hợp đồng pdf, hợp đồng song ngữ, nội dung mẫu, lưu vào tài liệu"
+      },
+      "section": "payroll",
+      "sequence": 290,
+      "sidebar_key": "",
+      "star": false,
+      "summary": {
+        "en": "The finished employment contract for one contract, in that country's two languages, downloaded or filed from the contract panel.",
+        "vi": "Hợp đồng lao động hoàn chỉnh cho một hợp đồng, bằng hai ngôn ngữ của quốc gia đó, tải về hoặc lưu từ bảng hợp đồng."
       }
     },
     {
@@ -41166,6 +43127,395 @@
     },
     {
       "after": "",
+      "duration_min": 8,
+      "icon": "file-signature",
+      "key": "docstudio",
+      "kind": "lesson",
+      "lessons": [
+        {
+          "duration_min": 8,
+          "goal": {
+            "en": "Change a letter's wording, add fields, show a paragraph only to some people, check it with a real person, and save it.",
+            "vi": "Sửa nội dung một lá thư, thêm trường, chỉ hiện một đoạn cho một số người, kiểm tra với một người thật, rồi lưu lại."
+          },
+          "key": "L45",
+          "name": {
+            "en": "Design a letter",
+            "vi": "Thiết kế một lá thư"
+          },
+          "quizzes": [
+            {
+              "kind": "choice",
+              "options": [
+                {
+                  "correct": true,
+                  "feedback": {
+                    "en": "Yes. A copy is used only for the people it is for; everyone else keeps the original.",
+                    "vi": "Đúng vậy. Bản sao chỉ dùng cho những người nó dành cho; những người khác vẫn dùng bản gốc."
+                  },
+                  "label": {
+                    "en": "The original experience letter",
+                    "vi": "Thư xác nhận kinh nghiệm bản gốc"
+                  }
+                },
+                {
+                  "correct": false,
+                  "feedback": {
+                    "en": "Let's rethink that. A copy reaches only its own company or country of work.",
+                    "vi": "Hãy nghĩ lại một chút. Bản sao chỉ đến với công ty hoặc quốc gia làm việc của nó."
+                  },
+                  "label": {
+                    "en": "The Indonesian copy, because it is newer",
+                    "vi": "Bản sao cho Indonesia, vì nó mới hơn"
+                  }
+                }
+              ],
+              "prompt": {
+                "en": "You make a copy of the experience letter for Indonesia and change it. Which letter does an employee in Vietnam get?",
+                "vi": "Bạn tạo bản sao thư xác nhận kinh nghiệm cho Indonesia rồi sửa nó. Một nhân viên ở Việt Nam nhận thư nào?"
+              }
+            }
+          ],
+          "steps": [
+            {
+              "affects": {
+                "en": "Letters made after you save use the new wording. Letters already made keep theirs.",
+                "vi": "Các thư lập sau khi bạn lưu sẽ dùng nội dung mới. Các thư đã lập vẫn giữ nội dung cũ."
+              },
+              "anchor": "ds-hero",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "What & why",
+                "vi": "Là gì & vì sao"
+              },
+              "lines": [],
+              "look": {
+                "en": "Documents, under Settings › HR: its title, the line under it and New document.",
+                "vi": "Tài liệu, trong Cài đặt › Nhân sự: tiêu đề, dòng chữ bên dưới và nút Tài liệu mới."
+              },
+              "means": {
+                "en": "Here HR changes the wording and the look of letters, adds details from the person's record, and checks them with a real person.",
+                "vi": "Tại đây nhân sự sửa nội dung và giao diện của thư, thêm thông tin từ hồ sơ của người nhận, và kiểm tra với một người thật."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "docstudio",
+              "tip": "",
+              "title": {
+                "en": "Every letter Payobook prepares, in one place",
+                "vi": "Mọi lá thư Payobook lập, ở một chỗ"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "A card's menu can switch the document off, make a copy for… someone, or put back the built-in wording.",
+                "vi": "Menu của thẻ có thể tắt tài liệu, tạo bản sao cho… một nhóm người, hoặc Khôi phục nội dung có sẵn."
+              },
+              "anchor": "ds-group",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "The gallery",
+                "vi": "Thư viện"
+              },
+              "lines": [],
+              "look": {
+                "en": "A card in the gallery: Your wording or Built-in wording, who it is for, its languages, and Copy on a copy.",
+                "vi": "Một thẻ trong thư viện: Nội dung của bạn hoặc Nội dung có sẵn, dành cho ai, các ngôn ngữ, và chữ Bản sao trên một bản sao."
+              },
+              "means": {
+                "en": "Built-in wording is what came with Payobook; Your wording means someone changed it. A copy is used for one company or country of work.",
+                "vi": "Nội dung có sẵn là nội dung đi kèm Payobook; Nội dung của bạn nghĩa là đã có người sửa. Một bản sao được dùng cho một công ty hoặc một quốc gia làm việc."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "A card, to open it in the designer.",
+                "vi": "Một thẻ, để mở nó trong trình thiết kế."
+              },
+              "screen": "docstudio",
+              "tip": "",
+              "title": {
+                "en": "One card for each document",
+                "vi": "Mỗi tài liệu một thẻ"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Fields under This document are filled in when the letter is made. Monthly pay has a lock: it prints only for people who may see pay.",
+                "vi": "Các trường trong Tài liệu này được điền khi lập thư. Lương tháng có dấu khoá: nó chỉ được in khi người lập được xem lương."
+              },
+              "anchor": "ds-fields",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Fields",
+                "vi": "Trường"
+              },
+              "lines": [],
+              "look": {
+                "en": "Fields on the left, grouped Employee, Job, Contract, Company, Dates, This document and Your own fields.",
+                "vi": "Danh sách Trường bên trái, chia nhóm Nhân viên, Công việc, Hợp đồng, Công ty, Ngày tháng, Tài liệu này và Trường riêng của bạn."
+              },
+              "means": {
+                "en": "Click a field to add it at the cursor, or drag it onto the page. Each one shows the preview person's real value.",
+                "vi": "Bấm một trường để thêm vào chỗ con trỏ, hoặc kéo nó vào trang. Mỗi trường hiện giá trị thật của người đang xem trước."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "A field, to add it where the cursor is.",
+                "vi": "Một trường, để thêm vào chỗ con trỏ."
+              },
+              "screen": "docdesigner",
+              "tip": "",
+              "title": {
+                "en": "Details from the person's record",
+                "vi": "Thông tin từ hồ sơ của người nhận"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "The rule is checked for each person when their letter is made. Press the pill to change it, or to show the paragraph to everyone.",
+                "vi": "Điều kiện được kiểm tra cho từng người khi lập thư của họ. Bấm vào nhãn để sửa, hoặc để hiện đoạn đó cho mọi người."
+              },
+              "anchor": "ds-toolbar",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Show only when",
+                "vi": "Chỉ hiện khi"
+              },
+              "lines": [],
+              "look": {
+                "en": "Show only when… on the bar above the page, and the pill Only when Country of work is Indonesia on one paragraph.",
+                "vi": "Nút Chỉ hiện khi… trên thanh phía trên trang, và nhãn Chỉ khi Quốc gia làm việc là Indonesia trên một đoạn."
+              },
+              "means": {
+                "en": "Put the cursor in a paragraph, press Show only when… and pick a field and a condition. Everyone else's letter leaves that paragraph out.",
+                "vi": "Đặt con trỏ vào một đoạn, bấm Chỉ hiện khi… rồi chọn trường và điều kiện. Thư của những người khác sẽ bỏ đoạn đó."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "Show only when…, with the cursor in a paragraph.",
+                "vi": "Chỉ hiện khi…, khi con trỏ đang ở trong một đoạn."
+              },
+              "screen": "docdesigner",
+              "tip": "",
+              "title": {
+                "en": "A paragraph for some people only",
+                "vi": "Một đoạn chỉ dành cho một số người"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Download a sample PDF gives the true PDF. Nothing is saved, filed or sent from here.",
+                "vi": "Tải PDF mẫu cho ra bản PDF thật. Không có gì được lưu, lưu hồ sơ hay gửi đi từ đây."
+              },
+              "anchor": "ds-preview",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Preview with a real person",
+                "vi": "Xem trước với một người thật"
+              },
+              "lines": [],
+              "look": {
+                "en": "Preview on the right: Nguyễn Thị Mai, her language, and 1 paragraph is hidden for this person.",
+                "vi": "Xem trước bên phải: Nguyễn Thị Mai, ngôn ngữ của cô, và dòng 1 đoạn bị ẩn với người này."
+              },
+              "means": {
+                "en": "The page is drawn again for that person a moment after each change, from what you typed, even before saving. Show them faded shows the hidden paragraphs.",
+                "vi": "Trang được vẽ lại cho người đó ngay sau mỗi thay đổi, theo những gì bạn gõ, kể cả trước khi lưu. Hiện mờ cho thấy các đoạn bị ẩn."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "Change, to preview with someone else.",
+                "vi": "Đổi, để xem trước với người khác."
+              },
+              "screen": "docdesigner",
+              "tip": "",
+              "title": {
+                "en": "See the letter for someone real",
+                "vi": "Xem thư cho một người thật"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Each person gets the wording in their own language. With none in it, they get the main wording.",
+                "vi": "Mỗi người nhận nội dung bằng ngôn ngữ của họ. Nếu chưa có, họ nhận nội dung chính."
+              },
+              "anchor": "ds-langs",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Languages",
+                "vi": "Ngôn ngữ"
+              },
+              "lines": [],
+              "look": {
+                "en": "The language tabs above the page: Main wording · English (US), Tiếng Việt and Bahasa Indonesia.",
+                "vi": "Các tab ngôn ngữ phía trên trang: Nội dung chính · English (US), Tiếng Việt và Bahasa Indonesia."
+              },
+              "means": {
+                "en": "Each language has its own wording. An empty tab offers to copy the main wording or start from the translation. Written in sets the main wording's language.",
+                "vi": "Mỗi ngôn ngữ có nội dung riêng. Một tab còn trống cho phép sao chép nội dung chính hoặc bắt đầu từ bản dịch. Viết bằng đặt ngôn ngữ của nội dung chính."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "docdesigner",
+              "tip": "",
+              "title": {
+                "en": "One wording for each language",
+                "vi": "Mỗi ngôn ngữ một nội dung"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "Every letter made from this document uses its page design, on screen and in the PDF.",
+                "vi": "Mọi lá thư lập từ tài liệu này đều dùng thiết kế trang đó, trên màn hình và trong bản PDF."
+              },
+              "anchor": "ds-page",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Page design",
+                "vi": "Thiết kế trang"
+              },
+              "lines": [],
+              "look": {
+                "en": "The Page tab, drawn open: Letterhead, Margins, Font, Text size and Signature block.",
+                "vi": "Tab Trang, đang mở sẵn: Tiêu đề thư, Lề trang, Phông chữ, Cỡ chữ và Phần chữ ký."
+              },
+              "means": {
+                "en": "Switch the letterhead off to print on your own headed paper. The signature block can carry a name and title, or a signature image.",
+                "vi": "Tắt tiêu đề thư để in trên giấy in sẵn của bạn. Phần chữ ký có thể ghi tên và chức danh, hoặc có ảnh chữ ký."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "screen": "docdesigner",
+              "tip": "",
+              "title": {
+                "en": "Letterhead, margins, font and signature",
+                "vi": "Tiêu đề thư, lề trang, phông chữ và chữ ký"
+              },
+              "visual": "none"
+            },
+            {
+              "affects": {
+                "en": "A copy always wins for the people it is for. Built-in wording puts back what came with Payobook, with a few seconds to undo it.",
+                "vi": "Bản sao luôn được ưu tiên cho những người nó dành cho. Nội dung có sẵn đưa về nội dung đi kèm Payobook, với vài giây để hoàn tác."
+              },
+              "anchor": "ds-top",
+              "body": "",
+              "consequence": "",
+              "kicker": {
+                "en": "Save, or a copy",
+                "vi": "Lưu, hoặc một bản sao"
+              },
+              "lines": [],
+              "look": {
+                "en": "The top bar: All documents, Make a copy for…, Built-in wording and Save.",
+                "vi": "Thanh trên cùng: Tất cả tài liệu, Tạo bản sao cho…, Nội dung có sẵn và Lưu."
+              },
+              "means": {
+                "en": "Save keeps your wording for every letter made from now on. Make a copy for… a company or a country of work gives those people their own version.",
+                "vi": "Lưu giữ nội dung của bạn cho mọi lá thư lập từ bây giờ. Tạo bản sao cho… một công ty hoặc một quốc gia làm việc cho những người đó phiên bản riêng."
+              },
+              "moment_chain": "",
+              "moment_from": "",
+              "moment_to": "",
+              "moment_which": "",
+              "press": {
+                "en": "Save, or ⌘S.",
+                "vi": "Lưu, hoặc ⌘S."
+              },
+              "screen": "docdesigner",
+              "tip": "",
+              "title": {
+                "en": "Save it, or make a copy for a company",
+                "vi": "Lưu, hoặc tạo bản sao cho một công ty"
+              },
+              "visual": "none"
+            }
+          ]
+        }
+      ],
+      "line": "setup",
+      "name": {
+        "en": "Design a letter",
+        "vi": "Thiết kế một lá thư"
+      },
+      "outline": {
+        "mistakes": [
+          {
+            "en": "Changing the original when only one country needs it. Make a copy for that country; everyone else keeps the original.",
+            "vi": "Sửa bản gốc khi chỉ một quốc gia cần thay đổi. Hãy tạo bản sao cho quốc gia đó; những người khác vẫn giữ bản gốc."
+          },
+          {
+            "en": "Saving without a preview. Pick a real person in Preview: hidden paragraphs and missing values show there.",
+            "vi": "Lưu mà không xem trước. Hãy chọn một người thật ở Xem trước: các đoạn bị ẩn và giá trị còn thiếu hiện ra ở đó."
+          }
+        ],
+        "prereq": {
+          "en": "Letter administrators and system administrators. Pay fields print only when the person making the letter may see pay.",
+          "vi": "Người quản trị thư và quản trị viên hệ thống. Các trường lương chỉ được in khi người lập thư được xem lương."
+        },
+        "what": {
+          "en": "Settings › HR › Documents. The gallery lists every letter by group. Open one: the fields on the left, the page in the middle, Preview and Page on the right.",
+          "vi": "Cài đặt › Nhân sự › Tài liệu. Thư viện liệt kê mọi lá thư theo nhóm. Mở một lá: các trường ở bên trái, trang giấy ở giữa, Xem trước và Trang ở bên phải."
+        },
+        "when": {
+          "en": "When a letter's wording or the law behind it changes, when a company or country needs its own version, and before the first letter of a new kind.",
+          "vi": "Khi nội dung thư hoặc quy định đằng sau nó thay đổi, khi một công ty hoặc quốc gia cần phiên bản riêng, và trước lá thư đầu tiên của một loại mới."
+        },
+        "why": {
+          "en": "Letters go out with the company's name on them. HR changes the wording itself and checks it on a real person before anything is printed.",
+          "vi": "Thư được gửi đi mang tên công ty. Nhân sự tự sửa nội dung và kiểm tra với một người thật trước khi in bất cứ thứ gì."
+        }
+      },
+      "required": false,
+      "roles": [
+        "hr"
+      ],
+      "search": {
+        "en": "documents, letter wording, design a letter, letter template, show only when, letterhead, signature, language versions, copy for a company",
+        "vi": "tài liệu, nội dung thư, thiết kế thư, mẫu thư, chỉ hiện khi, tiêu đề thư, chữ ký, phiên bản ngôn ngữ, bản sao cho công ty"
+      },
+      "section": "payroll",
+      "sequence": 200,
+      "sidebar_key": "",
+      "star": false,
+      "summary": {
+        "en": "Settings › HR › Documents: every letter's wording and look, with fields from the person's record, paragraphs for some people only, and a real-person preview.",
+        "vi": "Cài đặt › Nhân sự › Tài liệu: nội dung và giao diện của mọi lá thư, với các trường từ hồ sơ của người nhận, những đoạn chỉ dành cho một số người, và bản xem trước với một người thật."
+      }
+    },
+    {
+      "after": "",
       "duration_min": 6,
       "icon": "sun",
       "key": "wftoday",
@@ -41448,7 +43798,7 @@
         "vi": "hôm nay, ai có mặt, ai đi trễ, cần bạn, duyệt tăng ca sạch"
       },
       "section": "payroll",
-      "sequence": 420,
+      "sequence": 480,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -41816,7 +44166,7 @@
         "vi": "chấm công, ngoại lệ chấm công, nghỉ phép, đơn nghỉ phép, duyệt tăng ca"
       },
       "section": "payroll",
-      "sequence": 430,
+      "sequence": 490,
       "sidebar_key": "",
       "star": false,
       "summary": {
@@ -42145,7 +44495,7 @@
         "vi": "chốt tuần, khoá tuần, gửi vào bảng lương, cờ chấm công"
       },
       "section": "payroll",
-      "sequence": 440,
+      "sequence": 500,
       "sidebar_key": "",
       "star": true,
       "summary": {
@@ -42154,5 +44504,5 @@
       }
     }
   ],
-  "version": "0d526aab7465"
+  "version": "54784dbbc561"
 }

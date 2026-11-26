@@ -2151,6 +2151,52 @@ const PRACTICE = {
     ],
   },
 
+  /* ------------------------------------- Insights › Build a report (DOCSTUDIO)
+     pb_report_builder's builder view (report_builder.xml): "Each row is"
+     People, the field list with its sections (People fields, Counts from
+     other areas), the filter bar (a filter written as a sentence, the
+     period, Group by), and the table grouped by Department with a Sum on
+     one count. The people are the practice company's own; the counts are
+     small and made up for the copy (the lesson quotes none of them). */
+  reportbuilder: {
+    name: "DEMO Time off and attendance",
+    rows: [["mai", 2, 21], ["hung", 0, 22], ["trang", 3, 20], ["duc", 1, 22]],
+  },
+
+  /* -------------------- Insights › Build a report › My Excel layout (DOCSTUDIO)
+     pb_excel_layout's set-up dialog in its ready state, over the same
+     report: the customer's own sheet (their title rows and headings kept),
+     the start cell, the outline chip, the fields on the right and the
+     footer. The file name and the layout name are made up for the copy. */
+  excellayout: {
+    file: "DEMO board pack.xlsx", sheet: "Data", start: "B6", layout: "DEMO Board pack",
+    heads: ["Name", "Department", "Days off", "Days in"],
+  },
+
+  /* ----------------------------------- Settings › HR › Documents (DOCSTUDIO)
+     pb_doc_studio's gallery (Hiring first since phase A1, then a letter
+     group and Certificates) and its designer, drawn for the experience
+     letter with one paragraph shown only for Indonesia, previewed with
+     Nguyễn Thị Mai (Vietnam), so that paragraph is hidden for her. The
+     document names are records' own names, the same in both languages. */
+  docstudio: {
+    offer: "Offer letter — Vietnam",
+    letter: "Experience letter",
+    copy: "Experience letter — Indonesia",
+    cert: "Employment certificate",
+    offerRef: "OF-2026-0003",
+    candidate: "Trần Thu Hà",
+  },
+
+  /* ------------------------------ People › Employees › Contract (DOCSTUDIO)
+     pb_doc_contracts' sheet over the contract panel: Nguyễn Thị Mai's
+     fixed-term contract on the Vietnam copy (Vietnamese | English side by
+     side), still the shipped sample wording, one value missing. */
+  contractdocs: {
+    ref: "HĐ-2026-0012",
+    saved: "Employment contract · v1 · 02 Jan 2026",
+  },
+
   /* ----------------------------------------------- Compliance › Bank / Young workers / Audit */
   compliance: {
     bank: [[B("Draft", "Nháp"), 1], [B("HR Review", "Nhân sự xét duyệt"), 1], [B("Finance Review", "Tài chính xét duyệt"), 0],
@@ -2234,8 +2280,10 @@ const MENU = [
        to Talent, the Announce calendar to Home › Announce. */
     key: "people", icon: "users", label: B("People", "Con người"), section: null,
     lenses: [
+      /* DOCSTUDIO A2: the contract panel's Contract document sheet opens
+         over Employees, so its practice copy lives under this tab. */
       { key: "employees", label: B("Employees", "Nhân viên"), screen: "employees",
-        also: ["contracts"] },
+        also: ["contracts", "contractdocs"] },
       /* ORG CHART (2026-11-05): sequence 30, right after Employees and
          before Contracts (38) — pb_orgchart orgchart_lens.js. */
       { key: "orgchart", label: B("Org chart", "Sơ đồ tổ chức"), screen: "orgchart" },
@@ -2295,6 +2343,11 @@ const MENU = [
       { key: "hiring", label: B("Hiring", "Tuyển dụng"), screen: "hiringnumbers" },
       { key: "training", label: B("Training", "Đào tạo") },
       { key: "goals", label: B("Goals", "Mục tiêu") },
+      /* DOCSTUDIO R: "Build a report" (pb_report_builder, lens
+         report_builder). Its My Excel layout and PDF buttons open their
+         set-up over the report, so their practice copies live here too. */
+      { key: "report_builder", label: B("Build a report", "Tạo báo cáo"), screen: "reportbuilder",
+        also: ["excellayout", "reportpdf"] },
     ],
   },
   {
@@ -2372,6 +2425,11 @@ const MENU = [
           card: B("Hiring set-up", "Thiết lập tuyển dụng") },
         { key: "announcements", label: B("Announcements", "Thông báo") },
         { key: "journeys", label: B("Journeys", "Hành trình") },
+        /* DOCSTUDIO F: the Documents card (pb_doc_studio settings_card.js,
+           group "hr"; letter administrators and system administrators). The
+           gallery and its designer, with offer letters in it since A1. */
+        { key: "documents", label: B("Documents", "Tài liệu"), screen: "docstudio",
+          also: ["docdesigner", "offerletters"] },
       ] },
       { key: "workflows", label: B("Workflows", "Phê duyệt"), cats: [
         { key: "approvals", label: B("Approvals", "Phê duyệt"), screen: "matrix",

@@ -5,7 +5,7 @@
        Loop variables are short, non-operator names (C18.71). -->
   <t t-name="pb_excel_layout.Button">
     <span class="pbxl-anchor" t-ref="root">
-      <button type="button" class="pbxl-btn" t-att-class="{ open: state.open }"
+      <button type="button" class="pbxl-btn" data-coach="xl-button" t-att-class="{ open: state.open }"
               t-att-disabled="disabled" t-att-aria-expanded="state.open ? 'true' : 'false'"
               aria-haspopup="dialog" t-att-title="btnTitle"
               t-on-click="() => this.toggle()">
@@ -16,7 +16,7 @@
       </button>
       <span t-if="disabled and reason" class="pbxl-why" role="note" t-esc="reason"/>
 
-      <div t-if="state.open" class="pbxl-pop" role="dialog" aria-label="My Excel layout">
+      <div t-if="state.open" class="pbxl-pop" data-coach="xl-pop" role="dialog" aria-label="My Excel layout">
         <div class="pbxl-pop-head">
           <span class="pbxl-badge"><t t-out="xic('fileSpreadsheet', 16)"/></span>
           <div>
@@ -127,7 +127,7 @@
                t-on-change="(ev) => this.onFileInput(ev)"/>
 
         <!-- the three steps, as one line the eye can follow -->
-        <ol class="pbxl-steps" aria-label="Steps">
+        <ol class="pbxl-steps" data-coach="xl-steps" aria-label="Steps">
           <li t-att-class="{ on: state.phase !== 'ready', done: state.phase === 'ready' }">
             <span class="n"><t t-if="state.phase === 'ready'" t-out="xic('check', 12)"/><t t-else="">1</t></span>
             Your file
@@ -207,7 +207,7 @@
                 <span t-esc="goneLine"/>
               </div>
 
-              <div class="pbxl-sheetwrap">
+              <div class="pbxl-sheetwrap" data-coach="xl-grid">
                 <div class="pbxl-gridscroll">
                   <table class="pbxl-grid" t-ref="grid" tabindex="0" role="grid"
                          aria-label="Click the cell where the figures start"
@@ -251,7 +251,7 @@
               <p t-if="state.file and state.file.recalc" class="pbxl-coach quiet"><t t-out="xic('refresh', 14)"/> <span t-esc="state.file.recalc"/></p>
             </div>
 
-            <aside class="pbxl-right">
+            <aside class="pbxl-right" data-coach="xl-side">
               <label class="pbxl-field">
                 <span class="pbxl-label">Name</span>
                 <input type="text" maxlength="80" t-model="state.name" placeholder="Board pack"/>
@@ -320,7 +320,7 @@
         </t>
       </div>
       <t t-set-slot="footer">
-        <div class="pbxl-foot">
+        <div class="pbxl-foot" data-coach="xl-foot">
           <button type="button" class="pbxl-b ghost" t-on-click="() => this.props.close()">Cancel</button>
           <span class="grow"/>
           <button type="button" class="pbxl-b secondary" t-att-disabled="state.phase !== 'ready' or blocked or state.busy"
@@ -345,7 +345,7 @@
        no line of the drawer itself changes. -->
   <t t-inherit="pb_explorer.PbExplorer" t-inherit-mode="extension">
     <xpath expr="//p[hasclass('pbex-preview')]" position="before">
-      <div class="pbex-field pbxl-sendas">
+      <div class="pbex-field pbxl-sendas" data-coach="xl-sendas">
         <span class="pbex-label">Send as</span>
         <div class="pbex-seg wrap" role="radiogroup" aria-label="Send as">
           <button role="radio" t-att-aria-checked="!state.sched.form.layout_id ? 'true' : 'false'"

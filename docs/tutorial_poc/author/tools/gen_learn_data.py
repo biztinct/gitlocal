@@ -145,6 +145,22 @@ SCREEN_ACTION_TAGS = {
     # hub place, so its client action tag is how the helper knows it is on
     # screen (pb_form_studio field_library.js registers "pb_form_library").
     'formbuilder': 'pb_form_library',
+    # DOCSTUDIO close-out (2026-11-26). Build a report is a lens INSIDE
+    # Insights and grounds by its place (pb_insights_hub:report_builder); the
+    # hub's tag is declared after Insights' own screens, so the hub still
+    # grounds on Pulse. My Excel layout and Design the PDF open over the
+    # report (no action of their own) and the contract document over the
+    # contract panel: second views, detected by their owner's tag and never
+    # winning the exact pass. The Document studio is its own client action
+    # (pb_doc_studio); its designer and the offer-letter view share that tag
+    # and are declared after the gallery.
+    'reportbuilder': 'pb_insights_hub',
+    'excellayout': 'pb_insights_hub',
+    'reportpdf': 'pb_insights_hub',
+    'docstudio': 'pb_doc_studio',
+    'docdesigner': 'pb_doc_studio',
+    'offerletters': 'pb_doc_studio',
+    'contractdocs': 'pb_people_hub',
     # LEARN REFRESH step 3 — the setup cockpits a Settings card opens. None of
     # them has a sidebar leaf (they live behind Settings), so the action tag is
     # how the helper knows one is on screen. The Records Desk is also a tab
