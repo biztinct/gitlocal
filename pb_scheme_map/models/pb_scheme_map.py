@@ -121,8 +121,17 @@ class PbSchemeMap(models.AbstractModel):
 
     @api.model
     def cycle_words(self, cycle_type):
-        """The kind of run, in words a person uses."""
-        return _(CYCLE_WORDS.get(cycle_type or 'any', 'any kind of run'))
+        """The kind of run, in words a person uses — one `_()` literal per
+        word so the catalogue carries them (PSCHEME P1: the dict alone was
+        never extracted, so these stayed English on every screen)."""
+        words = {
+            'any': _("any kind of run"),
+            'regular': _("regular payroll"),
+            'mid_cycle': _("mid-month advance"),
+            'end_cycle': _("end-of-month"),
+            'full_final': _("final settlement"),
+        }
+        return words.get(cycle_type or 'any') or words['any']
 
     # ============================================================ the roster
     @api.model

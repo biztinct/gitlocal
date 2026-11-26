@@ -1944,3 +1944,33 @@ msgstr "trả lương cho 1 người"
 #: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
 msgid "their own pay scheme, from %(date)s"
 msgstr "chương trình lương riêng, từ %(date)s"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "any kind of run"
+msgstr "mọi loại kỳ lương"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "end-of-month"
+msgstr "cuối tháng"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "final settlement"
+msgstr "quyết toán nghỉ việc"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "mid-month advance"
+msgstr "tạm ứng giữa tháng"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "regular payroll"
+msgstr "kỳ lương thường"

@@ -88,3 +88,30 @@ line only if the code under it moved).
 
 ## 4. Gotchas (append as hit)
 - PS0. Inherited: FACTS §12.1 T1–T13 are live traps for every phase — read them before coding.
+- PS1. The proposal mixin's generic `_proposal_moved` prints snapshot KEYS to the user ("12 (was [...], now [...])").
+  A `person_set` snapshot keyed by employee id gets its own `_proposal_moved` naming the person in plain words
+  (board `_person_moved_words`) — never a raw id on screen (coordinator ruling).
+- PS2. Fast lane + a proposer without the carry-out group: the engine catches the gate error, the request becomes
+  "approved" with `block_reason`, and `answer_message()` says "Sent for approval." — false. `person_set` refuses up
+  front with a plain sentence (`_person_blocked`), and the screen hides the button with that reason.
+- PS3. `hr.formula.config.cycle_type` selection labels are "Mid-Cycle" / "End-Cycle" ("cycle" on screen). Screens use
+  `pb.scheme.map.cycle_words` ("mid-month advance", "end-of-month", "regular payroll").
+- PS4. Ledger A4 read per kind of run double-counts: a later row of a NEW kind (regular -> end of month on the 15th,
+  or an advance added later) "counted backwards" too, so the person sat in two runs of one month (R6 broken). Built:
+  only the FIRST-EVER scheme counts backwards — while nothing of the person's has started on or before the day, and
+  only for rows starting on their first-ever start date (`_person_rows_for`, test T16b). Joiners still land (T3).
+- PS5. "Paid by" asks the company's main kind (`_pb_main_cycle`: end of month where one exists). A person whose own
+  scheme is a REGULAR one then read "no pay scheme". `MAIN_QUESTION` context (`pb_scheme_main_question`) lets the
+  "who pays this person" readers (recompute, chip, panel, pay items, old hire payloads) accept the other main kind;
+  pay runs never set it (T5b). The pay run's preview uses it too, so such people show as "paid elsewhere", never as
+  "not covered".
+- PS6. A team line "for any kind of run" answers the ADVANCE question with the main scheme (pre-existing: the stored
+  `pb_paid_by_advance_id` holds a regular scheme for many people; the chip showed "Advance: <main scheme>"). P1 hides
+  it on screen (chip, panel) and never writes it as an advance row (hire, `cycle_type == 'mid_cycle'` guard). The
+  stored column is unchanged — P2's fill must copy an advance only when it IS a mid-month scheme.
+- PS7. `CYCLE_WORDS` is a plain dict: `_(CYCLE_WORDS[...])` was never extracted, so "end-of-month" / "mid-month
+  advance" stayed English in vi/id. `cycle_words` now holds one `_()` literal per word.
+- PS8. `pkill -f "<pattern>"` from a shell whose own command line contains the pattern kills that shell (exit 144).
+  Restart walk servers from a script file (`serve.sh`), never inline.
+- PS9. The first page load after an upgrade + asset purge can take 45 s+ (the renderer looks frozen to the browser
+  tool; a navigate during server start shows an error page). Wait for "HTTP service running", then navigate again.

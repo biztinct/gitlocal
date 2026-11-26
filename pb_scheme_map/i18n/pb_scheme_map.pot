@@ -1763,3 +1763,33 @@ msgstr ""
 #: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
 msgid "their own pay scheme, from %(date)s"
 msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "any kind of run"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "end-of-month"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "final settlement"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "mid-month advance"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "regular payroll"
+msgstr ""
