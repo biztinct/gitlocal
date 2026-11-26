@@ -440,3 +440,30 @@ class TestOfferStudio(OfferStudioCase):
                 table = str(self.offer._pbds_lines_table(lang))
                 self.assertIn(month, table)
                 self.assertIn(once, table)
+
+    # ------------------------------------------------------------ CZ-1
+    def test_cz_01_untouched_offer_letter_pay_words_in_its_language(self):
+        """DOCSTUDIO close Z item 1: an offer letter nobody has edited
+        (Hiring's own `${lines}`) writes "Every month" / "One-off" in the
+        letter's language, Indonesian included."""
+        expected = {'en_US': ('Every month', 'One-off'),
+                    'vi_VN': ('Hằng tháng', 'Một lần'),
+                    'id_ID': ('Setiap bulan', 'Sekali saja')}
+        for lang, (month, once) in expected.items():
+            with self.subTest(lang=lang):
+                table = str(self.offer.with_context(lang=lang)._lines_table())
+                self.assertIn(month, table)
+                self.assertIn(once, table)
+        # The real letter, written in Indonesian on Hiring's own path.
+        offer = self.offer_for(self.generic)
+        self.assertFalse(self.generic._pbds_is_studio())
+        offer.sudo().pbds_letter_lang = 'id_ID'
+        offer.action_prepare_letter()
+        html = str(offer.rendered_html)
+        self.assertIn('Setiap bulan', html)
+        self.assertIn('Sekali saja', html)
+        self.assertNotIn('Every month', html)
+        # No choice and an English screen: byte for byte as before.
+        offer.sudo().pbds_letter_lang = False
+        offer.with_context(lang='en_US').action_prepare_letter()
+        self.assertIn('Every month', str(offer.rendered_html))

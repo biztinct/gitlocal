@@ -1149,3 +1149,21 @@ msgstr ""
 msgid ""
 "When an agency puts somebody forward, give the recruiter a to-do for a first look."
 msgstr "Saat agensi mengajukan seseorang, beri perekrut tugas untuk peninjauan awal."
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/hiring_common.py:0
+msgid "Every month"
+msgstr "Setiap bulan"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/hiring_common.py:0
+msgid "Once a year"
+msgstr "Setahun sekali"
+
+#. module: pb_hiring
+#. odoo-python
+#: code:addons/pb_hiring/models/hiring_common.py:0
+msgid "One-off"
+msgstr "Sekali saja"
