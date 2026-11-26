@@ -6343,3 +6343,246 @@ msgid ""
 msgstr ""
 "Dokumen bank sudah dibaca, tetapi ada satu yang kurang: %s Buka di "
 "Permintaan bank untuk menyelesaikannya."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid ""
+"%(scheme)s is used for the example. Set who pays %(team)s in Mapping so the "
+"pay run includes them."
+msgstr ""
+"%(scheme)s dipakai untuk contoh. Atur siapa yang membayar %(team)s di "
+"Pemetaan agar proses penggajian menyertakan mereka."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid ""
+"%(scheme)s pays them through a rule on the map. Set who pays %(team)s in "
+"Mapping to make it the team's own."
+msgstr ""
+"%(scheme)s membayar mereka lewat aturan di peta. Atur siapa yang membayar "
+"%(team)s di Pemetaan agar menjadi milik tim itu sendiri."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/checklist_p8.py:0
+msgid "%(step)s — done."
+msgstr "%(step)s — selesai."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "%(team)s is paid by %(run)s, and the pay run follows the team."
+msgstr "%(team)s dibayar oleh %(run)s, dan proses penggajian mengikuti tim."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "A rule on the map pays people like them with this scheme."
+msgstr "Aturan di peta membayar orang seperti mereka dengan skema ini."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/joiners_board_p8.py:0
+msgid "Filling in HR partners for everybody is for the lifecycle team."
+msgstr "Mengisi mitra HR untuk semua orang adalah tugas tim siklus karyawan."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/joiners_board_p8.py:0
+msgid "New joiners are looked after by the HR team."
+msgstr "Karyawan baru diurus oleh tim HR."
+
+#. module: pb_new_hire
+#: model:res.groups,name:pb_new_hire.group_joiners_board
+msgid "New joiners board"
+msgstr "Papan karyawan baru"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "No pay scheme for %s yet"
+msgstr "Belum ada skema gaji untuk %s"
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "One of %(count)s pay schemes for %(country)s."
+msgstr "Salah satu dari %(count)s skema gaji untuk %(country)s."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Pays most people in %(team)s."
+msgstr "Membayar sebagian besar orang di %(team)s."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Pays most people working in %(country)s."
+msgstr "Membayar sebagian besar orang yang bekerja di %(country)s."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Pick the pay scheme for this person"
+msgstr "Pilih skema gaji untuk orang ini"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Picked in step 2"
+msgstr "Dipilih di langkah 2"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Print the slip now"
+msgstr "Cetak slip sekarang"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Print their sign-in slip"
+msgstr "Cetak slip masuk mereka"
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/checklist_p8.py:0
+msgid "Requested"
+msgstr "Sudah diminta"
+
+#. module: pb_new_hire
+#: model:res.groups,comment:pb_new_hire.group_joiners_board
+msgid ""
+"See the New joiners board of your own companies, open a joiner and choose "
+"their buddy."
+msgstr ""
+"Lihat papan karyawan baru di perusahaan Anda sendiri, buka seorang karyawan "
+"baru dan pilih pendampingnya."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Set who pays %(team)s in Mapping to make %(scheme)s theirs."
+msgstr ""
+"Atur siapa yang membayar %(team)s di Pemetaan agar %(scheme)s menjadi milik "
+"mereka."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Suggest who pays each team"
+msgstr "Sarankan siapa yang membayar setiap tim"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Teams %s pays"
+msgstr "Tim yang dibayar %s"
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/joiners_board_p8.py:0
+msgid "The daily run is for the lifecycle team."
+msgstr "Proses harian adalah tugas tim siklus karyawan."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "The only pay scheme for %(country)s."
+msgstr "Satu-satunya skema gaji untuk %(country)s."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "The pay run will pay them by %(run)s, not %(scheme)s."
+msgstr ""
+"Proses penggajian akan membayar mereka dengan %(run)s, bukan %(scheme)s."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "The slip could not be made."
+msgstr "Slip tidak dapat dibuat."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "The slip has a new first password, shown only this once."
+msgstr "Slip berisi kata sandi pertama yang baru, hanya ditampilkan kali ini."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"They follow the country of work. The pay scheme follows the team; when the "
+"country has several, you pick one."
+msgstr ""
+"Semua ini mengikuti negara kerja. Skema gaji mengikuti tim; jika negaranya "
+"punya beberapa, Anda memilih satu."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "This differs from the team's usual scheme, %s."
+msgstr "Ini berbeda dari skema biasa tim, %s."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/checklist_p8.py:0
+msgid "Ticked when the laptop was handed over"
+msgstr "Dicentang saat laptop diserahkan"
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid ""
+"To pay them by %(scheme)s, pick one of its teams (they are listed first) or "
+"change who pays %(team)s in Mapping."
+msgstr ""
+"Untuk membayar mereka dengan %(scheme)s, pilih salah satu timnya (tercantum "
+"paling atas) atau ubah siapa yang membayar %(team)s di Pemetaan."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Use the usual one"
+msgstr "Pakai yang biasa"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Usual"
+msgstr "Biasa"
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "Who pays them"
+msgstr "Siapa yang membayar mereka"
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "You chose this pay scheme."
+msgstr "Anda memilih skema gaji ini."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "chooses their own at the first sign-in."
+msgstr "memilih sendiri saat masuk pertama kali."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "pays %s people"
+msgstr "membayar %s orang"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "pays 1 person"
+msgstr "membayar 1 orang"

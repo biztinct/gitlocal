@@ -6310,3 +6310,233 @@ msgid ""
 "The bank paper was read, but one thing is missing: %s Open it in Bank "
 "requests to finish."
 msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid ""
+"%(scheme)s is used for the example. Set who pays %(team)s in Mapping so the "
+"pay run includes them."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid ""
+"%(scheme)s pays them through a rule on the map. Set who pays %(team)s in "
+"Mapping to make it the team's own."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/checklist_p8.py:0
+msgid "%(step)s — done."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "%(team)s is paid by %(run)s, and the pay run follows the team."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "A rule on the map pays people like them with this scheme."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/joiners_board_p8.py:0
+msgid "Filling in HR partners for everybody is for the lifecycle team."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/joiners_board_p8.py:0
+msgid "New joiners are looked after by the HR team."
+msgstr ""
+
+#. module: pb_new_hire
+#: model:res.groups,name:pb_new_hire.group_joiners_board
+msgid "New joiners board"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "No pay scheme for %s yet"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "One of %(count)s pay schemes for %(country)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Pays most people in %(team)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Pays most people working in %(country)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Pick the pay scheme for this person"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Picked in step 2"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Print the slip now"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Print their sign-in slip"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/checklist_p8.py:0
+msgid "Requested"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:res.groups,comment:pb_new_hire.group_joiners_board
+msgid ""
+"See the New joiners board of your own companies, open a joiner and choose "
+"their buddy."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Set who pays %(team)s in Mapping to make %(scheme)s theirs."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Suggest who pays each team"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Teams %s pays"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/joiners_board_p8.py:0
+msgid "The daily run is for the lifecycle team."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "The only pay scheme for %(country)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "The pay run will pay them by %(run)s, not %(scheme)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "The slip could not be made."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "The slip has a new first password, shown only this once."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"They follow the country of work. The pay scheme follows the team; when the "
+"country has several, you pick one."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "This differs from the team's usual scheme, %s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/checklist_p8.py:0
+msgid "Ticked when the laptop was handed over"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid ""
+"To pay them by %(scheme)s, pick one of its teams (they are listed first) or "
+"change who pays %(team)s in Mapping."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Use the usual one"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Usual"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "Who pays them"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "You chose this pay scheme."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "chooses their own at the first sign-in."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "pays %s people"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "pays 1 person"
+msgstr ""

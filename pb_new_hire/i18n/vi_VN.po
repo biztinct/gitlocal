@@ -6343,3 +6343,248 @@ msgid ""
 msgstr ""
 "Giấy tờ ngân hàng đã được đọc, nhưng còn thiếu một thứ: %s Mở nó trong Yêu "
 "cầu ngân hàng để hoàn tất."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid ""
+"%(scheme)s is used for the example. Set who pays %(team)s in Mapping so the "
+"pay run includes them."
+msgstr ""
+"%(scheme)s được dùng cho ví dụ. Hãy đặt chương trình trả lương cho %(team)s "
+"trong Ánh xạ để kỳ lương có tên người này."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid ""
+"%(scheme)s pays them through a rule on the map. Set who pays %(team)s in "
+"Mapping to make it the team's own."
+msgstr ""
+"%(scheme)s trả lương cho họ qua một quy tắc trên bản đồ. Hãy đặt chương "
+"trình trả lương cho %(team)s trong Ánh xạ để nó thành của chính nhóm."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/checklist_p8.py:0
+msgid "%(step)s — done."
+msgstr "%(step)s — đã xong."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "%(team)s is paid by %(run)s, and the pay run follows the team."
+msgstr "%(team)s được trả lương theo %(run)s, và kỳ lương đi theo nhóm."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "A rule on the map pays people like them with this scheme."
+msgstr ""
+"Một quy tắc trên bản đồ trả lương cho những người như họ bằng chương trình "
+"này."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/joiners_board_p8.py:0
+msgid "Filling in HR partners for everybody is for the lifecycle team."
+msgstr ""
+"Việc điền đối tác nhân sự cho mọi người là việc của nhóm vòng đời nhân viên."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/joiners_board_p8.py:0
+msgid "New joiners are looked after by the HR team."
+msgstr "Nhân viên mới do nhóm nhân sự chăm lo."
+
+#. module: pb_new_hire
+#: model:res.groups,name:pb_new_hire.group_joiners_board
+msgid "New joiners board"
+msgstr "Bảng nhân viên mới"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "No pay scheme for %s yet"
+msgstr "Chưa có chương trình lương cho %s"
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "One of %(count)s pay schemes for %(country)s."
+msgstr "Một trong %(count)s chương trình lương của %(country)s."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Pays most people in %(team)s."
+msgstr "Trả lương cho phần lớn người trong %(team)s."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Pays most people working in %(country)s."
+msgstr "Trả lương cho phần lớn người làm việc ở %(country)s."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Pick the pay scheme for this person"
+msgstr "Chọn chương trình lương cho người này"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Picked in step 2"
+msgstr "Đã chọn ở bước 2"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Print the slip now"
+msgstr "In phiếu ngay"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Print their sign-in slip"
+msgstr "In phiếu đăng nhập của họ"
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/checklist_p8.py:0
+msgid "Requested"
+msgstr "Đã yêu cầu"
+
+#. module: pb_new_hire
+#: model:res.groups,comment:pb_new_hire.group_joiners_board
+msgid ""
+"See the New joiners board of your own companies, open a joiner and choose "
+"their buddy."
+msgstr ""
+"Xem bảng nhân viên mới của các công ty mình, mở hồ sơ một người mới và chọn "
+"người đồng hành cho họ."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Set who pays %(team)s in Mapping to make %(scheme)s theirs."
+msgstr ""
+"Hãy đặt chương trình trả lương cho %(team)s trong Ánh xạ để %(scheme)s thành"
+" của họ."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Suggest who pays each team"
+msgstr "Gợi ý chương trình trả lương cho từng nhóm"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Teams %s pays"
+msgstr "Các nhóm do %s trả lương"
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/joiners_board_p8.py:0
+msgid "The daily run is for the lifecycle team."
+msgstr "Lượt chạy hằng ngày là việc của nhóm vòng đời nhân viên."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "The only pay scheme for %(country)s."
+msgstr "Chương trình lương duy nhất của %(country)s."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "The pay run will pay them by %(run)s, not %(scheme)s."
+msgstr "Kỳ lương sẽ trả cho họ theo %(run)s, không phải %(scheme)s."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "The slip could not be made."
+msgstr "Không tạo được phiếu."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "The slip has a new first password, shown only this once."
+msgstr "Phiếu có mật khẩu lần đầu mới, chỉ hiện một lần này."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"They follow the country of work. The pay scheme follows the team; when the "
+"country has several, you pick one."
+msgstr ""
+"Các mục này đi theo quốc gia làm việc. Chương trình lương đi theo nhóm; khi "
+"quốc gia có nhiều chương trình, bạn chọn một."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "This differs from the team's usual scheme, %s."
+msgstr "Khác với chương trình thường dùng của nhóm, %s."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/checklist_p8.py:0
+msgid "Ticked when the laptop was handed over"
+msgstr "Đánh dấu xong khi đã bàn giao máy tính xách tay"
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid ""
+"To pay them by %(scheme)s, pick one of its teams (they are listed first) or "
+"change who pays %(team)s in Mapping."
+msgstr ""
+"Để trả lương theo %(scheme)s, hãy chọn một nhóm của chương trình đó (được "
+"liệt kê đầu tiên) hoặc đổi chương trình trả lương cho %(team)s trong Ánh xạ."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Use the usual one"
+msgstr "Dùng chương trình thường dùng"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Usual"
+msgstr "Thường dùng"
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "Who pays them"
+msgstr "Ai trả lương cho họ"
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "You chose this pay scheme."
+msgstr "Bạn đã chọn chương trình lương này."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "chooses their own at the first sign-in."
+msgstr "sẽ tự đặt mật khẩu khi đăng nhập lần đầu."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "pays %s people"
+msgstr "trả lương cho %s người"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "pays 1 person"
+msgstr "trả lương cho 1 người"

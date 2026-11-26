@@ -1,0 +1,234 @@
+# Translation of Payobook Server.
+# This file contains the translation of the following modules:
+# 	* pb_scheme_map
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: id_ID\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "%(count)s %(word)s"
+msgstr "%(count)s %(word)s"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid ""
+"%(count)s teams now have a pay scheme. %(moved)s people moved to their "
+"team's scheme."
+msgstr ""
+"%(count)s tim kini punya skema gaji. %(moved)s orang pindah ke skema tim "
+"mereka."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid ""
+"%(count)s teams now have a pay scheme. Their people keep the scheme that "
+"pays them today."
+msgstr ""
+"%(count)s tim kini punya skema gaji. Orang-orangnya tetap di skema yang "
+"membayar mereka hari ini."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid ""
+"%(n)s of %(total)s work in %(country)s, and %(scheme)s is the only pay "
+"scheme for %(country)s."
+msgstr ""
+"%(n)s dari %(total)s bekerja di %(country)s, dan %(scheme)s adalah satu-"
+"satunya skema gaji untuk %(country)s."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid ""
+"%(n)s of %(total)s work in %(country)s, and %(scheme)s paid %(paid)s of them"
+" in their latest pay run."
+msgstr ""
+"%(n)s dari %(total)s bekerja di %(country)s, dan %(scheme)s membayar "
+"%(paid)s orang di proses penggajian terakhir mereka."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid ""
+"%(n)s of %(total)s work in %(country)s, and there is no active pay scheme "
+"for %(country)s yet."
+msgstr ""
+"%(n)s dari %(total)s bekerja di %(country)s, dan belum ada skema gaji aktif "
+"untuk %(country)s."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid ""
+"%(n)s of %(total)s work in %(country)s, which has %(count)s pay schemes, and"
+" their last pay runs do not point to one of them."
+msgstr ""
+"%(n)s dari %(total)s bekerja di %(country)s, yang punya %(count)s skema "
+"gaji, dan proses penggajian terakhir mereka tidak menunjuk salah satunya."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid ""
+"%(n)s of them are paid by another pay scheme today and would move to "
+"%(scheme)s."
+msgstr ""
+"%(n)s dari mereka hari ini dibayar oleh skema lain dan akan pindah ke "
+"%(scheme)s."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid ""
+"%(offers)s teams can be set now, %(choices)s need your choice and %(empty)s "
+"have nobody in them yet."
+msgstr ""
+"%(offers)s tim bisa diatur sekarang, %(choices)s perlu pilihan Anda dan "
+"%(empty)s belum ada orangnya."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "A payroll manager can set these."
+msgstr "Manajer penggajian dapat mengatur ini."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid ""
+"An older line on the map still names %(old)s for this team. Take it off on "
+"the map first, then ask again."
+msgstr ""
+"Baris lama di peta masih menyebut %(old)s untuk tim ini. Hapus dulu dari "
+"peta, lalu minta lagi."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Can be set now"
+msgstr "Bisa diatur sekarang"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"Each team that no line pays yet, with the pay scheme of the country most of "
+"its people work in. Nothing changes until you press Set."
+msgstr ""
+"Setiap tim yang belum dibayar oleh baris mana pun, dengan skema gaji negara "
+"tempat sebagian besar orangnya bekerja. Tidak ada yang berubah sampai Anda "
+"menekan Atur."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Every team already has a pay scheme"
+msgstr "Setiap tim sudah punya skema gaji"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Moves"
+msgstr "Pindah"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Needs your choice"
+msgstr "Perlu pilihan Anda"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "No single country of work for most of these people (%(split)s)."
+msgstr ""
+"Tidak ada satu negara kerja untuk sebagian besar orang ini (%(split)s)."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "Nobody here has a country of work yet."
+msgstr "Belum ada yang punya negara kerja di sini."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "Nobody works in this team yet."
+msgstr "Belum ada yang bekerja di tim ini."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Nothing to suggest: each team is on the map."
+msgstr "Tidak ada yang disarankan: setiap tim sudah ada di peta."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+msgid "Pay %(count)s teams by the pay scheme of their country of work"
+msgstr "Bayar %(count)s tim dengan skema gaji negara kerja mereka"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Reading where each team's people work…"
+msgstr "Membaca di mana orang-orang setiap tim bekerja…"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Sent for approval. The teams are set once it is approved."
+msgstr "Dikirim untuk persetujuan. Tim diatur setelah disetujui."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "Set %(count)s teams"
+msgstr "Atur %(count)s tim"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Suggest who pays each team"
+msgstr "Sarankan siapa yang membayar setiap tim"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "The teams could not be read."
+msgstr "Tim tidak dapat dibaca."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Who pays each team, by country of work"
+msgstr "Siapa yang membayar setiap tim, menurut negara kerja"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "another scheme"
+msgstr "skema lain"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "no country"
+msgstr "tanpa negara"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "teams with nobody in them yet"
+msgstr "tim yang belum ada orangnya"

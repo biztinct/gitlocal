@@ -1,0 +1,146 @@
+# Translation of Payobook Server.
+# This file contains the translation of the following modules:
+# 	* biz_access
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: id_ID\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid ""
+"%(n)s new slips made, %(m)s skipped. Print them now: the passwords are not "
+"shown again."
+msgstr ""
+"%(n)s slip baru dibuat, %(m)s dilewati. Cetak sekarang: kata sandinya tidak "
+"ditampilkan lagi."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid ""
+"%s new slips made. Print them now: the passwords are not shown again. Their "
+"old passwords no longer work."
+msgstr ""
+"%s slip baru dibuat. Cetak sekarang: kata sandinya tidak ditampilkan lagi. "
+"Kata sandi lama mereka tidak berlaku lagi."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid "%s works in another company."
+msgstr "%s bekerja di perusahaan lain."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid ""
+"A new slip is ready for %s. Print it now: the password is not shown again. "
+"Their old password no longer works."
+msgstr ""
+"Slip baru untuk %s sudah siap. Cetak sekarang: kata sandinya tidak "
+"ditampilkan lagi. Kata sandi lamanya tidak berlaku lagi."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid ""
+"A new slip with a new first password, for people who lost theirs. Their old "
+"password stops working."
+msgstr ""
+"Slip baru dengan kata sandi pertama yang baru, untuk orang yang kehilangan "
+"slipnya. Kata sandi lama mereka tidak berlaku lagi."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid "Choose at least one person with a login."
+msgstr "Pilih setidaknya satu orang yang punya akun masuk."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid "Could not be made. Try this person on their own."
+msgstr "Tidak dapat dibuat. Coba orang ini secara terpisah."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Make %s new slips"
+msgstr "Buat %s slip baru"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Make 1 new slip"
+msgstr "Buat 1 slip baru"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Make the new slip"
+msgstr "Buat slip baru"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "New logins"
+msgstr "Akun baru"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "New sign-in slips"
+msgstr "Slip masuk baru"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid "No slips were made."
+msgstr "Tidak ada slip yang dibuat."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Nobody here signs in with a login yet."
+msgstr "Belum ada yang masuk dengan akun di sini."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Print a new sign-in slip"
+msgstr "Cetak slip masuk baru"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Print a new sign-in slip for %s?"
+msgstr "Cetak slip masuk baru untuk %s?"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid ""
+"Their old passwords stop working and they are signed out everywhere. Press "
+"again to make the slips."
+msgstr ""
+"Kata sandi lama mereka tidak berlaku lagi dan mereka dikeluarkan dari semua "
+"perangkat. Tekan lagi untuk membuat slip."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid ""
+"They get a new first password on a slip, like their first one. Their old "
+"password stops working and they are signed out everywhere. They choose their"
+" own password the next time they sign in."
+msgstr ""
+"Mereka mendapat kata sandi pertama yang baru di slip, seperti yang pertama. "
+"Kata sandi lama tidak berlaku lagi dan mereka dikeluarkan dari semua "
+"perangkat. Mereka memilih kata sandi sendiri saat masuk berikutnya."

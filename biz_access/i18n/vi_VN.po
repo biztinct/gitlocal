@@ -3962,3 +3962,137 @@ msgstr "Mật khẩu bạn vừa dùng để đăng nhập, để xác nhận đ
 #: model_terms:ir.ui.view,arch_db:biz_access.two_step_page
 msgid "Turn it on and continue"
 msgstr "Bật và tiếp tục"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid ""
+"%(n)s new slips made, %(m)s skipped. Print them now: the passwords are not "
+"shown again."
+msgstr ""
+"Đã tạo %(n)s phiếu mới, bỏ qua %(m)s. Hãy in ngay: mật khẩu sẽ không hiện "
+"lại."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid ""
+"%s new slips made. Print them now: the passwords are not shown again. Their "
+"old passwords no longer work."
+msgstr ""
+"Đã tạo %s phiếu mới. Hãy in ngay: mật khẩu sẽ không hiện lại. Mật khẩu cũ "
+"của họ không còn dùng được."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid "%s works in another company."
+msgstr "%s làm việc ở công ty khác."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid ""
+"A new slip is ready for %s. Print it now: the password is not shown again. "
+"Their old password no longer works."
+msgstr ""
+"Phiếu mới cho %s đã sẵn sàng. Hãy in ngay: mật khẩu sẽ không hiện lại. Mật "
+"khẩu cũ của họ không còn dùng được."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid ""
+"A new slip with a new first password, for people who lost theirs. Their old "
+"password stops working."
+msgstr ""
+"Phiếu mới với mật khẩu lần đầu mới, cho người bị mất phiếu. Mật khẩu cũ của "
+"họ ngừng hoạt động."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid "Choose at least one person with a login."
+msgstr "Hãy chọn ít nhất một người có tài khoản đăng nhập."
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid "Could not be made. Try this person on their own."
+msgstr "Không tạo được. Hãy thử riêng với người này."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Make %s new slips"
+msgstr "Tạo %s phiếu mới"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Make 1 new slip"
+msgstr "Tạo 1 phiếu mới"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Make the new slip"
+msgstr "Tạo phiếu mới"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "New logins"
+msgstr "Tài khoản mới"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "New sign-in slips"
+msgstr "Phiếu đăng nhập mới"
+
+#. module: biz_access
+#. odoo-python
+#: code:addons/biz_access/models/account_workers.py:0
+msgid "No slips were made."
+msgstr "Chưa tạo phiếu nào."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Nobody here signs in with a login yet."
+msgstr "Chưa ai ở đây đăng nhập bằng tài khoản."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid "Print a new sign-in slip"
+msgstr "In phiếu đăng nhập mới"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid "Print a new sign-in slip for %s?"
+msgstr "In phiếu đăng nhập mới cho %s?"
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/xml/access_board.xml:0
+msgid ""
+"Their old passwords stop working and they are signed out everywhere. Press "
+"again to make the slips."
+msgstr ""
+"Mật khẩu cũ của họ ngừng hoạt động và họ bị đăng xuất ở mọi nơi. Bấm lần nữa"
+" để tạo phiếu."
+
+#. module: biz_access
+#. odoo-javascript
+#: code:addons/biz_access/static/src/js/access_board.js:0
+msgid ""
+"They get a new first password on a slip, like their first one. Their old "
+"password stops working and they are signed out everywhere. They choose their"
+" own password the next time they sign in."
+msgstr ""
+"Họ nhận mật khẩu lần đầu mới trên phiếu, giống phiếu đầu tiên. Mật khẩu cũ "
+"ngừng hoạt động và họ bị đăng xuất ở mọi nơi. Họ tự đặt mật khẩu ở lần đăng "
+"nhập tiếp theo."

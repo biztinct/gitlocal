@@ -1372,3 +1372,43 @@ msgstr "Chỉ xem: nhân viên thấy thông tin này; chỉ HR thay đổi."
 #: code:addons/pb_form_studio_portal/models/res_users.py:0
 msgid "Your details change only through \"Request a change\" on My Profile, where HR approves them. Nothing was saved."
 msgstr "Thông tin của bạn chỉ thay đổi qua \"Yêu cầu thay đổi\" trên Hồ sơ của tôi, nơi HR phê duyệt. Chưa có gì được lưu."
+
+#. module: pb_form_studio_portal
+#: model:res.groups,comment:pb_form_studio_portal.group_page_builder
+msgid ""
+"Change the My Payobook page of your own company: add, hide and order fields,"
+" headings and the banner."
+msgstr ""
+"Thay đổi trang My Payobook của công ty mình: thêm, ẩn và sắp xếp các trường,"
+" tiêu đề và ảnh bìa."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid ""
+"Its label and what the employee can change apply to every company, so an "
+"administrator changes them."
+msgstr ""
+"Nhãn và quyền nhân viên được thay đổi áp dụng cho mọi công ty, nên quản trị "
+"viên sẽ thay đổi."
+
+#. module: pb_form_studio_portal
+#: model:res.groups,name:pb_form_studio_portal.group_page_builder
+msgid "My Payobook page builder"
+msgstr "Trình dựng trang My Payobook"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Only the administrator can change forms."
+msgstr "Chỉ quản trị viên mới được thay đổi biểu mẫu."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid ""
+"You are changing the page for %s. Labels and what employees can change apply"
+" to every company, so an administrator changes those."
+msgstr ""
+"Bạn đang thay đổi trang cho %s. Nhãn và quyền nhân viên được thay đổi áp "
+"dụng cho mọi công ty, nên quản trị viên sẽ thay đổi các mục đó."
