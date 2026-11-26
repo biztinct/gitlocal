@@ -327,17 +327,28 @@ class TestUpdatesP3bJoiners(P3bCommon):
         judged = self.judge(rows, used=used, scheme=6)
         self.assertTrue(judged[2]['addable'], judged[2])
         self.assertEqual(judged[2]['scheme'], 'P3B Monthly')
-        self.assertFalse(judged[3]['addable'])
-        self.assertEqual(judged[3]['cells'][TEAM]['why'],
-                         "P3B Kitchen is paid under P3B Monthly, not P3B Daily. "
-                         "Change the team or the pay scheme column.")
+        # PSCHEME P2b (deliberate update, owner ruling R1): the pay scheme
+        # column is the person's OWN pay scheme, no longer a check against the
+        # team — a Kitchen joiner named "P3B Daily" is paid by P3B Daily, and
+        # a Garden joiner (no team line) by the scheme the row names.
+        self.assertTrue(judged[3]['addable'], judged[3])
+        self.assertEqual(judged[3]['scheme'], 'P3B Daily')
+        self.assertEqual(judged[3]['cells'][TEAM]['status'], 'ok')
         self.assertTrue(judged[4]['addable'], judged[4])
-        self.assertIn('No pay scheme covers P3B Garden', judged[4]['scheme_note'])
+        self.assertEqual(judged[4]['scheme'], 'P3B Daily')
+        self.assertFalse(judged[4]['scheme_note'])
         self.no_approval('newhire')
         answer = self.add(rows, used=used, scheme=6)
         self.assertTrue(answer['ok'], answer.get('msg'))
-        self.assertEqual(answer['joiners_added'], 2)
+        self.assertEqual(answer['joiners_added'], 3)
         self.assertEqual(Assign.search_count([]), map_before, "the scheme map is untouched")
+        own = self.env['pb.person.scheme'].sudo().search(
+            [('employee_id.name', 'in', ('DEMO P3B S1', 'DEMO P3B S2', 'DEMO P3B S3'))])
+        self.assertEqual(sorted((r.employee_id.name, r.config_id.name, str(r.date_from), r.source)
+                                for r in own),
+                         [('DEMO P3B S1', 'P3B Monthly', '2026-12-01', 'import'),
+                          ('DEMO P3B S2', 'P3B Daily', '2026-12-01', 'import'),
+                          ('DEMO P3B S3', 'P3B Daily', '2026-12-01', 'import')])
         # The column reads as the check by its heading, and is remembered.
         cols = self.Upd.read_columns(csv_b64(rows), 'p3b.csv')
         self.assertEqual(cols['columns'][5]['target'], UJ.SCHEME_TARGET)

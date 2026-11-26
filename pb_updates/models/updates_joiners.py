@@ -15,9 +15,11 @@ Rails (handover §2):
     already here (archived people too), as another row of the file, or as a
     new-hire request still waiting — refused in a sentence, never merged;
   * teams, jobs, managers, countries and working hours are FOUND, never made;
-  * a "Pay scheme" column is a CHECK against the team: the scheme map is read
-    (`_department_schemes`, the pay run's own ladder for a department) and
-    never written;
+  * a "Pay scheme" column is the new person's OWN pay scheme (PSCHEME P2b,
+    owner ruling R1): empty, the usual scheme of the row's Country of work;
+    filled, it must be a scheme of that country (`updates_person_scheme.py`).
+    It is written on the person from their first day when they are added; the
+    scheme map's team lines are never written;
   * undo never deletes or archives a person.
 
 What the rest of a row carries (pay items, bank details, other fields) is
@@ -46,7 +48,7 @@ from odoo.addons.pb_records.models.pb_records_io import (
 from odoo.addons.pb_hr_payroll_formula.models.payroll_import_batch import (
     m2o_resolution_key)
 from odoo.addons.pb_people_advanced.models.newhire_approval import NEWHIRE_WRITE
-from odoo.addons.pb_updates.models.updates_desk import SCHEME_TARGET
+from odoo.addons.pb_updates.models.updates_desk import ADVANCE_TARGET, SCHEME_TARGET
 
 try:  # WHITELABEL — the tenant's own name for the product
     from odoo.addons.biz_debrand.models.brand import product_label
@@ -61,6 +63,9 @@ CON = 'hr.contract'
 #: Headings read as that check column.
 SCHEME_HEADINGS = ('pay scheme', 'payroll scheme', 'pay scheme name',
                    'chế độ lương', 'skema gaji')
+#: PSCHEME P2b — headings read as the "Mid-month advance" column.
+ADVANCE_HEADINGS = ('mid-month advance', 'mid month advance', 'advance scheme',
+                    'tạm ứng giữa tháng', 'uang muka tengah bulan')
 #: At most this many new employees from one file.
 MAX_NEW = 200
 #: A contract start date may be this many days back or ahead.
@@ -88,8 +93,10 @@ NEWHIRE_GROUPS = ('hr.group_hr_user', 'hr.group_hr_manager')
 #: The columns of the blank sheet for new employees, after the identity three.
 BLANK_COLUMNS = (TEAM, 'f:hr.employee:job_id', 'f:hr.employee:job_title',
                  'f:hr.employee:parent_id', 'f:hr.employee:work_phone',
-                 'f:hr.employee:country_id', START, 'f:hr.contract:date_end',
-                 WAGE, 'f:hr.contract:resource_calendar_id')
+                 'f:hr.employee:country_id',
+                 # PSCHEME P2b — Country of work decides the pay scheme (R1)
+                 'f:hr.employee:payroll_country', START,
+                 'f:hr.contract:date_end', WAGE, 'f:hr.contract:resource_calendar_id')
 
 JOINER_STATES = [
     ('waiting', 'Waiting for approval'),
@@ -466,7 +473,11 @@ class PbUpdatesJoiners(models.AbstractModel):
                  'email': email, 'cells': {}, 'block': '', 'addable': False,
                  'vals': {'name': name}, 'rest': [], 'team': '', 'team_id': 0,
                  'scheme': '', 'scheme_text': str(raw.get('scheme') or '').strip(),
-                 'scheme_note': '', 'no_contract': False, 'start': raw.get('start') or {}}
+                 'scheme_note': '', 'no_contract': False, 'start': raw.get('start') or {},
+                 # PSCHEME P2b — their own pay scheme (`_judge_joiner_scheme`)
+                 'advance_text': str(raw.get('advance') or '').strip(),
+                 'country': '', 'scheme_id': 0, 'advance_id': 0, 'advance': '',
+                 'scheme_options': [], 'scheme_ask': False, 'scheme_why': ''}
             if email:
                 j['vals']['work_email'] = email
             quick = self._quick_block(raw, index, desk, memo)
@@ -498,9 +509,15 @@ class PbUpdatesJoiners(models.AbstractModel):
             if j['team_id']:
                 teams[j['team_id']] = True
             out.append(j)
+        # PSCHEME P2b — each row's OWN pay scheme first (its Country of work);
+        # the team's schemes only for a row that has none of its own.
+        for j in out:
+            if not j.get('quick'):
+                self._judge_joiner_scheme(j)
         schemes = self._department_schemes(list(teams))
-        items = self._scheme_items(desk, {c for s in schemes.values() for c in s['ids']}) \
-            if teams else {}
+        items = self._scheme_items(desk, {c for s in schemes.values() for c in s['ids']}
+                                   | {j['scheme_id'] for j in out if j.get('scheme_id')}) \
+            if (teams or any(j.get('scheme_id') for j in out)) else {}
         # Second pass: what needs the whole file — schemes, copies, twins.
         seen = {}
         for j in out:
@@ -601,24 +618,19 @@ class PbUpdatesJoiners(models.AbstractModel):
         cells = j['cells']
         team_cell = cells.get(TEAM)
         start_cell = cells.get(START)
-        # — the pay scheme check and its greying of pay items
+        # — the pay scheme and its greying of pay items. PSCHEME P2b: the
+        # row's own pay scheme (judged in `_judge_joiner_scheme`) when it has
+        # one; the team's usual schemes only for a row without (R2).
         info = schemes.get(j['team_id']) or {'ids': set(), 'names': {}}
-        if j['team_id']:
-            names = sorted(set(info['names'].values()))
-            j['scheme'] = ', '.join(names)
-            if not info['ids']:
-                j['scheme_note'] = _("No pay scheme covers %s yet. Pay items are "
-                                     "still saved on the contract.") % j['team']
-            if j['scheme_text']:
-                config, why = self._named_scheme(j['scheme_text'])
-                if why:
-                    team_cell.update(status='refused', why=why)
-                elif info['ids'] and config.id not in info['ids']:
-                    team_cell.update(status='refused', why=_(
-                        "%(team)s is paid under %(scheme)s, not %(named)s. Change "
-                        "the team or the pay scheme column.") % {
-                            'team': j['team'], 'scheme': j['scheme'],
-                            'named': config.name})
+        if j.get('scheme_id'):
+            info = {'ids': {j['scheme_id']}, 'names': {j['scheme_id']: j['scheme']}}
+        if j['team_id'] or j.get('scheme_id'):
+            if not j.get('scheme_id'):
+                names = sorted(set(info['names'].values()))
+                j['scheme'] = ', '.join(names)
+                if not info['ids'] and not j.get('scheme_why') and not j.get('scheme_note'):
+                    j['scheme_note'] = _("No pay scheme covers %s yet. Pay items are "
+                                         "still saved on the contract.") % j['team']
             codes = set()
             for cid in info['ids']:
                 codes |= (items.get(cid) or {}).get('codes', set())
@@ -686,7 +698,9 @@ class PbUpdatesJoiners(models.AbstractModel):
             j['rest'] = [c for c in j['rest'] if not c['field_id'].startswith('f:hr.contract:')]
         consumed_bad = any(c['status'] == 'refused' for f, c in cells.items()
                            if f in CONSUMED)
-        j['addable'] = not j['block'] and not consumed_bad
+        # PSCHEME P2b — a pay scheme cell that is wrong, or a country with
+        # several schemes and no usual one, needs a pick before the row goes.
+        j['addable'] = not j['block'] and not consumed_bad and not j.get('scheme_why')
         start = j.get('start') or {}
         own = start.get('date') if isinstance(start, dict) and not start.get('error') else ''
         for change in j['rest']:
@@ -698,7 +712,8 @@ class PbUpdatesJoiners(models.AbstractModel):
     @api.model
     def _public_joiner(self, j):
         """A judged row for the screen: no server-only keys."""
-        return {k: v for k, v in j.items() if k not in ('vals', 'rest', 'team_id', 'quick')}
+        return {k: v for k, v in j.items()
+                if k not in ('vals', 'rest', 'team_id', 'quick', 'advance_rec')}
 
     @api.model
     def judge_joiners(self, rows=None):
@@ -839,6 +854,9 @@ class PbUpdatesJoiners(models.AbstractModel):
                     answer = dict(answer, proposal_id=prop.id)
                     res['answer'] = answer
                 res['note'] = self._joiner_code(emp_id, j['code'], res['note'])
+                # PSCHEME P2b B.1 — their own pay scheme, from their first day.
+                self._joiner_scheme_write(emp_id, j.get('scheme_id'), j.get('advance_id'),
+                                          j['vals'].get('date_start'))
                 extra += [dict(c, emp_id=emp_id) for c in j['rest']]
             elif answer.get('proposal_id') and not answer.get('error'):
                 res['state'] = 'waiting'
@@ -904,6 +922,8 @@ class PbUpdatesJoiners(models.AbstractModel):
                 'contract_id': a.get('contract_id') or False,
                 'cells_json': json.dumps(j['rest'], default=str),
                 'values_count': len(j['rest']),
+                'scheme_id': j.get('scheme_id') or False,
+                'advance_scheme_id': j.get('advance_id') or False,
                 'cells_done': created,
                 'note': res['note'] or False,
             })
@@ -961,6 +981,18 @@ class PbUpdatesJoiners(models.AbstractModel):
         if result.get('error'):
             vals['note'] = _("The contract could not be made: %s") % result['error']
         joiner.write(vals)
+        # PSCHEME P2b B.1 — the approval of the hire is the approval of their
+        # own pay scheme (as in Add employee): written from their first day.
+        try:
+            with self.env.cr.savepoint():
+                self._joiner_scheme_write(emp_id, joiner.scheme_id.id, joiner.advance_scheme_id.id,
+                                          joiner.start_date)
+        except Exception as error:   # noqa: BLE001 — the hire stands
+            _logger.info('pb_updates: pay scheme of new employee %s not written: %s',
+                         joiner.id, error)
+            joiner.write({'note': ' '.join(b for b in [joiner.note or '', _(
+                "Their pay scheme could not be set: give them one from their "
+                "record.")] if b)})
         sender = self._as_sender(joiner)
         note = sender._joiner_code(emp_id, joiner.code, joiner.note or '')
         if note != (joiner.note or ''):
@@ -1164,39 +1196,49 @@ class PbUpdatesJoiners(models.AbstractModel):
         answer = super().read_columns(file_b64, filename, kind, month)
         if kind == 'oneoff' or not answer.get('ok'):
             return answer
-        taken = any(c.get('target') == SCHEME_TARGET for c in answer['columns'])
-        for col in answer['columns']:
-            if taken:
-                break
-            if col.get('target') and col['target'] != 'ignore':
-                continue
-            head = _norm(col.get('head'))
-            remembered = col.get('how') == 'memory'
-            if head in SCHEME_HEADINGS and not remembered:
-                col.update(how='label', target=SCHEME_TARGET, field_id='')
-                taken = True
+        for target, headings in ((SCHEME_TARGET, SCHEME_HEADINGS),
+                                 (ADVANCE_TARGET, ADVANCE_HEADINGS)):
+            taken = any(c.get('target') == target for c in answer['columns'])
+            for col in answer['columns']:
+                if taken:
+                    break
+                if col.get('target') and col['target'] != 'ignore':
+                    continue
+                head = _norm(col.get('head'))
+                remembered = col.get('how') == 'memory'
+                if head in headings and not remembered:
+                    col.update(how='label', target=target, field_id='')
+                    taken = True
         if answer.get('columns'):
             answer['from_sheet'] = any(c['how'] == 'id' for c in answer['columns']) and all(
-                c['how'] in ('id', 'identity') or c.get('target') == SCHEME_TARGET
+                c['how'] in ('id', 'identity')
+                or c.get('target') in (SCHEME_TARGET, ADVANCE_TARGET)
                 for c in answer['columns'])
         return answer
 
     @api.model
     def _clean_columns(self, columns):
         cols = super()._clean_columns(columns)
-        scheme = 0
+        scheme = advance = 0
         for idx, target in list(cols['used'].items()):
             if target == SCHEME_TARGET:
                 scheme = scheme or idx
                 cols['used'].pop(idx)
+            elif target == ADVANCE_TARGET:
+                advance = advance or idx
+                cols['used'].pop(idx)
         cols['scheme'] = scheme if scheme not in cols['identity'].values() else 0
+        cols['advance'] = advance if advance not in cols['identity'].values() else 0
         return cols
 
     @api.model
     def _remember_layout(self, desk, file_b64, filename, cols):
-        if cols.get('scheme'):
+        if cols.get('scheme') or cols.get('advance'):
             used = dict(cols['used'])
-            used[cols['scheme']] = SCHEME_TARGET
+            if cols.get('scheme'):
+                used[cols['scheme']] = SCHEME_TARGET
+            if cols.get('advance'):
+                used[cols['advance']] = ADVANCE_TARGET
             cols = dict(cols, used=used)
         return super()._remember_layout(desk, file_b64, filename, cols)
 
@@ -1257,12 +1299,16 @@ class PbUpdatesJoiners(models.AbstractModel):
             heads.append((card['label'], card['id'],
                           need_fill if card['id'] in need else head_fill))
         heads.append((_("Pay scheme"), SCHEME_TARGET, head_fill))
+        # PSCHEME P2b — only where the company pays a mid-month advance at all.
+        advances = self._company_has_advances()
+        if advances:
+            heads.append((_("Mid-month advance"), ADVANCE_TARGET, head_fill))
         for idx, (label, cid, fill) in enumerate(heads, start=1):
             cell = ws.cell(row=1, column=idx, value=label)
             cell.font = bold
             cell.fill = fill
             cell.alignment = Alignment(vertical='center')
-            if cid and cid != SCHEME_TARGET:
+            if cid and cid not in (SCHEME_TARGET, ADVANCE_TARGET):
                 cell.comment = Comment(text=ID_COMMENT % cid, author=author)
             ws.column_dimensions[get_column_letter(idx)].width = \
                 max(16, min(36, len(label or '') + 6))
@@ -1289,14 +1335,19 @@ class PbUpdatesJoiners(models.AbstractModel):
             _("Team, Job, Manager, Country and Working hours must already exist: "
               "nothing is created from this sheet. A manager can be given by "
               "name, employee code or work email."),
-            _("Pay scheme is a check only: it must be the scheme the team is "
-              "paid under. It never changes who is paid by what."),
+            _("Pay scheme is the person's own pay scheme. Leave it empty and the "
+              "usual pay scheme of their Country of work is used. If you type "
+              "one, it must be a pay scheme of their Country of work."),
             _("When you upload it, choose \"Add these people as new employees\" "
               "on the review. Each person goes through your company's new-hire "
               "approval, exactly like Add employee."),
             _("Adding a person cannot be undone from Updates. Check the review "
               "before you apply."),
         ]
+        if advances:
+            lines.insert(5, _("Mid-month advance: leave it empty for the pay "
+                              "scheme's own mid-month advance, type No for none, "
+                              "or type the name of the advance."))
         if scheme:
             lines.insert(5, _("The pay items are those of %s. A pay item left "
                               "blank is not set.") % scheme['name'])

@@ -18,3 +18,5 @@ from . import updates_leave_desk
 from . import updates_ytd
 from . import updates_ytd_payrun
 from . import updates_ytd_desk
+# PSCHEME P2b — the person's own pay scheme in the sheets (last: wraps apply/review)
+from . import updates_person_scheme

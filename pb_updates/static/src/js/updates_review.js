@@ -176,8 +176,12 @@ export function laneCounts(rv) {
 // ---------------------------------------------------------------------------
 //  UPDATES P3b — rows that match nobody, added as new employees
 // ---------------------------------------------------------------------------
-/** The "Goes to" target of a "Pay scheme" column: a check, never a value. */
+/** The "Goes to" target of a "Pay scheme" column. PSCHEME P2b: the person's
+ *  OWN pay scheme — set on a new employee, changed from a date for the people
+ *  already here (never a team line). */
 export const SCHEME_TARGET = "check:scheme";
+/** PSCHEME P2b — the "Mid-month advance" column beside it. */
+export const ADVANCE_TARGET = "check:advance";
 const NEW_TEAM = "f:hr.employee:department_id";
 const NEW_START = "f:hr.contract:date_start";
 
@@ -185,6 +189,9 @@ const NEW_START = "f:hr.contract:date_start";
 export function newRowState(row) {
     if (row.block) { return "blocked"; }
     if (row.skipped) { return "skipped"; }
+    // PSCHEME P2b — a wrong pay scheme cell, or a country with several schemes
+    // and no usual one: the row waits for a pick.
+    if (row.schemeWhy) { return "fix"; }
     for (const [fid, cell] of Object.entries(row.cells || {})) {
         if (!cell.consumed) { continue; }
         const kind = cellKind(cell);
@@ -203,13 +210,14 @@ export function newRowPayload(row) {
     }
     return { row: row.row, code: row.code || "", name: row.fileName || row.name || "",
              email: row.email || "", values, scheme: row.schemeText || "",
-             start: row.start || {} };
+             advance: row.advanceText || "", start: row.start || {} };
 }
 
 /** A row that matches nobody, as the server judges it the first time. */
 export function unmatchedPayload(u) {
     return { row: u.row, code: u.code || "", name: u.name || "", email: u.email || "",
-             values: u.values || {}, scheme: u.scheme || "", start: u.start || {} };
+             values: u.values || {}, scheme: u.scheme || "", advance: u.advance || "",
+             start: u.start || {} };
 }
 
 /** A judged row (`judge_joiners`) as a grid row. */
@@ -225,6 +233,10 @@ export function newRowFrom(j, old = null) {
         email: j.email || "", department: j.team || "", team: j.team || "",
         scheme: j.scheme || "", schemeText: j.scheme_text || "",
         schemeNote: j.scheme_note || "", noContract: !!j.no_contract,
+        // PSCHEME P2b — their own pay scheme (empty: the team's usual one)
+        schemeId: j.scheme_id || 0, schemeWhy: j.scheme_why || "", schemeAsk: !!j.scheme_ask,
+        schemeFrom: j.scheme_from || "", schemeOptions: j.scheme_options || [],
+        advance: j.advance || "", advanceText: j.advance_text || "", country: j.country || "",
         block: j.block || "", start: j.start || undefined, skipped: old ? !!old.skipped : false,
         cells,
     };
@@ -238,7 +250,7 @@ export function joinersToSend(rv) {
 
 export function reviewCounts(rv) {
     const out = { changes: 0, people: 0, cells: 0, rowsOpen: 0, attention: 0,
-                  leftOut: 0, offScheme: 0, cleared: 0, newPeople: 0, newFix: 0,
+                  leftOut: 0, offScheme: 0, cleared: 0, newPeople: 0, newFix: 0, schemes: 0,
                   rows: { all: 0, chg: 0, att: 0, same: 0, off: 0, later: 0, past: 0 } };
     const people = new Set();
     for (const row of rv.rows || []) {
@@ -260,6 +272,15 @@ export function reviewCounts(rv) {
             else if (kind === "fix") { out.cells += 1; out.leftOut += 1; hasFix = true; }
             else if (kind === "left") { out.leftOut += 1; }
             else if (kind === "off") { out.offScheme += 1; hasOff = true; }
+        }
+        // PSCHEME P2b — a pay scheme change of somebody already here
+        if (row.scheme_change && row.scheme_change.status === "ok" && !row.scheme_change.left) {
+            out.schemes += 1;
+            if (!hasChange) { hasChange = true; }
+        } else if (row.scheme_change && row.scheme_change.status === "refused" && !row.scheme_change.left) {
+            out.cells += 1;
+            out.leftOut += 1;
+            hasFix = true;
         }
         if (hasChange) { people.add(row.emp_id); }
         out.rows.all += 1;
@@ -437,9 +458,39 @@ export function changesToSend(rv) {
     return out;
 }
 
+/** PSCHEME P2b — the day a pay scheme change of a row starts: the row's own
+ *  start date, else the sheet's, else the 1st of next month. */
+export function schemeDay(rv, row) {
+    if (row.start && !row.start.error && row.start.date) { return row.start.date; }
+    if (rv.defaultStart) { return rv.defaultStart; }
+    const today = luxon.DateTime.fromISO(rv.today || luxon.DateTime.now().toISODate());
+    return today.plus({ months: 1 }).startOf("month").toISODate();
+}
+
+/** PSCHEME P2b — owner ruling R6, for a change that starts after the 1st. */
+export function schemeR6(oldName, newName, iso) {
+    if (!iso || !oldName || oldName === newName) { return ""; }
+    const day = luxon.DateTime.fromISO(iso);
+    if (!day.isValid || day.day === 1) { return ""; }
+    return _t("%(old)s still pays %(month)s. %(new)s starts with the next pay run.", {
+        old: oldName, new: newName, month: day.toFormat("LLLL yyyy") });
+}
+
+/** PSCHEME P2b — the pay scheme changes Apply sends, one per row. */
+export function schemesToSend(rv) {
+    const out = [];
+    for (const row of rv.rows || []) {
+        const c = row.scheme_change;
+        if (!c || c.status !== "ok" || c.left) { continue; }
+        out.push({ emp_id: row.emp_id, config_id: c.config_id, advance_id: c.advance_id || 0,
+                   date: schemeDay(rv, row) });
+    }
+    return out;
+}
+
 /** The Continue button's own promise. */
 export function continueLabel(counts) {
-    if (!counts.changes && !counts.newPeople) { return _t("Nothing to apply yet"); }
+    if (!counts.changes && !counts.newPeople && !counts.schemes) { return _t("Nothing to apply yet"); }
     if (counts.attention === 1) { return _t("Continue without the 1 that needs attention"); }
     if (counts.attention) {
         return _t("Continue without the %s that need attention", grouped(counts.attention));
@@ -923,6 +974,58 @@ export class UpdReview extends Component {
     }
 
     skipNew(row) { row.skipped = true; this.rv.fix = null; this.changed(); }
+
+    // ------------------------------------------------- PSCHEME P2b — pay scheme
+    /** A new employee's pay scheme picked from the row's dropdown. */
+    async pickNewScheme(row, ev) {
+        const id = parseInt(ev.target.value, 10) || 0;
+        const opt = (row.schemeOptions || []).find((o) => o.id === id);
+        if (!opt) { return; }
+        row.schemeText = opt.name;
+        const res = await this.props.judgeNew([newRowPayload(row)]);
+        const j = res && res.ok ? (res.rows || [])[0] : null;
+        if (!j) { return; }
+        const fresh = newRowFrom(j, row);
+        Object.assign(row, { scheme: fresh.scheme, schemeId: fresh.schemeId, schemeWhy: fresh.schemeWhy,
+                             schemeAsk: fresh.schemeAsk, schemeFrom: fresh.schemeFrom, advance: fresh.advance,
+                             schemeNote: fresh.schemeNote, block: fresh.block });
+        for (const [fid, c] of Object.entries(fresh.cells)) {
+            if (row.cells[fid]) { Object.assign(row.cells[fid], c); } else { row.cells[fid] = c; }
+        }
+        this.flash(row.key, "scheme");
+        this.changed();
+    }
+    schemeDayOf(row) { return schemeDay(this.rv, row); }
+    schemeDayLabel(row) {
+        const d = luxon.DateTime.fromISO(this.schemeDayOf(row));
+        return d.isValid ? d.toFormat("d LLL yyyy") : "";
+    }
+    schemePickLabel(row) { return _t("Pay scheme for %s", row.name || ""); }
+    schemeWhenLine(row) {
+        const c = row.scheme_change || {};
+        const day = this.schemeDayLabel(row);
+        return c.advance
+            ? _t("from %(date)s · Mid-month advance: %(advance)s", { date: day, advance: c.advance })
+            : _t("from %s", day);
+    }
+    suggestLabel(row) { return _t("Change it to %s", (row.scheme_suggest || {}).new || ""); }
+    schemeR6Of(row) {
+        const c = row.scheme_change || {};
+        return schemeR6(c.old, c.new, this.schemeDayOf(row));
+    }
+    leaveScheme(row) { if (row.scheme_change) { row.scheme_change.left = true; this.changed(); } }
+    keepScheme(row) { if (row.scheme_change) { row.scheme_change.left = false; this.changed(); } }
+    /** "Change pay scheme too": the suggestion of a Country of work change
+     *  becomes a change of this row — only when somebody presses it (A7). */
+    takeSuggest(row) {
+        const s = row.scheme_suggest;
+        if (!s) { return; }
+        row.scheme_change = { status: "ok", old: s.old, new: s.new, config_id: s.config_id,
+                              advance_id: s.advance_id || 0, advance: s.advance || "", suggested: true };
+        row.scheme_suggest = null;
+        this.flash(row.key, "scheme");
+        this.changed();
+    }
     unskipNew(row) { row.skipped = false; this.changed(); }
 
     /** One new-employee row judged again after a fix (team, date, pay…). */
@@ -1150,7 +1253,7 @@ export class UpdReview extends Component {
 
     // ------------------------------------------------------------- footer
     get continueLabel() { return continueLabel(this.counts); }
-    get canContinue() { return this.counts.changes > 0 || this.counts.newPeople > 0; }
+    get canContinue() { return this.counts.changes > 0 || this.counts.newPeople > 0 || this.counts.schemes > 0; }
     get attentionNote() {
         const c = this.counts;
         if (!c.attention || !c.changes) { return ""; }
