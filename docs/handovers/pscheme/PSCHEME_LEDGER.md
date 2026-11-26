@@ -1,0 +1,90 @@
+# PSCHEME — ledger (standing rules, owner rulings, architect decisions, gotchas)
+
+Programme: **the pay scheme belongs to the person.** Started 2026-11-26. Every handover of this programme references
+this file. Builders append gotchas (PS1, PS2 …) in §4 the moment they are hit. Engineering document: real technical
+names on purpose. No credentials, client names or client data.
+
+Facts: `PSCHEME_FACTS.md` (study at `8eb27c95e`, every file:line is from that HEAD — **do not re-derive**; re-check a
+line only if the code under it moved).
+
+## 0. Standing rules (all phases)
+1. Worktree `gitlocal-worktrees/pscheme`, branch `pscheme` from `origin/19.1`. Never the shared checkout. Feature-scoped
+   commits; push only when a handover says so. Scan every commit for passwords. Public repo: no client names / data.
+2. **White-label**: the word "Odoo" never appears in a user-visible string (labels, help, toasts, selection labels,
+   reports, `.po` msgstr). Technical identifiers are left alone.
+3. **Plain screen words** on every label, toast and sentence: "pay scheme", "pay run", "Country of work", "team",
+   "mid-month advance". Never "rung", "config", "cycle type", "resolver" on screen.
+4. **Design mandate (verbatim, binding): "extreme WOW, intuitive, out-of-this-world experience, best in class."**
+   Every surface names a hero moment; zero dead-ends (empty, loading, error, partial, huge all designed; every failure
+   names its reason and next step); motion with purpose; keyboard + bulk ergonomics where rows are involved; Lucide /
+   SVG icons, never emoji; locked Payobook palette, no gradients; measured against the best SaaS tool in the category.
+   The phase report scores itself against this bar.
+5. Every new user-visible string ships in `vi_VN` and `id_ID` (PO loading rules: three things an entry needs; parse
+   gate; a translation fix is two fixes — the .po AND the stored value).
+6. Browser validation is mandatory (Chrome MCP, console read) before a screen is called done. Test boards inside their
+   hub. Demo fixtures: reuse the persistent demo schemes; prefix DEMO; never "RIZE" in a demo record.
+7. Lessons, tours and replicas follow screen changes (inventory in FACTS §10.2) — done in the phase that changes the
+   screen or explicitly deferred to the named later phase.
+8. Whatever is done from the backend must also be doable on screen.
+9. Dependency rail: `pb_hr_payroll_formula` and `pb_payrun_wizard` never depend on `pb_scheme_map`
+   (`test_t12_the_ladder_edit_is_guarded`); reach it through `'pb.scheme.map' in self.env` soft probes.
+10. Release (only in the phase that says so): read `/opt/deploy-notes.md` first, START/DONE lines, risky tier ritual
+    (this programme touches pay-run population), ONE addons directory, the four + sudima databases, never abm, clean
+    staging, per-module scoped rsync, asset purge, hash + version verification. Tell the other sessions before a stop.
+11. **No pay run or payslip is in production** (owner, 2026-11-26): do not spend effort keeping past runs / payslips
+    unchanged or re-reading them. Build and test for pay runs created from now on. Backups before a release still apply.
+12. Demo data on payobook is kept; seeds only add. `pb_demo` runs bypass the map (FACTS T9) — do not "fix" that.
+
+## 1. Owner rulings (binding)
+- R1. The pay scheme is stored on the PERSON with a start date. Pre-filled from **Country of work** (never the work
+  site). HR may pick another scheme of that country. The pay run follows the person's own scheme.
+- R2. Team lines on Mapping stay only as (a) a bulk shortcut and (b) the fallback for people with no scheme of their own.
+- R3. Existing people are filled once: the scheme that pays them today, else from Country of work; review list; undo.
+- R4. A Country of work change makes the screen ask to change the pay scheme from a date.
+- R5. Split work: two sites in one country = one scheme (cost split only). Short trip = home scheme. Permanent move =
+  dated change. Ongoing two-country split = LATER (second contract) — out of scope for this programme.
+- R6. **Mid-month change: the old scheme pays that whole month; the new one starts with the next pay period. One
+  payslip per person per period, always.** A new joiner's first scheme counts from their first month.
+- R7. **No advance from the team**: a person with their own pay scheme gets a mid-month advance only if they were
+  given one themselves.
+- R8. "Set this pay scheme for everyone in this team" fills only people without a scheme of their own; moving people
+  who already have one is a separate, unticked-by-default tick with a start date.
+- R9. Who changes it: HR asks, a payroll manager approves — the same route as Mapping changes today
+  (`pb.schememap.proposal`, process `schememap`); saved at once where no second approver is set up (fast lane).
+
+## 2. Architect decisions (made — do not reopen without a report)
+- A1. **Storage**: new model `pb.person.scheme` in `pb_scheme_map`, cloned from `pb.division.link` (FACTS §4 option a).
+  One row per scheme the person is on; the kind of run is DERIVED (`cycle_type` related to `config_id.cycle_type`,
+  stored). An advance person has two rows. No `full_final` rows.
+- A2. **Rung**: key `'person'`, between `'segment'` and `'department'`:
+  `RUNGS = ('segment', 'person', 'department', 'division', 'rule', 'only', 'none')`.
+- A3. **The person rung is authoritative once a person has any active row** (any kind, any date): for an asked kind it
+  answers its row or `none` — it never falls through to team / division / rule / only. The single exception is
+  `full_final`, which always falls through to the rest of the ladder. A person with NO active row at all falls through
+  exactly as today (so a database with no rows behaves byte-for-byte as before).
+- A4. **Which row counts on date D** (implements R6 without storing false dates): per kind, the row in force on D
+  (`date_from <= D` and (`date_to` empty or `>= D`)); if none is in force AND the person has no earlier row of that
+  kind (nothing with `date_from < D`), the EARLIEST row of that kind (their first-ever scheme counts backwards, so a
+  joiner hired on the 15th is found by a run judged on the 1st); otherwise no row of that kind. The pay run keeps
+  judging on the period's first day (`on_date=date_start`), so a change dated mid-period leaves the old scheme paying
+  that period.
+- A5. `'any'` asked: `_pick` order over the person's counting rows (`end_cycle`, `regular`, `full_final`, `mid_cycle`).
+- A6. One constant for the advance allow-list in `pb_scheme_map` (`ADVANCE_RUNGS`, includes `'person'`); the copy in
+  `pb_hr_payroll_formula/models/scheme_component_scope.py` stays a literal (dependency rail) and a test asserts it
+  equals the constant.
+- A7. The server never changes a scheme because a country changed; screens ask first (R4). A `payroll_country` write
+  only marks "Paid by" to be worked out again.
+- A8. Country of work stays undated (FACTS D5). Demo people are filled like everyone else (D6).
+- A9. A scheme on a person row must belong to the person's company or be shared; a job change to another company ends
+  the old row the day before and starts a row for the new company's scheme (D8, built in the phase that touches
+  `pb_job_change`).
+- A10. Phases: **P1** engine + Add employee + the person's "Pay scheme" panel and change dialog (local, no release) ·
+  **P2** Mapping re-wording and "Set for everyone in this team", the one-time fill tool, Country of work prompt, job
+  change, Updates sheets, hiring-offer default, pay-data-file joiners, contract currency / usual answers on a scheme
+  change (local) · **P3** lessons, vi/id completion, release ×5, the fill on each database, closeout.
+
+## 3. Open (owner)
+- none
+
+## 4. Gotchas (append as hit)
+- PS0. Inherited: FACTS §12.1 T1–T13 are live traps for every phase — read them before coding.
