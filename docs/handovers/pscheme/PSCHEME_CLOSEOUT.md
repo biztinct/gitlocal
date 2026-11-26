@@ -135,3 +135,83 @@ Commit `757c16793` on `19.1`; `pb_scheme_map` 19.0.2.9.0, `pb_formula_studio` 19
 - The bottom card "Nothing is attached to a scheme yet — You have been paying people for months, so the map already
   exists…" (company with no team lines) still reads as if something were missing; not in F2's scope.
 - The interruption on 27 Nov (network error) hit only the local browser walk; nothing on the server was started.
+
+## 7. P4 — rize fill re-run, "Usual pay scheme by country", the empty card (owner card, 27 Nov)
+
+### A. rize — the fill again (the 26 Nov staff refresh was planned)
+`ps3_fill.sh rize apply` at 22:37 UTC (dump first, START/DONE, undo list
+`/odoo/backups/pscheme-p3-20261126T2005Z/fill/run-rize-apply-20261126T2237Z/`): **23** people given their own pay scheme
+(23 rows); the 215 who had one untouched; **4** left — no Country of work (left for HR). Before/after: who-pays-them
+(main + real advance) unchanged for everyone; next month nobody in two main runs, nobody missing, nobody moved;
+"Work it out again": 0 left to work out; banner 238 of 242 have their own. The 12 archived people keep their rows
+(history) and are reached by no scheme's pay run; 3 of them still have a running contract (a data item for HR).
+
+### B. Mapping › Who is paid by what › "Usual pay scheme by country"
+- A section below the banner, above the teams (collapsible, remembers its state, opens by itself when there is a
+  hole): one line per Country of work with people or an active scheme — "Vietnam · 70 people · 0 rely on this today",
+  the scheme as a chip; **not set** is grey unless somebody relies on nothing ("2 people here have no pay scheme and
+  nothing catches them", amber, with Choose); a country without an active scheme says so with "Add a pay scheme".
+- Choose / Change / Remove inline: radio cards (arrow keys, Enter, Escape, Ctrl+Enter), "Show pay schemes of other
+  countries (N)" with a required "This pay scheme is of another country" tick, one live sentence of consequence, Save
+  (fast lane) or "Ask for this change" (second approver).
+- "Other rules (N)": each rule in plain words ("A list of 2 named people → <scheme>", "People matching a special
+  rule"), "Reaches N today · Set up by support"; Remove only when nobody would be left uncaught, otherwise the reason.
+- Server: new approval kind `country_set` (set / change / remove a country line; remove an other rule) — Mapping
+  route, fast lane or second approver, re-check (refused in plain words when the line moved meanwhile), audit,
+  proposer rights as `person_set`, carry-out gate unchanged. A new line is written after the company's other rules
+  (a named-people rule keeps winning); each write reports who was caught / moved / lost. Refusals: not active, other
+  company, mid-month advance, not monthly, another country unconfirmed, already the same, nothing to remove.
+- The "not covered" list gains "Choose a usual pay scheme for <country>"; a person caught by a country line reads
+  "From the usual pay scheme of <country>" on their panel (was "From a rule on the map").
+- One lesson sentence (Mapping "Who is paid by what", en + vi). `pb_learn` 19.0.20.12.0.
+
+### C. The empty card
+"Everyone is paid by their own pay scheme — Giving a team a usual pay scheme is optional. It pre-fills new people in
+that team." (+ "Suggest who pays each team") when 2 % or fewer still have none; otherwise "N people have no pay scheme
+of their own yet" with "Give everyone their own pay scheme". The old card's msgids and 7 other dead msgids removed.
+
+### Tests and walks
+- `test_pscheme_p4` T1–T10 pass (12 tests, incl. second approver + re-check). Suites
+  `/pb_scheme_map,/pb_hr_payroll_formula,/pb_formula_studio,/pb_new_hire,/pb_learn` before (`a2549f35e`) / after:
+  1,962 → 1,973 tests, the failing lines **identical** (17 failed + 2 errors pre-existing on this base);
+  `pb_scheme_map` 112/112. P2a's msgid list updated deliberately (the not-covered sentence). `gen_learn_data --check`
+  clean, `pb_learn` vi_VN.po untouched; parse gate; placeholders kept; 0 vendor word.
+- Local walks (en + vi, console clean after the fix of a template-variable clash found on the first walk): the amber
+  Vietnam hole → Choose → Save → grey, "not covered" 4 → 2; Remove → amber again; set again; second-approver company →
+  "Ask for this change" → "Sent for approval to …"; Other rules disclosure with the reason; a new person with
+  Country of work Vietnam and no scheme → answered by the line ("From the usual pay scheme of Vietnam"); the empty
+  card's "N people have no pay scheme of their own yet" state (the other state by test T8); 500 px (the browser's
+  narrowest): nothing overflows. vi and id read at the source (screen strings and server sentences).
+
+### Release ×5 (normal tier + dumps)
+Commit `3935840ee` on `19.1`; `pb_scheme_map` 19.0.2.10.0, `pb_learn` 19.0.20.12.0. 26 Nov 23:47:53–23:56:14 UTC,
+**502 s down**; dumps ×5 right before the stop (`/odoo/backups/pscheme-p4-20261127P4/`).
+
+| Database | `-u` | Jobs active before → after |
+|---|---|---|
+| payobook_template | 0 / 80 s / 0 ERROR | 41 → 41 |
+| p0clone | 0 / 77 s / 0 ERROR | 50 → 50 |
+| sudima | 0 / 79 s / 0 ERROR | 92 → 92 |
+| rize | 0 / 81 s / 0 ERROR | 93 → 93 |
+| payobook | 0 / 98 s / 0 ERROR | 60 → 60 (job 156 still off) |
+
+Trees = commit; versions = manifests ×5; no job re-activated; 0 ERROR / Traceback since the stop; sites 200 ×5.
+Read-only look per database (counts): **rize** 4 of 4 countries set (Indonesia 137 people, Vietnam 70, India 29,
+Singapore 2), **0 holes**, 1 other rule (the Vietnam named-people list, reaches 70, can now be taken off — the
+Vietnam line pays them the same way); **payobook** company 5: Vietnam not set, 44 holes (the 44 people of P3 who
+need a choice), company 1: 21 people and no active Vietnam scheme, company 2: 7 people all caught; **sudima**: 678
+holes — its only scheme is still a draft; **payobook_template**, **p0clone**: nothing to show.
+
+### Anything unexpected
+- First walk: the chooser crashed (a method named like the template's loop variable); renamed, re-walked clean.
+- sudima's section opens in amber ("678 people have no pay scheme and nothing catches them") — true until its pay
+  scheme is switched on; nothing to do now.
+
+### Open items
+- A waiting `country_set` request is not yet shown on its country line (the chooser says "Sent for approval"; the
+  line stays "Not set" until approved).
+- rize's Vietnam named-people rule is now redundant (the Vietnam line covers the same 70 people the same way) and can
+  be taken off on screen — the owner's call.
+- payobook: Vietnam country line not chosen (company 5 has seven Vietnam schemes); company 1 has no active scheme.
+- Earlier open items (§4, §6) stand: sudima fill, rize's 4 without Country of work, payobook's 44 / 21 / 7, the owner's
+  two-minute look, backup pruning, the three known analytics ERROR lines, partial Indonesian catalogues elsewhere.
