@@ -1,0 +1,133 @@
+// PSCHEME P4 B — "Usual pay scheme by country". Locked Payobook palette
+// (`--pbim-*` tokens only), no gradients, no emoji. Grey and calm when every
+// country is caught; the one hole is the only thing in colour (amber).
+// Motion: the section and the chooser rise in; off for reduced motion.
+
+.pbim.smp {
+    .smp-cl {
+        margin-bottom: var(--smp-gap, 14px);
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-r);
+        background: var(--pbim-surface);
+        &.has-hole { border-color: var(--pbim-amber); }
+    }
+    .smp-cl__head {
+        width: 100%; display: flex; align-items: center; gap: 10px;
+        padding: 10px 14px; border: 0; background: none; text-align: left;
+        color: var(--pbim-text); cursor: pointer; border-radius: var(--pbim-r);
+        &:focus-visible { outline: 2px solid var(--pbim-teal); outline-offset: -2px; }
+    }
+    .smp-cl__head-t {
+        flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px;
+        b { font-weight: 700; font-size: 13.5px; }
+        small { color: var(--pbim-muted); font-size: 12px; }
+    }
+    .smp-cl.has-hole .smp-cl__head-t small { color: var(--pbim-amber); font-weight: 600; }
+    .smp-cl__tile {
+        flex: none; width: 30px; height: 30px; border-radius: 10px;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: var(--pbim-soft); color: var(--pbim-muted);
+        &.is-amber { background: var(--pbim-amber-soft); color: var(--pbim-amber); }
+    }
+    .smp-cl__chev {
+        flex: none; color: var(--pbim-muted); transition: transform .18s ease;
+        &.is-open { transform: rotate(180deg); }
+    }
+    .smp-cl__body {
+        padding: 0 14px 12px; display: flex; flex-direction: column; gap: 6px;
+        animation: smp-cl-in .22s cubic-bezier(.2, .8, .2, 1) both;
+    }
+    .smp-cl__lead { margin: 0 0 4px; font-size: 12px; color: var(--pbim-muted); }
+    .smp-cl__quiet { color: var(--pbim-muted); font-size: 12px; }
+    .smp-cl__problem { margin: 4px 0 0; color: var(--pbim-rose); font-size: 12.5px; font-weight: 600; }
+    .smp-cl__row {
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-sm);
+        background: var(--pbim-surface);
+        &.is-hole { border-color: var(--pbim-amber); background: var(--pbim-amber-soft); }
+        &.is-editing { border-color: var(--pbim-teal); }
+    }
+    .smp-cl__line {
+        display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; padding: 8px 10px;
+    }
+    .smp-cl__globe { flex: none; color: var(--pbim-muted); display: inline-flex; }
+    .smp-cl__row.is-hole .smp-cl__globe { color: var(--pbim-amber); }
+    .smp-cl__who {
+        flex: 1 1 160px; min-width: 0; display: flex; flex-direction: column; gap: 1px;
+        b { font-weight: 600; font-size: 13px; }
+        small { color: var(--pbim-muted); font-size: 11.5px; }
+    }
+    .smp-cl__what {
+        flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 2px;
+        align-items: flex-start;
+    }
+    .smp-cl__chip {
+        display: inline-flex; align-items: center; gap: 6px; max-width: 100%;
+        padding: 3px 9px; border-radius: 999px; background: var(--pbim-teal-soft);
+        color: var(--pbim-text); font-size: 12px; font-weight: 600;
+        svg { color: var(--pbim-teal); flex: none; }
+        span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        small { color: var(--pbim-muted); font-weight: 500; }
+    }
+    .smp-cl__hole {
+        display: inline-flex; align-items: center; gap: 6px; color: var(--pbim-amber);
+        font-size: 12px; font-weight: 600;
+    }
+    .smp-cl__acts { flex: none; display: inline-flex; gap: 6px; flex-wrap: wrap; }
+    .smp-cl__panel {
+        border-top: 1px solid var(--pbim-line); padding: 10px; display: flex;
+        flex-direction: column; gap: 8px;
+        animation: smp-cl-in .2s cubic-bezier(.2, .8, .2, 1) both;
+    }
+    .smp-cl__cards { display: flex; flex-direction: column; gap: 6px; }
+    .smp-cl__card {
+        display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+        border: 1px solid var(--pbim-line); border-radius: var(--pbim-r-sm);
+        background: var(--pbim-surface); cursor: pointer;
+        transition: border-color .15s ease, background .15s ease;
+        &:hover { border-color: var(--pbim-teal); }
+        &.is-on { border-color: var(--pbim-teal); background: var(--pbim-teal-soft); }
+        &:focus-visible { outline: 2px solid var(--pbim-teal); outline-offset: 1px; }
+    }
+    .smp-cl__dot {
+        flex: none; width: 18px; height: 18px; border-radius: 50%;
+        border: 1.5px solid var(--pbim-line); display: inline-flex;
+        align-items: center; justify-content: center; color: var(--pbim-surface);
+    }
+    .smp-cl__card.is-on .smp-cl__dot { background: var(--pbim-teal); border-color: var(--pbim-teal); }
+    .smp-cl__card-t {
+        min-width: 0; display: flex; flex-direction: column; gap: 1px;
+        b { font-weight: 600; font-size: 13px; overflow-wrap: anywhere; }
+        small { color: var(--pbim-muted); font-size: 11.5px; }
+    }
+    .smp-cl__link {
+        align-self: flex-start; border: 0; background: none; padding: 2px 0; font: inherit;
+        font-size: 12px; font-weight: 600; color: var(--pbim-teal); cursor: pointer;
+        display: inline-flex; align-items: center; gap: 4px;
+        &:focus-visible { outline: 2px solid var(--pbim-teal); outline-offset: 2px; border-radius: 3px; }
+    }
+    .smp-cl__confirm {
+        display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px;
+        color: var(--pbim-text);
+    }
+    .smp-cl__sentence {
+        margin: 0; display: flex; gap: 6px; align-items: flex-start; font-size: 12.5px;
+        color: var(--pbim-text);
+        svg { flex: none; color: var(--pbim-teal); margin-top: 2px; }
+    }
+    .smp-cl__panel-acts { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+    .smp-cl__others { margin-top: 4px; display: flex; flex-direction: column; gap: 6px; }
+    .smp-cl__other-list { display: flex; flex-direction: column; gap: 6px; }
+    .smp-cl__other {
+        display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; padding: 8px 10px;
+        border: 1px dashed var(--pbim-line); border-radius: var(--pbim-r-sm);
+        background: var(--pbim-bg);
+    }
+}
+
+@keyframes smp-cl-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .pbim.smp .smp-cl__body, .pbim.smp .smp-cl__panel { animation: none; }
+    .pbim.smp .smp-cl__chev { transition: none; }
+}

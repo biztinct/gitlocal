@@ -1003,6 +1003,12 @@ class PbSchemeMap(models.AbstractModel):
         # not covered says WHY in their own words ("their own pay scheme has
         # ended…"); the team sentence is only for people who follow a team.
         own = self._person_schemes(named) if named else {}
+        # PSCHEME P4 B.5 — the third fix: a country with no usual pay scheme.
+        lined = set()
+        Board = self.env.get('pb.scheme.board')
+        if Board is not None and hasattr(Board, '_map_rules'):
+            lined = set(Board._map_rules(company_id)[0])
+        country_names = dict(Employee._fields['payroll_country']._description_selection(self.env))
         for employee in Employee.browse(named):
             dept_id = roster.get(employee.id, (0, 0))[0]
             if employee.id in own:
@@ -1022,6 +1028,11 @@ class PbSchemeMap(models.AbstractModel):
                 'department': dept_names.get(dept_id, ''),
                 'own': employee.id in own,
                 'reason': reason,
+                'country': employee.payroll_country or '',
+                'country_fix': (_("Choose a usual pay scheme for %s",
+                                  country_names.get(employee.payroll_country, ''))
+                                if employee.payroll_country and employee.id not in own
+                                and employee.payroll_country not in lined else ''),
             })
         return {
             'company_id': company_id,

@@ -138,6 +138,8 @@ export class SchemeMapBoard extends Component {
             dropOn: 0,           // the scheme the pointer is over
             overTrash: false,    // the pointer is over the take-it-off bar
             traced: 0,           // the wire being followed with the pointer
+            countryVersion: 0,   // PSCHEME P4: re-read the country lines
+            countryFocus: "",   // PSCHEME P4: open this country's chooser
         });
 
         this._escape = (ev) => this.onEscape(ev);
@@ -284,7 +286,30 @@ export class SchemeMapBoard extends Component {
     openMismatch() { this.state.drawer = { kind: "mismatch" }; }
     openOwn(departmentId) { this.state.drawer = { kind: "own", id: Number(departmentId) }; }
     closeDrawer() { this.state.drawer = null; }
-    async afterPersonChange() { await this.load(); }
+    async afterPersonChange() { await this.load(); this.state.countryVersion += 1; }
+
+    // ===================== PSCHEME P4 — the country lines and the empty card
+    async afterCountryChange() { await this.load(); }
+    /** From the "not covered" drawer: open that country's chooser. */
+    openCountryFix(code) {
+        this.state.showExceptions = false;
+        this.state.countryFocus = "";
+        // a fresh value each time, so pressing the same country twice re-opens it
+        Promise.resolve().then(() => { this.state.countryFocus = code; });
+    }
+    /** (Almost) everyone has their own pay scheme: 2 % or fewer still have none. */
+    get everyoneOwn() {
+        const p = this.persons;
+        const people = p.people || 0;
+        const without = p.without || 0;
+        return !!people && without * 50 <= people;
+    }
+    get emptyTitle() {
+        const n = this.persons.without || 0;
+        return n === 1
+            ? _t("1 person has no pay scheme of their own yet")
+            : _t("%(count)s people have no pay scheme of their own yet", { count: this.num(n) });
+    }
 
     /** The headline sentence: how much of this company the map reaches. */
     get coverLine() {

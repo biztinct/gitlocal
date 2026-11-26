@@ -34,7 +34,7 @@ WHAT IT DOES NOT CHANGE
   A company with exactly one scheme and no map notices nothing at all: its
   pay run covers exactly the people it always did.
 """,
-    'version': '19.0.2.9.0',
+    'version': '19.0.2.10.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
@@ -72,6 +72,10 @@ WHAT IT DOES NOT CHANGE
             'pb_scheme_map/static/src/js/person_fill.js',
             'pb_scheme_map/static/src/xml/person_fill.xml',
             'pb_scheme_map/static/src/js/person_scheme_prompt.js',
+            # PSCHEME P4 — Usual pay scheme by country
+            'pb_scheme_map/static/src/scss/country_lines.scss',
+            'pb_scheme_map/static/src/js/country_lines.js',
+            'pb_scheme_map/static/src/xml/country_lines.xml',
         ],
     },
     'installable': True,

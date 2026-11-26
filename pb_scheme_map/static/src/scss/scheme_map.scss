@@ -482,6 +482,9 @@
     .smp-teach__icon { color: var(--pbim-primary); display: inline-flex; }
     .smp-teach__title { margin: 0 0 4px; font-weight: 600; }
     .smp-teach__sub { margin: 0; color: var(--pbim-muted); font-size: 12.5px; }
+    // PSCHEME P4 C — the card's own action
+    .smp-teach__t { min-width: 0; }
+    .smp-teach__acts { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
 
     // -------------------------------------------------------------- a panel
     .smp-scrim {

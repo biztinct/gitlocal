@@ -124,6 +124,12 @@
         </button>
       </div>
 
+      <!-- ================ PSCHEME P4 B: the country lines (the safety net) -->
+      <CountryLines t-if="hasSchemes and state.companyId" companyId="state.companyId"
+                    version="state.countryVersion" focus="state.countryFocus"
+                    canEdit="canEdit" studioAction="board.studio_action or ''"
+                    onChanged.bind="afterCountryChange"/>
+
       <!-- ======================================== no schemes on this company -->
       <div t-if="!hasSchemes" class="smp-empty">
         <span class="smp-empty__icon"><t t-out="ic('layers', 22)"/></span>
@@ -354,15 +360,31 @@
       </div>
 
       <!-- ============================================ no map drawn at all -->
-      <div t-if="hasSchemes and !hasWires" class="smp-teach">
-        <span class="smp-teach__icon"><t t-out="ic('sparkles', 20)"/></span>
-        <div>
-          <p class="smp-teach__title">Nothing is attached to a scheme yet</p>
-          <p class="smp-teach__sub">
-            You have been paying people for months, so the map already exists —
-            it is just not written down. Press "Review scheme suggestions" and this system reads the last runs and proposes it back to
-            you, line by line, with the numbers behind each one.
-          </p>
+      <!-- PSCHEME P4 C: giving a team a usual scheme is OPTIONAL. When (almost)
+           everyone has their own pay scheme the card says so, quietly; when
+           people still have none, it points at the one-time fill. -->
+      <div t-if="hasSchemes and !hasWires and everyoneOwn" class="smp-teach">
+        <span class="smp-teach__icon"><t t-out="ic('userCheck', 20)"/></span>
+        <div class="smp-teach__t">
+          <p class="smp-teach__title">Everyone is paid by their own pay scheme</p>
+          <p class="smp-teach__sub">Giving a team a usual pay scheme is optional. It pre-fills new people in that team.</p>
+          <div t-if="canEdit" class="smp-teach__acts">
+            <button type="button" class="pbim-btn outline sm" t-on-click="startCountry">
+              <t t-out="ic('globe', 14)"/> Suggest who pays each team
+            </button>
+          </div>
+        </div>
+      </div>
+      <div t-elif="hasSchemes and !hasWires" class="smp-teach">
+        <span class="smp-teach__icon"><t t-out="ic('userCheck', 20)"/></span>
+        <div class="smp-teach__t">
+          <p class="smp-teach__title" t-esc="emptyTitle"/>
+          <p class="smp-teach__sub">Give each of them the pay scheme that pays them today, written down as their own. Giving a team a usual pay scheme is optional.</p>
+          <div class="smp-teach__acts">
+            <button type="button" class="pbim-btn primary sm" t-on-click="() => this.openFill()">
+              <t t-out="ic('userCheck', 14)"/> Give everyone their own pay scheme
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -619,7 +641,7 @@
             <t t-out="ic('x', 16)"/>
           </button>
         </div>
-        <p class="smp-panel__sub">A pay run leaves them out until they have a pay scheme. Give them one of their own, or set their team's usual pay scheme.</p>
+        <p class="smp-panel__sub">A pay run leaves them out until they have a pay scheme. Give them one of their own, set their team's usual pay scheme, or choose their country's usual pay scheme.</p>
         <div t-if="persons.can_propose and exceptionPeople.length" class="smp-panel__fixes">
           <button class="pbim-btn primary sm" t-on-click="openFillForExceptions">
             <t t-out="ic('userCheck', 14)"/> Give them a pay scheme
@@ -648,6 +670,10 @@
             <button t-if="canEdit and person.department_id" class="pbim-btn outline sm"
                     t-on-click="() => this.openAttachForDepartment(person.department_id)">
               <t t-out="ic('link', 14)"/> Set their team's usual pay scheme
+            </button>
+            <button t-if="person.country_fix and persons.can_propose" class="pbim-btn outline sm"
+                    t-on-click="() => this.openCountryFix(person.country)">
+              <t t-out="ic('globe', 14)"/> <span t-esc="person.country_fix"/>
             </button>
           </div>
           <p t-if="exceptionCount > exceptionPeople.length" class="smp-panel__none">

@@ -18,3 +18,5 @@ from . import pb_person_scheme_many
 from . import pb_person_scheme_fill
 from . import pb_person_scheme_team
 from . import pb_person_scheme_follow
+# PSCHEME P4: Usual pay scheme by country (the country lines) and the country_set approval kind.
+from . import pb_country_lines

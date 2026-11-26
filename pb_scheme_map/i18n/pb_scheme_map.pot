@@ -115,12 +115,6 @@ msgid "Advance paid by"
 msgstr ""
 
 #. module: pb_scheme_map
-#. odoo-javascript
-#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
-msgid "Advance:"
-msgstr ""
-
-#. module: pb_scheme_map
 #: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_scheme_assignment__confidence
 msgid "Agreement"
 msgstr ""
@@ -238,12 +232,6 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
 msgid "Divisions and teams in this company"
-msgstr ""
-
-#. module: pb_scheme_map
-#. odoo-javascript
-#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
-msgid "Draft the map from what you paid"
 msgstr ""
 
 #. module: pb_scheme_map
@@ -438,12 +426,6 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
 msgid "Not now"
-msgstr ""
-
-#. module: pb_scheme_map
-#. odoo-javascript
-#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
-msgid "Nothing is attached to a scheme yet"
 msgstr ""
 
 #. module: pb_scheme_map
@@ -767,16 +749,6 @@ msgstr ""
 #. module: pb_scheme_map
 #. odoo-javascript
 #: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
-msgid ""
-"You have been paying people for months, so the map already exists —\n"
-"            it is just not written down. Press \"Draft the map from what you\n"
-"            paid\" and this system reads the last runs and proposes it back to\n"
-"            you, line by line, with the numbers behind each one."
-msgstr ""
-
-#. module: pb_scheme_map
-#. odoo-javascript
-#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
 msgid "and"
 msgstr ""
 
@@ -968,14 +940,6 @@ msgstr ""
 msgid ""
 "%(n)s of them are paid by another pay scheme today and would move to "
 "%(scheme)s."
-msgstr ""
-
-#. module: pb_scheme_map
-#. odoo-javascript
-#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
-msgid ""
-"%(offers)s teams can be set now, %(choices)s need your choice and %(empty)s "
-"have nobody in them yet."
 msgstr ""
 
 #. module: pb_scheme_map
@@ -1896,14 +1860,6 @@ msgstr ""
 msgid ""
 "A change during a month starts with the next pay run. Their current pay "
 "scheme still pays %s."
-msgstr ""
-
-#. module: pb_scheme_map
-#. odoo-javascript
-#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
-msgid ""
-"A pay run leaves them out until they have a pay scheme. Give them one of "
-"their own, or set their team's usual pay scheme."
 msgstr ""
 
 #. module: pb_scheme_map
@@ -2997,15 +2953,6 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
 msgid ""
-"You have been paying people for months, so the map already exists —\n"
-"            it is just not written down. Press \"Review scheme suggestions\" and this system reads the last runs and proposes it back to\n"
-"            you, line by line, with the numbers behind each one."
-msgstr ""
-
-#. module: pb_scheme_map
-#. odoo-javascript
-#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
-msgid ""
 "matched\n"
 "                  across"
 msgstr ""
@@ -3062,4 +3009,364 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
 msgid "Optional: drag a team onto a pay scheme to make it that team's usual scheme. It pre-fills new people and covers anyone without a pay scheme of their own. Hover a line to follow it. Pull a line off to take it away — or use the keyboard: Enter on a team attaches it, Delete on a line takes it off."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "%(count)s of them have no pay scheme of their own and no country line that pays them the same way."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "%(count)s people have no pay scheme of their own yet"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/country_lines.js:0
+msgid "%(people)s · %(rely)s rely on this today"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "%(scheme)s is a pay scheme of %(other)s. Tick \"This pay scheme is of another country\" to use it for %(country)s."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/country_lines.js:0
+msgid "%(set)s of %(total)s countries have a usual pay scheme"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "%s belongs to another company, so it cannot pay people here."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "%s has no usual pay scheme to remove."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "%s is a mid-month advance. A country's usual pay scheme is the one that pays the month."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "%s is already this country's usual pay scheme."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "%s is not a monthly pay scheme, so it cannot be a country's usual pay scheme."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "%s is not active. Switch it on first, or choose an active pay scheme."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/country_lines.js:0
+msgid "%s people have no pay scheme and nothing catches them"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/country_lines.js:0
+msgid "%s people here have no pay scheme and nothing catches them"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/country_lines.js:0
+msgid "1 person has no pay scheme and nothing catches them"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
+msgid "1 person has no pay scheme of their own yet"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/country_lines.js:0
+msgid "1 person here has no pay scheme and nothing catches them"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "A change to who pays people goes through approval."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "A list of %(count)s named people"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "A pay run leaves them out until they have a pay scheme. Give them one of their own, set their team's usual pay scheme, or choose their country's usual pay scheme."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/country_lines.xml:0
+msgid "Change"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "Changing who pays people is for HR and payroll. Ask one of them to make the change."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/country_lines.xml:0
+msgid "Choose"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "Choose a usual pay scheme for %s"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "Everybody it reached is paid by their own pay scheme or their country line"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Everyone is paid by their own pay scheme"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Give each of them the pay scheme that pays them today, written down as their own. Giving a team a usual pay scheme is optional."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Giving a team a usual pay scheme is optional. It pre-fills new people in that team."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/country_lines.js:0
+msgid "New people in %(country)s without a pay scheme of their own will be paid by %(scheme)s. Nobody with their own pay scheme changes."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/country_lines.js:0
+msgid "New people in %s without a pay scheme of their own or a team's usual one will not be paid until they get one. Nobody with their own pay scheme changes."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/country_lines.js:0
+msgid "No active pay scheme for %s yet."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/country_lines.xml:0
+msgid "Not set"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/country_lines.js:0
+msgid "Nothing was changed."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/country_lines.js:0
+msgid "Nothing was changed. Try again."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/country_lines.js:0
+msgid "Other rules (%s)"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "Pay people in %(country)s without a pay scheme of their own by %(scheme)s"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "People matching a special rule"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/country_lines.js:0
+msgid "Pick the pay scheme that catches people in %s."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/country_lines.js:0
+msgid "Reaches %s today · Set up by support"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/country_lines.xml:0
+msgid "Reading the country lines…"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/country_lines.xml:0
+msgid "Remove"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "Remove the usual pay scheme of %s"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "Rule to take off"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/country_lines.js:0
+msgid "Save"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "Set a country's usual pay scheme"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/country_lines.xml:0
+msgid "Someone who arrives without a pay scheme of their own is caught by their team's usual pay scheme, if the team has one, and then by their country's."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "Take off the rule that pays %(who)s by %(scheme)s"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "That country of work is not one this system knows. Reload the screen and try again."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "That rule is not on this company's map any more. Reload the screen."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/country_lines.js:0
+msgid "The country lines could not be read."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/country_lines.xml:0
+msgid "This pay scheme is of another country"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "This rule cannot be taken off yet: %s"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "Usual pay scheme"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/country_lines.xml:0
+msgid "Usual pay scheme by country"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "Usual pay scheme of a country"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "that rule"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "the usual pay scheme of %s"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/country_lines.js:0
+msgid "%s people are paid by another rule"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "1 of them has no pay scheme of their own and no country line that pays them the same way."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/country_lines.js:0
+msgid "1 person is paid by another rule"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_country_lines.py:0
+msgid "From the usual pay scheme of %s"
 msgstr ""

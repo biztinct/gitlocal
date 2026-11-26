@@ -8,3 +8,4 @@ from . import test_p2a_fill
 from . import test_p2a_follow
 from . import test_p2a_static
 from . import test_pscheme_p2b
+from . import test_pscheme_p4

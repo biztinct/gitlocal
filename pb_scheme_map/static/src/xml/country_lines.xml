@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- =========================== PSCHEME P4 B: Usual pay scheme by country -->
+  <t t-name="pb_scheme_map.CountryLines">
+    <section t-attf-class="smp-cl {{ d.holes ? 'has-hole' : '' }}" aria-label="Usual pay scheme by country">
+      <button type="button" class="smp-cl__head" t-on-click="toggle"
+              t-att-aria-expanded="state.open ? 'true' : 'false'">
+        <span t-attf-class="smp-cl__tile {{ d.holes ? 'is-amber' : '' }}"><t t-out="ic('globe', 16)"/></span>
+        <span class="smp-cl__head-t">
+          <b>Usual pay scheme by country</b>
+          <small t-if="!state.loading and !state.error" t-esc="headLine"/>
+        </span>
+        <span t-attf-class="smp-cl__chev {{ state.open ? 'is-open' : '' }}"><t t-out="ic('chevronDown', 16)"/></span>
+      </button>
+
+      <div t-if="state.open" class="smp-cl__body">
+        <p class="smp-cl__lead">Someone who arrives without a pay scheme of their own is caught by their team's usual pay scheme, if the team has one, and then by their country's.</p>
+        <p t-if="state.loading" class="smp-cl__quiet">Reading the country lines…</p>
+        <p t-elif="state.error" class="smp-cl__problem" t-esc="state.error"/>
+        <t t-else="">
+          <p t-if="d.blocked" class="smp-cl__quiet" t-esc="d.blocked"/>
+          <div t-foreach="rows" t-as="row" t-key="row.country" t-att-class="rowClass(row)">
+            <div class="smp-cl__line">
+              <span class="smp-cl__globe"><t t-out="ic('globe', 14)"/></span>
+              <span class="smp-cl__who">
+                <b t-esc="row.country_name"/>
+                <small t-esc="peopleLine(row)"/>
+              </span>
+              <span class="smp-cl__what">
+                <t t-if="row.state === 'set'">
+                  <span class="smp-cl__chip">
+                    <t t-out="ic('layers', 13)"/>
+                    <span t-esc="row.line.config"/>
+                    <small t-if="row.line.currency" t-esc="row.line.currency"/>
+                  </span>
+                </t>
+                <t t-elif="row.state === 'not_set'">
+                  <span t-if="row.holes" class="smp-cl__hole"><t t-out="ic('triangleAlert', 13)"/><span t-esc="holeLine(row)"/></span>
+                  <span t-else="" class="smp-cl__quiet">Not set</span>
+                </t>
+                <t t-else="">
+                  <span class="smp-cl__quiet" t-esc="noSchemeLine(row)"/>
+                </t>
+                <small t-if="row.by_other_rule" class="smp-cl__quiet" t-esc="otherRuleLine(row)"/>
+              </span>
+              <span class="smp-cl__acts" t-if="canChange">
+                <t t-if="row.state === 'set'">
+                  <button type="button" class="pbim-btn outline sm" t-on-click="() => this.startChoose(row.country)">
+                    <t t-out="ic('pencil', 13)"/> Change
+                  </button>
+                  <button type="button" class="pbim-btn ghost sm" t-on-click="() => this.startRemove(row.country)">
+                    <t t-out="ic('minusCircle', 13)"/> Remove
+                  </button>
+                </t>
+                <button t-elif="row.state === 'not_set'" type="button"
+                        t-attf-class="pbim-btn {{ row.holes ? 'primary' : 'outline' }} sm"
+                        t-on-click="() => this.startChoose(row.country)">
+                  <t t-out="ic('check', 13)"/> Choose
+                </button>
+                <button t-else="" type="button" class="pbim-btn ghost sm" t-on-click="addScheme">
+                  <t t-out="ic('plus', 13)"/> Add a pay scheme
+                </button>
+              </span>
+            </div>
+
+            <!-- the chooser, inline under its own line -->
+            <div t-if="state.editing === row.country" class="smp-cl__panel" t-on-keydown="onPanelKey">
+              <t t-if="state.mode === 'set'">
+                <div class="smp-cl__cards" role="radiogroup" t-att-aria-label="row.country_name">
+                  <div t-foreach="choices" t-as="o" t-key="o.id" t-att-data-id="o.id"
+                       t-attf-class="smp-cl__card {{ state.pick === o.id ? 'is-on' : '' }}"
+                       role="radio" t-att-aria-checked="state.pick === o.id ? 'true' : 'false'"
+                       t-att-tabindex="(state.pick === o.id or (!state.pick and o_first)) ? '0' : '-1'"
+                       t-on-click="() => this.pick(o)" t-on-keydown="(ev) => this.onCardKey(o, ev)">
+                    <span class="smp-cl__dot"><t t-if="state.pick === o.id" t-out="ic('check', 11)"/></span>
+                    <span class="smp-cl__card-t">
+                      <b t-esc="o.name"/>
+                      <small t-esc="cardMeta(o)"/>
+                    </span>
+                  </div>
+                  <p t-if="!choices.length" class="smp-cl__quiet" t-esc="noSchemeLine(row)"/>
+                </div>
+                <button t-if="otherCount" type="button" class="smp-cl__link" t-on-click="toggleOther">
+                  <t t-out="ic(state.showOther ? 'chevronUp' : 'chevronDown', 13)"/> <span t-esc="otherToggle"/>
+                </button>
+                <label t-if="pickedIsOther" class="smp-cl__confirm">
+                  <input type="checkbox" t-att-checked="state.confirmOther" t-on-change="toggleConfirm"/>
+                  <span>This pay scheme is of another country</span>
+                </label>
+              </t>
+              <p class="smp-cl__sentence" aria-live="polite"><t t-out="ic('info', 13)"/><span t-esc="consequence"/></p>
+              <p t-if="state.problem" class="smp-cl__problem" t-esc="state.problem"/>
+              <div class="smp-cl__panel-acts">
+                <button type="button" class="pbim-btn ghost sm" t-on-click="cancel">Cancel</button>
+                <button type="button"
+                        t-attf-class="pbim-btn {{ state.mode === 'remove' ? 'outline' : 'primary' }} sm"
+                        t-att-disabled="canSave ? false : 'disabled'" t-on-click="save">
+                  <t t-if="state.mode === 'remove'"><t t-out="ic('minusCircle', 13)"/> Remove</t>
+                  <t t-else=""><t t-out="ic('check', 13)"/> <span t-esc="saveLabel"/></t>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- B.3: every other rule, read-only -->
+          <div t-if="others.length" class="smp-cl__others">
+            <button type="button" class="smp-cl__link" t-on-click="toggleOthers"
+                    t-att-aria-expanded="state.othersOpen ? 'true' : 'false'">
+              <t t-out="ic(state.othersOpen ? 'chevronUp' : 'chevronDown', 13)"/> <span t-esc="othersTitle"/>
+            </button>
+            <div t-if="state.othersOpen" class="smp-cl__other-list">
+              <div t-foreach="others" t-as="rule" t-key="rule.id" class="smp-cl__other">
+                <span class="smp-cl__who">
+                  <b t-esc="ruleTitle(rule)"/>
+                  <small t-esc="ruleSub(rule)"/>
+                  <small t-if="!rule.removable" class="smp-cl__quiet" t-esc="rule.why_not"/>
+                </span>
+                <button t-if="canChange and rule.removable" type="button" class="pbim-btn ghost sm"
+                        t-on-click="() => this.removeRule(rule)">
+                  <t t-out="ic('minusCircle', 13)"/> Remove
+                </button>
+              </div>
+            </div>
+          </div>
+        </t>
+      </div>
+    </section>
+  </t>
+
+</templates>

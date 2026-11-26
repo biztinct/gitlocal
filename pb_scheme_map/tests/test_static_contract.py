@@ -198,6 +198,10 @@ class TestSchemeMapStaticContract(TransactionCase):
             'pb_scheme_map/static/src/js/person_fill.js',
             'pb_scheme_map/static/src/xml/person_fill.xml',
             'pb_scheme_map/static/src/js/person_scheme_prompt.js',
+            # PSCHEME P4: Usual pay scheme by country
+            'pb_scheme_map/static/src/scss/country_lines.scss',
+            'pb_scheme_map/static/src/js/country_lines.js',
+            'pb_scheme_map/static/src/xml/country_lines.xml',
         ])
 
     def test_t12_every_icon_exists_in_the_shared_registry(self):

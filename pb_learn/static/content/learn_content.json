@@ -25593,8 +25593,8 @@
           },
           "scheme": {
             "line": {
-              "en": "Each team's usual pay scheme, and who has a pay scheme of their own. Give everyone their own pay scheme starts here.",
-              "vi": "Chương trình lương thường dùng của từng nhóm, và ai có chương trình lương riêng. Cho mọi người chương trình lương riêng bắt đầu từ đây."
+              "en": "Each team's usual pay scheme, and who has a pay scheme of their own. Give everyone their own pay scheme starts here. Usual pay scheme by country is the safety net: it catches anyone who has no pay scheme of their own and no team's usual one.",
+              "vi": "Chương trình lương thường dùng của từng nhóm, và ai có chương trình lương riêng. Cho mọi người chương trình lương riêng bắt đầu từ đây. Chương trình lương thường dùng theo quốc gia là lưới an toàn: nó giữ lại bất kỳ ai chưa có chương trình lương riêng và nhóm của họ cũng chưa có chương trình lương thường dùng."
             },
             "name": {
               "en": "Who is paid by what",
@@ -44504,5 +44504,5 @@
       }
     }
   ],
-  "version": "514bec1aa227"
+  "version": "56cc6991f9d3"
 }

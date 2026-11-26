@@ -23,7 +23,7 @@
 1 person has a pay scheme of their own.
 1 person still follows their team.
 A change during a month starts with the next pay run. Their current pay scheme still pays %s.
-A pay run leaves them out until they have a pay scheme. Give them one of their own, or set their team's usual pay scheme.
+A pay run leaves them out until they have a pay scheme. Give them one of their own, set their team's usual pay scheme, or choose their country's usual pay scheme.
 Add a pay scheme
 All
 All %(count)s in %(country)s
