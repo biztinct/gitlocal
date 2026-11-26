@@ -622,6 +622,11 @@
                           t-on-click="() => this.deskConfirm(ph, 'invite')">
                     <t t-out="ic('mail',14)"/> Email a set-password link
                   </button>
+                  <button t-if="ph.password and ph.password.allowed" class="pbim-btn ghost pbim-btn-sm"
+                          t-att-disabled="state.deskBusy"
+                          t-on-click="() => this.deskConfirm(ph, 'slip')">
+                    <t t-out="ic('printer',14)"/> Print a new sign-in slip
+                  </button>
                 </div>
                 <div class="pbva-desk-prefs">
                   <label class="pbva-lbl" t-att-for="'pbva-lang-' + ph.id">Language</label>
@@ -1338,7 +1343,8 @@
             <div class="pbva-modal-ic"><t t-out="ic('users',17)"/></div>
             <div class="pbva-modal-t">
               <h3>Logins for workers</h3>
-              <p>For people with no email. They sign in with their employee code and open their payslips, leave and requests.</p>
+              <p t-if="workersSlips">A new slip with a new first password, for people who lost theirs. Their old password stops working.</p>
+              <p t-else="">For people with no email. They sign in with their employee code and open their payslips, leave and requests.</p>
             </div>
             <button class="pbim-btn ghost" t-on-click="closeWorkers"
                     t-att-disabled="state.workersBusy" title="Close">
@@ -1347,6 +1353,18 @@
           </div>
 
           <div t-if="!wk.result" class="pbva-modal-b">
+            <div class="pbva-wk-modes" role="tablist" aria-label="Logins for workers">
+              <button type="button" role="tab" t-att-aria-selected="workersSlips ? 'false' : 'true'"
+                      t-att-class="'pbva-wk-mode' + (workersSlips ? '' : ' is-on')"
+                      t-on-click="() => this.setWorkersMode('new')">
+                <t t-out="ic('userPlus',14)"/> New logins
+              </button>
+              <button type="button" role="tab" t-att-aria-selected="workersSlips ? 'true' : 'false'"
+                      t-att-class="'pbva-wk-mode' + (workersSlips ? ' is-on' : '')"
+                      t-on-click="() => this.setWorkersMode('slips')">
+                <t t-out="ic('printer',14)"/> New sign-in slips
+              </button>
+            </div>
             <label class="pbva-field pbva-field--search">
               <span class="pbva-in-ic"><t t-out="ic('search',15)"/></span>
               <input class="pbva-in" type="search" t-att-value="wk.search"
@@ -1364,6 +1382,7 @@
                      t-esc="workersCapLine"/>
             </div>
             <div t-if="!wk.data" class="pbva-hint">Reading the employees…</div>
+            <p t-elif="!wk.data.rows.length and workersSlips" class="pbva-hint">Nobody here signs in with a login yet.</p>
             <p t-elif="!wk.data.rows.length" class="pbva-hint">Everyone already has a login.</p>
             <ul t-else="" class="pbva-wk-list">
               <li t-foreach="wk.data.rows" t-as="r" t-key="r.id"
@@ -1392,6 +1411,10 @@
               </li>
             </ul>
             <p class="pbva-hint">Each slip has the address, their sign-in and a first password. They choose their own the first time they sign in.</p>
+          </div>
+          <div t-if="!wk.result and wk.sure" class="pbva-note pbva-note--warn pbva-wk-sure" role="alert">
+            <t t-out="ic('alert',14)"/>
+            <span>Their old passwords stop working and they are signed out everywhere. Press again to make the slips.</span>
           </div>
 
           <div class="pbva-modal-f">

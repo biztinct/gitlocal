@@ -95,6 +95,51 @@ const LENS_CONTEXT_KEY = "pb_lens";
 /** How long the People search waits before asking the server. */
 const SEARCH_PAUSE = 220;
 
+/** The sign-in slip (first logins and NEWHIRE P8's new slips): one per person,
+ *  English and Vietnamese, printed from a new window by the browser. `res` is
+ *  the answer of `create_worker_logins` or `reissue_sign_in_slips`. */
+export function printSignInSlips(res, notif) {
+        if (!res || !res.created.length) { return; }
+        const esc = (v) => String(v || "").replace(/[&<>"']/g,
+            (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+        const url = esc(res.url || window.location.origin);
+        const slips = res.created.map((c) => `
+          <section class="slip">
+            <h2>${esc(c.name)}</h2>
+            <p class="dept">${esc(c.department)}</p>
+            <table>
+              <tr><th>${esc(_t("Address"))}<small>Địa chỉ</small></th><td>${url}</td></tr>
+              <tr><th>${esc(_t("Sign in with"))}<small>Tên đăng nhập</small></th><td class="mono">${esc(c.login)}</td></tr>
+              <tr><th>${esc(_t("First password"))}<small>Mật khẩu lần đầu</small></th><td class="mono big">${esc(c.password)}</td></tr>
+            </table>
+            <p class="note">${esc(_t("You choose your own password the first time you sign in. Keep this slip private."))}<br/>
+            <i>Bạn sẽ tự đặt mật khẩu mới khi đăng nhập lần đầu. Vui lòng giữ phiếu này riêng tư.</i></p>
+          </section>`).join("");
+        const w = window.open("", "_blank");
+        if (!w) {
+            notif.add(_t("The browser blocked the new window. Allow pop-ups for this page and press Print again."),
+                           { type: "warning", sticky: true });
+            return;
+        }
+        w.document.write(`<!doctype html><html><head><meta charset="utf-8">
+          <title>${esc(_t("Sign-in slips"))}</title>
+          <style>
+            body { font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif; color: #1B1733; margin: 16px; }
+            .slip { border: 1px dashed #94A3B8; border-radius: 8px; padding: 14px 18px; margin: 0 0 14px;
+                    break-inside: avoid; page-break-inside: avoid; }
+            h2 { margin: 0; font-size: 17px; } .dept { margin: 2px 0 10px; color: #64748B; font-size: 12px; }
+            table { border-collapse: collapse; width: 100%; } th { text-align: left; width: 38%; padding: 4px 8px 4px 0;
+                    font-size: 12px; color: #475569; vertical-align: top; } th small { display: block; font-weight: 400; color: #94A3B8; }
+            td { padding: 4px 0; font-size: 14px; } .mono { font-family: ui-monospace, Menlo, monospace; letter-spacing: .04em; }
+            .big { font-size: 18px; font-weight: 700; } .note { font-size: 11px; color: #475569; margin: 10px 0 0; }
+            @media print { body { margin: 0; } }
+          </style></head><body>${slips}</body></html>`);
+        w.document.close();
+        w.focus();
+        w.print();
+}
+
+
 export class PbAccessBoard extends Component {
     static template = "biz_access.PbAccessBoard";
     static components = { HubBackChip, PbMiniRail };
@@ -816,6 +861,11 @@ export class PbAccessBoard extends Component {
                 title: _t("Sign %s out everywhere?", who),
                 line: _t("For a lost laptop or phone. Their password does not change; they sign in again on the devices they still have."),
             },
+            slip: {
+                icon: "printer", press: _t("Make the new slip"),
+                title: _t("Print a new sign-in slip for %s?", who),
+                line: _t("They get a new first password on a slip, like their first one. Their old password stops working and they are signed out everywhere. They choose their own password the next time they sign in."),
+            },
             invite: {
                 icon: "mail", press: _t("Send the email"),
                 title: _t("Email %s a set-password link?", who),
@@ -832,6 +882,24 @@ export class PbAccessBoard extends Component {
     async runDeskAsk() {
         const da = this.state.deskAsk;
         if (!da || this.state.deskBusy) { return; }
+        if (da.kind === "slip") {
+            // P8 D: the slip opens in the workers dialog's result, where
+            // "Print the slips" is a press of its own (a new window needs one)
+            this.state.deskBusy = true;
+            try {
+                const res = await this.orm.call("pb.access", "reissue_sign_in_slips", [[], [da.id]]);
+                this.state.deskAsk = null;
+                this.state.workers = { search: "", data: null, picked: {}, result: res, mode: "slips" };
+                if (!res.created.length) {
+                    this.notif.add(res.message, { type: "warning" });
+                }
+            } catch (e) {
+                this.notif.add(this._msg(e, _t("That could not be done.")), { type: "danger" });
+            } finally {
+                this.state.deskBusy = false;
+            }
+            return;
+        }
         const method = { two_step: "turn_off_two_step", sign_out: "sign_out_everywhere",
                          invite: "send_invitation" }[da.kind];
         await this._deskCall(method, [da.id], () => { this.state.deskAsk = null; });
@@ -1047,10 +1115,18 @@ export class PbAccessBoard extends Component {
     }
 
     // ----------------------------------------------- logins for workers
-    async openWorkers() {
-        this.state.workers = { search: "", data: null, picked: {}, result: null };
+    async openWorkers(mode = "new") {
+        this.state.workers = { search: "", data: null, picked: {}, result: null, mode };
         await this.loadWorkers();
     }
+    /** NEWHIRE P8 D: "New logins" | "New slips" in the same dialog. */
+    async setWorkersMode(mode) {
+        const wk = this.state.workers;
+        if (!wk || wk.result || this.state.workersBusy || wk.mode === mode) { return; }
+        this.state.workers = { search: wk.search, data: null, picked: {}, result: null, mode };
+        await this.loadWorkers();
+    }
+    get workersSlips() { return Boolean(this.state.workers && this.state.workers.mode === "slips"); }
 
     closeWorkers() {
         if (this.state.workersBusy) { return; }
@@ -1065,7 +1141,8 @@ export class PbAccessBoard extends Component {
         if (!wk) { return; }
         const seq = (this.workersSeq = (this.workersSeq || 0) + 1);
         try {
-            const data = await this.orm.call("pb.access", "worker_candidates", [wk.search || ""]);
+            const method = wk.mode === "slips" ? "worker_slip_candidates" : "worker_candidates";
+            const data = await this.orm.call("pb.access", method, [wk.search || ""]);
             if (seq !== this.workersSeq || !this.state.workers) { return; }
             this.state.workers.data = data;
         } catch (e) {
@@ -1095,10 +1172,11 @@ export class PbAccessBoard extends Component {
         return el.length > 0 && el.every((r) => this.state.workers.picked[r.id]);
     }
 
-    pickWorker(id, on) { this.state.workers.picked[id] = on; }
+    pickWorker(id, on) { this.state.workers.picked[id] = on; this.state.workers.sure = false; }
 
     toggleWorkersAll(ev) {
         for (const r of this.workersEligible) { this.state.workers.picked[r.id] = ev.target.checked; }
+        this.state.workers.sure = false;
     }
 
     get workersCountLine() {
@@ -1115,15 +1193,25 @@ export class PbAccessBoard extends Component {
 
     get workersPressLine() {
         const n = this.workersPickedIds.length;
+        if (this.workersSlips) {
+            return n === 1 ? _t("Make 1 new slip") : _t("Make %s new slips", n);
+        }
         return n === 1 ? _t("Make 1 login") : _t("Make %s logins", n);
     }
 
     async makeWorkerLogins() {
         const ids = this.workersPickedIds;
         if (!ids.length || this.state.workersBusy) { return; }
+        if (this.workersSlips && !this.state.workers.sure) {
+            // P8 D: the old passwords stop working — said once, pressed twice
+            this.state.workers.sure = true;
+            return;
+        }
         this.state.workersBusy = true;
         try {
-            const res = await this.orm.call("pb.access", "create_worker_logins", [ids]);
+            const res = this.workersSlips
+                ? await this.orm.call("pb.access", "reissue_sign_in_slips", [ids])
+                : await this.orm.call("pb.access", "create_worker_logins", [ids]);
             this.state.workers.result = res;
             this.notif.add(res.message, { type: res.created.length ? "success" : "warning",
                                           sticky: true });
@@ -1134,47 +1222,10 @@ export class PbAccessBoard extends Component {
         }
     }
 
-    /** One slip per person, English and Vietnamese, printed from a new window. */
+    /** One slip per person, English and Vietnamese, printed from a new window.
+     *  NEWHIRE P8 D: the same slip for "Print a new sign-in slip". */
     printSlips() {
-        const res = this.state.workers && this.state.workers.result;
-        if (!res || !res.created.length) { return; }
-        const esc = (v) => String(v || "").replace(/[&<>"']/g,
-            (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-        const url = esc(res.url || window.location.origin);
-        const slips = res.created.map((c) => `
-          <section class="slip">
-            <h2>${esc(c.name)}</h2>
-            <p class="dept">${esc(c.department)}</p>
-            <table>
-              <tr><th>${esc(_t("Address"))}<small>Địa chỉ</small></th><td>${url}</td></tr>
-              <tr><th>${esc(_t("Sign in with"))}<small>Tên đăng nhập</small></th><td class="mono">${esc(c.login)}</td></tr>
-              <tr><th>${esc(_t("First password"))}<small>Mật khẩu lần đầu</small></th><td class="mono big">${esc(c.password)}</td></tr>
-            </table>
-            <p class="note">${esc(_t("You choose your own password the first time you sign in. Keep this slip private."))}<br/>
-            <i>Bạn sẽ tự đặt mật khẩu mới khi đăng nhập lần đầu. Vui lòng giữ phiếu này riêng tư.</i></p>
-          </section>`).join("");
-        const w = window.open("", "_blank");
-        if (!w) {
-            this.notif.add(_t("The browser blocked the new window. Allow pop-ups for this page and press Print again."),
-                           { type: "warning", sticky: true });
-            return;
-        }
-        w.document.write(`<!doctype html><html><head><meta charset="utf-8">
-          <title>${esc(_t("Sign-in slips"))}</title>
-          <style>
-            body { font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif; color: #1B1733; margin: 16px; }
-            .slip { border: 1px dashed #94A3B8; border-radius: 8px; padding: 14px 18px; margin: 0 0 14px;
-                    break-inside: avoid; page-break-inside: avoid; }
-            h2 { margin: 0; font-size: 17px; } .dept { margin: 2px 0 10px; color: #64748B; font-size: 12px; }
-            table { border-collapse: collapse; width: 100%; } th { text-align: left; width: 38%; padding: 4px 8px 4px 0;
-                    font-size: 12px; color: #475569; vertical-align: top; } th small { display: block; font-weight: 400; color: #94A3B8; }
-            td { padding: 4px 0; font-size: 14px; } .mono { font-family: ui-monospace, Menlo, monospace; letter-spacing: .04em; }
-            .big { font-size: 18px; font-weight: 700; } .note { font-size: 11px; color: #475569; margin: 10px 0 0; }
-            @media print { body { margin: 0; } }
-          </style></head><body>${slips}</body></html>`);
-        w.document.close();
-        w.focus();
-        w.print();
+        printSignInSlips(this.state.workers && this.state.workers.result, this.notif);
     }
 
     // ----------------------------------------------------- Employee | Staff

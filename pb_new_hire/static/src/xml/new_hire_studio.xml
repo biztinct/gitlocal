@@ -1106,10 +1106,13 @@
             <t t-out="icon('alert', 16)"/><span t-esc="leg.message"/>
           </div>
         </div>
+        <p t-if="card.slip" class="pbnh-sub" role="status">The slip has a new first password, shown only this once. <t t-esc="first"/> chooses their own at the first sign-in.</p>
         <div class="pbnh-done-b">
           <t t-if="result.applied">
             <button t-if="result.employee_id" type="button" class="pbnh-btn pbnh-btn--pri" t-on-click="() => this.api.openRecord()"><t t-out="icon('user', 16)"/><t t-esc="openLabel"/></button>
             <button t-if="canSeeJoiners" type="button" class="pbnh-btn" t-on-click="() => this.api.seeJoiners()"><t t-out="icon('users', 16)"/>See new joiners</button>
+            <button t-if="canSlip and !card.slip" type="button" class="pbnh-btn" t-att-disabled="card.slipBusy" t-on-click="makeSlip"><t t-out="icon('printer', 16)"/>Print their sign-in slip</button>
+            <button t-if="canSlip and card.slip" type="button" class="pbnh-btn pbnh-btn--pri" t-on-click="printSlip"><t t-out="icon('printer', 16)"/>Print the slip now</button>
           </t>
           <t t-else="">
             <button type="button" class="pbnh-btn pbnh-btn--out" t-att-disabled="nh.sending" t-on-click="() => this.api.withdraw()">

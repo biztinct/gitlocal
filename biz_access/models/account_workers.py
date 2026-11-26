@@ -274,3 +274,94 @@ class PbAccessWorkers(models.AbstractModel):
         if closed or opened:
             _logger.info('biz_access: leavers job closed %s and reopened %s '
                          'logins', closed, opened)
+
+    # ---------------------------------------- NEWHIRE P8 D: a new sign-in slip
+    @api.model
+    def worker_slip_candidates(self, search=None):
+        """Employees who already sign in with a login here, for "Print new
+        sign-in slips" (same picker, same caps, same rights as the first)."""
+        self._require_manage()
+        co_ids = self.env.companies.ids or [self.env.company.id]
+        dom = [('user_id', '!=', False), ('company_id', 'in', co_ids)]
+        needle = (search or '').strip()
+        if needle:
+            dom += ['|', '|', ('name', 'ilike', needle),
+                    ('barcode', 'ilike', needle),
+                    ('department_id.name', 'ilike', needle)]
+        emps = self.env['hr.employee'].sudo().search(dom, order='name, id')
+        rows = []
+        for e in emps[:WORKER_CAP]:
+            rows.append({
+                'id': e.id,
+                'name': e.name or '',
+                'department': e.department_id.name or '',
+                'code': e.user_id.login or '',
+                'why': self._password_refusal(e.user_id),
+            })
+        return {'rows': rows, 'total': len(emps), 'shown': len(rows), 'no_code': 0,
+                'cap': WORKER_CAP}
+
+    @api.model
+    def reissue_sign_in_slips(self, employee_ids=None, user_ids=None):
+        """A fresh first password for each person, on the same slip as the
+        first one: the same password shape (`first_password`), set through
+        the same path as "Set a new password" (`set_user_password`: the same
+        refusals, signed out everywhere, the old password stops working, they
+        choose their own at the next sign-in). Passwords come back once and
+        are never stored or written to the log."""
+        self._require_manage()
+        co_ids = self.env.companies.ids or [self.env.company.id]
+        Users = self.env['res.users'].sudo().with_context(active_test=False)
+        users = Users.browse()
+        emp_of = {}
+        if employee_ids:
+            emps = self.env['hr.employee'].sudo().browse(
+                [int(i) for i in employee_ids][:BATCH_CAP]).exists().filtered(
+                lambda e: e.company_id.id in co_ids)
+            for e in emps:
+                if e.user_id:
+                    users |= e.user_id
+                    emp_of[e.user_id.id] = e
+        if user_ids:
+            users |= Users.browse([int(i) for i in user_ids][:BATCH_CAP]).exists()
+        users = users[:BATCH_CAP]
+        if not users:
+            raise UserError(_("Choose at least one person with a login."))
+        created, skipped = [], []
+        for user in users:
+            emp = emp_of.get(user.id) or (user.employee_ids[:1] if 'employee_ids' in user._fields
+                                          else self.env['hr.employee'])
+            why = self._password_refusal(user)
+            if not why and emp and emp.company_id.id not in co_ids:
+                why = _("%s works in another company.", user.name)
+            if why:
+                skipped.append({'name': user.name, 'why': why})
+                continue
+            password = first_password()
+            try:
+                with self.env.cr.savepoint():
+                    self.set_user_password(user.id, password, must_change=True)
+            except Exception as exc:                          # noqa: BLE001
+                _logger.warning('biz_access: new sign-in slip for user %s failed: %s',
+                                user.id, type(exc).__name__)
+                skipped.append({'name': user.name, 'why': _(
+                    "Could not be made. Try this person on their own.")})
+                continue
+            created.append({'employee_id': emp.id if emp else 0, 'name': user.name,
+                            'department': emp.department_id.name or '' if emp else '',
+                            'login': user.login, 'password': password})
+        _logger.info('biz_access: user %s printed new sign-in slips for %s people (%s skipped)',
+                     self.env.uid, len(created), len(skipped))
+        if created and skipped:
+            message = _("%(n)s new slips made, %(m)s skipped. Print them now: the "
+                        "passwords are not shown again.", n=len(created), m=len(skipped))
+        elif len(created) == 1:
+            message = _("A new slip is ready for %s. Print it now: the password is not "
+                        "shown again. Their old password no longer works.", created[0]['name'])
+        elif created:
+            message = _("%s new slips made. Print them now: the passwords are not shown "
+                        "again. Their old passwords no longer work.", len(created))
+        else:
+            message = _("No slips were made.")
+        return {'created': created, 'skipped': skipped, 'message': message, 'reissue': True,
+                'url': self.env['ir.config_parameter'].sudo().get_param('web.base.url') or ''}

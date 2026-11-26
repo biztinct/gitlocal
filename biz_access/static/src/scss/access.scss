@@ -2489,6 +2489,22 @@ $pbva-areas: (
     @media (max-width: 720px) {
         .pbva-desk-prefs { grid-template-columns: auto 1fr; }
     }
+    // NEWHIRE P8 D: "New logins" | "New sign-in slips"
+    .pbva-wk-modes {
+        display: inline-flex; gap: 4px; padding: 3px; margin: 0 0 10px;
+        border-radius: 10px; background: var(--pbim-soft, #EDEAF8);
+    }
+    .pbva-wk-mode {
+        display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+        border: 0; border-radius: 8px; background: transparent; font-size: 13px;
+        color: var(--pbim-muted, #64748B); cursor: pointer;
+        transition: background .16s ease-out, color .16s ease-out;
+        &.is-on { background: var(--pbim-surface, #fff); color: var(--pbim-text, #1E1B2E);
+                  box-shadow: 0 1px 2px rgba(30, 27, 46, .08); }
+        &:focus-visible { outline: 2px solid var(--pbim-primary, #5A4BB0); outline-offset: 1px; }
+        svg { width: 14px; height: 14px; }
+    }
+    .pbva-wk-sure { margin: 0 20px 8px; }
     .pbva-wk-bar {
         display: flex;
         align-items: center;

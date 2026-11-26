@@ -10,6 +10,7 @@
  * card shows the welcome legs — one green line when all went well, an amber
  * row for each that did not — and "See new joiners".
  */
+import { printSignInSlips } from "@biz_access/js/access_board";
 import { Component, useState, useEffect } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { icon, fmtDay, money, rich, weekNameOf, ownMissingOf, docItemsOf, docChoiceOf, docGapsOf, docTallyOf,
@@ -24,7 +25,7 @@ export class StepCheck extends Component {
         this.nh = useState(this.props.api.nh);
         // P3b: the done card of an ADDED person reads the real asks (and
         // whether the welcome link can be copied here) once
-        this.card = useState({ data: null, busy: false, link: "", hint: "" });
+        this.card = useState({ data: null, busy: false, link: "", hint: "", slip: null, slipBusy: false });
         useEffect((empId, applied) => {
             if (applied && empId) {
                 this.loadCard(empId);
@@ -401,6 +402,37 @@ export class StepCheck extends Component {
         }
     }
     selectLink(ev) { ev.target.select(); }
+
+    // ------------------------------------------------------------ P8 D: the sign-in slip
+    /** Added without an email, signing in with their employee number, and
+     *  the reader manages access: a new slip can be made and printed. */
+    get canSlip() {
+        const f = (this.nh.data && this.nh.data.features) || {};
+        const w = this.nh.welcome;
+        const mode = this.d.login_mode || (w && w.login && w.login.chosen) || "none";
+        return Boolean(this.result && this.result.applied && f.slips && mode === "code"
+                       && this.legs.some((l) => l.key === "login" && l.ok));
+    }
+    async makeSlip() {
+        if (this.card.slipBusy) {
+            return;
+        }
+        this.card.slipBusy = true;
+        try {
+            const res = await this.api.orm.call("pb.access", "reissue_sign_in_slips", [[this.result.employee_id]]);
+            this.card.slip = res && res.created && res.created.length ? res : null;
+            if (!this.card.slip) {
+                this.api.toast((res && res.message) || _t("The slip could not be made."), { kind: "error" });
+            }
+        } catch (e) {
+            this.api.toast(errorText(e), { kind: "error" });
+        } finally {
+            this.card.slipBusy = false;
+        }
+    }
+    printSlip() {
+        printSignInSlips(this.card.slip, { add: (msg, opts) => this.api.toast(msg, { kind: (opts && opts.type) || "info" }) });
+    }
 
     get canSeeJoiners() {
         const f = (this.nh.data && this.nh.data.features) || {};

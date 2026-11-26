@@ -210,9 +210,17 @@ class PbNewHire(models.AbstractModel):
                 joiners = bool(self.env['pb.onboarding']._can_read())
             except Exception:                   # noqa: BLE001 — a probe
                 joiners = False
+        slips = False
+        if 'pb.access' in self.env:
+            try:
+                slips = bool(self.env['pb.access'].can_manage())
+            except Exception:                   # noqa: BLE001 — a probe
+                slips = False
         return {'bands': bands, 'scales': 'pb.pay.scales' in self.env,
                 # P2: "See new joiners" only for people the board lets in
-                'joiners': joiners}
+                'joiners': joiners,
+                # P8 D: "Print their sign-in slip" for people who manage access
+                'slips': slips}
 
     # ============================================================ approval
     @api.model
