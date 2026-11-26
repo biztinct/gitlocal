@@ -326,6 +326,31 @@ class PbDocStudio(models.AbstractModel):
         return res
 
     @api.model
+    def _pbds_preview_lang(self, tmpl, employee, draft, lang):
+        """A contract previews in the language the contract panel prints it
+        in for this person (`pb.contracts._pbdc_pick_lang` with no language
+        asked): theirs when the wording exists in it, else their company's,
+        else the main wording's. The languages are those of the draft on
+        screen (main language, wordings of their own) plus the saved ones."""
+        lang = super()._pbds_preview_lang(tmpl, employee, draft, lang)
+        if not tmpl._pbdc_is_contract() or not employee:
+            return lang
+        Panel = self.env['pb.contracts']
+        codes = [row['code'] for row in Panel._pbdc_langs(tmpl)]
+        draft = draft if isinstance(draft, dict) else {}
+        active = self._pbds_active_langs()
+        main = draft.get('main_lang')
+        if main in active:
+            codes = [main] + [c for c in codes if c != main]
+        versions = draft.get('versions') if isinstance(draft.get('versions'), dict) else {}
+        for code, ver in versions.items():
+            if code in active and code not in codes and ver:
+                codes.append(code)
+            elif code in codes and ver is None and code != codes[0]:
+                codes.remove(code)
+        return Panel._pbdc_pick_lang(tmpl, employee, False, [{'code': c} for c in codes])
+
+    @api.model
     def save(self, template_id, payload):
         """The customer's first save makes the wording theirs: the sample
         notice goes away."""

@@ -9,7 +9,7 @@
       <attribute name="t-att-class">{ on: !state.sched.form.layout_id and !state.sched.form.pbrp_pdf }</attribute>
     </xpath>
     <xpath expr="//div[hasclass('pbxl-sendas')]/div[hasclass('pbex-seg')]" position="inside">
-      <button role="radio" class="pbrp-sendpdf"
+      <button role="radio" class="pbrp-sendpdf" data-coach="pd-sendpdf"
               t-att-aria-checked="state.sched.form.pbrp_pdf ? 'true' : 'false'"
               t-att-class="{ on: state.sched.form.pbrp_pdf }"
               t-on-click="() => this.setSendPdf()">

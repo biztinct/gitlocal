@@ -88,7 +88,7 @@
     <!-- ============================= BUILDER ============================= -->
     <div t-else="" class="pbrb-build">
       <!-- top bar -->
-      <div class="pbrb-top">
+      <div class="pbrb-top" data-coach="rb-top">
         <button class="pbrb-iconbtn" t-on-click="goHome" title="All reports" aria-label="All reports">
           <span t-out="icon('chevronLeft', 18)"/>
         </button>
@@ -96,7 +96,7 @@
                placeholder="Name this report" maxlength="80" t-att-readonly="readOnly"/>
         <span t-if="state.dirty and !readOnly" class="pbrb-dirty">Not saved</span>
         <span t-if="readOnly" class="pbrb-chip is-soft"><span>Shared by</span> <t t-esc="state.report.owner"/></span>
-        <div class="pbrb-top__tools">
+        <div class="pbrb-top__tools" data-coach="rb-tools">
           <button class="pbrb-iconbtn" t-on-click="undo" t-att-disabled="!canUndo" title="Undo (⌘Z)" aria-label="Undo">
             <span t-out="icon('undo', 16)"/>
           </button>
@@ -153,7 +153,7 @@
       <div t-else="" class="pbrb-work">
         <!-- ========== field list ========== -->
         <aside class="pbrb-fields">
-          <button class="pbrb-rowis" t-on-click="() => this.state.pickSubject = true" t-att-disabled="readOnly">
+          <button class="pbrb-rowis" data-coach="rb-rowis" t-on-click="() => this.state.pickSubject = true" t-att-disabled="readOnly">
             <span class="pbrb-rowis__k">Each row is</span>
             <span class="pbrb-rowis__v"><span t-out="icon(subject ? subject.icon : 'table', 15)"/><t t-esc="subject ? subject.label : ''"/></span>
             <span t-if="!readOnly" class="pbrb-rowis__c" t-out="icon('chevronDown', 14)"/>
@@ -163,7 +163,7 @@
             <input t-ref="search" t-model="state.search" t-on-keydown="onSearchKey" placeholder="Find a field"/>
             <kbd>/</kbd>
           </label>
-          <div class="pbrb-flist">
+          <div class="pbrb-flist" data-coach="rb-fields">
             <div t-if="searchEmpty" class="pbrb-quiet is-small">
               <span>No field matches that.</span>
             </div>
@@ -190,7 +190,7 @@
         <!-- ========== the table side ========== -->
         <section class="pbrb-main">
           <!-- filter bar -->
-          <div class="pbrb-bar">
+          <div class="pbrb-bar" data-coach="rb-bar">
             <div class="pbrb-bar__row">
               <span class="pbrb-bar__k" t-out="icon('filter', 14)"/>
               <span t-foreach="filterChips" t-as="chip" t-key="chip.i" class="pbrb-fchip">
@@ -325,7 +325,7 @@
           </div>
 
           <!-- the table -->
-          <div class="pbrb-tablewrap" t-att-class="{'is-busy': state.busy and state.result}">
+          <div class="pbrb-tablewrap" data-coach="rb-table" t-att-class="{'is-busy': state.busy and state.result}">
             <div t-if="!state.spec.columns.length" class="pbrb-empty">
               <span class="pbrb-empty__ic" t-out="icon('columns', 30)"/>
               <b>Pick what each row is, then click the fields you want.</b>

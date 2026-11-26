@@ -6,7 +6,7 @@
        non-operator names (C18.71). -->
   <t t-name="pb_report_pdf.Button">
     <span class="pbrp-anchor">
-      <button type="button" class="pbrp-btn" t-att-disabled="disabled" t-att-title="btnTitle"
+      <button type="button" class="pbrp-btn" data-coach="pd-button" t-att-disabled="disabled" t-att-title="btnTitle"
               aria-haspopup="dialog" t-on-click="() => this.open()">
         <t t-out="icon('fileText', 15)"/>
         <span class="lbl">PDF</span>
@@ -21,7 +21,7 @@
       <div class="pbrp-root" t-att-class="{ dragging: state.dragging }">
 
         <!-- top bar -->
-        <header class="pbrp-top">
+        <header class="pbrp-top" data-coach="pd-top">
           <span class="pbrp-top-badge"><t t-out="icon('fileText', 18)"/></span>
           <div class="pbrp-top-id">
             <span class="pbrp-top-kicker">Design the PDF</span>
@@ -78,7 +78,7 @@
           <!-- ================================================= options -->
           <aside class="pbrp-side">
 
-            <section class="pbrp-sec">
+            <section class="pbrp-sec" data-coach="pd-paper">
               <h4><t t-out="icon('pageTurn', 15)"/> Paper</h4>
               <div class="pbrp-seg" role="radiogroup" aria-label="Paper size">
                 <button t-foreach="state.data.options.papers" t-as="pp" t-key="pp.key" type="button" role="radio"
@@ -93,7 +93,7 @@
               <p t-if="state.look.turn === 'fit'" class="pbrp-hint" t-esc="fitHint"/>
             </section>
 
-            <section class="pbrp-sec">
+            <section class="pbrp-sec" data-coach="pd-page">
               <h4><t t-out="icon('building', 15)"/> Page</h4>
               <label class="pbrp-switch">
                 <input type="checkbox" t-att-checked="state.look.letterhead" t-on-change="() => this.toggle('letterhead')"/>
@@ -157,7 +157,7 @@
               <p t-if="!state.data.has_totals" class="pbrp-hint">This report has no totals. Add a total to a column on screen to print one here.</p>
             </section>
 
-            <section class="pbrp-sec">
+            <section class="pbrp-sec" data-coach="pd-cols">
               <h4>
                 <t t-out="icon('columns', 15)"/> Columns
                 <span class="pbrp-count"><t t-esc="printedCount"/>/<t t-esc="columnCount"/></span>
@@ -190,7 +190,7 @@
                         t-on-input="(ev) => this.onText('note', ev)" aria-label="Closing note"/>
             </section>
 
-            <section class="pbrp-sec pbrp-sec-look">
+            <section class="pbrp-sec pbrp-sec-look" data-coach="pd-look">
               <h4><t t-out="icon('star', 15)"/> This look</h4>
               <label t-if="state.data.can_share" class="pbrp-switch">
                 <input type="checkbox" t-att-checked="state.data.my_shared" t-att-disabled="state.saving" t-on-change="() => this.toggleShare()"/>
@@ -215,7 +215,7 @@
           </aside>
 
           <!-- ================================================= the page -->
-          <section class="pbrp-stage" t-ref="stage">
+          <section class="pbrp-stage" data-coach="pd-stage" t-ref="stage">
             <div class="pbrp-stage-bar">
               <span class="pbrp-chip"><t t-out="icon('file', 13)"/><span t-esc="pageWord"/></span>
               <span class="pbrp-chip"><t t-out="icon('rows', 13)"/><span t-esc="rowWord"/></span>

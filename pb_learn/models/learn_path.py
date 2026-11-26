@@ -37,7 +37,11 @@ _logger = logging.getLogger(__name__)
 # LEARN REFRESH step 5 — rebuilt over the final station set (39 stations);
 # LEARN REFRESH 2 added the two Hiring stations to the HR path; ORG CHART
 # (2026-11-05) added People › Org chart to it (only HR users can change the
-# chart, so it is their month, not a line manager's).
+# chart, so it is their month, not a line manager's). DOCSTUDIO (2026-11-26)
+# added Build a report and the three document lessons (letters, offer letters
+# and certificates, contract documents) to the HR path, and Build a report and
+# the PDF of a report to the owner's: those are the people the department was
+# built for. My Excel layout stays outside every path (one person sets it up).
 # Each path is what that person does in a normal month, not everything they
 # may open. Notes on the choices:
 #   officer  — the whole month (run → deliver → adjust / settle) plus the
@@ -61,11 +65,13 @@ ROLE_PATHS = {
                  'reports', 'payreview'),
     'hr': ('dashboard', 'employees', 'orgchart', 'records', 'hiring',
            'hiringrole', 'hiringsetup', 'joiners', 'probation', 'exits',
-           'contractends', 'wftime', 'paybands'),
+           'contractends', 'wftime', 'paybands', 'reportbuilder', 'docstudio',
+           'offerletters', 'contractdocs'),
     'manager': ('approvals', 'wftoday', 'wftime', 'wfclose', 'hiring',
                 'probation', 'growth'),
     'owner': ('dashboard', 'approvals', 'insights', 'explorer', 'reports',
-              'decisionroom', 'paybands', 'govreports', 'matrix', 'access'),
+              'decisionroom', 'paybands', 'govreports', 'matrix', 'access',
+              'reportbuilder', 'reportpdf'),
 }
 ROLES = tuple(ROLE_PATHS)
 

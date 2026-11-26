@@ -23,7 +23,8 @@ first page on the right, redrawn by the server as the options change.
 Silent install: no records, no job, no mail.
 See docs/handovers/docstudio/DOCSTUDIO_B_REPORT.md.
 """,
-    'version': '19.0.1.1.0',
+    # 1.1.1: Learn anchors (data-coach) for the DOCSTUDIO lessons, no behaviour change.
+    'version': '19.0.1.1.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

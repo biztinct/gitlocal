@@ -29,6 +29,9 @@ NO_OWN_STATION = {
     'mapping_sheet': 'mapping', 'matrix_builder': 'matrix',
     'hiring_request': 'hiring', 'hiringnumbers': 'hiringsetup',
     'filing_flow': 'govreports',
+    # DOCSTUDIO (2026-11-26): the Document studio's designer is a step of
+    # the Design a letter lesson (L45), whose station is the gallery's.
+    'docdesigner': 'docstudio',
     # no lesson yet: the drawer says so and opens the lesson map
     'wftimeoff': '', 'wfovertime': '',
     # CLOCK-3: a lens inside Time — its step is in Time's lesson (L21) and it
@@ -70,7 +73,10 @@ class TestLearnrevLessonDoor(TransactionCase):
         content = [s['key'] for s in self.tree['screens'] if not s['key'].startswith('hub_')]
         # 57: FORM STUDIO (2026-11-20) added Settings › Form builder, which has
         # its own station (formbuilder), so the list below is unchanged.
-        self.assertEqual(len(content), 57, 'the content screen count moved: review the list')
+        # 64: DOCSTUDIO (2026-11-26) added seven: six with a station of their
+        # own (reportbuilder, excellayout, reportpdf, docstudio, offerletters,
+        # contractdocs) and the designer, listed above (docdesigner).
+        self.assertEqual(len(content), 64, 'the content screen count moved: review the list')
         missing = sorted(k for k in content if k not in stations)
         self.assertEqual(missing, sorted(NO_OWN_STATION))
 

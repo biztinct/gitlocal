@@ -21,7 +21,9 @@ before (Hiring's own path runs unchanged). The PDF is rendered as the person
 preparing it, never as the superuser (Hiring's rule R89).
 See docs/handovers/docstudio/DOCSTUDIO_A1_REPORT.md.
 """,
-    'version': '19.0.1.1.0',
+    # 1.1.1: Learn anchors (data-coach) for the DOCSTUDIO lessons, no behaviour change.
+    # 1.2.0: offer pay words vi/id + offer-letter names translated (close-out Z1/Z3); carries 1.1.1.
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

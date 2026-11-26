@@ -495,3 +495,41 @@ class TestDocContracts(ContractDocCase):
         self.Studio.reset(self.generic.id)
         self.assertTrue(self.generic.pbdc_sample)
         self.assertTrue(self.doc(self.c_sg)['sample_wording'])
+
+    # ------------------------------------------------------------ CZ-4
+    def test_cz_04_designer_preview_picks_the_panel_language(self):
+        """DOCSTUDIO close Z item 4: a Vietnamese person whose own language
+        is English, on the Vietnam copy: the contract panel prints it in
+        Vietnamese, and the designer's preview opens in the same language
+        (no "No wording in this language yet" line). A language somebody
+        picks is kept."""
+        self.emp_vn.lang = 'en_US'
+        panel = self.doc(self.c_vn)
+        self.assertEqual(panel['document']['used_id'], self.vn_copy.id)
+        self.assertEqual(panel['lang'], 'vi_VN')
+        Auto = self.Studio.with_context(pbds_preview_auto=True)
+        pv = Auto.preview(self.vn_copy.id, {}, self.emp_vn.id, 'en_US')
+        self.assertEqual(pv['lang'], panel['lang'])
+        self.assertEqual(pv['read_lang'], panel['lang'])
+        # Picked by hand: unchanged (the asked language, read in the main one).
+        picked = self.Studio.preview(self.vn_copy.id, {}, self.emp_vn.id, 'en_US')
+        self.assertEqual((picked['lang'], picked['read_lang']), ('en_US', 'vi_VN'))
+        # A draft English wording of its own counts at once (before saving).
+        draft = {'versions': {'en_US': {'subject': 'DEMO', 'body': '<p>DEMO English</p>'}}}
+        self.assertEqual(Auto.preview(self.vn_copy.id, draft, self.emp_vn.id, 'en_US')['lang'],
+                         'en_US')
+        # The generic contract (English, shipped Vietnamese words) for a person
+        # reading Vietnamese: Vietnamese, as the panel does.
+        self.emp_vn.lang = 'vi_VN'
+        self.assertEqual(Auto.preview(self.generic.id, {}, self.emp_vn.id, 'vi_VN')['lang'],
+                         self.Panel._pbdc_pick_lang(self.generic, self.emp_vn, False,
+                                                    self.Panel._pbdc_langs(self.generic)))
+        # Letters (not contracts) are untouched by the flag.
+        letter = self.env['pb.letter.template'].create({
+            'name': 'DEMO CZ letter', 'letter_type': 'custom',
+            'body_html': '<p>DEMO ${employee_name}</p>'})
+        self.emp_vn.lang = 'en_US'
+        self.assertEqual(Auto.preview(letter.id, {}, self.emp_vn.id, 'en_US')['lang'], 'en_US')
+        # The true PDF follows the same pick.
+        pdf = Auto.sample_pdf(self.vn_copy.id, {}, self.emp_vn.id, 'en_US')
+        self.assertTrue(pdf['ok'], pdf.get('msg'))

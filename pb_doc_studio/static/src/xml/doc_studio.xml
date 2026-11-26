@@ -19,7 +19,7 @@
       <div class="pbds-top">
         <HubBackChip t-if="back" back="back" tone="'light'"/>
       </div>
-      <header class="pbds-hero">
+      <header class="pbds-hero" data-coach="ds-hero">
         <span class="pbds-hero-ic" t-out="ic('fileText', 24)"/>
         <div class="pbds-hero-t">
           <h1>Documents</h1>
@@ -42,7 +42,7 @@
           <div><b>Pick a letter to make it yours.</b> <span>Change the wording, add fields, show some paragraphs only to some people, and preview it with a real person before you save.</span></div>
         </div>
 
-        <div class="pbds-filter">
+        <div class="pbds-filter" data-coach="ds-filter">
           <div class="pbds-find">
             <span class="pbds-find-ic" t-out="ic('search', 15)"/>
             <input type="search" t-ref="search" placeholder="Find a document" aria-label="Find a document" aria-keyshortcuts="/"
@@ -73,7 +73,7 @@
           <button type="button" class="pbds-btn ghost" t-on-click="clearFilters">Clear the search</button>
         </div>
 
-        <section t-foreach="groups" t-as="g" t-key="g.key" class="pbds-group">
+        <section t-foreach="groups" t-as="g" t-key="g.key" class="pbds-group" data-coach="ds-group">
           <h2 class="pbds-group-h"><span class="pbds-group-ic" t-out="ic(g.icon, 16)"/> <span t-esc="g.label"/> <small t-esc="g.cards.length"/></h2>
           <div class="pbds-grid">
             <article t-foreach="g.cards" t-as="c" t-key="c.id" class="pbds-card" tabindex="0" role="button"
@@ -127,7 +127,7 @@
         <span class="pbds-spin"/> <span>Opening the document…</span>
       </div>
       <t t-else="">
-        <header class="pbds-dz-top">
+        <header class="pbds-dz-top" data-coach="ds-top">
           <button type="button" class="pbds-back" t-on-click="() => this.backToGallery()"><t t-out="ic('back', 14)"/> <span>All documents</span></button>
           <div class="pbds-dz-name">
             <input type="text" class="pbds-name-in" aria-label="Document name" t-att-value="state.draft.name" t-on-input="onName"/>
@@ -164,7 +164,7 @@
 
         <div class="pbds-dz">
           <!-- LEFT: fields -->
-          <aside class="pbds-fields" aria-label="Fields">
+          <aside class="pbds-fields" data-coach="ds-fields" aria-label="Fields">
             <div class="pbds-fields-h">
               <h2>Fields</h2>
               <p>Click to add at the cursor, or drag onto the page.</p>
@@ -206,7 +206,7 @@
 
           <!-- CENTRE: the page -->
           <main class="pbds-centre">
-            <div class="pbds-langs" role="tablist" aria-label="Languages">
+            <div class="pbds-langs" data-coach="ds-langs" role="tablist" aria-label="Languages">
               <button t-foreach="langTabs" t-as="l" t-key="l.code" type="button" role="tab" class="pbds-lang-tab"
                       t-att-aria-selected="state.lang === l.code ? 'true' : 'false'"
                       t-att-class="{ 'is-on': state.lang === l.code, 'is-has': l.has }" t-on-click="() => this.switchLang(l.code)">
@@ -226,7 +226,7 @@
             <DocToolbar api="editorApi" ui="ui" disabled="!hasEditor" onImage.bind="chooseImage" onPick.bind="openPicker"/>
             <input type="file" class="d-none" t-ref="imgInput" accept="image/png,image/jpeg,image/webp,image/gif" t-on-change="onImageChosen"/>
             <div class="pbds-desk" t-ref="desk">
-              <div class="pbds-paper" t-ref="paper" t-att-style="paperStyle">
+              <div class="pbds-paper" data-coach="ds-paper" t-ref="paper" t-att-style="paperStyle">
                 <div t-if="page.letterhead" class="pbds-lh">
                   <span class="pbds-lh-logo"><img t-if="state.doc.company.logo" t-att-src="state.doc.company.logo" alt=""/><t t-else="" t-out="ic('building', 22)"/></span>
                   <span class="pbds-lh-id">
@@ -271,7 +271,7 @@
               <button type="button" role="tab" t-att-aria-selected="state.rightTab === 'preview' ? 'true' : 'false'" t-att-class="{ 'is-on': state.rightTab === 'preview' }" t-on-click="() => this.setRightTab('preview')"><t t-out="ic('eye', 14)"/> <span>Preview</span></button>
               <button type="button" role="tab" t-att-aria-selected="state.rightTab === 'page' ? 'true' : 'false'" t-att-class="{ 'is-on': state.rightTab === 'page' }" t-on-click="() => this.setRightTab('page')"><t t-out="ic('layout', 14)"/> <span>Page</span></button>
             </div>
-            <div t-if="state.rightTab === 'preview'" class="pbds-pv">
+            <div t-if="state.rightTab === 'preview'" class="pbds-pv" data-coach="ds-preview">
               <t t-if="!state.person">
                 <div class="pbds-state">
                   <span class="pbds-state-ic" t-out="ic('users', 20)"/>
@@ -343,7 +343,7 @@
               </t>
             </div>
 
-            <div t-else="" class="pbds-pg">
+            <div t-else="" class="pbds-pg" data-coach="ds-page">
               <section class="pbds-pg-s">
                 <div class="pbds-pg-row">
                   <div><h3>Letterhead</h3><p>Your company's logo, name and address at the top, as on your other documents. Switch it off to print on your own headed paper.</p></div>

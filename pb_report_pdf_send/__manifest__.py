@@ -14,7 +14,8 @@ the look of the person who set up the send. If the PDF cannot be made, that
 person gets the standard Excel instead and the history says why — a send
 never fails because of the PDF.
 """,
-    'version': '19.0.1.0.0',
+    # 1.0.1: Learn anchors (data-coach) for the DOCSTUDIO lessons, no behaviour change.
+    'version': '19.0.1.0.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

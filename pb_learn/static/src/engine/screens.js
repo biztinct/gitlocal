@@ -2672,6 +2672,386 @@ export const SCREENS = {
                     "hình dạng của chúng do chương trình lương và mẫu tệp chính thức quy định.")))}</p>`;
     },
 
+    /* ------------------------------------------ Insights › Build a report
+       DOCSTUDIO R (2026-11-26) — pb_report_builder's builder view as
+       report_builder.xml draws it: the top bar (name, Undo, Share, Make a
+       copy, Delete, Excel, My Excel layout, PDF, Save), the field list (Each
+       row is, Find a field, People fields and Counts from other areas, the
+       key hints), the filter bar (a filter written as a sentence, the
+       period, Group by, Summary only, the row count) and the table, grouped
+       by Department with a Sum on one count. The anchors are the product's
+       own (rb-*), laid on report_builder.xml itself. */
+    reportbuilder() {
+        const r = PRACTICE.reportbuilder;
+        const f = (label, on) => `<div class="lrn-ddf ${on ? "on" : ""}"><span>${esc(tx(label))}</span>${ic(on ? "check" : "plus")}</div>`;
+        const own = [[B("Name", "Tên"), true], [B("Department", "Phòng ban"), true],
+                     [B("Country of Work", "Quốc gia làm việc"), true], [B("Start date", "Ngày bắt đầu"), false]]
+            .map(([l, on]) => f(l, on)).join("");
+        const counts = [[B("Time off days taken", "Số ngày nghỉ đã dùng"), true], [B("Days attended", "Số ngày đi làm"), true],
+                        [B("Assets held now", "Tài sản đang giữ"), false]]
+            .map(([l, on]) => f(l, on)).join("");
+        const heads = [B("Name", "Tên"), B("Department", "Phòng ban"), B("Country of Work", "Quốc gia làm việc")]
+            .map((h) => `<th>${esc(tx(h))}</th>`).join("");
+        const off = r.rows.reduce((a, x) => a + x[1], 0);
+        const rows = r.rows.map(([k, days, att]) => `<tr><td>${esc(EMP[k].name)}</td><td>${esc(tx(EMP[k].dept))}</td>
+            <td>${esc(tx(B("Vietnam", "Việt Nam")))}</td><td class="c">${esc(N(days))}</td><td class="c">${esc(N(att))}</td></tr>`).join("");
+        return `
+            ${rbTopBar()}
+            <div class="lrn-dd2">
+                <aside class="lrn-panel lrn-ddside">
+                    <button class="lrn-btn sm ghost" data-coach="rb-rowis"><span class="lrn-sub2">${esc(tx(B("Each row is", "Mỗi dòng là")))}</span>${
+                        SP}${ic("users")}<b>${esc(tx(B("People", "Nhân sự")))}</b>${ic("chevron-down")}</button>
+                    <span class="lrn-chip">${ic("search")}${esc(tx(B("Find a field", "Tìm trường")))}${SP}<kbd>/</kbd></span>
+                    <div data-coach="rb-fields">
+                        <div class="lrn-ddsec">${esc(tx(B("People fields", "Trường của Nhân sự")))}</div>${own}
+                        <div class="lrn-ddsec">${esc(tx(B("Counts from other areas", "Số liệu từ các mục khác")))}</div>${counts}
+                    </div>
+                    <span class="lrn-sub2"><kbd>/</kbd>${SP}${esc(tx(B("find", "tìm")))}${DOT}<kbd>Enter</kbd>${SP}${esc(tx(B("add", "thêm")))}${DOT}<kbd>⌘S</kbd>${SP}${esc(tx(B("save", "lưu")))}${DOT}<kbd>⌘Z</kbd>${SP}${esc(tx(B("undo", "hoàn tác")))}</span>
+                </aside>
+                <div>
+                    <div class="lrn-panel" data-coach="rb-bar">
+                        <div class="lrn-strip">
+                            ${ic("filter")}<span class="lrn-chip b">${esc(tx(B("Country of Work is one of Vietnam", "Quốc gia làm việc là một trong Việt Nam")))}${ic("x")}</span>
+                            <button class="lrn-chip">${ic("plus")}${esc(tx(B("Filter", "Lọc")))}</button>
+                            ${ic("calendar")}<span class="lrn-chip">${esc(tx(B("This year", "Năm nay")))}${ic("chevron-down")}</span>
+                            <span class="lrn-sub2">${esc(tx(B("by", "theo")))}</span><span class="lrn-chip">${esc(tx(B("Counts only", "Chỉ cho số liệu")))}${ic("chevron-down")}</span>
+                        </div>
+                        <div class="lrn-strip">
+                            ${ic("layers")}<span class="lrn-chip b">${esc(tx(B("Group by", "Nhóm theo")))}${SP}${esc(tx(B("Department", "Phòng ban")))}${ic("x")}</span>
+                            <span class="lrn-chip">${esc(tx(B("Group by…", "Nhóm theo…")))}</span>
+                            <span class="lrn-ddsw"><i></i>${esc(tx(B("Summary only", "Chỉ xem tóm tắt")))}</span>
+                            <span class="lrn-push"></span><b>${esc(N(r.rows.length))}</b><span class="lrn-sub2">${esc(tx(B("rows", "dòng")))}</span>
+                        </div>
+                    </div>
+                    <div class="lrn-panel" data-coach="rb-table">
+                        <div class="lrn-ztablewrap"><table class="lrn-ztable"><thead><tr>${heads}
+                            <th>${esc(tx(B("Time off days taken", "Số ngày nghỉ đã dùng")))}${SP}<span class="lrn-chip">${esc(tx(B("Sum", "Tổng")))}</span>${ic("chevron-down")}</th>
+                            <th>${esc(tx(B("Days attended", "Số ngày đi làm")))}${ic("chevron-down")}</th></tr></thead>
+                            <tbody><tr class="lrn-zarea"><td colspan="3">${ic("chevron-down")}${esc(tx(EMP.mai.dept))}${SP}${esc(N(r.rows.length))}</td><td class="c">${esc(N(off))}</td><td></td></tr>
+                            ${rows}
+                            <tr class="lrn-zarea"><td colspan="3">${esc(tx(B("Total", "Tổng")))}</td><td class="c">${esc(N(off))}</td><td></td></tr></tbody>
+                        </table></div>
+                    </div>
+                </div>
+            </div>`;
+    },
+
+    /* ------------------- Insights › Build a report › My Excel layout
+       DOCSTUDIO X (2026-11-26) — pb_excel_layout's button in the report's
+       top bar, its list drawn open with no layout yet, then the set-up
+       dialog in its ready state: the three steps, the customer's own sheet
+       (their title rows and own headings kept; the area the figures fill
+       lit, the values it replaces struck through), the outline chip, the
+       fields on the right and the footer. Last, the Explorer's Send
+       regularly drawer with its Send as row. Anchors xl-* are the product's
+       own, laid on excel_layout.xml. */
+    excellayout() {
+        const x = PRACTICE.excellayout;
+        const r = PRACTICE.reportbuilder;
+        const letters = ["A", "B", "C", "D", "E", "F"];
+        const cell = (row, col) => {
+            if (row === 1 && col === 0) {
+                return `<td><b>DEMO Hoa Sen board pack</b></td>`;
+            }
+            if (row === 2 && col === 0) {
+                return `<td>${esc(tx(B("Days off and days in, this year", "Days off and days in, this year")))}</td>`;
+            }
+            if (row === 5 && col >= 1 && col <= 4) {
+                return `<td class="head">${esc(x.heads[col - 1])}</td>`;
+            }
+            if (row >= 6 && row <= 9 && col >= 1 && col <= 4) {
+                const data = r.rows[row - 6];
+                const val = [EMP[data[0]].name, tx(EMP[data[0]].dept), N(data[1]), N(data[2])][col - 1];
+                return `<td class="hot old ${row === 6 && col === 1 ? "start" : ""}">${esc(val)}</td>`;
+            }
+            if (row === 11 && col === 3) {
+                return `<td><b>=SUM(D6:D9)</b></td>`;
+            }
+            return `<td></td>`;
+        };
+        const grid = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((row) => `<tr><th>${row}</th>${letters.map((l, c) => cell(row, c)).join("")}</tr>`).join("");
+        const step = (n, label, cls) => `<li class="${cls}"><span>${cls === "done" ? ic("check") : n}</span>${esc(tx(label))}</li>`;
+        const outline = tx(B("4 columns × 4 rows from B6", "4 cột × 4 hàng từ B6"));
+        return `
+            ${rbTopBar()}
+            <div class="lrn-panel" data-coach="xl-pop">
+                <h3>${ic("file-spreadsheet")}${esc(tx(B("Your own Excel file, filled with these figures", "Tệp Excel của chính bạn, điền sẵn số liệu này")))}</h3>
+                <p class="lrn-note">${esc(tx(B("Upload it once. Every download brings it back with fresh figures, in your own headings, formulas and charts.",
+                    "Tải lên một lần. Mỗi lần tải về, bạn nhận lại tệp với số liệu mới, giữ nguyên tiêu đề, công thức và biểu đồ của bạn.")))}</p>
+                <p class="lrn-note">${esc(tx(B("No layout yet. Bring the board pack you already use — headings, formulas, charts and macros stay exactly as they are.",
+                    "Chưa có mẫu nào. Hãy mang bộ báo cáo bạn vẫn dùng — tiêu đề, công thức, biểu đồ và macro được giữ nguyên.")))}</p>
+                <button class="lrn-btn sm pri">${ic("upload")}${esc(tx(B("Use my Excel layout", "Dùng mẫu Excel của tôi")))}</button>
+            </div>
+            <div class="lrn-panel">
+                <h3>${esc(tx(B("Fill your own Excel file with these figures", "Điền số liệu này vào tệp Excel của chính bạn")))}</h3>
+                <ol class="lrn-ddsteps" data-coach="xl-steps">${step(1, B("Your file", "Tệp của bạn"), "done")}${
+                    step(2, B("Where the figures go", "Chỗ ghi số liệu"), "now")}${step(3, B("Try it and save", "Thử và lưu"), "")}</ol>
+                <div class="lrn-ywf">
+                    <div class="lrn-ywfmain" data-coach="xl-grid">
+                        <div class="lrn-strip">${ic("file-spreadsheet")}<b>${esc(x.file)}</b><span class="lrn-sub2">${esc(tx(B("2 sheets", "2 trang tính")))}</span></div>
+                        <div class="lrn-ztablewrap"><table class="lrn-ddgrid"><thead><tr><th></th>${letters.map((l) => `<th>${l}</th>`).join("")}</tr></thead><tbody>${grid}</tbody></table></div>
+                        <div class="lrn-strip">${ic("crosshair")}<b>${esc(outline)}</b>
+                            <span class="lrn-chip b">${esc(x.sheet)}</span><span class="lrn-chip">${esc(tx(B("Summary", "Summary")))}</span></div>
+                        <p class="lrn-note">${ic("sparkles")}${esc(tx(B("Point your formulas and charts at whole columns or an Excel table so they pick up new rows.",
+                            "Hãy cho công thức và biểu đồ trỏ tới cả cột hoặc một bảng Excel để chúng nhận cả các hàng mới.")))}</p>
+                    </div>
+                    <aside class="lrn-ydock" data-coach="xl-side">
+                        <div class="lrn-kv2"><span>${esc(tx(B("Name", "Tên")))}</span><b>${esc(x.layout)}</b></div>
+                        <div class="lrn-kv2"><span>${esc(tx(B("The figures start at", "Số liệu bắt đầu tại")))}</span><b>${ic("crosshair")}${esc(x.start)}</b></div>
+                        <span class="lrn-sub2">${esc(tx(B("Click a cell in the grid, use the arrow keys, or type a cell like B6.",
+                            "Bấm vào một ô trong lưới, dùng phím mũi tên, hoặc gõ một ô như B6.")))}</span>
+                        <span class="lrn-ddsw"><i></i>${esc(tx(B("Write the column headings", "Ghi tiêu đề cột")))}</span>
+                        <span class="lrn-sub2">${esc(tx(B("Your own headings stay; the figures start right at the cell.",
+                            "Tiêu đề của bạn được giữ; số liệu bắt đầu ngay tại ô đó.")))}</span>
+                        <span class="lrn-ddsw on"><i></i>${esc(tx(B("Share with everyone who can open this view", "Chia sẻ với mọi người mở được dạng xem này")))}</span>
+                        <span class="lrn-sub2">${esc(tx(B("They get their own figures in it, never yours.", "Họ nhận số liệu của chính họ trong đó, không bao giờ là của bạn.")))}</span>
+                    </aside>
+                </div>
+                <div class="lrn-strip" data-coach="xl-foot">
+                    <button class="lrn-btn sm ghost">${esc(tx(B("Cancel", "Hủy")))}</button>
+                    <span class="lrn-push"></span>
+                    <button class="lrn-btn sm">${ic("download")}${esc(tx(B("Try it", "Thử ngay")))}</button>
+                    <button class="lrn-btn sm pri">${ic("save")}${esc(tx(B("Save layout", "Lưu mẫu")))}</button>
+                </div>
+            </div>
+            <div class="lrn-panel" data-coach="xl-sendas">
+                <span class="lrn-sub2">${esc(tx(B("Explorer", "Khám phá dữ liệu")))}${ARROW}${esc(tx(B("Send regularly", "Gửi định kỳ")))}</span>
+                <div class="lrn-strip"><b>${esc(tx(B("Send as", "Gửi dưới dạng")))}</b>
+                    <span class="lrn-chip">${esc(tx(B("Standard Excel", "Excel chuẩn")))}</span>
+                    <span class="lrn-chip b">${ic("file-spreadsheet")}${esc(x.layout)}</span></div>
+                <p class="lrn-note">${esc(tx(B("Each person gets your file filled with their own figures. If it ever cannot be used, the standard Excel goes instead and the history says why.",
+                    "Mỗi người nhận tệp của bạn với số liệu của chính họ. Nếu có lúc không dùng được, tệp Excel chuẩn sẽ được gửi thay và lịch sử ghi rõ lý do.")))}</p>
+            </div>
+            <div class="lrn-ddtail"></div>`;
+    },
+
+    /* ------------------------- Insights › Build a report › PDF (Design the PDF)
+       DOCSTUDIO B (2026-11-26) — pb_report_pdf's designer as report_pdf.xml
+       draws it: the top bar (Design the PDF, the report's name, the look it
+       prints with, Save look, Download PDF), the options (Paper, Page,
+       Columns, This look; Heading, Table and Footer shortened to their
+       first lines) and the real first page on the right with its chips.
+       Then the Explorer's Send as row with PDF in my look (pb_report_pdf_send).
+       Anchors rp-* are the product's own. */
+    reportpdf() {
+        const r = PRACTICE.reportbuilder;
+        const seg = (list, on) => list.map((l, i) => `<span class="lrn-chip ${i === on ? "b" : ""}">${esc(tx(l))}</span>`).join("");
+        const cols = [[B("Name", "Tên"), "30%"], [B("Department", "Phòng ban"), "24%"], [B("Country of Work", "Quốc gia làm việc"), "18%"],
+                      [B("Time off days taken", "Số ngày nghỉ đã dùng"), "14%"], [B("Days attended", "Số ngày đi làm"), "14%"]]
+            .map(([l, w]) => `<div class="lrn-ddf on"><span>${ic("check")}${esc(tx(l))}</span><small>${esc(tx(B("Auto", "Tự động")))}${DOT}${w}</small></div>`).join("");
+        const rows = r.rows.map(([k, days, att]) => `<tr><td>${esc(EMP[k].name)}</td><td>${esc(tx(EMP[k].dept))}</td>
+            <td>${esc(tx(B("Vietnam", "Việt Nam")))}</td><td class="c">${esc(N(days))}</td><td class="c">${esc(N(att))}</td></tr>`).join("");
+        return `
+            ${rbTopBar()}
+            <div class="lrn-panel">
+                <div class="lrn-zhead" data-coach="pd-top">
+                    <div><span class="lrn-sub2">${esc(tx(B("Design the PDF", "Thiết kế bản PDF")))}</span><h3>${ic("file-text")}${esc(r.name)}</h3></div>
+                    <span class="lrn-chip">${esc(tx(B("Standard look", "Kiểu trình bày chuẩn")))}</span>
+                    <span class="lrn-push"></span>
+                    <button class="lrn-btn sm ghost">${ic("save")}${esc(tx(B("Save look", "Lưu kiểu")))}</button>
+                    <button class="lrn-btn sm pri">${ic("download")}${esc(tx(B("Download PDF", "Tải PDF")))}</button>
+                </div>
+                <div class="lrn-dd2">
+                    <aside class="lrn-ddside">
+                        <div data-coach="pd-paper"><div class="lrn-ddsec">${esc(tx(B("Paper", "Giấy")))}</div>
+                            <div class="lrn-strip">${seg([EN("A4"), EN("A3")], 0)}</div>
+                            <div class="lrn-strip">${seg([B("Fit", "Vừa trang"), B("Upright", "Đứng"), B("Sideways", "Nằm ngang")], 0)}</div>
+                            <span class="lrn-sub2">${esc(tx(B("Fit turns the page sideways when more than 7 columns print.", "Vừa trang sẽ xoay ngang trang khi in hơn 7 cột.")))}</span></div>
+                        <div data-coach="pd-page"><div class="lrn-ddsec">${esc(tx(B("Page", "Trang")))}</div>
+                            <span class="lrn-ddsw on"><i></i>${esc(tx(B("Company letterhead", "Tiêu đề thư của công ty")))}</span>
+                            <div class="lrn-strip">${seg([B("Clean", "Gọn gàng"), B("Classic serif", "Có chân cổ điển")], 0)}</div>
+                            <div class="lrn-strip">${seg([EN("10"), EN("11"), EN("12"), EN("13"), EN("14")], 1)}</div></div>
+                        <div class="lrn-ddsec">${esc(tx(B("Heading", "Tiêu đề")))}${DOT}${esc(tx(B("Table", "Bảng")))}${DOT}${esc(tx(B("Footer", "Chân trang")))}</div>
+                        <span class="lrn-ddsw on"><i></i>${esc(tx(B("Group headings and subtotals, as on screen", "Tiêu đề nhóm và tổng phụ, như trên màn hình")))}</span>
+                        <span class="lrn-ddsw on"><i></i>${esc(tx(B("Printed on (date) by (your name)", "In lúc (ngày) bởi (tên bạn)")))}</span>
+                        <div data-coach="pd-cols"><div class="lrn-ddsec">${esc(tx(B("Columns", "Cột")))}${SP}5/5</div>${cols}
+                            <span class="lrn-sub2">${esc(tx(B("Drag a column edge on the page to change its width.", "Kéo mép cột trên trang để đổi độ rộng.")))}</span></div>
+                        <div data-coach="pd-look"><div class="lrn-ddsec">${esc(tx(B("This look", "Kiểu này")))}</div>
+                            <span class="lrn-ddsw"><i></i>${esc(tx(B("Everyone who opens this report prints with it", "Mọi người mở báo cáo này đều in theo kiểu này")))}</span>
+                            <span class="lrn-sub2">${ic("star")}${esc(tx(B("Use this look for every new report", "Dùng kiểu này cho mọi báo cáo mới")))}</span></div>
+                    </aside>
+                    <div data-coach="pd-stage">
+                        <div class="lrn-strip"><span class="lrn-chip">${esc(tx(B("1 page", "1 trang")))}</span>
+                            <span class="lrn-chip">${esc(N(r.rows.length))}${SP}${esc(tx(B("rows", "dòng")))}</span>
+                            <span class="lrn-chip">A4${DOT}${esc(tx(B("Upright (fit)", "Đứng (vừa trang)")))}</span></div>
+                        <div class="lrn-ddpaper">
+                            <div class="lrn-ddlh">${ic("home")}<span><b>Hoa Sen Retail Co.</b><br>${esc(tx(B("Hà Nội, Vietnam", "Hà Nội, Việt Nam")))}</span></div>
+                            <b>${esc(r.name)}</b>
+                            <p class="lrn-sub2">${esc(tx(B("This year · Country of Work is one of Vietnam", "Năm nay · Quốc gia làm việc là một trong Việt Nam")))}</p>
+                            <table class="lrn-ztable"><thead><tr><th>${esc(tx(B("Name", "Tên")))}</th><th>${esc(tx(B("Department", "Phòng ban")))}</th>
+                                <th>${esc(tx(B("Country of Work", "Quốc gia làm việc")))}</th><th>${esc(tx(B("Time off days taken", "Số ngày nghỉ đã dùng")))}</th>
+                                <th>${esc(tx(B("Days attended", "Số ngày đi làm")))}</th></tr></thead><tbody>${rows}</tbody></table>
+                            <p class="lrn-sub2">${esc(tx(B("Printed on 26/11/2026 by Demo User · Page 1 of 1", "In lúc 26/11/2026 bởi Demo User · Trang 1 / 1")))}</p>
+                        </div>
+                        <p class="lrn-note">${esc(tx(B("Drag the edge between two column headings to make a column wider. Download PDF gives the true file.",
+                            "Kéo mép giữa hai tiêu đề cột để làm cột rộng hơn. Tải PDF để có tệp thật.")))}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="lrn-panel">
+                <span class="lrn-sub2">${esc(tx(B("Explorer", "Khám phá dữ liệu")))}${ARROW}${esc(tx(B("Send regularly", "Gửi định kỳ")))}</span>
+                <div class="lrn-strip"><b>${esc(tx(B("Send as", "Gửi dưới dạng")))}</b>
+                    <span class="lrn-chip">${esc(tx(B("Standard Excel", "Excel chuẩn")))}</span>
+                    <span class="lrn-chip b" data-coach="pd-sendpdf">${ic("file-text")}${esc(tx(B("PDF in my look", "PDF theo kiểu của tôi")))}</span></div>
+                <p class="lrn-note">${esc(tx(B("Each person gets a PDF of their own figures, printed in your look for this view. If it ever cannot be made, the standard Excel goes instead and the history says why.",
+                    "Mỗi người nhận một bản PDF với số liệu của riêng họ, in theo kiểu của bạn cho chế độ xem này. Nếu không tạo được, bản Excel chuẩn sẽ được gửi thay và lịch sử ghi lý do.")))}</p>
+            </div>
+            <div class="lrn-ddtail"></div>`;
+    },
+
+    /* ------------------------------------------- Settings › HR › Documents
+       DOCSTUDIO F + A1 (2026-11-26) — pb_doc_studio's gallery as
+       doc_studio.xml draws it: the hero (Documents, its line, New document),
+       the coach line, the search and the kind chips with counts, then the
+       groups (Hiring first, a letter group, Certificates) with one card a
+       document: the paper thumbnail, the name, Your wording / Built-in
+       wording, who it is for, the languages, the Copy badge, and the line on
+       what an offer letter or a certificate prints for (pb_doc_studio_hiring,
+       pb_doc_studio_me). The experience letter's menu is drawn open. Anchors
+       ds-* / dh-* / dm-* are the product's own. */
+    docstudio() {
+        const d = PRACTICE.docstudio;
+        const tag = (edited) => edited
+            ? `<span class="lrn-chip b">${ic("pencil")}${esc(tx(B("Your wording", "Nội dung của bạn")))}</span>`
+            : `<span class="lrn-chip">${esc(tx(B("Built-in wording", "Nội dung có sẵn")))}</span>`;
+        const card = (c) => `
+            <div class="lrn-panel">
+                <div class="lrn-ddpaper"><span class="lrn-sub2">${esc(tx(c.snip))}</span></div>
+                <b>${esc(c.name)}</b>${c.copy ? `${SP}<span class="lrn-chip">${ic("copy")}${esc(tx(B("Copy", "Bản sao")))}</span>` : ""}
+                <div class="lrn-strip">${tag(c.edited)}</div>
+                <span class="lrn-sub2">${ic("users")}${esc(tx(B("For", "Cho")))}${SP}${esc(tx(c.forWho))}${DOT}${ic("languages")}${esc(c.langs)}</span>
+                ${c.prints ? `<p class="lrn-note" ${c.prints.attr}>${ic(c.prints.icon)}${esc(tx(c.prints.what))}${SP}<b>${esc(tx(c.prints.uses))}</b></p>` : ""}
+                ${c.menu ? `<div class="lrn-strip"><span class="lrn-chip">${ic("pencil")}${esc(tx(B("Open", "Mở")))}</span><span class="lrn-chip">${ic("copy")}${esc(tx(B("Make a copy for…", "Tạo bản sao cho…")))}</span>
+                    <span class="lrn-chip">${esc(tx(B("Switch off", "Tắt")))}</span><span class="lrn-chip">${ic("rotate-ccw")}${esc(tx(B("Put back the built-in wording", "Khôi phục nội dung có sẵn")))}</span></div>` : ""}
+            </div>`;
+        const groups = [
+            [B("Hiring", "Tuyển dụng"), "briefcase", [{ name: d.offer, edited: false, forWho: B("Vietnam", "Việt Nam"), langs: "EN VI",
+                snip: B("Dear Trần Thu Hà, we are pleased to offer you…", "Kính gửi Trần Thu Hà, chúng tôi vui mừng…"),
+                prints: { attr: ATTR_DH_PRINTS, icon: "briefcase", what: B("Printed when an offer is prepared in Hiring", "Được in khi soạn lời mời trong Tuyển dụng"),
+                          uses: B("Used by 2 offers", "Dùng cho 2 lời mời") } }]],
+            [B("Leaving", "Nghỉ việc"), "log-out", [
+                { name: d.letter, edited: true, forWho: B("Everyone", "Mọi người"), langs: "EN VI", menu: true,
+                  snip: B("This is to confirm that Nguyễn Thị Mai worked with us…", "Xác nhận Nguyễn Thị Mai đã làm việc tại công ty…") },
+                { name: d.copy, edited: true, copy: true, forWho: B("Indonesia", "Indonesia"), langs: "EN ID",
+                  snip: B("This is to confirm that…", "Xác nhận rằng…") }]],
+            [B("Certificates", "Giấy xác nhận"), "award", [{ name: d.cert, edited: false, forWho: B("Everyone", "Mọi người"), langs: "EN VI ID",
+                snip: B("We confirm that Nguyễn Thị Mai is employed…", "Chúng tôi xác nhận Nguyễn Thị Mai đang làm việc…"),
+                prints: { attr: ATTR_DM_PRINTS, icon: "award", what: B("Printed at once when an employee asks for it on My Payobook", "Được in ngay khi nhân viên yêu cầu trên My Payobook"),
+                          uses: B("Issued 3 times", "Đã cấp 3 lần") } }]],
+            /* A document the practice company made itself from a blank page
+               (New document › Show it under Other). */
+            [B("Other", "Khác"), "file-text", [{ name: "DEMO Welcome letter", edited: true, forWho: B("Everyone", "Mọi người"), langs: "EN VI",
+                snip: B("Welcome to Hoa Sen Retail Co.…", "Chào mừng bạn đến với Hoa Sen Retail Co.…") }]],
+        ];
+        const sections = groups.map(([label, icon, cards], i) => `
+            <section ${i === 0 ? ATTR_DS_GROUP : ""}>
+                <h3>${ic(icon)}${esc(tx(label))}${SP}<span class="lrn-sub2">${esc(N(cards.length))}</span></h3>
+                <div class="lrn-grid g3">${cards.map(card).join("")}</div>
+            </section>`).join("");
+        const chips = [[B("All", "Tất cả"), 10], [B("Hiring", "Tuyển dụng"), 1], [B("Joining", "Gia nhập"), 2], [B("Trial period", "Thử việc"), 3],
+                       [B("Leaving", "Nghỉ việc"), 2], [B("Certificates", "Giấy xác nhận"), 1], [B("Other", "Khác"), 1]]
+            .map(([l, n], i) => `<span class="lrn-chip ${i === 0 ? "b" : ""}">${esc(tx(l))}${SP}<b>${esc(N(n))}</b></span>`).join("");
+        return `
+            <div class="lrn-zhead" data-coach="ds-hero">
+                <div><h3>${ic("file-text")}${esc(tx(B("Documents", "Tài liệu")))}</h3>
+                <p class="lrn-note">${esc(tx(B("The wording and the look of every letter Payobook prepares: change it, add details from the person's record, decide who sees which paragraph, and check it with a real person before anything is printed.",
+                    "Nội dung và giao diện của mọi lá thư Payobook lập: chỉnh sửa, thêm thông tin từ hồ sơ của người nhận, quyết định ai thấy đoạn nào, và kiểm tra với một người thật trước khi in.")))}</p></div>
+                <span class="lrn-push"></span>
+                <button class="lrn-btn sm pri">${ic("plus")}${esc(tx(B("New document", "Tài liệu mới")))}</button>
+            </div>
+            <p class="lrn-note">${ic("sparkles")}<b>${esc(tx(B("Pick a letter to make it yours.", "Chọn một lá thư để biến nó thành của bạn.")))}</b></p>
+            <div class="lrn-strip" data-coach="ds-filter">
+                <span class="lrn-chip">${ic("search")}${esc(tx(B("Find a document", "Tìm tài liệu")))}${SP}<kbd>/</kbd></span>${chips}
+            </div>
+            ${sections}
+            <button class="lrn-btn sm ghost" ${navAttr("docdesigner")}>${ic("pencil")}${esc(tx(B("Open", "Mở")))}${SP}${esc(d.letter)}</button>
+            <div class="lrn-ddtail"></div>`;
+    },
+
+    /* ------------------------------ Settings › HR › Documents › the designer
+       DOCSTUDIO F (2026-11-26) — the designer for the experience letter: the
+       top bar (All documents, the name, Your wording, Make a copy for…,
+       Built-in wording, Save), the Fields list with the preview person's
+       real values (Monthly pay locked), the language tabs and the
+       formatting bar with Show only when…, the page itself (letterhead, a
+       field chip, one paragraph only for Indonesia), and on the right the
+       Preview tab for Nguyễn Thị Mai (Vietnam: the paragraph is hidden for
+       her) with the Page tab drawn open below it. */
+    docdesigner() {
+        return docDesignerHTML(false);
+    },
+
+    /* --------------------------- Settings › HR › Documents › an offer letter
+       DOCSTUDIO A1 (2026-11-26) — the same designer on an offer letter:
+       "Preview with · An offer" (pb_doc_studio_hiring), the offer's own
+       fields with the pay lines table, the candidate's signature line under
+       the company's; then the Hiring offer panel's language choice beside
+       Which letter (offer_board.xml). Anchors dh-* are the product's own. */
+    offerletters() {
+        return docDesignerHTML(true);
+    },
+
+    /* --------------------- People › Employees › Contract › Contract document
+       DOCSTUDIO A2 (2026-11-26) — the contract panel's action row with the
+       Contract document button (pb_doc_contracts), and the sheet it opens:
+       the head (the document, the person, the contract's reference, the
+       Vietnam copy's note, the language switch), the amber Sample wording
+       line, what needs attention, the actions, the saved versions and the
+       finished contract on paper — two languages side by side. Anchors dc-*
+       are the product's own (contract_doc.xml). */
+    contractdocs() {
+        const c = PRACTICE.contractdocs;
+        return `
+            <div class="lrn-panel">
+                <span class="lrn-sub2">${esc(EMP.mai.name)}${DOT}${esc(c.ref)}</span>
+                <div class="lrn-strip"><b>${esc(tx(B("Next step", "Bước tiếp theo")))}</b>
+                    <button class="lrn-btn sm ghost">${esc(tx(B("Renew", "Gia hạn")))}</button>
+                    <button class="lrn-btn sm pri" data-coach="dc-button">${ic("file-text")}${esc(tx(B("Contract document", "Văn bản hợp đồng")))}</button></div>
+            </div>
+            <div class="lrn-panel lrn-zdrawer">
+                <div class="lrn-zhead" data-coach="dc-head">
+                    <div><h3>${ic("file-signature")}${esc(tx(B("Employment contract — Vietnam", "Hợp đồng lao động — Việt Nam")))}</h3>
+                    <span class="lrn-sub2">${esc(EMP.mai.name)}${DOT}${esc(c.ref)}${DOT}${ic("globe")}${esc(tx(B("Using the wording for Vietnam", "Dùng nội dung dành cho Việt Nam")))}</span></div>
+                    <span class="lrn-push"></span>
+                    <span class="lrn-chip">${ic("globe")}${esc(tx(B("Tiếng Việt · English", "Tiếng Việt · English")))}</span>
+                    <button class="lrn-btn sm ghost" aria-label="${esc(tx(B("Close", "Đóng")))}">${ic("x")}</button>
+                </div>
+                <div class="lrn-ddnote" data-coach="dc-sample">${ic("alert-triangle")}<b>${esc(tx(B("Sample wording.", "Nội dung mẫu.")))}</b>${SP}${
+                    esc(tx(B("Have your own lawyer check it before you use it.", "Hãy nhờ luật sư của bạn kiểm tra trước khi sử dụng.")))}
+                    <span class="lrn-chip">${esc(tx(B("Not printed", "Không in ra")))}</span>
+                    <button class="lrn-btn sm ghost">${ic("pencil")}${esc(tx(B("Make it yours", "Sửa thành nội dung của bạn")))}</button></div>
+                <div class="lrn-dd2">
+                    <aside class="lrn-ddside">
+                        <div class="lrn-panel" data-coach="dc-missing">
+                            <b>${ic("alert-triangle")}${esc(tx(B("1 thing is missing", "Còn thiếu 1 thông tin")))}</b>
+                            <p class="lrn-note">${esc(tx(B("These print as nothing. Press one to fill it in.", "Những mục này sẽ in ra trống. Bấm vào một mục để điền.")))}</p>
+                            <span class="lrn-ddamber">${ic("user")}${esc(tx(B("No ID number", "Chưa có số giấy tờ tùy thân")))}</span>
+                        </div>
+                        <div class="lrn-ddside" data-coach="dc-acts">
+                            <button class="lrn-btn sm pri">${ic("download")}${esc(tx(B("Download PDF", "Tải PDF")))}${SP}<kbd>⌘P</kbd></button>
+                            <button class="lrn-btn sm">${ic("save")}${esc(tx(B("Save to documents · v2", "Lưu vào tài liệu · v2")))}${SP}<kbd>⌘S</kbd></button>
+                            <button class="lrn-btn sm ghost">${ic("pencil")}${esc(tx(B("Change the wording", "Sửa nội dung")))}</button>
+                        </div>
+                        <div class="lrn-panel" data-coach="dc-versions">
+                            <b>${ic("history")}${esc(tx(B("Saved versions", "Các phiên bản đã lưu")))}</b>
+                            <div class="lrn-kv2"><span><b>v1</b>${SP}${esc(c.saved)}</span>${ic("download")}</div>
+                        </div>
+                    </aside>
+                    <div data-coach="dc-paper">
+                        <div class="lrn-ddpaper">
+                            <div class="lrn-ddlh">${ic("home")}<span><b>Hoa Sen Retail Co.</b><br>${esc(tx(B("Hà Nội, Vietnam", "Hà Nội, Việt Nam")))}</span></div>
+                            <div class="lrn-ddcols"><div><b>HỢP ĐỒNG LAO ĐỘNG</b><br>Người lao động:${SP}${esc(EMP.mai.name)}</div>
+                                <div><b>EMPLOYMENT CONTRACT</b><br>The employee:${SP}${esc(EMP.mai.name)}</div></div>
+                            <div class="lrn-ddcols"><div>Thời hạn: từ 01/01/2026 đến 31/12/2026.</div>
+                                <div>Term: from 01/01/2026 to 31/12/2026.</div></div>
+                            <div class="lrn-ddcols"><div>Thử việc đến 28/02/2026.</div>
+                                <div>Trial period until 28/02/2026.</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+    },
+
     /* ------------------------------------- Compliance › Generate a filing
        The flow a Filings tile opens: Choose the filing → Scope → Generate. */
     filing_flow() {
@@ -3491,6 +3871,162 @@ const ATTR_AH_TAKE = 'data-coach="ah-take"';
 const ATTR_EX_OPEN = 'data-coach="rep-ex-open"';
 /* LEARN REFRESH step 5 */
 const ATTR_PE_ROWCONTRACT = 'data-coach="pe-rowcontract"';
+
+/* DOCSTUDIO close-out (2026-11-26) — anchors laid only on one row or card of
+   a practice copy, held as constants so the registry scan sees them. */
+const ATTR_DS_GROUP = 'data-coach="ds-group"';
+const ATTR_DH_PRINTS = 'data-coach="dh-prints"';
+const ATTR_DM_PRINTS = 'data-coach="dm-prints"';
+const ATTR_DH_WITH = 'data-coach="dh-with"';
+const ATTR_DH_SIGN = 'data-coach="dh-sign"';
+const ATTR_DS_PAGE = 'data-coach="ds-page"';
+
+/* Build a report's top bar (report_builder.xml `pbrb-top`): back to All
+   reports, the report's name, then its tools — Undo, Share, Make a copy,
+   Delete, Excel, the two buttons other modules register into it (My Excel
+   layout from pb_excel_layout, PDF from pb_report_pdf) and Save. Shared by
+   the three Build a report practice copies. */
+function rbTopBar() {
+    return `<div class="lrn-ddbar" data-coach="rb-top">
+        <button class="lrn-btn sm ghost" aria-label="${esc(tx(B("All reports", "Tất cả báo cáo")))}">${ic("chevron-left")}</button>
+        <span class="lrn-ddname">${esc(PRACTICE.reportbuilder.name)}</span>
+        <span class="lrn-push"></span>
+        <span class="lrn-strip" data-coach="rb-tools">
+            <button class="lrn-btn sm ghost" aria-label="${esc(tx(B("Undo", "Hoàn tác")))}">${ic("undo")}</button>
+            <button class="lrn-btn sm ghost">${ic("users")}${esc(tx(B("Share", "Chia sẻ")))}</button>
+            <button class="lrn-btn sm ghost" aria-label="${esc(tx(B("Make a copy", "Tạo bản sao")))}">${ic("copy")}</button>
+            <button class="lrn-btn sm ghost" aria-label="${esc(tx(B("Delete", "Xóa")))}">${ic("trash-2")}</button>
+            <button class="lrn-btn sm ghost">${ic("file-spreadsheet")}${esc(tx(B("Excel", "Excel")))}</button>
+            <button class="lrn-btn sm ghost" data-coach="xl-button">${ic("file-spreadsheet")}${esc(tx(B("My Excel layout", "Mẫu Excel của tôi")))}${ic("chevron-down")}</button>
+            <button class="lrn-btn sm ghost" data-coach="pd-button">${ic("file-text")}${esc(tx(B("PDF", "PDF")))}</button>
+            <button class="lrn-btn sm pri">${ic("save")}${esc(tx(B("Save", "Lưu")))}</button>
+        </span>
+    </div>`;
+}
+
+/* The Document studio's designer (doc_studio.xml `Designer`), for a letter
+   or — `offer` — for an offer letter (pb_doc_studio_hiring's extensions:
+   Preview with · An offer, the offer's own fields with the pay lines table,
+   the candidate's signature line), with the Hiring offer panel's language
+   choice drawn under it. A letter draws the Page tab open under Preview. */
+function docDesignerHTML(offer) {
+    const d = PRACTICE.docstudio;
+    const fld = (label, value, pay) => `<div class="lrn-ddf"><span>${esc(tx(label))}${pay ? ic("lock") : ""}</span><small>${esc(tx(value))}</small></div>`;
+    const grp = (label, rows) => `<div class="lrn-ddsec">${esc(tx(label))}</div>${rows.join("")}`;
+    const fields = offer
+        ? [grp(B("Candidate", "Ứng viên"), [fld(B("Candidate name", "Tên ứng viên"), EN(d.candidate))]),
+           grp(B("Job", "Công việc"), [fld(B("Job title", "Chức danh"), EN("Store supervisor"))]),
+           grp(B("Pay", "Lương"), [fld(B("Monthly total", "Tổng mỗi tháng"), EN("15,000,000 ₫")), fld(B("Pay lines table", "Bảng các khoản lương"), B("3 lines", "3 dòng"))]),
+           grp(B("Dates", "Ngày tháng"), [fld(B("Start date", "Ngày bắt đầu"), EN("01/12/2026"))])]
+        : [grp(B("Employee", "Nhân viên"), [fld(B("Full name", "Họ và tên"), EN(EMP.mai.name)), fld(B("Country of work", "Quốc gia làm việc"), B("Vietnam", "Việt Nam"))]),
+           grp(B("Job", "Công việc"), [fld(B("Job title", "Chức danh"), EN("Cashier")), fld(B("Manager", "Quản lý"), EN(EMP.trang.name))]),
+           grp(B("Contract", "Hợp đồng"), [fld(B("Monthly pay", "Lương tháng"), EN("12,000,000 ₫"), true)]),
+           grp(B("Dates", "Ngày tháng"), [fld(B("Joining date", "Ngày vào làm"), EN("01/03/2024"))]),
+           grp(B("This document", "Tài liệu này"), [fld(B("Last working day", "Ngày làm việc cuối cùng"), B("When the letter is made", "Khi lập thư"))]),
+           grp(B("Your own fields", "Trường riêng của bạn"), [fld(EN("DEMO Shirt size"), EN("M"))])];
+    const chip = (label) => `<span class="lrn-ddchip">${esc(tx(label))}</span>`;
+    const body = offer
+        ? `<p>Dear${SP}${chip(B("Candidate name", "Tên ứng viên"))},</p>
+           <p>We are pleased to offer you the role of${SP}${chip(B("Job title", "Chức danh"))}, starting on${SP}${chip(B("Start date", "Ngày bắt đầu"))}.</p>
+           <p class="lrn-panel lrn-zdrop">${ic("table")}${esc(tx(B("Pay lines table", "Bảng các khoản lương")))}</p>`
+        : `<p>To whom it may concern,</p>
+           <p>This is to confirm that${SP}${chip(B("Full name", "Họ và tên"))}${SP}worked with us as${SP}${chip(B("Job title", "Chức danh"))}${SP}from${SP}${
+               chip(B("Joining date", "Ngày vào làm"))}${SP}to${SP}${chip(B("Last working day", "Ngày làm việc cuối cùng"))}.</p>`;
+    const rule = offer
+        ? B("Only when Country is Indonesia", "Chỉ khi Quốc gia là Indonesia")
+        : B("Only when Country of work is Indonesia", "Chỉ khi Quốc gia làm việc là Indonesia");
+    const when = `<div class="lrn-ddwhen"><span class="lrn-ddpill">${ic("eye")}${esc(tx(rule))}</span>
+        <p>This letter follows the labour rules of the Republic of Indonesia.</p></div>`;
+    const candidate = offer
+        ? `<div class="lrn-ddsign" ${ATTR_DH_SIGN}><b>${esc(d.candidate)}</b><span>${esc(tx(B("Signature and date", "Chữ ký và ngày")))}</span></div>`
+        : "";
+    const who = offer
+        ? `<b>${ic("briefcase")}${esc(d.offerRef)}</b><span class="lrn-sub2">${esc(d.candidate)}${DOT}Store supervisor</span>`
+        : `<b>${ic("user")}${esc(EMP.mai.name)}</b><span class="lrn-sub2">Cashier</span>`;
+    const with_ = offer ? B("An offer", "Một lời mời") : B("A person", "Một người");
+    const tb = [["undo", null], [null, B("Text", "Văn bản")], [null, EN("B")], [null, EN("I")], [null, EN("U")], ["table", null], [null, B("Field", "Trường")]]
+        .map(([i, l]) => `<button class="lrn-btn sm ghost">${i ? ic(i) : ""}${l ? esc(tx(l)) : ""}</button>`).join("");
+    const page = offer ? "" : `
+        <div class="lrn-panel lrn-zdialog" ${ATTR_DS_PAGE}>
+            <h3>${ic("layers")}${esc(tx(B("Page", "Trang")))}${DOT}${esc(tx(B("drawn open", "đang mở sẵn")))}</h3>
+            <span class="lrn-ddsw on"><i></i>${esc(tx(B("Letterhead", "Tiêu đề thư")))}</span>
+            <div class="lrn-ddsec">${esc(tx(B("Margins", "Lề trang")))}</div>
+            <div class="lrn-strip"><span class="lrn-chip b">${esc(tx(B("Normal", "Bình thường")))}</span><span class="lrn-chip">${esc(tx(B("Narrow", "Hẹp")))}</span><span class="lrn-chip">${esc(tx(B("Wide", "Rộng")))}</span></div>
+            <div class="lrn-ddsec">${esc(tx(B("Font", "Phông chữ")))}</div>
+            <div class="lrn-strip"><span class="lrn-chip">${esc(tx(B("Clean", "Gọn gàng")))}</span><span class="lrn-chip">${esc(tx(B("Friendly", "Thân thiện")))}</span><span class="lrn-chip b">${esc(tx(B("Classic serif", "Có chân cổ điển")))}</span><span class="lrn-chip">${esc(tx(B("Modern", "Hiện đại")))}</span></div>
+            <div class="lrn-ddsec">${esc(tx(B("Text size", "Cỡ chữ")))}${DOT}${esc(tx(B("Signature block", "Phần chữ ký")))}</div>
+            <div class="lrn-strip"><span class="lrn-chip b">13</span><span class="lrn-chip">${esc(tx(B("No signature block", "Không có phần chữ ký")))}</span><span class="lrn-chip b">${esc(tx(B("Name and title", "Tên và chức danh")))}</span><span class="lrn-chip">${esc(tx(B("With a signature image", "Có ảnh chữ ký")))}</span></div>
+        </div>`;
+    const hiring = offer ? `
+        <div class="lrn-panel">
+            <span class="lrn-sub2">${esc(tx(B("Hiring", "Tuyển dụng")))}${ARROW}${esc(tx(B("Offer", "Lời mời")))}${DOT}${esc(d.candidate)}</span>
+            <div class="lrn-strip">
+                <button class="lrn-btn sm ghost">${ic("plus")}${esc(tx(B("Add a line", "Thêm một dòng")))}</button>
+                <span class="lrn-chip">${esc(d.offer)}${ic("chevron-down")}</span>
+                <span class="lrn-chip b" data-coach="dh-lang">${esc(tx(B("Language: Tiếng Việt, automatic (the language they applied in)", "Ngôn ngữ: Tiếng Việt, tự động (ngôn ngữ họ dùng khi ứng tuyển)")))}${ic("chevron-down")}</span>
+                <button class="lrn-btn sm ghost">${ic("eye")}${esc(tx(B("Read the letter", "Đọc thư")))}</button>
+            </div>
+        </div>` : "";
+    const tag = offer
+        ? `<span class="lrn-chip">${esc(tx(B("Built-in wording", "Nội dung có sẵn")))}</span>`
+        : `<span class="lrn-chip b">${esc(tx(B("Your wording", "Nội dung của bạn")))}</span>`;
+    const hidden = offer ? "" : `<span class="lrn-ddchip">${esc(tx(B("Last working day — filled in when the letter is made", "Ngày làm việc cuối cùng — được điền khi lập thư")))}</span>`;
+    return `
+        <div class="lrn-ddbar" data-coach="ds-top">
+            <button class="lrn-btn sm ghost" ${navAttr("docstudio")}>${ic("chevron-left")}${esc(tx(B("All documents", "Tất cả tài liệu")))}</button>
+            <span class="lrn-ddname">${esc(offer ? d.offer : d.letter)}</span>
+            ${tag}
+            <span class="lrn-push"></span>
+            <button class="lrn-btn sm ghost">${ic("copy")}${esc(tx(B("Make a copy for…", "Tạo bản sao cho…")))}</button>
+            <button class="lrn-btn sm ghost">${ic("rotate-ccw")}${esc(tx(B("Built-in wording", "Nội dung có sẵn")))}</button>
+            <button class="lrn-btn sm pri">${ic("save")}${esc(tx(B("Save", "Lưu")))}${SP}<kbd>⌘S</kbd></button>
+        </div>
+        <div class="lrn-dd3">
+            <aside class="lrn-panel lrn-ddside" data-coach="ds-fields">
+                <b>${esc(tx(B("Fields", "Trường")))}</b>
+                <span class="lrn-sub2">${esc(tx(B("Click to add at the cursor, or drag onto the page.", "Nhấn để thêm tại con trỏ, hoặc kéo vào trang.")))}</span>
+                <span class="lrn-chip">${ic("search")}${esc(tx(B("Find a field", "Tìm trường")))}</span>
+                ${fields.join("")}
+                <span class="lrn-sub2">${esc(tx(B("While typing, press", "Khi đang gõ, nhấn")))}${SP}<kbd>/</kbd>${SP}${esc(tx(B("to pick a field.", "để chọn một trường.")))}</span>
+            </aside>
+            <div>
+                <div class="lrn-strip" data-coach="ds-langs">
+                    <span class="lrn-chip b">${esc(tx(B("Main wording · English (US)", "Nội dung chính · English (US)")))}</span>
+                    <span class="lrn-chip">Tiếng Việt</span>
+                    <span class="lrn-chip">Bahasa Indonesia</span>
+                    <span class="lrn-push"></span>
+                    <span class="lrn-sub2">${esc(tx(B("Written in", "Viết bằng")))}</span><span class="lrn-chip">English (US)${ic("chevron-down")}</span>
+                </div>
+                <div class="lrn-strip" data-coach="ds-toolbar">${tb}
+                    <button class="lrn-btn sm">${ic("eye")}${esc(tx(B("Show only when…", "Chỉ hiện khi…")))}</button></div>
+                <div class="lrn-ddpaper" data-coach="ds-paper">
+                    <div class="lrn-ddlh">${ic("home")}<span><b>Hoa Sen Retail Co.</b><br>${esc(tx(B("Hà Nội, Vietnam", "Hà Nội, Việt Nam")))}</span></div>
+                    <p class="lrn-sub2">26/11/2026</p>
+                    <p><b>${esc(offer ? d.offer : d.letter)}</b></p>
+                    ${body}
+                    ${when}
+                    <div class="lrn-ddsign"><b>Hoa Sen Retail Co.</b><span>${esc(tx(B("Authorised signatory", "Người ký được ủy quyền")))}</span></div>
+                    ${candidate}
+                </div>
+            </div>
+            <aside class="lrn-ddside">
+                <div class="lrn-strip"><span class="lrn-chip b">${ic("eye")}${esc(tx(B("Preview", "Xem trước")))}</span><span class="lrn-chip">${ic("layers")}${esc(tx(B("Page", "Trang")))}</span></div>
+                <div class="lrn-panel" data-coach="ds-preview">
+                    <div class="lrn-strip" ${offer ? ATTR_DH_WITH : ""}><span class="lrn-sub2">${esc(tx(B("Preview with", "Xem trước với")))}</span>${ic(offer ? "briefcase" : "user")}<b>${esc(tx(with_))}</b></div>
+                    <div class="lrn-strip">${who}<span class="lrn-push"></span><span class="lrn-chip">${esc(tx(B("Change", "Đổi")))}${ic("chevron-down")}</span></div>
+                    <div class="lrn-kv2"><span>${ic("languages")}${esc(tx(B("Language", "Ngôn ngữ")))}</span><b>${esc(tx(B("Tiếng Việt (their language)", "Tiếng Việt (ngôn ngữ của họ)")))}</b></div>
+                    <span class="lrn-sub2">${esc(tx(B("This is the language their letter is made in.", "Đây là ngôn ngữ dùng để lập thư cho họ.")))}</span>
+                    <div class="lrn-strip">${ic("eye-off")}<span>${esc(tx(B("1 paragraph is hidden for this person", "1 đoạn bị ẩn với người này")))}</span>
+                        <span class="lrn-ddsw"><i></i>${esc(tx(B("Show them faded", "Hiện mờ")))}</span></div>
+                    ${hidden}
+                    <button class="lrn-btn sm pri">${ic("download")}${esc(tx(B("Download a sample PDF", "Tải PDF mẫu")))}</button>
+                    <span class="lrn-sub2">${esc(tx(B("Nothing is saved, filed or sent from here.", "Không có gì được lưu, lưu hồ sơ hay gửi đi từ đây.")))}</span>
+                </div>
+                ${page}
+                ${hiring}
+            </aside>
+        </div>`;
+}
 
 /* The quiet numbers row every Lifecycle board opens with: small, grey, one
    line — a count and its words, never a tile. `attr` is the board's own

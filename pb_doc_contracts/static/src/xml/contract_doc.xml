@@ -10,7 +10,7 @@
     <xpath expr="//div[hasclass('pbc-acts')]" position="inside">
       <t t-if="pbdcAvailable">
         <span class="pbdc-acts-gap"/>
-        <button type="button" class="pbim-btn pbdc-btn" t-att-disabled="state.busy"
+        <button type="button" class="pbim-btn pbdc-btn" data-coach="dc-button" t-att-disabled="state.busy"
                 title="See the finished contract, download it as a PDF or file it in their documents"
                 t-on-click="pbdcOpen">
           <t t-out="pbdcIcon()"/> <span>Contract document</span>
@@ -20,7 +20,7 @@
     <xpath expr="//div[hasclass('pbc-acts')]" position="after">
       <div class="pbc-acts pbdc-acts" t-if="pbdcAvailable and !pbdcInActs">
         <span class="pbc-acts-l">Paperwork</span>
-        <button type="button" class="pbim-btn pbdc-btn"
+        <button type="button" class="pbim-btn pbdc-btn" data-coach="dc-button"
                 title="See the finished contract, download it as a PDF or file it in their documents"
                 t-on-click="pbdcOpen">
           <t t-out="pbdcIcon()"/> <span>Contract document</span>
@@ -34,7 +34,7 @@
        ================================================================ -->
   <t t-inherit="pb_doc_studio.Designer" t-inherit-mode="extension">
     <xpath expr="//div[hasclass('pbds-dz')]" position="before">
-      <div t-if="state.doc and state.doc.pbdc_note" class="pbds-banner pbdc-note" role="note">
+      <div t-if="state.doc and state.doc.pbdc_note" class="pbds-banner pbdc-note" data-coach="dc-note" role="note">
         <t t-out="ic('alert', 16)"/>
         <span><b>Sample wording.</b> Have your own lawyer check it before you use it.</span>
         <span class="pbdc-note-np">Not printed</span>
@@ -50,7 +50,7 @@
       <div class="pbdc-scrim" t-on-click="close"/>
       <section class="pbdc-sheet" role="dialog" aria-modal="true" aria-label="Contract document">
 
-        <header class="pbdc-head">
+        <header class="pbdc-head" data-coach="dc-head">
           <span class="pbdc-head-ic" t-out="ic('scrollText', 20)"/>
           <div class="pbdc-head-tx">
             <h2 t-esc="title"/>
@@ -83,7 +83,7 @@
         <!-- Owner ruling 2026-11-24: shipped wording goes live with a notice,
              on screen only (it is not part of the wording, so it never
              reaches the PDF or the filed document). -->
-        <div t-if="d.sample_wording" class="pbdc-sample" role="note">
+        <div t-if="d.sample_wording" class="pbdc-sample" data-coach="dc-sample" role="note">
           <span class="pbdc-sample-ic" t-out="ic('triangleAlert', 16)"/>
           <span class="pbdc-sample-tx"><b>Sample wording.</b> Have your own lawyer check it before you use it.</span>
           <span class="pbdc-sample-np">Not printed</span>
@@ -114,7 +114,7 @@
                 <p t-esc="d.pay_msg"/>
               </div>
 
-              <div t-if="missing.length" class="pbdc-card is-amber">
+              <div t-if="missing.length" class="pbdc-card is-amber" data-coach="dc-missing">
                 <div class="pbdc-card-h">
                   <t t-out="ic('triangleAlert', 15)"/> <b t-esc="missingTitle"/>
                   <span class="pbdc-grow"/>
@@ -152,7 +152,7 @@
                 </ul>
               </div>
 
-              <div class="pbdc-acts">
+              <div class="pbdc-acts" data-coach="dc-acts">
                 <button type="button" class="pbdc-b primary" t-att-disabled="state.pdfBusy or state.loading or blocked"
                         t-att-title="blocked ? d.pay_msg : ''" t-on-click="download">
                   <span t-if="state.pdfBusy" class="pbdc-spin"/>
@@ -171,7 +171,7 @@
                 </button>
               </div>
 
-              <div class="pbdc-vers">
+              <div class="pbdc-vers" data-coach="dc-versions">
                 <div class="pbdc-vers-h"><t t-out="ic('history', 14)"/> <span>Saved versions</span></div>
                 <p t-if="!versions.length" class="pbdc-muted" t-esc="emptyVersionsText"/>
                 <a t-foreach="versions" t-as="v" t-key="v.id" class="pbdc-ver" t-att-class="versionClass(v)"
@@ -188,7 +188,7 @@
           </aside>
 
           <!-- RIGHT: the paper -->
-          <main class="pbdc-desk" t-ref="desk">
+          <main class="pbdc-desk" data-coach="dc-paper" t-ref="desk">
             <div t-if="state.loading" class="pbdc-loading" aria-live="polite">
               <span class="pbdc-spin"/> <span>Writing the contract…</span>
             </div>

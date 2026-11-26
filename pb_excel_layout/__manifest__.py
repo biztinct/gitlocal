@@ -21,7 +21,8 @@ current result — or receives it by scheduled email.
   per recipient; a layout that cannot be used falls back to the standard
   Excel and says why.
 """,
-    'version': '19.0.1.0.0',
+    # 1.0.1: Learn anchors (data-coach) for the DOCSTUDIO lessons, no behaviour change.
+    'version': '19.0.1.0.1',
     'category': 'Human Resources/Payroll',
     'license': 'LGPL-3',
     'author': 'Payobook',
