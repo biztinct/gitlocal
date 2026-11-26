@@ -1230,7 +1230,7 @@
                     <div class="ce-sec-h">Where this value comes from</div>
                     <div class="ce-srcrow">
                       <span class="ce-srclbl">Set to read</span>
-                      <span t-attf-class="ce-srcchip s-{{ srcDeclared(selected).kind }}">
+                      <span t-if="srcDeclared(selected).kind !== 'none' or !(selected.source and selected.source.clock)" t-attf-class="ce-srcchip s-{{ srcDeclared(selected).kind }}">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><t t-set="icon" t-value="srcIcon(srcDeclared(selected).kind)"/><t t-call="pb_formula_studio.SrcIco"/></svg>
                         <t t-esc="srcLabel(srcDeclared(selected).kind)"/>
                       </span>
@@ -1471,7 +1471,7 @@
                       <div class="ce-sec-h">Where this value comes from</div>
                       <div class="ce-srcrow">
                         <span class="ce-srclbl">Set to read</span>
-                        <span t-attf-class="ce-srcchip s-{{ srcDeclared(selected).kind }}">
+                        <span t-if="srcDeclared(selected).kind !== 'none' or !(selected.source and selected.source.clock)" t-attf-class="ce-srcchip s-{{ srcDeclared(selected).kind }}">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><t t-set="icon" t-value="srcIcon(srcDeclared(selected).kind)"/><t t-call="pb_formula_studio.SrcIco"/></svg>
                           <t t-esc="srcLabel(srcDeclared(selected).kind)"/>
                         </span>
