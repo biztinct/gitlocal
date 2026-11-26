@@ -182,3 +182,17 @@ line only if the code under it moved).
   `pb.updates.desk`.
 - PS-b8. Change job lists only the companies ticked in the company switcher (`self.env.companies`): tick the second
   company to walk a company move.
+- PS-c1. `pb_learn/static/content/learn_content.json` and the `practice` block of `anchors.json` are GENERATED from
+  `docs/tutorial_poc/author/data.js` (`python3 docs/tutorial_poc/author/tools/gen_learn_data.py`, then `--check`). Edit
+  the source, never the JSON; the `product` block of `anchors.json` and `engine/screens.js` are hand-edited. The
+  generator left `pb_learn/i18n/vi_VN.po` untouched this time (compare it anyway).
+- PS-c2. A QWeb plural hack (`pay run<t t-if="n !== 1">s</t>`) exports a lone "s" term; a whitespace msgstr counts as
+  untranslated (`test_p7_vietnamese.test_t4` / `t4c`). Use whole phrases in `t-if` / `t-else`.
+- PS-c3. `hr_employee` has no `department_id` column in 19 (it lives on the version): an SQL snapshot that names it
+  fails. Snapshot `id, company_id, payroll_country, active`.
+- PS-c4. The P2a walk users lack the payroll base role: People > Employees > a person opens the full form with "You
+  don't have access yet" (a Vietnam-only view). The Pay scheme block is on the People cockpit's side panel (client
+  action `pb_people`, Pay & tax tab). Give the local walk user `pb_hr_payroll_base.group_payroll_base_manager` and
+  restart the walk server (groups are cached per process).
+- PS-c5. The server has an empty, stale `/tmp/payobook-studio-deploy.lock` file that nobody holds: the test is
+  `flock -n`, never the file's existence.

@@ -3033,15 +3033,13 @@ msgstr ""
 #. module: pb_scheme_map
 #. odoo-javascript
 #: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
-msgid ""
-"recent\n"
-"                  pay run"
+msgid "recent pay run"
 msgstr ""
 
 #. module: pb_scheme_map
 #. odoo-javascript
 #: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
-msgid "s"
+msgid "recent pay runs"
 msgstr ""
 
 #. module: pb_scheme_map

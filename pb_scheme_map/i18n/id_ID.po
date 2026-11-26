@@ -3020,16 +3020,14 @@ msgstr "diusulkan"
 #. module: pb_scheme_map
 #. odoo-javascript
 #: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
-msgid ""
-"recent\n"
-"                  pay run"
-msgstr "penggajian\n                  terakhir"
+msgid "recent pay run"
+msgstr "penggajian terakhir"
 
 #. module: pb_scheme_map
 #. odoo-javascript
 #: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
-msgid "s"
-msgstr " "
+msgid "recent pay runs"
+msgstr "penggajian terakhir"
 
 #. module: pb_scheme_map
 #. odoo-python

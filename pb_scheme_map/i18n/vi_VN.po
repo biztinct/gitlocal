@@ -3177,16 +3177,14 @@ msgstr "trong"
 #. module: pb_scheme_map
 #. odoo-javascript
 #: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
-msgid ""
-"recent\n"
-"                  pay run"
-msgstr "kỳ trả lương\n                  gần nhất"
+msgid "recent pay run"
+msgstr "kỳ trả lương gần nhất"
 
 #. module: pb_scheme_map
 #. odoo-javascript
 #: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
-msgid "s"
-msgstr " "
+msgid "recent pay runs"
+msgstr "kỳ trả lương gần nhất"
 
 #. module: pb_scheme_map
 #. odoo-javascript

@@ -201,8 +201,8 @@
                   · <t t-esc="num(segment.suggestion.people_agree)"/> of
                   <t t-esc="num(segment.suggestion.people_total)"/>
                   <span class="smp-suggestion__people"><t t-esc="peopleWord(segment.suggestion.people_total)"/></span> matched
-                  across <t t-esc="num(segment.suggestion.runs)"/> recent
-                  pay run<t t-if="segment.suggestion.runs !== 1">s</t>
+                  across <t t-esc="num(segment.suggestion.runs)"/>
+                  <t t-if="segment.suggestion.runs === 1">recent pay run</t><t t-else="">recent pay runs</t>
                 </small>
               </span>
               <span t-if="segment.people and !segment.missing" class="smp-tag is-good">All covered</span>
