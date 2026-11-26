@@ -2885,3 +2885,173 @@ msgid ""
 "Somebody has changed %s's pay scheme since, so this cannot be taken back "
 "here."
 msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+msgid "Accept the drafted map · %s row(s)"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Advance"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Candidate from import:"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Choose a team or a specific assignment before applying a team map."
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_scheme_assignment__date_from
+msgid "Effective from"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_scheme_assignment__date_to
+msgid "Effective through"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "How are schemes suggested?"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Import evidence:"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "No linked spreadsheet import to suggest a scheme from."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+msgid "Pay %(who)s with %(scheme)s"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Previous import scheme:"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Review scheme suggestions"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"Review suggestions from recent payslips and their linked imports. This does "
+"not change assignments until you accept a proposal."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_board.py:0
+msgid "Stop paying %s with this scheme"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Suggested from"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Suggested:"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"Suggestions use the scheme recorded on recent payslips for this team. Linked"
+" spreadsheet imports show where those runs came from. The uncovered-people "
+"list also shows the latest linked spreadsheet import, including archived "
+"schemes. An import does not permanently assign the person or their whole "
+"team. Review the evidence, then accept the right proposal. Mixed teams may "
+"need separate assignments."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/formula_scheme_assignment.py:0
+msgid "The mapping end date must not precede its start date."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__pb_person_scheme__source__sheet
+msgid "Upload sheet"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"You have been paying people for months, so the map already exists —\n"
+"            it is just not written down. Press \"Review scheme suggestions\" and this system reads the last runs and proposes it back to\n"
+"            you, line by line, with the numbers behind each one."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"matched\n"
+"                  across"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "of"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"recent\n"
+"                  pay run"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "s"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "· Archived or inactive — choose a current replacement."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "· Matched in staging; import not completed for this person."
+msgstr ""

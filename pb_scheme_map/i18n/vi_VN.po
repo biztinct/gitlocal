@@ -3047,3 +3047,155 @@ msgid ""
 "Somebody has changed %s's pay scheme since, so this cannot be taken back "
 "here."
 msgstr "Đã có người đổi chương trình lương của %s sau đó, nên không thể hoàn tác ở đây."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Advance"
+msgstr "Tạm ứng"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Candidate from import:"
+msgstr "Ứng viên từ tệp nhập:"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Choose a team or a specific assignment before applying a team map."
+msgstr "Hãy chọn một bộ phận hoặc một dòng gán cụ thể trước khi áp dụng bản đồ bộ phận."
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_scheme_assignment__date_from
+msgid "Effective from"
+msgstr "Hiệu lực từ"
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_formula_scheme_assignment__date_to
+msgid "Effective through"
+msgstr "Hiệu lực đến"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "How are schemes suggested?"
+msgstr "Phương án lương được gợi ý thế nào?"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Import evidence:"
+msgstr "Bằng chứng từ tệp nhập:"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "No linked spreadsheet import to suggest a scheme from."
+msgstr "Không có tệp bảng tính đã nhập nào liên kết để gợi ý phương án lương."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Previous import scheme:"
+msgstr "Phương án lương của lần nhập trước:"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Review scheme suggestions"
+msgstr "Xem gợi ý phương án lương"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"Review suggestions from recent payslips and their linked imports. This does "
+"not change assignments until you accept a proposal."
+msgstr "Xem các gợi ý từ phiếu lương gần đây và các tệp nhập liên kết. Việc gán không thay đổi cho đến khi bạn chấp nhận một đề xuất."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Suggested from"
+msgstr "Gợi ý từ"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "Suggested:"
+msgstr "Gợi ý:"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"Suggestions use the scheme recorded on recent payslips for this team. Linked"
+" spreadsheet imports show where those runs came from. The uncovered-people "
+"list also shows the latest linked spreadsheet import, including archived "
+"schemes. An import does not permanently assign the person or their whole "
+"team. Review the evidence, then accept the right proposal. Mixed teams may "
+"need separate assignments."
+msgstr "Gợi ý dùng phương án lương ghi trên các phiếu lương gần đây của bộ phận này. Các tệp bảng tính đã nhập liên kết cho biết các kỳ lương đó đến từ đâu. Danh sách người chưa có phương án cũng hiển thị tệp bảng tính đã nhập gần nhất, kể cả phương án đã lưu trữ. Một lần nhập không gán cố định người đó hay cả bộ phận của họ. Hãy xem bằng chứng, rồi chấp nhận đề xuất đúng. Bộ phận có nhiều nhóm có thể cần các dòng gán riêng."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/formula_scheme_assignment.py:0
+msgid "The mapping end date must not precede its start date."
+msgstr "Ngày kết thúc của dòng gán không được trước ngày bắt đầu."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__pb_person_scheme__source__sheet
+msgid "Upload sheet"
+msgstr "Bảng tải lên"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"You have been paying people for months, so the map already exists —\n"
+"            it is just not written down. Press \"Review scheme suggestions\" and this system reads the last runs and proposes it back to\n"
+"            you, line by line, with the numbers behind each one."
+msgstr "Bạn đã trả lương cho mọi người nhiều tháng, nên bản đồ đã có sẵn —\n            chỉ là chưa được ghi lại. Nhấn \"Xem gợi ý phương án lương\" và hệ thống sẽ đọc các kỳ lương gần nhất rồi đề xuất lại cho\n            bạn, từng dòng một, kèm các con số đằng sau mỗi dòng."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"matched\n"
+"                  across"
+msgstr "khớp\n                  qua"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "of"
+msgstr "trong"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid ""
+"recent\n"
+"                  pay run"
+msgstr "kỳ trả lương\n                  gần nhất"
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "s"
+msgstr " "
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "· Archived or inactive — choose a current replacement."
+msgstr "· Đã lưu trữ hoặc ngừng dùng — hãy chọn phương án thay thế hiện hành."
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/scheme_map.xml:0
+msgid "· Matched in staging; import not completed for this person."
+msgstr "· Đã khớp ở bước chuẩn bị; việc nhập chưa hoàn tất cho người này."

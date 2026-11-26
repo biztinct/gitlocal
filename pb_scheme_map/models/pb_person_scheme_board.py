@@ -124,6 +124,7 @@ class PbSchemeBoardPerson(models.AbstractModel):
             'hand': _("Changed by hand"),
             'team': _("Set for the whole team"),
             'import': _("Pay data file"),
+            'sheet': _("Upload sheet"),
             'job_change': _("Job change"),
         }
         return labels.get(source) or dict(SOURCES).get(source, '')

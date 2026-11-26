@@ -10,7 +10,7 @@ pre-filled from their Country of work. Two sheets carry it:
   the row asks, with the country's schemes in its dropdown. Filled, it must be
   an active scheme of that country, else the row says why and names the
   allowed ones. When the person is added it becomes their own pay scheme from
-  their first day (`source='import'`), with the mid-month advance the
+  their first day (`source='sheet'`, "Upload sheet"), with the mid-month advance the
   "Mid-month advance" column gives, else the scheme's one paired advance
   (ledger A13: only a real mid-month scheme; R7: never the team's).
 * the rows of people already here (lasting changes): a "Pay scheme" cell that
@@ -233,7 +233,7 @@ class PbUpdatesPersonScheme(models.AbstractModel):
         board = self._board().with_context(**{SCHEMEMAP_WRITE: True})
         start = fields.Date.to_date(day) or self.env['pb.records.apply']._today_for()
         return board._person_set_write(employee, config, advance or False, start,
-                                       source='import')
+                                       source='sheet')
 
     # =================================================================
     # B.2 — people already here: a pay scheme cell is a change from a date
@@ -495,7 +495,7 @@ class PbUpdatesPersonScheme(models.AbstractModel):
             answer = board.person_set(g['people'].ids, g['config'].id,
                                       g['advance'].id or False,
                                       fields.Date.to_string(g['day']),
-                                      company_id=self.env.company.id, source='import',
+                                      company_id=self.env.company.id, source='sheet',
                                       note=(name or '')[:200])
             if answer.get('ok') is False:
                 raise UserError(_("Nothing was changed: %s") % (answer.get('message') or ''))

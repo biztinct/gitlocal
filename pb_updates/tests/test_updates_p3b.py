@@ -346,9 +346,9 @@ class TestUpdatesP3bJoiners(P3bCommon):
             [('employee_id.name', 'in', ('DEMO P3B S1', 'DEMO P3B S2', 'DEMO P3B S3'))])
         self.assertEqual(sorted((r.employee_id.name, r.config_id.name, str(r.date_from), r.source)
                                 for r in own),
-                         [('DEMO P3B S1', 'P3B Monthly', '2026-12-01', 'import'),
-                          ('DEMO P3B S2', 'P3B Daily', '2026-12-01', 'import'),
-                          ('DEMO P3B S3', 'P3B Daily', '2026-12-01', 'import')])
+                         [('DEMO P3B S1', 'P3B Monthly', '2026-12-01', 'sheet'),
+                          ('DEMO P3B S2', 'P3B Daily', '2026-12-01', 'sheet'),
+                          ('DEMO P3B S3', 'P3B Daily', '2026-12-01', 'sheet')])
         # The column reads as the check by its heading, and is remembered.
         cols = self.Upd.read_columns(csv_b64(rows), 'p3b.csv')
         self.assertEqual(cols['columns'][5]['target'], UJ.SCHEME_TARGET)

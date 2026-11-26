@@ -38,6 +38,7 @@ SOURCES = [
     ('hand', 'Changed by hand'),
     ('team', 'Set for the whole team'),
     ('import', 'Pay data file'),
+    ('sheet', 'Upload sheet'),
     ('job_change', 'Job change'),
 ]
 

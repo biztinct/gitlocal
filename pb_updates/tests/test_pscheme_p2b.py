@@ -9,7 +9,7 @@ T8  new-employee rows: an empty cell takes the only scheme of the Country of
     work, or the usual one of several; several without a usual one asks (with
     the list); a scheme of another country is refused with the reason and the
     allowed names; the advance column on / off; apply writes the person's own
-    rows from their first day (`source='import'`), at once or when the hire is
+    rows from their first day (`source='sheet'`), at once or when the hire is
     approved; the joiner lands in that scheme's pay run
 T10 people already here: a changed cell asks for the change from the row's
     start date (fast lane, second-approver lane, refused without carry-out);
@@ -137,8 +137,8 @@ class TestUpdatesPersonScheme(P3bCommon):
         person = self.people('DEMO P2B Gita')
         rows = self.own(person)
         self.assertEqual([(r.config_id, r.date_from, r.source) for r in rows],
-                         [(self.idn, date(2026, 12, 15), 'import'),
-                          (self.id_adv, date(2026, 12, 15), 'import')])
+                         [(self.idn, date(2026, 12, 15), 'sheet'),
+                          (self.id_adv, date(2026, 12, 15), 'sheet')])
         joiner = self.env['pb.updates.joiner'].search([('batch_id', '=', answer['batch_id'])])
         self.assertEqual(joiner.scheme_id, self.idn)
         if 'pb.payrun.wizard' in self.env:
@@ -229,7 +229,7 @@ class TestUpdatesPersonScheme(P3bCommon):
         self.assertTrue(answer['schemes'][0]['saved'])
         rows_ann = self.own(self.ann)
         self.assertEqual([(r.config_id, r.date_from, r.source) for r in rows_ann],
-                         [(self.daily, date(2026, 12, 15), 'import')])
+                         [(self.daily, date(2026, 12, 15), 'sheet')])
         self.assertFalse(self.own(self.bob), "an unchanged cell wrote nothing")
 
     def test_t10b_second_approver_lane(self):
