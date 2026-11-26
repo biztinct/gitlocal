@@ -8,7 +8,7 @@
   <t t-inherit="pb_doc_studio.Gallery" t-inherit-mode="extension">
     <!-- What this document prints for, and how many offers use it. -->
     <xpath expr="//dl[hasclass('pbds-meta')]" position="after">
-      <p t-if="c.kind === 'hiring' and c.prints_for" class="pbdx-prints">
+      <p t-if="c.kind === 'hiring' and c.prints_for" class="pbdx-prints" data-coach="dh-prints">
         <t t-out="ic('briefcase', 12)"/> <span t-esc="c.prints_for"/><t t-if="c.uses_text"> <span class="pbdx-uses" t-esc="c.uses_text"/></t>
       </p>
     </xpath>
@@ -17,7 +17,7 @@
   <t t-inherit="pb_doc_studio.Designer" t-inherit-mode="extension">
     <!-- "Preview with": a person for a letter, an offer for an offer letter. -->
     <xpath expr="//div[hasclass('pbds-person')]" position="before">
-      <div class="pbdx-with">
+      <div class="pbdx-with" data-coach="dh-with">
         <span>Preview with</span>
         <b><t t-out="ic(isOfferDoc ? 'briefcase' : 'user', 12)"/> <span t-esc="previewWithText"/></b>
       </div>
@@ -53,7 +53,7 @@
     </xpath>
     <!-- The candidate signs under the company on an offer letter. -->
     <xpath expr="//div[hasclass('pbds-paper')]/div[hasclass('pbds-sign')]" position="after">
-      <div t-if="isOfferDoc" class="pbds-sign pbdh-accept">
+      <div t-if="isOfferDoc" class="pbds-sign pbdh-accept" data-coach="dh-sign">
         <div class="pbds-sign-space"/>
         <div class="pbds-sign-line"><strong t-esc="candidateSignName"/><div class="pbds-sign-title">Signature and date</div></div>
       </div>
