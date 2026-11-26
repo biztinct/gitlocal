@@ -8381,7 +8381,7 @@ const LESSONS = {
         means: B("Built-in wording is what came with Payobook; Your wording means someone changed it. A copy is used for one company or country of work.",
                  "Nội dung có sẵn là nội dung đi kèm Payobook; Nội dung của bạn nghĩa là đã có người sửa. Một bản sao được dùng cho một công ty hoặc một quốc gia làm việc."),
         affects: B("A card's menu can switch the document off, make a copy for… someone, or put back the built-in wording.",
-                   "Menu của thẻ có thể tắt tài liệu, tạo bản sao cho… một nhóm người, hoặc đưa về nội dung có sẵn."),
+                   "Menu của thẻ có thể tắt tài liệu, tạo bản sao cho… một nhóm người, hoặc Khôi phục nội dung có sẵn."),
         press: B("A card, to open it in the designer.", "Một thẻ, để mở nó trong trình thiết kế."),
       },
       {

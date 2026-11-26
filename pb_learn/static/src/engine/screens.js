@@ -2821,7 +2821,8 @@ export const SCREENS = {
                     <span class="lrn-chip b">${ic("file-spreadsheet")}${esc(x.layout)}</span></div>
                 <p class="lrn-note">${esc(tx(B("Each person gets your file filled with their own figures. If it ever cannot be used, the standard Excel goes instead and the history says why.",
                     "Mỗi người nhận tệp của bạn với số liệu của chính họ. Nếu có lúc không dùng được, tệp Excel chuẩn sẽ được gửi thay và lịch sử ghi rõ lý do.")))}</p>
-            </div>`;
+            </div>
+            <div class="lrn-ddtail"></div>`;
     },
 
     /* ------------------------- Insights › Build a report › PDF (Design the PDF)
@@ -2894,7 +2895,8 @@ export const SCREENS = {
                     <span class="lrn-chip b" data-coach="pd-sendpdf">${ic("file-text")}${esc(tx(B("PDF in my look", "PDF theo kiểu của tôi")))}</span></div>
                 <p class="lrn-note">${esc(tx(B("Each person gets a PDF of their own figures, printed in your look for this view. If it ever cannot be made, the standard Excel goes instead and the history says why.",
                     "Mỗi người nhận một bản PDF với số liệu của riêng họ, in theo kiểu của bạn cho chế độ xem này. Nếu không tạo được, bản Excel chuẩn sẽ được gửi thay và lịch sử ghi lý do.")))}</p>
-            </div>`;
+            </div>
+            <div class="lrn-ddtail"></div>`;
     },
 
     /* ------------------------------------------- Settings › HR › Documents
@@ -2914,13 +2916,13 @@ export const SCREENS = {
             : `<span class="lrn-chip">${esc(tx(B("Built-in wording", "Nội dung có sẵn")))}</span>`;
         const card = (c) => `
             <div class="lrn-panel">
-                <div class="lrn-ddpaper"><b>${esc(c.name)}</b><br><span class="lrn-sub2">${esc(tx(c.snip))}</span></div>
+                <div class="lrn-ddpaper"><span class="lrn-sub2">${esc(tx(c.snip))}</span></div>
                 <b>${esc(c.name)}</b>${c.copy ? `${SP}<span class="lrn-chip">${ic("copy")}${esc(tx(B("Copy", "Bản sao")))}</span>` : ""}
                 <div class="lrn-strip">${tag(c.edited)}</div>
                 <span class="lrn-sub2">${ic("users")}${esc(tx(B("For", "Cho")))}${SP}${esc(tx(c.forWho))}${DOT}${ic("languages")}${esc(c.langs)}</span>
                 ${c.prints ? `<p class="lrn-note" ${c.prints.attr}>${ic(c.prints.icon)}${esc(tx(c.prints.what))}${SP}<b>${esc(tx(c.prints.uses))}</b></p>` : ""}
-                ${c.menu ? `<div class="lrn-panel"><span>${ic("pencil")}${esc(tx(B("Open", "Mở")))}</span><br><span>${ic("copy")}${esc(tx(B("Make a copy for…", "Tạo bản sao cho…")))}</span><br>
-                    <span>${esc(tx(B("Switch off", "Tắt")))}</span><br><span>${ic("rotate-ccw")}${esc(tx(B("Put back the built-in wording", "Đưa về nội dung có sẵn")))}</span></div>` : ""}
+                ${c.menu ? `<div class="lrn-strip"><span class="lrn-chip">${ic("pencil")}${esc(tx(B("Open", "Mở")))}</span><span class="lrn-chip">${ic("copy")}${esc(tx(B("Make a copy for…", "Tạo bản sao cho…")))}</span>
+                    <span class="lrn-chip">${esc(tx(B("Switch off", "Tắt")))}</span><span class="lrn-chip">${ic("rotate-ccw")}${esc(tx(B("Put back the built-in wording", "Khôi phục nội dung có sẵn")))}</span></div>` : ""}
             </div>`;
         const groups = [
             [B("Hiring", "Tuyển dụng"), "briefcase", [{ name: d.offer, edited: false, forWho: B("Vietnam", "Việt Nam"), langs: "EN VI",
@@ -2936,14 +2938,18 @@ export const SCREENS = {
                 snip: B("We confirm that Nguyễn Thị Mai is employed…", "Chúng tôi xác nhận Nguyễn Thị Mai đang làm việc…"),
                 prints: { attr: ATTR_DM_PRINTS, icon: "award", what: B("Printed at once when an employee asks for it on My Payobook", "Được in ngay khi nhân viên yêu cầu trên My Payobook"),
                           uses: B("Issued 3 times", "Đã cấp 3 lần") } }]],
+            /* A document the practice company made itself from a blank page
+               (New document › Show it under Other). */
+            [B("Other", "Khác"), "file-text", [{ name: "DEMO Welcome letter", edited: true, forWho: B("Everyone", "Mọi người"), langs: "EN VI",
+                snip: B("Welcome to Hoa Sen Retail Co.…", "Chào mừng bạn đến với Hoa Sen Retail Co.…") }]],
         ];
         const sections = groups.map(([label, icon, cards], i) => `
             <section ${i === 0 ? ATTR_DS_GROUP : ""}>
                 <h3>${ic(icon)}${esc(tx(label))}${SP}<span class="lrn-sub2">${esc(N(cards.length))}</span></h3>
                 <div class="lrn-grid g3">${cards.map(card).join("")}</div>
             </section>`).join("");
-        const chips = [[B("All", "Tất cả"), 12], [B("Hiring", "Tuyển dụng"), 1], [B("Joining", "Gia nhập"), 2], [B("Trial period", "Thử việc"), 3],
-                       [B("Leaving", "Nghỉ việc"), 2], [B("Certificates", "Giấy xác nhận"), 2], [B("Other", "Khác"), 0]]
+        const chips = [[B("All", "Tất cả"), 10], [B("Hiring", "Tuyển dụng"), 1], [B("Joining", "Gia nhập"), 2], [B("Trial period", "Thử việc"), 3],
+                       [B("Leaving", "Nghỉ việc"), 2], [B("Certificates", "Giấy xác nhận"), 1], [B("Other", "Khác"), 1]]
             .map(([l, n], i) => `<span class="lrn-chip ${i === 0 ? "b" : ""}">${esc(tx(l))}${SP}<b>${esc(N(n))}</b></span>`).join("");
         return `
             <div class="lrn-zhead" data-coach="ds-hero">
@@ -2958,7 +2964,8 @@ export const SCREENS = {
                 <span class="lrn-chip">${ic("search")}${esc(tx(B("Find a document", "Tìm tài liệu")))}${SP}<kbd>/</kbd></span>${chips}
             </div>
             ${sections}
-            <button class="lrn-btn sm ghost" ${navAttr("docdesigner")}>${ic("pencil")}${esc(tx(B("Open", "Mở")))}${SP}${esc(d.letter)}</button>`;
+            <button class="lrn-btn sm ghost" ${navAttr("docdesigner")}>${ic("pencil")}${esc(tx(B("Open", "Mở")))}${SP}${esc(d.letter)}</button>
+            <div class="lrn-ddtail"></div>`;
     },
 
     /* ------------------------------ Settings › HR › Documents › the designer

@@ -171,17 +171,20 @@ export const Spot = {
         this._applyFold();
 
         if (!el) {
+            this._placing = null;
             this.hole.style.display = "none";
             this.position(null);
             return;
         }
         el.scrollIntoView({ block: docked() ? "start" : "center",
                             behavior: reduced() || docked() ? "auto" : "smooth" });
+        this._placing = el;
         const place = () => {
             // Deferred a frame to let scrollIntoView settle, so it can outlive
             // the step that scheduled it — leaving a lesson calls hide() and
-            // this fires afterwards against a torn-down overlay.
-            if (!this.hole || !this.card) {
+            // this fires afterwards against a torn-down overlay. A later step
+            // owns the hole once it has started placing its own control.
+            if (!this.hole || !this.card || this._placing !== el) {
                 return;
             }
             let r = el.getBoundingClientRect();
@@ -200,6 +203,12 @@ export const Spot = {
             place();
         } else {
             setTimeout(place, 190);
+            // DOCSTUDIO close-out (2026-11-26): a long smooth scroll (a
+            // control far down a tall practice copy, e.g. the last group of
+            // Settings › Documents) is still moving at 190 ms, and the hole
+            // was left where the control had been. Place it again once the
+            // scroll has settled; the same rectangle when it already had.
+            setTimeout(place, 700);
         }
     },
 
