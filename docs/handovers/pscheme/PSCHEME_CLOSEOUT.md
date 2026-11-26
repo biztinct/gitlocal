@@ -79,8 +79,9 @@ No service stop was needed.
 9. **Untranslated leftovers** (not this programme's strings, all of which are in vi + id): Indonesian catalogues are
    partial in `pb_hr_payroll_formula` (51 entries), `pb_updates` (68), `pb_payrun_wizard` (13), `pb_contracts` (2) and
    absent in `pb_import_batch`, `pb_import_wizard`; `pb_learn` content is English + Vietnamese only (NH70).
-10. Small wording: a person's own pay scheme that starts in the future reads "Since 1 Dec 2026" in Mapping's "have
-    their own" list (should read "From").
+10. ~~Small wording: "Since 1 Dec 2026" in Mapping's "have their own" list~~ — **closed**: commit `9c88dfcd4` (reads
+    "From <date>"; dead "Since %s" msgid dropped), released looks-only 26 Nov 2026 21:35 UTC on all five (files +
+    asset purge, no -u, no restart, 0 s down; served bundle checked ×5, version unchanged 19.0.2.8.0).
 11. Earlier owner questions still open in the phase reports: P1 §10, P2a §12, P2b §10.
 
 ## 5. Can be removed
