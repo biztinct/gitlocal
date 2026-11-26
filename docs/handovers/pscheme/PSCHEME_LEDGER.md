@@ -82,6 +82,21 @@ line only if the code under it moved).
   **P2** Mapping re-wording and "Set for everyone in this team", the one-time fill tool, Country of work prompt, job
   change, Updates sheets, hiring-offer default, pay-data-file joiners, contract currency / usual answers on a scheme
   change (local) · **P3** lessons, vi/id completion, release ×5, the fill on each database, closeout.
+- A11 (after P1, confirms PS4). **A4 tightened**: only the person's FIRST-EVER pay scheme (no earlier row of ANY main
+  kind) counts backwards. A later row of a new kind never does, so a mid-month move between a regular and an
+  end-of-month scheme leaves the old scheme paying that month (R6: never two runs in one month).
+- A12 (after P1, confirms PS5). The "main question" flag (`MAIN_QUESTION`) is accepted: "who pays this person" screens
+  accept either main kind; pay runs never use it.
+- A13. The fill and every later writer copy a mid-month advance ONLY when the scheme is really of kind `mid_cycle`
+  (PS6). A team line "for any kind of run" never becomes someone's advance. No owner question: it was a display
+  artefact, nobody was ever paid an advance by it.
+- A14. A person whose pay scheme's country differs from their Country of work is never changed silently: every screen
+  that shows the pay scheme says so in one amber line with "Change pay scheme" (the universal net behind R4, covering
+  imports and sheets that write Country of work without a screen prompt).
+- A15. P2 is built as two parallel streams from `pscheme` HEAD: **P2a** (branch `pscheme-p2a`: Mapping, team button,
+  fill tool, Country of work prompt, contract follows the scheme) and **P2b** (branch `pscheme-p2b`: job change,
+  Updates sheets, hiring-offer default, pay-data-file joiners). P2b may ADD files / methods to `pb_scheme_map` but
+  never edits a line P1 wrote there except `__init__`, the manifest and i18n; P3 merges both.
 
 ## 3. Open (owner)
 - none
