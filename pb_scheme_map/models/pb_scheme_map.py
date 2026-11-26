@@ -998,17 +998,30 @@ class PbSchemeMap(models.AbstractModel):
             else:
                 uncovered_ids.append(employee_id)
                 missing_by_department[roster.get(employee_id, (0, 0))[0]] += 1
-        for employee in Employee.browse(uncovered_ids[:int(limit or MAX_NAMED)]):
+        named = uncovered_ids[:int(limit or MAX_NAMED)]
+        # PSCHEME P2a A.2 — a person with a pay scheme of their own who is
+        # not covered says WHY in their own words ("their own pay scheme has
+        # ended…"); the team sentence is only for people who follow a team.
+        own = self._person_schemes(named) if named else {}
+        for employee in Employee.browse(named):
             dept_id = roster.get(employee.id, (0, 0))[0]
+            if employee.id in own:
+                reason = answers[employee.id].get('via') or _(
+                    "They have their own pay scheme, but none for this kind "
+                    "of pay run.")
+            elif dept_id:
+                reason = _("They have no pay scheme of their own, and their "
+                           "team has no usual pay scheme yet.")
+            else:
+                reason = _("They have no pay scheme of their own and are not "
+                           "in a team.")
             not_covered.append({
                 'employee_id': employee.id,
                 'name': employee.name or '',
                 'department_id': dept_id,
                 'department': dept_names.get(dept_id, ''),
-                'reason': (_("Their team is not attached to a scheme yet.")
-                           if dept_id
-                           else _("They are not in a team, so no team map "
-                                  "can reach them.")),
+                'own': employee.id in own,
+                'reason': reason,
             })
         return {
             'company_id': company_id,

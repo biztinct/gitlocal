@@ -60,6 +60,7 @@
         </div>
 
         <p class="smp-strip__line" t-esc="coverLine"/>
+        <p class="smp-strip__note"><t t-out="ic('info', 13)"/><span>Each person has their own pay scheme. A team's usual scheme is the starting point for new people and for anyone without one.</span></p>
 
         <details class="smp-evidence-help">
           <summary>How are schemes suggested?</summary>
@@ -72,6 +73,13 @@
             <t t-out="ic('userX', 14)"/>
             <b t-esc="num(exceptionCount)"/>
             <span> not covered</span>
+          </button>
+          <button t-if="mismatchCount" type="button" class="smp-chip is-warn smp-chip--act"
+                  title="Their Country of work and their pay scheme disagree"
+                  t-on-click="openMismatch">
+            <t t-out="ic('globe', 14)"/>
+            <b t-esc="num(mismatchCount)"/>
+            <span> paid by another country's scheme</span>
           </button>
           <span t-if="staleCount" class="smp-chip is-warn"
                 title="The map changed and these people have not been read again yet.">
@@ -91,12 +99,29 @@
                   t-on-click="startCountry">
             <t t-out="ic('globe', 15)"/> Suggest who pays each team
           </button>
+          <button t-if="hasSchemes and !persons.without and persons.latest_fill" class="pbim-btn ghost"
+                  title="Who got a pay scheme of their own in the one-time fill, and undo it"
+                  t-on-click="() => this.openFill()">
+            <t t-out="ic('history', 15)"/> Pay scheme fill
+          </button>
           <button t-if="canEdit" class="pbim-btn outline"
                   t-att-disabled="state.busy ? 'disabled' : false"
                   t-on-click="recompute">
             <t t-out="ic('refresh', 15)"/> Work it out again
           </button>
         </div>
+      </div>
+
+      <!-- ================= PSCHEME P2a C.1: people who still follow their team -->
+      <div t-if="hasSchemes and persons.without" class="smp-pf-banner" role="status">
+        <span class="smp-pf-tile"><t t-out="ic('userCheck', 16)"/></span>
+        <span class="smp-pf-banner-t">
+          <b t-esc="bannerLine"/>
+          <small>Each person keeps the pay scheme that pays them today, written down as their own. Nothing changes in anybody's pay.</small>
+        </span>
+        <button class="pbim-btn primary" t-on-click="() => this.openFill()">
+          <t t-out="ic('userCheck', 15)"/> Give everyone their own pay scheme
+        </button>
       </div>
 
       <!-- ======================================== no schemes on this company -->
@@ -166,6 +191,10 @@
               <span class="smp-seg__name">
                 <b t-esc="segment.label"/>
                 <small><t t-esc="segment.sublabel"/> · <t t-esc="num(segment.people)"/> <t t-esc="peopleWord(segment.people)"/></small>
+                <small t-if="segment.kind === 'department' and (segment.usual or segment.own)" class="smp-seg__split">
+                  <span t-if="segment.usual" t-esc="usualWords(segment)"/>
+                  <button t-if="segment.own" type="button" t-on-mouseup="(ev) => this.openOwnClick(ev, segment.id)" t-on-keydown="(ev) => this.openOwnKey(ev, segment.id)" t-esc="ownWords(segment)"/>
+                </small>
                 <small t-if="segment.suggestion and segment.missing"
                        class="smp-seg__suggestion">
                   Suggested: <b t-esc="segment.suggestion.config"/>
@@ -186,6 +215,13 @@
                       t-on-mouseup="(ev) => this.openAttachClick(ev, segment.key)"
                       t-on-keydown="(ev) => this.openAttachKey(ev, segment.key)">
                 <t t-out="ic('plus', 14)"/>
+              </button>
+              <button t-if="segment.kind === 'department' and segment.people and persons.can_propose" type="button" class="smp-icon"
+                      title="Set for everyone in this team…"
+                      t-att-aria-label="setForLabel(segment)"
+                      t-on-mouseup="(ev) => this.openTeamSetClick(ev, segment.id)"
+                      t-on-keydown="(ev) => this.openTeamSetKey(ev, segment.id)">
+                <t t-out="ic('userCheck', 14)"/>
               </button>
               <button t-if="segment.children.length" type="button" class="smp-icon"
                       t-att-title="'Teams inside ' + segment.label"
@@ -208,6 +244,7 @@
                     t-on-blur="clearTrace"
                     t-on-mouseenter="() => this.traceWire(wire.id)"
                     t-on-mouseleave="clearTrace">
+                <span class="smp-wirechip__lead">Usual</span>
                 <b t-esc="wire.config"/>
                 <span class="smp-badge" t-esc="wire.cycle_label"/>
                 <span t-if="wire.source !== 'manual'" class="smp-badge is-soft">proposed</span>
@@ -225,9 +262,14 @@
                 <span class="smp-seg__name">
                   <b t-esc="child.label"/>
                   <small><t t-esc="num(child.people)"/> <t t-esc="peopleWord(child.people)"/></small>
+                  <small t-if="child.usual or child.own" class="smp-seg__split">
+                    <span t-if="child.usual" t-esc="usualWords(child)"/>
+                    <button t-if="child.own" type="button" t-on-click.stop="() => this.openOwn(child.id)" t-esc="ownWords(child)"/>
+                  </small>
                 </span>
                 <span t-foreach="wiresFor(child.key)" t-as="wire" t-key="wire.id"
                       class="smp-wirechip">
+                  <span class="smp-wirechip__lead">Usual</span>
                   <b t-esc="wire.config"/>
                   <span class="smp-badge" t-esc="wire.cycle_label"/>
                   <button t-if="canEdit" class="smp-icon"
@@ -236,6 +278,11 @@
                     <t t-out="ic('unlink', 13)"/>
                   </button>
                 </span>
+                <button t-if="child.people and persons.can_propose" class="smp-icon"
+                        title="Set for everyone in this team…"
+                        t-on-click="() => this.openTeamSet(child.id)">
+                  <t t-out="ic('userCheck', 13)"/>
+                </button>
                 <button t-if="canEdit" class="smp-icon"
                         title="Attach a scheme to this team"
                         t-on-click="() => this.openAttach([child.key])">
@@ -334,10 +381,7 @@
           </button>
         </div>
 
-        <p class="smp-panel__sub">
-          Everyone in this part of the business will be paid by the scheme you
-          pick, for the kind of run you pick.
-        </p>
+        <p class="smp-panel__sub" t-esc="attachLead"/>
 
         <div class="smp-kinds" role="radiogroup" aria-label="Kind of run">
           <button t-foreach="cycleChoices" t-as="kind" t-key="kind.value"
@@ -473,7 +517,7 @@
            aria-label="Suggest who pays each team"
            t-on-click.stop="onPanelClick">
         <div class="smp-panel__head">
-          <h3>Who pays each team, by country of work</h3>
+          <h3>Each team's usual pay scheme, by country of work</h3>
           <button type="button" class="smp-icon" title="Close"
                   t-on-mouseup="closeCountryClick"
                   t-on-keydown="closeCountryKey">
@@ -575,10 +619,12 @@
             <t t-out="ic('x', 16)"/>
           </button>
         </div>
-        <p class="smp-panel__sub">
-          A pay run will leave them out until their team is attached to a
-          scheme. Fixing the team fixes everybody in it at once.
-        </p>
+        <p class="smp-panel__sub">A pay run leaves them out until they have a pay scheme. Give them one of their own, or set their team's usual pay scheme.</p>
+        <div t-if="persons.can_propose and exceptionPeople.length" class="smp-panel__fixes">
+          <button class="pbim-btn primary sm" t-on-click="openFillForExceptions">
+            <t t-out="ic('userCheck', 14)"/> Give them a pay scheme
+          </button>
+        </div>
         <div class="smp-panel__list">
           <div t-foreach="exceptionPeople" t-as="person" t-key="person.employee_id"
                class="smp-person">
@@ -601,7 +647,7 @@
             </span>
             <button t-if="canEdit and person.department_id" class="pbim-btn outline sm"
                     t-on-click="() => this.openAttachForDepartment(person.department_id)">
-              <t t-out="ic('link', 14)"/> Attach a scheme
+              <t t-out="ic('link', 14)"/> Set their team's usual pay scheme
             </button>
           </div>
           <p t-if="exceptionCount > exceptionPeople.length" class="smp-panel__none">
@@ -610,6 +656,11 @@
         </div>
       </div>
     </div>
+    <!-- ===================================== PSCHEME P2a: person drawers -->
+    <PersonFillDrawer t-if="state.drawer and state.drawer.kind === 'fill'" companyId="state.companyId" filterIds="state.drawer.ids" onClose.bind="closeDrawer" onChanged.bind="afterPersonChange"/>
+    <TeamSetDrawer t-if="state.drawer and state.drawer.kind === 'team'" companyId="state.companyId" departmentId="state.drawer.id" onClose.bind="closeDrawer" onChanged.bind="afterPersonChange"/>
+    <MismatchDrawer t-if="state.drawer and state.drawer.kind === 'mismatch'" companyId="state.companyId" onClose.bind="closeDrawer" onChanged.bind="afterPersonChange"/>
+    <OwnPeoplePanel t-if="state.drawer and state.drawer.kind === 'own'" companyId="state.companyId" departmentId="state.drawer.id" onClose.bind="closeDrawer"/>
   </div>
 </t>
 
@@ -633,6 +684,10 @@
     <span t-if="state.data.advance" class="smp-paidby__row">
       <small>Advance</small>
       <span t-esc="state.data.advance"/>
+    </span>
+    <span t-if="state.data.mismatch_short" class="smp-paidby__row smp-paidby--warn">
+      <small><t t-out="ic('globe', 12)"/></small>
+      <span t-esc="state.data.mismatch_short"/>
     </span>
   </span>
 </t>

@@ -22,7 +22,7 @@ import { Component, onMounted, onWillStart, useRef, useState } from "@odoo/owl";
 import { Dialog } from "@web/core/dialog/dialog";
 import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
-import { useService } from "@web/core/utils/hooks";
+import { useBus, useService } from "@web/core/utils/hooks";
 import { Employee360Drawer } from "@pb_employee_vault/js/employee_360";
 import { ic } from "@pb_import_kit/js/import_icons";
 
@@ -72,6 +72,10 @@ export class ChangePaySchemeDialog extends Component {
         data: { type: Object, optional: true },
         onSaved: { type: Function, optional: true },
         close: Function,
+        // PSCHEME P2a D: preselect a card, lead with a question, name Cancel
+        pick: { type: Number, optional: true },
+        lead: { type: String, optional: true },
+        cancelLabel: { type: String, optional: true },
     };
 
     setup() {
@@ -104,7 +108,13 @@ export class ChangePaySchemeDialog extends Component {
             return;
         }
         this.state.date = d.default_date;
-        const mine = (d.main && d.main.id) || 0;
+        const wanted = this.props.pick
+            || (d.country_mismatch && d.country_mismatch.target_id) || 0;
+        // a person paid by another country's scheme: never preselect the
+        // scheme that is wrong for them — the fitting one, or nothing
+        const fallback = d.country_mismatch ? 0 : ((d.main && d.main.id) || 0);
+        const mine = (wanted && d.choices.concat(d.others).some((c) => c.id === wanted))
+            ? wanted : fallback;
         const inMine = d.choices.some((c) => c.id === mine);
         const inOthers = d.others.some((c) => c.id === mine);
         this.state.pick = mine && (inMine || inOthers) ? mine : 0;
@@ -246,6 +256,19 @@ export class ChangePaySchemeDialog extends Component {
         return Boolean(d && d.isValid && d.day !== 1 && this.d.main && this.d.main.own);
     }
 
+    // ------------------------------------------- PSCHEME P2a E.2: currency
+    get cancelLabel() { return this.props.cancelLabel || _t("Cancel"); }
+    get currencyLine() {
+        const c = this.choices.concat(this.others).find((x) => x.id === this.state.pick);
+        const k = this.d.contract;
+        if (!c || !k || !c.contract_currency || c.contract_currency === k.currency
+                || !c.country_code || c.country_code === k.country) {
+            return "";
+        }
+        return _t("This also changes their contract's currency to %(currency)s from %(date)s.",
+            { currency: c.contract_currency, date: dayWords(this.state.date) });
+    }
+
     // ---------------------------------------------------------- the button
     get route() { return this.d.lane === "route"; }
     get primaryLabel() { return this.route ? _t("Ask for this change") : _t("Change pay scheme"); }
@@ -327,8 +350,12 @@ export class ChangePaySchemeDialog extends Component {
 }
 
 /** Opens the dialog; focus goes back to `opener` when it closes (F.2). */
-export function openChangePayScheme(dialog, { employeeId, data, onSaved, opener, onClose }) {
-    dialog.add(ChangePaySchemeDialog, { employeeId: Number(employeeId), data, onSaved }, {
+export function openChangePayScheme(dialog, { employeeId, data, onSaved, opener, onClose, pick, lead, cancelLabel }) {
+    const props = { employeeId: Number(employeeId), data, onSaved };
+    if (pick) { props.pick = Number(pick); }
+    if (lead) { props.lead = lead; }
+    if (cancelLabel) { props.cancelLabel = cancelLabel; }
+    dialog.add(ChangePaySchemeDialog, props, {
         onClose: () => {
             if (onClose) {
                 onClose();
@@ -348,9 +375,47 @@ export class PersonSchemeBlock extends Component {
     setup() {
         this.orm = useService("orm");
         this.dialog = useService("dialog");
+        this.action = useService("action");
         this.ic = psIc;
         this.button = useRef("change");
         this.state = useState({ data: this.props.block, history: false, flash: 0 });
+        // PSCHEME P2a D.2: the pay scheme changed elsewhere on this screen
+        // (the Country of work prompt, the contract drawer) — read it again.
+        useBus(this.env.bus, "PB_PERSON_SCHEME_CHANGED", (ev) => {
+            const detail = ev.detail || {};
+            if (detail.source !== "block" && Number(detail.empId) === Number(this.props.employeeId)) {
+                this.reload(true);
+            }
+        });
+    }
+    get mismatch() { return this.d.country_mismatch || null; }
+    get contractNote() { return this.d.contract_note || null; }
+    openFix() {
+        const m = this.mismatch;
+        openChangePayScheme(this.dialog, {
+            employeeId: this.props.employeeId, data: this.state.data, pick: m && m.target_id,
+            onSaved: () => this.reload(), opener: this.button.el,
+        });
+    }
+    openContract() {
+        const note = this.contractNote;
+        if (!note) { return; }
+        const ws = this.env.pbEmployeeWorkspace;
+        if (ws && typeof ws.openContract === "function") {
+            ws.openContract(note.contract_id);
+            return;
+        }
+        this.action.doAction({ type: "ir.actions.act_window", res_model: "hr.contract",
+            res_id: note.contract_id, views: [[false, "form"]], target: "current" }).catch(() => {});
+    }
+    async dismissNote() {
+        const note = this.contractNote;
+        if (!note) { return; }
+        try {
+            await this.orm.call(BOARD, "contract_note_dismiss", [note.contract_id]);
+        } finally {
+            await this.reload(true);
+        }
     }
     get d() { return this.state.data || {}; }
     get main() { return this.d.main; }
@@ -382,11 +447,14 @@ export class PersonSchemeBlock extends Component {
             : _t("From %s", h.from_words);
     }
     toggleHistory() { this.state.history = !this.state.history; }
-    async reload() {
+    async reload(quiet = false) {
         try {
             this.state.data = await loadPersonScheme(this.orm, this.props.employeeId);
             this.state.flash += 1;
-            this.env.bus.trigger("PB_PERSON_SCHEME_CHANGED", { empId: Number(this.props.employeeId) });
+            if (quiet) {
+                return;
+            }
+            this.env.bus.trigger("PB_PERSON_SCHEME_CHANGED", { empId: Number(this.props.employeeId), source: "block" });
         } catch (e) {
             console.warn("pb_scheme_map: the pay scheme could not be read again", e);
         }

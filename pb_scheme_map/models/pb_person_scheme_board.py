@@ -293,8 +293,11 @@ class PbSchemeBoardPerson(models.AbstractModel):
             if lane != 'none':
                 return self._person_propose(employees, config, advance, day,
                                             company, source, note)
-        changed = self._person_set_write(employees, config, advance, day,
-                                         source=source, note=note)
+        # PSCHEME P2a: lane 'none' (no route at all) reached here with the map
+        # still "held", and the writer's own guard refused the write — the
+        # carry-out right was checked above, so this IS the approved write.
+        changed = self.with_context(**{SCHEMEMAP_WRITE: True})._person_set_write(
+            employees, config, advance, day, source=source, note=note)
         return {'ok': True, 'applied': True, 'pending': False,
                 'changed': changed, 'message': _("Saved.")}
 

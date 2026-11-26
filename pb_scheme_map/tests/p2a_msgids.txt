@@ -1,0 +1,179 @@
+%(base)s %(kept)s changed since keep theirs: %(names)s.
+%(base)s %(open)s still follow their team.
+%(count)s from %(date)s
+%(count)s have their own
+%(count)s on the usual scheme
+%(count)s people from %(date)s
+%(count)s people still follow their team.
+%(country)s has %(count)s pay schemes. Pick theirs.
+%(name)s works in %(country)s but is paid by %(scheme)s.
+%(names)s and %(count)s more
+%(own)s of %(people)s people have a pay scheme
+%(own)s of %(people)s people have a pay scheme of their own.
+%(people)s will be paid by %(scheme)s: %(when)s.
+%(people)s will get their own pay scheme from %(date)s.
+%(words)s, with the mid-month advance %(advance)s
+%s follow their team's usual pay scheme again.
+%s people
+%s people, and nobody has a pay scheme of their own yet.
+%s: people with a pay scheme of their own
++ mid-month advance %s
+1 person
+1 person has a pay scheme
+1 person has a pay scheme of their own.
+1 person still follows their team.
+A change during a month starts with the next pay run. Their current pay scheme still pays %s.
+A pay run leaves them out until they have a pay scheme. Give them one of their own, or set their team's usual pay scheme.
+Add a pay scheme
+All
+All %(count)s in %(country)s
+All %s people have a pay scheme
+All %s people have a pay scheme of their own.
+Already have their own (%s)
+Already have their own: %s
+Also move these %s people
+Ask to change these %s
+Asked by
+Attached. New people in that team start on this pay scheme; people with their own keep it.
+Back to the list
+Back to the team
+By group (JSON)
+Carried out by
+Change these %(count)s to %(scheme)s
+Changed. Their new pay scheme starts on %s.
+Check these
+Country of work is now %s. Change the pay scheme too?
+Each person has their own pay scheme. A team's usual scheme is the starting point for new people and for anyone without one.
+Each person keeps the pay scheme that pays them today, written down as their own from %s. Nothing changes in anybody's pay.
+Each person keeps the pay scheme that pays them today, written down as their own. Nothing changes in anybody's pay.
+Each team's usual pay scheme, by country of work
+Everybody here already has a pay scheme of their own.
+Everybody is paid by a pay scheme of their Country of work
+Fewer pay schemes
+Fill empty Country of Work
+Filled
+Find a person
+Find a person…
+First pay run on the new pay scheme: %s.
+For everyone here:
+From %s, the first day of this month.
+From %s. Each person's mid-month advance stays only when it is of the same country.
+From their Country of work
+Give %(count)s people their own pay scheme from %(date)s
+Give %s people their pay scheme
+Give 1 person their pay scheme
+Give everyone their own pay scheme
+Give them a pay scheme
+Give these people their own pay scheme
+Got it
+Its usual pay scheme is where new people start. Set it with the plus button on the team.
+Keep %s
+Keep it
+Keep today's
+Last fill: %(date)s by %(who)s, %(people)s.
+New people get theirs when they are added. Change one person's from their record.
+New people in %(team)s start on this pay scheme. People with a pay scheme of their own keep it.
+No Country of work
+No Country of work yet, so nobody can tell which pay scheme is theirs.
+No pay scheme for %s yet.
+Nobody can tell which pay scheme is theirs. Pick one, or fix the reason first.
+Nobody here matches that name.
+Nobody in this team has a pay scheme of their own yet.
+Nobody is ticked who needs this change. Tick the people to give this pay scheme first.
+Nobody is ticked yet.
+Nobody is ticked, so nobody is given a pay scheme. Tick a group or pick a pay scheme for someone first.
+Nobody on this list needs the change any more. Reload the screen.
+Nobody pays them today
+Nobody pays them today, and their Country of work has one pay scheme.
+Nobody was ticked. Tick the people to change first.
+Nobody works in this company yet
+Nobody works in this company yet.
+Nobody works in this team yet
+Only HR and payroll can do this.
+Only the latest fill can be undone, and this is not it any more. Reload the screen.
+Open the contract
+Paid by a pay scheme of another country
+Paid today by %s
+Paid today by a pay scheme of another country. Keep it, or give them their country's.
+Paid today by a pay scheme of their Country of work. They keep it.
+Pay %(count)s people by %(scheme)s, the pay scheme of their Country of work
+Pay %(count)s people of %(team)s by %(scheme)s
+Pay amounts to check
+Pay scheme fill
+Pay scheme fill — who, when, how many, which rows
+People added from now on get their pay scheme in Add employee.
+People given a pay scheme
+People kept (JSON)
+Pick a pay scheme…
+Proposed change to who is paid by what
+Ready
+Request
+Rows made (JSON)
+Rows taken off
+Rows written
+Sent for approval.
+Set for %s
+Set for %s people
+Set for 1 person
+Set for everyone in %(team)s
+Set for everyone in %s
+Set for everyone in this team
+Set for everyone in this team…
+Set their team's usual pay scheme
+Set when the contract's Country of work followed a new pay scheme of another country: the currency changed and the amounts were kept as typed. Cleared when the wage is edited.
+Show %s more pay schemes
+Show more (%s left)
+Since %s
+State
+That contract is not there any more.
+That fill is not there any more.
+That team is not in this company. Reload the screen and try again.
+The fill is not there any more
+The fill is undone
+The fill of %(date)s by %(who)s was undone on %(undone)s.
+The fill of %(date)s by %(who)s: %(count)s people
+The list could not be read. Try again.
+The names could not be read. Try again.
+The pay schemes this fill gave are taken off again. People somebody changed since keep theirs.
+The people could not be read. Try again.
+The people of %(team)s and of %(count)s teams below it that have no usual pay scheme of their own. The team's usual pay scheme stays as it is.
+The people of %s get a pay scheme of their own. The team's usual pay scheme stays as it is.
+The team could not be read. Try again.
+Their Country of work and their pay scheme disagree
+Their Country of work and their pay scheme disagree. Tax and insurance follow the Country of work, so the pay scheme usually should too. Nothing changes until you press a button.
+Their contract is now in %s. Check their pay amounts.
+Their country's
+Their country's…
+Their own pay scheme starts on %s. Nobody's pay changes: each person keeps the pay scheme that pays them today.
+These people work for more than one company. Change one company's people at a time.
+They are paid by %s. People who were not ticked keep what they had.
+They have no pay scheme of their own and are not in a team.
+They have no pay scheme of their own, and their team has no usual pay scheme yet.
+They keep their own pay scheme whatever this team's usual one is.
+This also changes their contract's currency to %(currency)s from %(date)s.
+This company has no pay scheme yet. Build one first.
+This fill was already undone.
+Undo
+Undo a pay scheme fill
+Undo takes off the pay schemes this fill gave %s. They go back to their team's usual pay scheme.
+Undo the pay scheme fill for %s people
+Undo this fill
+Undone
+Undone by
+Undone on
+Usual
+What happens
+Who got a pay scheme of their own in the one-time fill, and undo it
+Without a pay scheme (%s)
+Works in %(country)s and is paid today by %(scheme)s, a pay scheme of %(other)s.
+Works in %(country)s · paid by %(scheme)s (%(other)s)
+Works in %(country)s. %(scheme)s is a pay scheme of %(other)s.
+Works in %s
+You cannot see who pays this company's people.
+and %s more
+and %s more pay schemes
+no change
+paid by another country's scheme
+Fits their Country of work: %s
+Give their pay scheme
+No pay scheme for %s yet. Add one
