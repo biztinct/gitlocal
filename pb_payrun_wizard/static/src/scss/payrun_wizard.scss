@@ -401,11 +401,28 @@ $pw-lock-bd: #A7E3D5;
 }
 .pw-root .pw-schemesum__sep { color: var(--pw-muted); }
 
+.pw-root .pw-quiet {
+    display: flex; align-items: center; gap: 8px; width: 100%; margin-top: 8px; padding: 6px 2px;
+    border: 0; background: none; text-align: left; color: var(--pbim-muted, #64748B);
+    font-size: 12.5px; cursor: pointer;
+    &:hover { color: var(--pbim-text, #1B1733); }
+    &:focus-visible { outline: 2px solid var(--pbim-primary, #5A4BB0); outline-offset: 2px; border-radius: 6px; }
+    .pw-quiet__ic { display: inline-flex; flex: none; }
+    .pw-quiet__chev { display: inline-flex; margin-left: auto; transition: transform .18s; }
+    .pw-quiet__chev.is-open { transform: rotate(180deg); }
+}
+@media (prefers-reduced-motion: reduce) { .pw-root .pw-quiet .pw-quiet__chev { transition: none; } }
 .pw-root .pw-notcovered {
     margin-top: 10px; padding: 12px 14px; border-radius: 12px;
     background: #FFF5F7; border: 1px solid #F6C8D6;
 }
 .pw-root .pw-notcovered .pw-plist { max-height: 190px; overflow-y: auto; }
+/* PSCHEME P1 C.2 — "paid elsewhere" is information, not an alarm: neutral,
+   and each person on two lines so a long scheme name never clips. */
+.pw-root .pw-notcovered.pw-elsewhere { background: var(--pbim-bg, #F5F6FA); border-color: var(--pbim-line, #E2E8F0); }
+.pw-root .pw-notcovered .pw-prow { flex-wrap: wrap; row-gap: 2px; }
+.pw-root .pw-notcovered .pw-pname { flex: 1 1 100%; font-weight: 600; }
+.pw-root .pw-notcovered .pw-pmeta { flex: 1 1 100%; white-space: normal; }
 
 /* FILLIN P2 C2 — a muted line, not an alarm: the run may go ahead. */
 .pw-root .pw-fillin {

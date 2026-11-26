@@ -89,12 +89,19 @@
                                     <span class="pw-fillin__ic" t-out="ic('listChecks',14)"/>
                                     <span class="pw-fillin__tx"><t t-esc="schemeUncheckedLine"/> · <button type="button" class="pw-fillin__go" t-on-click="openFillin">Open the Contracts list</button></span>
                                 </p>
-                                <div t-if="state.scheme.open" class="pw-notcovered">
-                                    <p class="pw-muted">
-                                        No scheme covers these people, so this run will
-                                        leave them out. Attaching their team to a scheme
-                                        fixes everybody in it at once.
-                                    </p>
+                                <!-- PSCHEME P1 C.2 / C.3 — two quiet lines, grey and
+                                     hidden at zero (quiet board pattern): who
+                                     this run leaves out, and who of these teams
+                                     is paid by a pay scheme of their own. -->
+                                <button t-if="notCoveredCount" type="button" class="pw-quiet"
+                                        t-att-aria-expanded="state.scheme.open ? 'true' : 'false'"
+                                        t-on-click="toggleNotCovered">
+                                    <span class="pw-quiet__ic" t-out="ic('alert',14)"/>
+                                    <span t-esc="notCoveredLine"/>
+                                    <span t-attf-class="pw-quiet__chev {{ state.scheme.open ? 'is-open' : '' }}" t-out="ic('chevronDown',14)"/>
+                                </button>
+                                <div t-if="state.scheme.open and notCoveredCount" class="pw-notcovered">
+                                    <p class="pw-muted">No pay scheme covers these people, so this run will leave them out. Give a person a pay scheme of their own from their record, or set the team's usual pay scheme in Mapping.</p>
                                     <div class="pw-plist">
                                         <div t-foreach="notCoveredPeople" t-as="p"
                                              t-key="p.employee_id" class="pw-prow">
@@ -106,6 +113,22 @@
                                             t-on-click="openSchemeMap">
                                         Open the map
                                     </button>
+                                </div>
+                                <button t-if="elsewhereCount" type="button" class="pw-quiet"
+                                        t-att-aria-expanded="state.scheme.elsewhereOpen ? 'true' : 'false'"
+                                        t-on-click="toggleElsewhere">
+                                    <span class="pw-quiet__ic" t-out="ic('users',14)"/>
+                                    <span t-esc="elsewhereLine"/>
+                                    <span t-attf-class="pw-quiet__chev {{ state.scheme.elsewhereOpen ? 'is-open' : '' }}" t-out="ic('chevronDown',14)"/>
+                                </button>
+                                <div t-if="state.scheme.elsewhereOpen and elsewhereCount" class="pw-notcovered pw-elsewhere">
+                                    <div class="pw-plist">
+                                        <div t-foreach="elsewherePeople" t-as="p"
+                                             t-key="p.employee_id" class="pw-prow">
+                                            <span class="pw-pname" t-esc="p.emp"/>
+                                            <span class="pw-pmeta" t-esc="p.why"/>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <t t-if="!hasSchemePicker and (state.defaults.divisions || []).length">

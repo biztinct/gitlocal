@@ -280,7 +280,7 @@ export class PayrunWizard extends Component {
             },
             // What picking a scheme showed: how many people it covers and who
             // it leaves out, both known BEFORE anything is created.
-            scheme: { preview: null, loading: false, open: false },
+            scheme: { preview: null, loading: false, open: false, elsewhereOpen: false },
             summary: null,
             // GROUP P5 — both payslips for one person paid in two places,
             // computed in a savepoint and rolled back. Small metadata, so it
@@ -868,6 +868,28 @@ export class PayrunWizard extends Component {
     }
 
     toggleNotCovered() { this.state.scheme.open = !this.state.scheme.open; }
+
+    // ------------------------------------------------- PSCHEME P1 C.2
+    get notCoveredCount() {
+        return (this.state.scheme.preview && this.state.scheme.preview.not_covered) || 0;
+    }
+    get notCoveredLine() {
+        const n = this.notCoveredCount;
+        return n === 1 ? _t("1 person is not covered by any pay scheme and is left out")
+            : _t("%s people are not covered by any pay scheme and are left out", this.num(n));
+    }
+    get elsewhereCount() {
+        return (this.state.scheme.preview && this.state.scheme.preview.elsewhere) || 0;
+    }
+    get elsewherePeople() {
+        return (this.state.scheme.preview && this.state.scheme.preview.elsewhere_people) || [];
+    }
+    get elsewhereLine() {
+        const n = this.elsewhereCount;
+        return n === 1 ? _t("1 person of these teams has their own pay scheme and is paid elsewhere")
+            : _t("%s people of these teams have their own pay scheme and are paid elsewhere", this.num(n));
+    }
+    toggleElsewhere() { this.state.scheme.elsewhereOpen = !this.state.scheme.elsewhereOpen; }
 
     // ------------------------------------------------- FILLIN P2 C2
     /** Of the people covered, how many hold answers nobody has checked. */

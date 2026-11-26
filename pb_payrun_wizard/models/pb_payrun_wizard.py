@@ -5,6 +5,7 @@ import json
 import logging
 from datetime import date, datetime, time as dtime
 from dateutil.relativedelta import relativedelta
+from odoo.tools.misc import format_date
 from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 
@@ -561,6 +562,12 @@ class PbPayrunWizard(models.AbstractModel):
                                     vals.get('date_end'))
         known = set(covered)
         extra = [e for e in hosts if e not in known]
+        elsewhere, own_ids = self._scheme_own_elsewhere(
+            config_id, base, covered, on_date=vals.get('date_start'))
+        # a person with a pay scheme of their own is paid by it: never "not
+        # covered by any pay scheme" (the ones this team's usual scheme would
+        # have had are named in "paid elsewhere")
+        missed = [m for m in missed if m['employee_id'] not in own_ids]
         return {
             'formula_config_id': config_id,
             'covered': len(covered) + len(extra),
@@ -571,7 +578,78 @@ class PbPayrunWizard(models.AbstractModel):
             # FILLIN P2 C2 — of the people covered, how many still hold an
             # answer Payobook filled in that nobody has checked. Advice only.
             'unchecked': self._fillin_unchecked(covered),
+            # PSCHEME P1 C.2 — people of these teams whose OWN pay scheme pays
+            # them elsewhere: the run for the team's usual scheme would have
+            # had them, their own scheme's run has them instead. Advice only.
+            'elsewhere': len(elsewhere),
+            'elsewhere_people': elsewhere[:100],
         }
+
+    @api.model
+    def _scheme_elsewhere(self, config_id, base_ids, covered, on_date=None):
+        """The "paid elsewhere" list alone (see `_scheme_own_elsewhere`)."""
+        return self._scheme_own_elsewhere(config_id, base_ids, covered,
+                                          on_date=on_date)[0]
+
+    @api.model
+    def _scheme_own_elsewhere(self, config_id, base_ids, covered, on_date=None):
+        """`([{employee_id, emp, why}], {own_ids})` — people answered with ANOTHER scheme
+        because of a pay scheme of their own, whom the ladder without that rung
+        (`pb_scheme_skip_person`) would have put in THIS run. Soft probe: a
+        database without the map, or a map without the person rung, answers
+        an empty list. Never raises."""
+        Map = self.env.get('pb.scheme.map')
+        if Map is None or not config_id:
+            return [], set()
+        config = self.env['hr.formula.config'].sudo().browse(
+            int(config_id)).exists()
+        if not config:
+            return [], set()
+        known = set(covered)
+        rest = [e for e in base_ids if e not in known]
+        if not rest:
+            return [], set()
+        cycle = config.cycle_type or 'any'
+        try:
+            Map = Map.sudo()
+            # The MAIN question for a main run: a person whose own scheme is the
+            # other main kind (regular vs end of month) is answered by it.
+            Ask = Map.with_context(pb_scheme_main_question=True) \
+                if cycle in ('regular', 'end_cycle') else Map
+            real = Ask.resolve_many(rest, cycle, on_date=on_date)
+            mine = set(Map._person_schemes(rest, on_date)) \
+                if hasattr(Map, '_person_schemes') else set()
+            own = [e for e in rest
+                   if ((real.get(e) or {}).get('rung') == 'person'
+                       and (real.get(e) or {}).get('config_id')
+                       and real[e]['config_id'] != config.id)
+                   or (e in mine and not (real.get(e) or {}).get('config_id'))]
+            if not own:
+                return [], set()
+            without = Map.with_context(pb_scheme_skip_person=True).resolve_many(
+                own, cycle, on_date=on_date)
+        except Exception:       # noqa: BLE001 — advice must never block a run
+            _logger.exception('The scheme map could not say who is paid elsewhere')
+            return [], set()
+        moved = [e for e in own
+                 if (without.get(e) or {}).get('config_id') == config.id]
+        people = self.env['hr.employee'].sudo().browse(moved[:200])
+        out = []
+        for employee in people:
+            answer = real.get(employee.id) or {}
+            day = fields.Date.to_date(answer.get('date_from')) \
+                if answer.get('date_from') else None
+            if answer.get('config_id'):
+                why = _("paid by %(scheme)s, from %(date)s",
+                        scheme=answer.get('config_name') or '',
+                        date=format_date(self.env, day, date_format='d MMM y') if day else '')
+            else:
+                # their own pay scheme has nothing for this kind of run (an
+                # advance they were not given) — the map's own plain sentence
+                why = answer.get('via') or ''
+            out.append({'employee_id': employee.id, 'emp': employee.name or '',
+                        'why': why})
+        return out, set(own)
 
     @api.model
     def _fillin_unchecked(self, employee_ids):
