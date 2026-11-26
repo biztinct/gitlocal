@@ -1,9 +1,9 @@
-# DOCSTUDIO close-out — Stream D (merge, deploy, owed checks) — REPORT (PAUSED)
+# DOCSTUDIO close-out — Stream D (merge, deploy, owed checks) — REPORT
 
 Merge-deploy agent, 2026-11-26 (UTC). Handover `DOCSTUDIO_CLOSE_HANDOVER.md` §Stream D, ritual of
 `DOCSTUDIO_W2_DEPLOY_HANDOVER.md` / W1A. Scripts `docs/handovers/docstudio/cd/` (clones of `w2/` and
-`pdffix/`). **Paused on a coordinator instruction (owner going offline) AFTER the go-live and its
-verification, part-way through the browser walk.**
+`pdffix/`). Paused once (coordinator, owner offline, ~03:00 UTC) after the go-live and its verification;
+resumed ~08:00 UTC and finished the owed checks (§6b).
 
 **Result: merged and pushed to `19.1` at `06defa5ae`; LIVE on all five databases** (payobook,
 payobook_template, p0clone, rize, sudima) on 26 Nov, service stopped 02:45:11, up 02:53:19 UTC —
@@ -88,7 +88,7 @@ removed. Backups `/odoo/backups/docstudio-close-20261126T0222Z/` (prep + go-live
 - Compiled screen code ×5: Z4 flag, the new anchors, Learn practice copies, spotlight re-place.
 - Server log since the stop: 0 ERROR, 0 Traceback, 0 asset errors; rehearsal copies 0.
 
-## 6. Browser walk on payobook.com (Chrome MCP, isolated context, QA login) — PART-DONE
+## 6. Browser walk on payobook.com (Chrome MCP, isolated context, QA login), first pass
 
 Done (nothing saved; QA language put back to English; signed out; page closed):
 - Settings › HR › Documents on **Vietnamese** screens: cards "Thư mời làm việc", "Thư mời làm việc —
@@ -107,26 +107,20 @@ Done (nothing saved; QA language put back to English; signed out; page closed):
 - Hidden analytics PDFs: the QA login cannot open those pages at all (payroll managers only), so the
   Print menu could not be looked at in a browser; proven server-side (§5).
 
-## 7. Where I stopped (PAUSED, coordinator instruction 2026-11-26 ~03:00 UTC)
+## 6b. Owed checks after the resume (payobook.com, Chrome MCP isolated contexts)
 
-Live and verified; nothing open on the server (DONE + NOTE written, lock released).
-NOT done yet:
-1. Lessons in **Vietnamese** (QA screen to vi, rerun the stepping script on L43–L48).
-2. Console read across the walk (`list_console_messages`, errors) — not yet recorded.
-3. **HR-officer login**: no existing HR-officer-level login with a known password except the public
-   demo visitor `demo@payobook.com` (HR user, no payroll role). Next: sign in as it in an isolated
-   context; check Insights visible, only "Build a report", no payroll tabs.
-4. **View-only contract person**: on payobook NO role combination reads a contract and downloads it
-   without also being allowed to file (checked with throw-away logins inside a rolled-back
-   transaction, `cd/cd_viewonly_find.py`): every reader either may file, or is refused / blocked by
-   pay. So no view-only login can be made from the shipped roles; none was created. Owner question.
-5. Contract panel (People › Contracts › a contract › Contract document) walk, other PDF kinds
-   (letter sample, long report page 1 + middle page, Explorer PDF, payslips) — not repeated this time.
-6. `DOCSTUDIO_CLOSEOUT.md` not written yet.
+| # | Check | Result |
+|---|---|---|
+| 1 | Six lessons in **Vietnamese**, QA login | **40 / 40 steps, highlight on its control** (L43 6, L44 7, L45 8, L46 6, L47 6, L48 7); titles and lines in Vietnamese. QA language back to English. Console: **0 errors, 0 warnings**. |
+| 2 | Console, one pass each: Documents gallery + designer (Page tab), contract panel › Contract document, Build a report → saved → PDF designer → Download PDF ("3 rows, made in 3.5 seconds"), Explorer saved view → PDF → Download ("6 rows, 2.6 s"), Hiring offer panel (language box) | **0 errors, 0 warnings** on every screen. Fonts offered: Clean, Classic serif. Contract sheet: Download PDF, Save to documents · v1, sample-wording line. The walk's report and view (`DEMO CD walk …`) deleted again with the QA login; 0 PDF looks stored. |
+| 3 | HR-officer login | **Not done as a signed-in HR officer.** No existing demo login is a clean HR officer (the demo visitor also sees Payslips and Formula Engine; others are outside sign-ups). One login `DEMO CD HR Officer` was made with the Access screen's own method, but **giving it a role through the Access screen goes to the owner for approval** ("Sent for approval — Mitchell Admin"); I did not bypass it. Both test requests were withdrawn; the login (no role) is **archived**; its two invitation mails were stopped by the system ("test or demo address"). There is also no plain "HR officer" role in the Access catalogue (nearest: "Time off officer", which implies it). **Server check instead** (live code, synthetic person with the Time off officer groups, rolled back): Insights on the side menu = on; Build a report opens; Pulse / Explorer / payroll insights refused; 8 examples, 4,554 rows, save works, Excel file made; Contracts and Applicants locked with "You cannot see contracts. Ask your administrator for contract access."; a contract pay field asked for by name is refused with the same sentence. |
+| 4 | View-only on a contract | **Cannot exist today** (evidence, live code): opening the contract panel needs HR officer, payroll officer or administrator (`pb.contracts._cd_require_read`: "You do not have access to contracts. Ask an administrator for the HR or Payroll Officer role."); "Save to documents" and its server method `contract_document_save` check `pb.employee.document` create (`_pbdc_may_file`), which HR officer, payroll officer/manager, HR manager, system **and every internal login** hold (the My Payobook self-upload row "ess employee document self-upload", `pb_me_portal`, limited by a record rule to one's own record). Access roles checked (`cd/cd_roles_find.py`): every role that reads contracts also passes that check. **Guard still works** (`cd/cd_viewonly_guard.py`, rolled back): an HR officer and a no-role user behave as A2 test 11 (no-role refused, button hidden); a pay-seeing reader with document create taken away (inside the transaction) gets no Save button, the sentence "You can download this contract. Filing it in the employee's documents needs the HR or payroll role.", **download works**, and the **server refuses** filing; the sample note is on screen and not in the PDF (test 16). No login was created for this. What would have to change: a "contracts — can look" role that opens the panel without the HR/payroll officer role, and `_pbdc_may_file` reading a real filing permission (not plain document create). |
+| 5 | Phone width (400 px) | Documents gallery: no sideways scroll, readable; the side rail stays open (about 120 px) and the first card is almost two screens down. Lesson (L45): works, card docks at the bottom, highlight on the control; the PayAI button covers the corner of the lesson's bottom bar. **PDF designer: cramped header** — the title is covered by the "Standard look" chip, "Save look" / "Download PDF" wrap to two lines, settings take the top half over a small preview. Not fixed. |
 
-Next command to resume: open `https://payobook.com/web/login` in an isolated Chrome MCP context, sign
-in as the QA login, set its language to vi_VN, run the lesson stepping script (same as §6) for
-L43–L48, then items 2–6.
+Everything made for the checks is gone or archived: walk report and view deleted, DEMO CD HR Officer
+archived (no role), approval requests withdrawn, no synthetic login left (`demo.cd.%` active: 0), QA
+language English, all browser contexts signed out and closed. The PDF captured from the designer was
+moved out of the repo (ledger DS-CD-4).
 
 ## 8. Ledger rows
 
@@ -138,3 +132,8 @@ L43–L48, then items 2–6.
   `company_id.partner_id.country_id`.
 - DS-CD-4 | Chrome MCP `get_network_request` with a relative file path writes into the MAIN checkout's
   root | move the file out at once (done) — never leave it in the repo.
+- DS-CD-5 | Giving a role through the Access screen can need the owner's approval; a check that needs a
+  role cannot be finished alone | withdraw the test request (`biz.approval.engine.cancel`), archive the
+  login, check server-side with a synthetic user, say so.
+- DS-CD-6 | "May file" on the contract panel = document create, which every internal login holds via the
+  My Payobook self-upload permission | a true view-only reader needs a different check (owner decision).
