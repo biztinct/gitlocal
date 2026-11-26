@@ -51,9 +51,9 @@ line only if the code under it moved).
   who already have one is a separate, unticked-by-default tick with a start date.
 - R9. Who changes it: HR asks, a payroll manager approves — the same route as Mapping changes today
   (`pb.schememap.proposal`, process `schememap`); saved at once where no second approver is set up (fast lane).
-- R10 (owner, 2026-11-26 evening). **No lesson updates in this programme.** `pb_learn` lessons, tours and replicas are
-  NOT updated in P3 (this overrides ledger §0.7 and A10 for this programme only). The untrue lesson sentences listed
-  in the phase reports go into the closeout as a known open item.
+- R10 (owner, 2026-11-26 evening; an earlier "no lesson updates" instruction was WITHDRAWN minutes later).
+  **Lessons ARE updated**: `pb_learn` lessons, tours and replicas follow the screen changes in P3 (ledger §0.7 and
+  A10 stand).
 
 ## 2. Architect decisions (made — do not reopen without a report)
 - A1. **Storage**: new model `pb.person.scheme` in `pb_scheme_map`, cloned from `pb.division.link` (FACTS §4 option a).
