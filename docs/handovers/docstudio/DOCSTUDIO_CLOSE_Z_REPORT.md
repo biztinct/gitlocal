@@ -1,13 +1,13 @@
 # DOCSTUDIO close-out wave — Stream Z report (five leftover fixes)
 
-Branch `docstudio-close-z`, cut from `origin/19.1` at `95ba36ccf` (2026-11-26). Builder only:
+Branch `docstudio-close-z`, cut from `origin/19.1` at `95ba36ccf`, rebased on `3d038fcc9` (2026-11-26; the new commits touch none of these modules). Builder only:
 nothing deployed, the live server not touched. Local test database `docstudio_cz_t` (copy of
 `upd_p6_t_tpl`, `-u all` + the studio modules), dropped with its file folder at the end.
 
 | # | Item | Outcome | Module + version |
 |---|---|---|---|
 | 1 | "Every month" / "One-off" in built-in offer letters | FIXED (Indonesian AND Vietnamese were missing) | `pb_hiring` 19.0.2.23.8 → **19.0.2.23.9** |
-| 2 | Three Insights PDFs "template not found" | NOT BUILT — dead legacy buttons; owner decides hide vs repair (§2) | none |
+| 2 | Three Insights PDFs "template not found" | HIDDEN (owner ruling 2026-11-26) — dead legacy buttons, never built (§2) | `pb_hr_payroll_analytics` 19.0.1.4.0 → **19.0.1.4.1** |
 | 3 | Offer-letter names English on Vietnamese screens; designer name box English | FIXED | `pb_doc_studio_hiring` → **19.0.1.2.0**, `pb_doc_studio` → **19.0.1.5.0** |
 | 4 | Contract preview language in the designer | FIXED | `pb_doc_studio` **19.0.1.5.0** (hook + screen), `pb_doc_contracts` → **19.0.1.2.0** |
 | 5 | Reopen "Friendly" / "Modern" for report PDFs | NOT REOPENED — the proof is not there (§5) | none |
@@ -35,7 +35,7 @@ pay logic; no data written by an upgrade; no "Odoo" in any new string.
   choice on an English screen it is the English table as before. PASS.
 - **Module:** `pb_hiring` 19.0.2.23.9.
 
-## 2. Three Insights PDFs "template not found" — NOT BUILT (owner decides)
+## 2. Three Insights PDFs "template not found" — HIDDEN (owner ruling 2026-11-26)
 
 - **Cause (verified locally).** `pb_hr_payroll_analytics/reports/hr_analytics_reports.xml` defines
   three PDF reports — "Personnel Costs Report", "Statutory Contributions Report", "Headcount
@@ -64,7 +64,21 @@ pay logic; no data written by an upgrade; no "Odoo" in any new string.
     printed as a designed PDF through Insights › Build a report and the Explorer (report PDF designer).
   - **Repair:** design three new PDF pages (a new piece of work, roughly a day with tests and
     translations), for screens that have no menu today.
-- Nothing changed for this item.
+- **Owner ruling 2026-11-26: hide.** Change (data/view only, nothing deleted, no visible string added
+  or changed → no vi/id work):
+  - `reports/hr_analytics_reports.xml`: the three report actions keep their xml ids (the dashboard
+    and the export window still name them) but `binding_model_id` is now `False` → gone from the
+    **Print menu** of the personnel-costs, statutory-contributions and headcount record pages.
+  - `views/hr_analytics_dashboard.xml`: the **Export** button of the old HR Analytics Dashboard header
+    is removed (its window's PDF choice was the broken print; its Excel and CSV choices only ever said
+    "coming soon"). `action_hr_analytics_export_wizard` is kept.
+  - Repair later = write the three page designs and put the two things back (noted in the XML).
+- **Tests** (new `pb_hr_payroll_analytics/tests/test_hidden_pdfs.py`; the module had no tests
+  before, so its baseline is 0): actions kept, bound to no Print menu; list and form of the three
+  record pages render with no print entry for them; dashboard form renders, no Export button, rest of
+  the header there. Result in §6.
+- Lessons: no `pb_learn` lesson, anchor or replica names these buttons or pages (searched the lesson
+  content for the report names, the action ids and `hr_analytics`).
 
 ## 3. Offer-letter names and the designer's name box — FIXED
 
@@ -178,13 +192,18 @@ access_directory, TestRecruitInterviewsP5.test_07b, TestRecruitJoining.test_11, 
 TestRecruitPrivacy.test_02 / test_02b (error) / test_08 (error), TestRecruitPrivacyFiles.test_02,
 TestRegistersP9.test_08, TestRecruitStages.test_13. None touches the offer letter's pay table.
 
+Run 3 (item 2, after the owner ruling; fresh copy of the template, `-u all`, tag
+`/pb_hr_payroll_analytics`): **3 tests (5 with sub-cases), 0 failed, 0 errors**; the module had no tests
+before (baseline 0). The upgrade cleared the Print-menu link of all three reports on a database that
+had them (`binding_model_id` empty after `-u`), version 19.0.1.4.1; 0 ERROR lines in the log.
+
 Static gates: PO parse (polib) of every changed PO — no duplicates, every entry translated; `msgfmt -c`
 only the old header warnings. No "Odoo" in any new string. Upgrade log: 0 ERROR lines (missing picture
 files of the template copy only — ledger S6A-7).
 
 ## 7. For the deploy agent (Stream D)
 
-- **Upgrade:** `pb_hiring`, `pb_doc_studio`, `pb_doc_studio_hiring`, `pb_doc_contracts` on all five
+- **Upgrade:** `pb_hiring`, `pb_doc_studio`, `pb_doc_studio_hiring`, `pb_doc_contracts`, `pb_hr_payroll_analytics` (19.0.1.4.1, where installed) on all five
   databases (normal tier: no data rewrite, no pay change; `-u pb_hiring` cascades its dependents as
   usual). Versions: pb_hiring 19.0.2.23.9, pb_doc_studio 19.0.1.5.0, pb_doc_studio_hiring 19.0.1.2.0,
   pb_doc_contracts 19.0.1.2.0. **JS changed** (`pb_doc_studio/static/src/js/doc_studio.js`): purge
@@ -206,15 +225,15 @@ files of the template copy only — ledger S6A-7).
   3. *Names:* same screen — gallery cards and the name box of both offer letters and the Vietnam
      contract in Vietnamese; switch to Bahasa Indonesia: "Surat penawaran", "Surat penawaran — Vietnam".
      Do not press Save (if pressed with the name untouched, nothing changes — tested).
-  4. Lessons: no anchor or lesson text uses the changed elements (checked `pb_learn` content); Stream L
+  4. *Hidden PDFs (item 2):* per database where `pb_hr_payroll_analytics` is installed,
+     `select report_name, binding_model_id from ir_act_report_xml where report_name like
+     'pb_hr_payroll_analytics.report_%'` → three rows, `binding_model_id` empty.
+  5. Lessons: no anchor or lesson text uses the changed elements (checked `pb_learn` content); Stream L
      owns the new studio lessons.
 
 ## 8. Owner questions (plain)
 
-1. Three old PDF buttons (personnel costs, statutory contributions, headcount) have never worked —
-   their page designs were never made. They sit on old analytics pages that have had no menu since the
-   Insights board replaced them. **Hide them** (small change, nothing that ever worked is lost; the same
-   numbers print as PDF from Insights › Build a report), or **have them designed** (about a day of work)?
+1. ANSWERED 2026-11-26: hide the three broken PDF buttons — done (§2).
 2. Report PDFs stay with two fonts ("Clean", "Classic serif") until a long report has been printed and
    checked in "Friendly" and "Modern" on the server. Fine to leave as is?
 
@@ -223,7 +242,7 @@ files of the template copy only — ledger S6A-7).
 - Candidate's web offer page still shows "Every month" / "One-off" in English (same one-line fix).
 - Names of the older lifecycle letters untranslated on Vietnamese/Indonesian screens.
 - A copy made with "Make a copy for…" is named from the English name only.
-- Item 2 (owner decision) and item 5 (server proof) as above.
+- Item 5 (server proof) as above.
 
 ## 10. Gotcha rows (for the ledger)
 
