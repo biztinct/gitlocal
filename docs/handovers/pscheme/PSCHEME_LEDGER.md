@@ -130,3 +130,30 @@ line only if the code under it moved).
   Restart walk servers from a script file (`serve.sh`), never inline.
 - PS9. The first page load after an upgrade + asset purge can take 45 s+ (the renderer looks frozen to the browser
   tool; a navigate during server start shows an error page). Wait for "HTTP service running", then navigate again.
+- PS-a1. A team row on the Mapping board is a DRAG SOURCE: a mouse click never reaches a button inside it (the
+  attach "+" was already on `mouseup`). Every new row button ("Set for everyone in this team…", "M have their
+  own") answers `mouseup` + Enter/Space, never `click`. A synthetic `el.click()` works and hides the bug.
+- PS-a2. Rung `only` answers PER KIND of run: a company with exactly ONE end-of-month scheme makes every unmapped
+  person "paid" by it for the main question (`_pb_main_cycle` = end of month). The fill then shows them in
+  "Check these" (another country) instead of "From their Country of work"; a second end-of-month scheme flips them
+  to "Needs your choice". Truthful (the pay run does the same) — expect it on live databases with one scheme per
+  kind, and read the dry run's groups before the real fill.
+- PS-a3. The approval drawer cuts every cell at 60 characters (`_approval_detail`): a "Who" row of 188 names shows
+  three. Many-person requests show one row PER pay scheme ("77 people from 1 Nov 2026") instead.
+- PS-a4. The one writer `_person_set_write` is also the hire's: the contract-follow hook (E.1) runs for any row of
+  a main kind dated on or before today whose scheme country differs from the RUNNING contract's — never for
+  `source='fill'` (the fill writes down who pays people today; it moves no contract).
+- PS-a5. P1 `person_set` in lane `'none'` (no route at all) called the writer without `SCHEMEMAP_WRITE` while the
+  map was "held", so the writer's own guard refused it. Fixed: the carry-out right is checked, then the write runs
+  as the approved write. Same pattern in `person_set_many` and `fill_undo`.
+- PS-a6. 5,000 employees through the ORM take more than 10 minutes (versions, resources, tracking). T7 clones one
+  employee row 4,999 times in SQL (same team, same record) — enough for the plan, which reads ids, names,
+  countries and the roster only.
+- PS-a7. The workspace Pay tab's Country of Work is the selection `payroll_country` drawn as a search box; the save's
+  `changes` carry `payroll_country`, so one `FormController.onRecordSaved` patch covers it and Full details. The
+  panel block and the chip must be told to read again (bus event) — the drawer does not reload them on a save.
+- PS-a8. `pb_scheme_map` has ~25 visible strings from other sessions (import evidence, "Review scheme
+  suggestions", "How are schemes suggested?") that are in no catalogue: they show in English on a Vietnamese
+  screen. Not this phase's; listed for P3 with the 149 old msgids `id_ID.po` still lacks.
+- PS-a9. The Chrome automation's login page remembers users ("Choose a user"): typing into the email box appends to
+  a remembered login. Pick the user from the list, then type the password.
