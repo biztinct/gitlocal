@@ -169,9 +169,12 @@ class TestPayslipExample(NewHireCommon):
         whole = self.example(date_start='2027-01-01')
         self.assertEqual(whole['month_label'], 'January 2027')
         self.assertFalse(any('starts on' in n for n in whole['notes']), 'a first of the month: no part-month note')
+        # PSCHEME P1 (R1): a Vietnamese hire in a Singapore team is paid by
+        # Vietnam's scheme of their own — no mismatch note any more
         mismatch = self.example(payroll_country='VN')
         self.assertTrue(mismatch['ok'], mismatch)
-        self.assertTrue(any('a Singapore scheme, but you chose Vietnam' in n for n in mismatch['notes']))
+        self.assertEqual(mismatch['scheme_id'], self.vn_scheme.id)
+        self.assertFalse(any('but you chose Vietnam' in n for n in mismatch['notes']))
         self.assertEqual(mismatch['currency']['symbol'], self.env.ref('base.VND').symbol,
                          'the money is the country of work, as the contract')
         # an input the scheme reads from the pay data file falls to its usual value
@@ -190,11 +193,12 @@ class TestPayslipExample(NewHireCommon):
         # P8 A: no scheme for the team AND none for the country -> no example
         none = self.example(department_id=self.lonely.id, payroll_country='MY')
         self.assertEqual((none['ok'], none['reason'], none['step']),
-                         (False, 'No pay scheme pays this team yet.', 'role'))
-        # P8 A: the country's only scheme gives the example, and it says the pay run would not use it yet
+                         (False, 'No pay scheme for this person yet.', 'role'))
+        # PSCHEME P1: the country's only scheme gives the example, and the pay
+        # run WILL use it (it becomes the person's own) — no "would not" note
         country = self.example(department_id=self.lonely.id)
         if country.get('ok'):
-            self.assertIn('No pay scheme pays DEMO NH Lonely yet.', country['notes'])
+            self.assertFalse(any('No pay scheme pays' in n for n in country['notes']))
         missing = self.studio().payslip_example(self.draft(wage=''))
         self.assertEqual((missing['ok'], missing['step']), (False, 'pay'))
         nameless = self.studio().payslip_example(self.draft(name='  '))

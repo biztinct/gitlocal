@@ -76,8 +76,14 @@ const P2_KEYS = {
 /** P4: changing one of these works the payslip example out again (500 ms
  *  after the last change). */
 const EXAMPLE_INPUTS = ["name", "date_start", "department_id", "job_id", "job_title", "payroll_country", "country_id",
-    "wage", "contract_kind", "date_end", "usual", "type_id", "scheme_id"];
+    "wage", "contract_kind", "date_end", "usual", "type_id", "scheme_id", "advance_scheme_id"];
 const EXAMPLE_MS = 500;
+/** PSCHEME P1 E.3 — the advance choice as the server reads it: null (the
+ *  default: the one paired advance), false (switched off) or an id. */
+function advanceArg(d) {
+    const v = d.advance_scheme_id;
+    return v === undefined || v === null || v === "" ? null : (v || false);
+}
 /** P8: the Mapping screen ("Who is paid by what" is its scheme board). */
 const MAPPING_XMLID = "pb_formula_studio.action_pb_mapping_studio";
 const EXAMPLE_RETRY_MS = 600;
@@ -107,6 +113,7 @@ function blankDraft(today) {
         country_id: false, wage: null, contract_kind: "permanent", date_end: "", trial_on: true,
         usual: {}, pb_scale_pin_reason: "", fill_job_id: false,
         scheme_id: false,       // P8: the pay scheme picked by hand (several for the country)
+        advance_scheme_id: null, // PSCHEME P1 E.3: null = the default, false = none, an id
         ...Object.fromEntries(Object.entries(P2_KEYS).map(([k, [blank]]) => [k, deepClone(blank)])),
     };
 }
@@ -168,6 +175,7 @@ export class NewHireStudio extends Component {
             pickCountry: (code) => this.pickCountry(code),
             undoPlace: () => this.undoPlace(),
             pickScheme: (id) => this.pickScheme(id),
+            pickAdvance: (id) => this.pickAdvance(id),
             openMapping: (focus) => this.openMapping(focus),
             setUsual: (code, amount) => this.setUsual(code, amount),
             resetUsual: (code) => this.resetUsual(code),
@@ -459,7 +467,7 @@ export class NewHireStudio extends Component {
         const s = this.sendDraft;
         const keys = ["name", "date_start", "department_id", "job_id", "job_title", "payroll_country", "country_id",
             "wage", "contract_kind", "date_end", "trial_on", "usual", "type_id", "late_group", "work_location_id",
-            "pb_scale_pin_reason", "scheme_id"];
+            "pb_scale_pin_reason", "scheme_id", "advance_scheme_id"];
         return Object.fromEntries(keys.map((k) => [k, s[k]]));
     }
     /** Ask again 500 ms after the last change. ONE request at a time from
@@ -918,7 +926,8 @@ export class NewHireStudio extends Component {
         const gen = (this.decGen = (this.decGen || 0) + 1);
         return this.ask("decides", "decides", [d.department_id || false, d.payroll_country || false,
                                                  d.date_start || false, d.contract_kind,
-                                                 d.scheme_id || false, d.job_id || false], (res, err) => {
+                                                 d.scheme_id || false, d.job_id || false,
+                                                 advanceArg(d), d.name || false], (res, err) => {
             if (gen !== this.decGen) {
                 return;
             }
@@ -949,7 +958,7 @@ export class NewHireStudio extends Component {
         nh.decidesBusy = true;
         return this.ask("places", "places", [d.payroll_country, team, d.job_id || false,
                                                d.date_start || false, d.contract_kind, change,
-                                               d.scheme_id || false], (res, err) => {
+                                               d.scheme_id || false, advanceArg(d), d.name || false], (res, err) => {
             if (err || !res) {
                 if (gen === this.decGen) {
                     nh.decidesBusy = false;
@@ -988,7 +997,7 @@ export class NewHireStudio extends Component {
             this.keepCountry(code);
         }
         // P8: a scheme picked by hand belongs to the old country
-        this.patch({ payroll_country: code || "", scheme_id: false });
+        this.patch({ payroll_country: code || "", scheme_id: false, advance_scheme_id: null });
     }
     /** "Undo": the team (and job) the country change cleared come back; the
      *  mismatch warning then says what to do. */
@@ -1086,7 +1095,8 @@ export class NewHireStudio extends Component {
         if (has("payroll_country")) {
             // P7: the lists AND "What this decides" for the new country, in one call
             this.refreshPlaces({ change: !auto });
-        } else if (!decided && has("department_id", "date_start", "contract_kind", "scheme_id", "job_id")) {
+        } else if (!decided && has("department_id", "date_start", "contract_kind", "scheme_id", "job_id",
+                                   "advance_scheme_id")) {
             this.refreshDecides();
         }
         if (has("job_id", "date_start", "payroll_country")) {
@@ -1170,7 +1180,11 @@ export class NewHireStudio extends Component {
     /** P8: the person picks one of the country's pay schemes by hand
      *  (several for the country). `false` goes back to the usual one. */
     pickScheme(id) {
-        this.patch({ scheme_id: id || false });
+        this.patch({ scheme_id: id || false, advance_scheme_id: null });
+    }
+    /** PSCHEME P1 E.3: the mid-month advance — false = none, an id = that one. */
+    pickAdvance(id) {
+        this.patch({ advance_scheme_id: id || false });
     }
 
     setUsual(code, amount) {
@@ -1468,6 +1482,7 @@ export class NewHireStudio extends Component {
             trial_on: d.trial_on, usual: Object.entries(d.usual || {}).map(([code, amount]) => ({ code, amount })),
             pb_scale_pin_reason: d.pb_scale_pin_reason || "", fill_job_id: d.fill_job_id || false,
             scheme_id: d.scheme_id || false,
+            advance_scheme_id: advanceArg(d),
         };
     }
 

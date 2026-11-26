@@ -228,17 +228,27 @@ class TestNewHireSeams(NewHireCommon):
         self.assertEqual(match['trial']['months'], 3)
         self.assertEqual(match['trial']['ends'], fields.Date.to_string(add_months(date(2026, 12, 7), 3)))
         self.assertEqual(match['trial']['ends'], '2027-03-07', 'same day, N months later (D5)')
+        # PSCHEME P1 (owner ruling R1): the Country of work leads. A Singapore
+        # team with a Vietnamese hire: Vietnam's only scheme becomes the
+        # person's own, no mismatch (was: the team's scheme + a mismatch line).
         bad = s.decides(self.finance.id, 'VN', '2026-12-07', 'permanent')
-        self.assertFalse(bad['scheme']['match'])
-        self.assertEqual(bad['problem'], 'DEMO NH Finance is paid by DEMO NH Singapore monthly, a '
-                         'Singapore scheme, but you chose Vietnam as the country of work.')
-        self.assertEqual(bad['fix'], 'Choose Singapore, or pick the team that Vietnam people belong to.')
+        self.assertEqual(bad['scheme']['id'], self.vn_scheme.id)
+        self.assertTrue(bad['scheme']['match'])
+        self.assertTrue(bad['scheme']['own'])
+        self.assertFalse(bad['problem'])
         self.assertEqual(bad['currency']['name'], 'VND')
         self.assertEqual(bad['trial']['months'], 2)
+        # the mismatch line stays where it is still true: a country with no
+        # scheme of its own, a team paid by another country's
+        mis = s.decides(self.finance.id, 'MY', '2026-12-07', 'permanent')
+        self.assertFalse(mis['scheme']['match'])
+        self.assertEqual(mis['problem'], 'DEMO NH Finance is paid by DEMO NH Singapore monthly, a '
+                         'Singapore scheme, but you chose Malaysia as the country of work.')
+        self.assertEqual(mis['fix'], 'Choose Singapore, or pick the team that Malaysia people belong to.')
         none = s.decides(self.lonely.id, 'SG', '2026-12-07', 'permanent')
         if not none['scheme']:
-            self.assertEqual(none['problem'], 'No pay scheme pays DEMO NH Lonely yet.')
-            self.assertTrue(none['fix'].startswith('You can still add the person.'))
+            self.assertEqual(none['problem'], 'No pay scheme for Singapore yet.')
+            self.assertTrue(none['fix'].startswith('You can still add the person,'))
         nopol = s.decides(self.finance.id, 'MY', '2026-12-07', 'permanent')
         if not self.env['pb.probation.policy'].sudo().policy_for_country(
                 self.env.ref('base.my'), self.company):

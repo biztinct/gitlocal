@@ -302,6 +302,35 @@ export class StepRole extends Component {
         return s ? _t("This differs from the team's usual scheme, %s.", s.usual_name) : "";
     }
     useUsualScheme() { this.props.api.pickScheme(false); }
+    // ---- PSCHEME P1 E.3: the mid-month advance that goes with the scheme
+    get advances() {
+        const s = this.dec && this.dec.scheme;
+        return s && s.own ? s.advances || [] : [];
+    }
+    get oneAdvance() { return this.advances.length === 1 ? this.advances[0] : null; }
+    get advanceOn() {
+        const s = this.dec && this.dec.scheme;
+        return Boolean(s && s.advance);
+    }
+    get advanceLine() {
+        const a = this.oneAdvance;
+        return a ? _t("Mid-month advance: %s", a.name) : "";
+    }
+    toggleAdvance() {
+        const a = this.oneAdvance;
+        this.props.api.pickAdvance(this.advanceOn ? false : (a ? a.id : false));
+    }
+    onAdvanceKey(ev) {
+        if (ev.key === "Enter") {
+            ev.preventDefault();
+            this.toggleAdvance();
+        }
+    }
+    isAdvance(a) {
+        const s = this.dec && this.dec.scheme;
+        return Boolean(s && s.advance && s.advance.id === a.id);
+    }
+    onAdvanceSelect(ev) { this.props.api.pickAdvance(Number(ev.target.value) || false); }
     openMapping() { this.props.api.openMapping("country"); }
     get currencyTile() {
         const cur = this.props.api.currency;

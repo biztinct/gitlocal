@@ -170,7 +170,7 @@
       <div class="pbnh-q-t">
         <div class="pbnh-eyebrow">Step 1 of 7 · required</div>
         <h1 tabindex="-1">Who is joining?</h1>
-        <p>Four things are enough to begin. The team you pick next works out the pay scheme, the currency and the trial period for you.</p>
+        <p>Four things are enough to begin. The Country of work you pick next works out the pay scheme, the currency and the trial period for you.</p>
       </div>
     </div>
     <!-- P4: three ways to start (POC vWho) -->
@@ -272,7 +272,7 @@
       <div class="pbnh-q-t">
         <div class="pbnh-eyebrow">Step 2 of 7 · required</div>
         <h1 tabindex="-1" t-esc="heading"/>
-        <p>Pick the country of work first. The teams and jobs there come first in their lists, and the currency, trial period, contract letter and papers follow it. The team then decides who pays.</p>
+        <p>Pick the country of work first. The teams and jobs there come first in their lists, and the pay scheme, currency, trial period, contract letter and papers follow it. You can change the pay scheme here.</p>
       </div>
     </div>
     <div class="pbnh-card pbnh-pad pbnh-col">
@@ -392,7 +392,7 @@
     <div class="pbnh-card pbnh-pad pbnh-col">
       <div>
         <h3>What this decides</h3>
-        <p class="pbnh-sub">They follow the country of work. The pay scheme follows the team; when the country has several, you pick one.</p>
+        <p class="pbnh-sub">They follow the country of work. When the country has several pay schemes, you pick the one that pays this person.</p>
       </div>
       <div class="pbnh-decides" aria-live="polite">
         <div t-att-class="'pbnh-dec ' + schemeTile.cls + (schemeChoices.length ? ' pbnh-dec--choose' : '')">
@@ -424,6 +424,19 @@
             <small t-if="schemeTile.sub" t-esc="schemeTile.sub"/>
             <small t-if="schemeTile.mapping"><button type="button" class="pbnh-link" t-on-click="openMapping">Suggest who pays each team</button></small>
           </t>
+          <!-- PSCHEME P1 E.3: the mid-month advance that goes with it -->
+          <label t-if="oneAdvance" class="pbnh-adv">
+            <input type="checkbox" role="switch" t-att-checked="advanceOn" t-att-aria-checked="advanceOn ? 'true' : 'false'" t-on-change="toggleAdvance" t-on-keydown="onAdvanceKey"/>
+            <span class="pbnh-adv-ui" aria-hidden="true"/>
+            <span t-esc="advanceLine"/>
+          </label>
+          <label t-elif="advances.length" class="pbnh-adv pbnh-adv--pick">
+            <span>Mid-month advance</span>
+            <select class="pbnh-adv-sel" t-on-change="onAdvanceSelect">
+              <option value="" t-att-selected="!advanceOn">None</option>
+              <option t-foreach="advances" t-as="a" t-key="a.id" t-att-value="a.id" t-att-selected="isAdvance(a)" t-esc="a.name"/>
+            </select>
+          </label>
         </div>
         <div t-att-class="'pbnh-dec ' + currencyTile.cls">
           <span><t t-out="icon('coins', 13)"/>Currency</span>

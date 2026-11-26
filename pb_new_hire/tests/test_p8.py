@@ -77,9 +77,12 @@ class TestP8Scheme(DocsCommon):
         out = self.dec(self.lonely, 'SG')
         self.assertEqual(out['scheme']['id'], self.sg_hourly.id, 'pays most of the team')
         self.assertEqual(out['scheme']['why'], 'Pays most people in DEMO NH Lonely.')
-        self.assertFalse(out['scheme']['honoured'], 'no line pays the team: the pay run would not')
-        self.assertEqual(out['problem'], 'No pay scheme pays DEMO NH Lonely yet.')
-        self.assertIn('Set who pays DEMO NH Lonely in Mapping', out['fix'])
+        # PSCHEME P1: the country's scheme becomes the person's own, so the
+        # pay run takes it (was: not honoured + "Set who pays … in Mapping")
+        self.assertTrue(out['scheme']['honoured'])
+        self.assertTrue(out['scheme']['own'])
+        self.assertFalse(out['problem'])
+        self.assertIn('will be paid by DEMO NH Singapore hourly from', out['pay_line'])
         # a team nobody is paid in: most people in the country
         farm = self.dec(self.farm, 'SG')
         self.assertEqual(farm['scheme']['id'], self.sg_hourly.id)
@@ -93,9 +96,10 @@ class TestP8Scheme(DocsCommon):
         self.assertTrue(s['hand'])
         self.assertTrue(s['differs'])
         self.assertEqual(s['usual_name'], 'DEMO NH Singapore monthly')
-        self.assertFalse(s['honoured'], "the pay run follows the team's line")
-        self.assertEqual(out['problem'], 'DEMO NH Finance is paid by DEMO NH Singapore monthly, and '
-                                         'the pay run follows the team.')
+        # PSCHEME P1: the hand pick is honoured — it becomes the person's own
+        # pay scheme (was: "…and the pay run follows the team.")
+        self.assertTrue(s['honoured'])
+        self.assertFalse(out['problem'])
         self.assertIn(self.finance.id, out['scheme_teams'] + [self.finance.id])
         # another team: the pick stays
         other = self.dec(self.lonely, 'SG', scheme=self.sg_hourly)
@@ -112,8 +116,10 @@ class TestP8Scheme(DocsCommon):
         vals2, _d = self.studio()._values(self.draft(scheme_id=self.sg_hourly.id))
         self.assertEqual(vals2['pb_nh_scheme_id'], self.sg_hourly.id, 'the chosen scheme is sent')
         self.assertEqual(vals2['pb_nh_names']['scheme'], 'DEMO NH Singapore hourly')
-        self.assertIn('pay run follows the team', vals2['pb_nh_names']['scheme_note'])
+        # PSCHEME P1: honoured, so the approver reads no "who pays them" note
+        self.assertFalse(vals2['pb_nh_names']['scheme_note'])
         self.assertFalse(vals['pb_nh_names']['scheme_note'])
+        self.assertEqual(vals2['pb_nh_own_scheme_id'], self.sg_hourly.id)
         # the places() call carries the pick through to "What this decides"
         out = self.studio().places('SG', self.finance.id, False, '2026-12-07', 'permanent', False,
                                    self.sg_hourly.id)
@@ -132,7 +138,7 @@ class TestP8Scheme(DocsCommon):
         self.assertEqual(out['scheme']['id'], self.in_scheme.id)
         self.assertTrue(out['scheme']['honoured'], 'the rule on the map pays them')
         self.assertFalse(out['problem'])
-        self.assertIn('through a rule on the map', out['pay_line'])
+        self.assertIn('will be paid by DEMO NH India monthly from', out['pay_line'])
         answer = self.studio().send(self.draft(department_id=self.lonely.id, job_id=False,
                                                job_title='DEMO NH Grower', payroll_country='IN',
                                                parent_id=False, work_location_id=False, wage=50000,
@@ -174,9 +180,19 @@ class TestP8Scheme(DocsCommon):
             self.env.flush_all()
             real = Map.resolve(emp)
             self.assertEqual(found['pay_run'].id or 0, real['config_id'], (team.name, code))
-            self.assertEqual(found['rung'], real['rung'], (team.name, code))
             self.assertEqual(real['rung'], rung)
             self.assertEqual(found['pay_run'].id or 0, scheme.id if scheme else 0)
+            # PSCHEME P1 (T10): the studio answers on the person rung for a
+            # country scheme; the same person given that row answers the same
+            if found['own']:
+                self.assertEqual(found['rung'], 'person', (team.name, code))
+                self.env['pb.person.scheme'].sudo().create({
+                    'employee_id': emp.id, 'config_id': found['own'].id, 'date_from': '2026-12-07'})
+                again = Map.resolve(emp)
+                self.assertEqual((again['config_id'], again['rung']),
+                                 (found['pay_run'].id, found['rung']), (team.name, code))
+            else:
+                self.assertEqual(found['rung'], real['rung'], (team.name, code))
         # the only scheme, in a company that has one
         solo = self.env['res.company'].create({'name': 'DEMO NH8 Solo'})
         cfg = self.env['hr.formula.config'].create({'name': 'DEMO NH8 Solo scheme', 'code': 'DEMONH8SOLO',

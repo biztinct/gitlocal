@@ -10,3 +10,4 @@ from . import test_p5a
 from . import test_p7
 from . import test_p8
 from . import test_p8_more
+from . import test_pscheme

@@ -40,6 +40,7 @@ from odoo.exceptions import AccessError, UserError
 from odoo.tools.misc import format_date
 
 from odoo.addons.pb_people_advanced.models.newhire_approval import NEWHIRE_WRITE
+from .studio import _advance_arg
 
 from .studio import _int
 from .create_ext import PREVIEW_CTX            # "for the example only": no welcome leg
@@ -59,6 +60,7 @@ EXAMPLE_KEYS = (
     'country_id', 'wage', 'contract_kind', 'date_end', 'trial_on', 'usual', 'type_id',
     'late_group', 'pb_scale_pin_reason', 'work_location_id',
     'scheme_id',                    # P8: the pay scheme picked by hand
+    'advance_scheme_id',            # PSCHEME P1: the mid-month advance
 )
 
 #: The values keys the preview create drops (welcome legs, the bank, the
@@ -212,12 +214,14 @@ class PbNewHireExample(models.AbstractModel):
         start = self._day(d.get('date_start'))
         kind = 'fixed' if d.get('contract_kind') == 'fixed' else 'permanent'
         decided = self.decides(team.id, code, fields.Date.to_string(start), kind,
-                               _int(d.get('scheme_id')) or False, _int(d.get('job_id')) or False)
+                               _int(d.get('scheme_id')) or False, _int(d.get('job_id')) or False,
+                               _advance_arg(d))
         scheme = decided.get('scheme') or {}
         config = self._scheme(scheme.get('id'))
         if not config:
-            return self._no(_("No pay scheme pays this team yet."),
-                            _("Set who pays this team in Mapping, then the example appears here."),
+            return self._no(_("No pay scheme for this person yet."),
+                            _("Pick a Country of work that has a pay scheme, or add one in Mapping, "
+                              "then the example appears here."),
                             'role')
         first = start.replace(day=1)
         last = start.replace(day=monthrange(start.year, start.month)[1])

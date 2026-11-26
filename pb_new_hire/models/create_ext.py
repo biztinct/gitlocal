@@ -122,6 +122,48 @@ class PbOnboardWizardNewHire(models.AbstractModel):
         }
 
     @api.model
+    def _pb_nh_person_scheme(self, emp, values):
+        """Write the new person's own pay scheme row(s) (`source='hire'`,
+        from the contract start). A payload from before this phase carries no
+        `pb_nh_own_scheme_id`: the person is then resolved as the pay run
+        resolves them today and their answer is written down when it is a
+        scheme of their Country of work (with the advance the ladder gives
+        them, so their pay runs stay what they were); nothing is written when
+        nobody pays them. A failure here raises: a half-made hire is never
+        left behind (the engine rolls the whole apply back and says why)."""
+        if 'pb.scheme.board' not in self.env or 'pb.person.scheme' not in self.env:
+            return 0
+        Config = self.env['hr.formula.config'].sudo()
+        start = values.get('date_start') or fields.Date.context_today(self)
+        if 'pb_nh_own_scheme_id' in values:
+            main = Config.browse(_int(values.get('pb_nh_own_scheme_id'))).exists()
+            advance = Config.browse(_int(values.get('pb_nh_advance_scheme_id'))).exists()
+            if not main:
+                return 0
+        else:
+            from odoo.addons.pb_scheme_map.models.pb_scheme_map import ADVANCE_RUNGS
+            self.env.flush_all()            # NH4: the map reads teams with raw SQL
+            Map = self.env['pb.scheme.map'].sudo()
+            cycle = self.env['hr.employee'].sudo()._pb_main_cycle(emp.company_id.id)
+            answer = Map.with_context(pb_scheme_main_question=True).resolve(
+                emp.id, cycle, on_date=start)
+            main = Config.browse(answer.get('config_id') or 0).exists()
+            if not main or not emp.payroll_country or main.country_code != emp.payroll_country \
+                    or main.cycle_type not in ('regular', 'end_cycle'):
+                return 0
+            second = Map.resolve(emp.id, 'mid_cycle', on_date=start)
+            advance = Config.browse(second.get('config_id') or 0).exists() \
+                if second.get('rung') in ADVANCE_RUNGS else Config
+            if advance and advance.cycle_type != 'mid_cycle':
+                # a team line "for any kind of run" answers the advance question
+                # with the main scheme: that is no advance
+                advance = Config
+        from odoo.addons.pb_hr_payroll_formula.models.schememap_approval import SCHEMEMAP_WRITE
+        board = self.env['pb.scheme.board'].sudo().with_context(**{SCHEMEMAP_WRITE: True})
+        return board._person_set_write(emp, main, advance if advance else False,
+                                       fields.Date.to_date(start), source='hire')
+
+    @api.model
     def create_employee(self, vals):
         vals = vals or {}
         if not vals.get('pb_nh') or not self.env.context.get(NEWHIRE_WRITE):
@@ -143,6 +185,11 @@ class PbOnboardWizardNewHire(models.AbstractModel):
                 raise UserError(_("The end of the trial period could not be set."))
         for note in notes:
             emp.message_post(body=note)
+        if not self.env.context.get(PREVIEW_CTX):
+            # PSCHEME P1 E.4 — the pay scheme becomes the PERSON's own, from
+            # the first day, inside this same approved apply (no second
+            # proposal: the approver already read "Paid by").
+            self._pb_nh_person_scheme(emp, values)
         # P2: the welcome legs — after the core, each in its own savepoint;
         # a failed leg never undoes the hire (handover §2.2).
         contract = self.env['hr.contract'].sudo().browse(_int(res.get('contract_id'))).exists()
@@ -310,6 +357,7 @@ class PbNewHireProposalNH(models.Model):
         add(_('First day'), day(values.get('date_start')))
         add(_('Country of work'), names.get('country') or values.get('payroll_country'))
         add(_('Paid by'), names.get('scheme') or _('No pay scheme yet'))
+        add(_('Mid-month advance'), names.get('advance'))      # PSCHEME P1 E.3
         add(_('Who pays them'), names.get('scheme_note'))       # P8: when the pay run differs
         add(_('Team'), self._row_label('hr.department', values.get('department_id'),
                                        names.get('department_id') or ''))
