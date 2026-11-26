@@ -18,6 +18,10 @@ h employee_country hr_employee "id, company_id, payroll_country, active"
 h contract_country hr_contract "id, employee_id, state, wage"
 h job_changes pb_job_change "id, state, employee_id"
 h schemes hr_formula_config "id, name, state, cycle_type, country_code, company_id"
+# the two tables that gain a column in this release: compared WITHOUT the new column (must be identical);
+# the chain's own employees_rest / contracts_full lines move by that new column alone (release footprint)
+echo "p3_employees_minus_new_column: $(q "select count(*)||' '||md5(coalesce(string_agg((to_jsonb(e) - 'write_date' - 'write_uid' - 'pb_paid_by_own')::text, chr(10) order by id),'')) from hr_employee e")"
+echo "p3_contracts_minus_new_column: $(q "select count(*)||' '||md5(coalesce(string_agg((to_jsonb(c) - 'write_date' - 'write_uid' - 'pb_ps_check_amounts')::text, chr(10) order by id),'')) from hr_contract c")"
 echo "x_person_scheme: $(reg pb_person_scheme && q "select count(*) from pb_person_scheme" || echo 'no table')"
 echo "x_person_scheme_fill: $(reg pb_person_scheme_fill && q "select count(*) from pb_person_scheme_fill" || echo 'no table')"
 echo "x_paid_by: $(q "select md5(coalesce(string_agg(row(id, pb_paid_by_id, pb_paid_by_advance_id)::text, chr(10) order by id),'')) from hr_employee" 2>&1)"

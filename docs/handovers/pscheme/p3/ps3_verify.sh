@@ -31,7 +31,9 @@ echo "payobook job 156: $(sudo -u postgres psql -X -At -d payobook -c "select ac
 echo "== data: right before the stop vs installed (jobs, x_ and live_ lines excluded)"
 for db in $DBS; do
   [ -f $EV/counts-installed-$db.txt ] || { echo "$db: not upgraded"; continue; }
-  d=$(diff <(grep -vE '^(jobs_|x_|live_)' $EV/counts-before-$db.txt) <(grep -vE '^(jobs_|x_|live_)' $EV/counts-installed-$db.txt))
+  FOOT='^(jobs_[a-z_]*|x_[a-z_]*|live_[a-z_]*|employees_rest|contracts_full|server_actions|messages):'
+  d=$(diff <(grep -vE "$FOOT" $EV/counts-before-$db.txt) <(grep -vE "$FOOT" $EV/counts-installed-$db.txt))
+  echo "$db footprint lines (new column in the chain's hashes, the new job's server action, technical notes): $(diff <(grep -E '^(employees_rest|contracts_full|server_actions|messages):' $EV/counts-before-$db.txt) <(grep -E '^(employees_rest|contracts_full|server_actions|messages):' $EV/counts-installed-$db.txt) | grep -E '^[<>]' | cut -c1-80 | tr '\n' ' ')"
   [ -z "$d" ] && echo "$db: identical" || { echo "$db: DIFFERENT"; echo "$d" | cut -c1-200; }
   echo "$db x_: $(diff <(grep -E '^x_' $EV/counts-before-$db.txt) <(grep -E '^x_' $EV/counts-installed-$db.txt) | grep -E '^[<>]' | cut -c1-200 | tr '\n' ' ')"
 done
