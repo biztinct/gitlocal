@@ -39,7 +39,7 @@ from odoo.addons.pb_hr_payroll_formula.models.schememap_approval import (
 )
 
 from .formula_scheme_assignment import CYCLE_SELECTION, CYCLE_WORDS
-from .pb_scheme_map import ADVANCE_RUNGS
+from .pb_scheme_map import ADVANCE_RUNGS, MAIN_QUESTION
 
 _logger = logging.getLogger(__name__)
 
@@ -686,7 +686,8 @@ class PbSchemeBoard(models.AbstractModel):
         if employee.pb_paid_by_stale:
             cycle = self.env['hr.employee']._pb_main_cycle(
                 employee.company_id.id)
-            main = Map.resolve(employee.id, cycle)
+            main = Map.with_context(**{MAIN_QUESTION: True}).resolve(
+                employee.id, cycle)
             advance = Map.resolve(employee.id, 'mid_cycle')
             advance_id = (advance.get('config_id') or 0
                           if advance.get('rung') in ADVANCE_RUNGS else 0)
@@ -699,6 +700,10 @@ class PbSchemeBoard(models.AbstractModel):
             via = employee.pb_paid_by_rung or ''
         advance = self.env['hr.formula.config'].sudo().browse(
             advance_id).exists() if advance_id else None
+        if advance and advance.cycle_type != 'mid_cycle':
+            # PSCHEME P1: a team line "for any kind of run" answers the advance
+            # question with the main scheme — that is not an advance
+            advance = None
         return {
             'allowed': True,
             'found': True,

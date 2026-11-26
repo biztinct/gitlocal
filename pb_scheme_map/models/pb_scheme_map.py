@@ -83,6 +83,16 @@ ADVANCE_RUNGS = ('person', 'department', 'division', 'rule')
 #: the one-time fill). Read nowhere else.
 SKIP_PERSON = 'pb_scheme_skip_person'
 
+#: The context key that says "this is the MAIN question — who pays this
+#: person's month?" ("Paid by", the side panel, the pay items' scope), asked
+#: with the company's main kind of run (`_pb_main_cycle`: end of month where
+#: the company runs one). A person's own row of the OTHER main kind (regular
+#: vs end of month) then still answers: their main pay scheme is their main
+#: pay scheme. A pay run never sets it, so a run of one kind never takes a
+#: person whose own scheme is of the other.
+MAIN_QUESTION = 'pb_scheme_main_question'
+MAIN_KINDS = ('regular', 'end_cycle')
+
 #: Caps on anything a caller controls — this model is reachable over JSON-RPC.
 MAX_EMPLOYEES = 20000
 MAX_NAMED = 200
@@ -290,10 +300,17 @@ class PbSchemeMap(models.AbstractModel):
     @api.model
     def _person_rows_for(self, rows, day):
         """PSCHEME A4 — of ONE person's rows, the row that counts on `day`
-        for each kind of run: the row in force on `day`; else, when nothing
-        of that kind started before `day`, their EARLIEST row of that kind (a
-        first pay scheme counts backwards, so a joiner hired on the 15th is
-        found by a pay run judged on the 1st); else nothing.
+        for each kind of run: the row in force on `day`; else their FIRST-EVER
+        pay scheme counts backwards — only while nothing of theirs has started
+        on or before `day`, and only for a row that starts on their first-ever
+        start date (so a joiner hired on the 15th is found by a pay run judged
+        on the 1st, with the advance they were hired with); else nothing.
+
+        Why "first-ever" across every kind (ledger PS4): read per kind of run,
+        a later row of a NEW kind (regular -> end of month on the 15th, or an
+        advance added later) would also "count backwards" and put the person in
+        two pay runs of one month — owner ruling R6 says one payslip per person
+        per period, always.
 
         Returns `({cycle_type: row}, {cycle_type, …} that have rows but none
         counting on `day`)`.
@@ -301,6 +318,8 @@ class PbSchemeMap(models.AbstractModel):
         by_kind = defaultdict(list)
         for row in rows:
             by_kind[row.cycle_type or 'regular'].append(row)
+        first_day = min((r.date_from for r in rows), default=None)
+        started = first_day is not None and first_day <= day
         counting, ended = {}, set()
         for kind, kind_rows in by_kind.items():
             kind_rows.sort(key=lambda r: (r.date_from, r.id))
@@ -308,7 +327,7 @@ class PbSchemeMap(models.AbstractModel):
                         and (not r.date_to or r.date_to >= day)]
             if in_force:
                 counting[kind] = in_force[-1]
-            elif not any(r.date_from < day for r in kind_rows):
+            elif not started and kind_rows[0].date_from == first_day:
                 counting[kind] = kind_rows[0]
             else:
                 ended.add(kind)
@@ -349,7 +368,7 @@ class PbSchemeMap(models.AbstractModel):
             'config_name': config.name or '',
             'rung': 'person',
             'via': _("their own pay scheme, from %(date)s",
-                     date=format_date(self.env, date_from) if date_from
+                     date=format_date(self.env, date_from, date_format='d MMM y') if date_from
                      else ''),
             'date_from': fields.Date.to_string(date_from) if date_from
             else False,
@@ -362,7 +381,12 @@ class PbSchemeMap(models.AbstractModel):
         it never falls through to the team (owner ruling R7: no advance from
         the team for a person with a pay scheme of their own). The caller
         lets `full_final` fall through before reaching here."""
-        row = self._pick(entry.get('rows') or {}, cycle_type)
+        rows = entry.get('rows') or {}
+        row = self._pick(rows, cycle_type)
+        if not row and cycle_type in MAIN_KINDS \
+                and self.env.context.get(MAIN_QUESTION):
+            other = [k for k in MAIN_KINDS if k != cycle_type][0]
+            row = rows.get(other)
         if row and row.config_id.state == 'active':
             return self._person_answer(row.config_id, row.date_from)
         blank = self._blank()

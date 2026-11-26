@@ -19,8 +19,9 @@ this holds.
 
 import logging
 
-from odoo import _, api, models
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.tools.misc import format_date
 
 from odoo.addons.biz_approval_workflow.models.chain_shim import (
     role_step, route,
@@ -51,15 +52,69 @@ class PbSchemeMapProposal(models.Model):
         'accept_draft': 'Accept the drafted map',
         'map_create': 'Add a scheme mapping',
         'map_delete': 'Remove a scheme mapping',
+        # PSCHEME P1 D.1 — one person's (or several people's) own pay scheme
+        # from a date. Applied by `pb.scheme.board.person_set`.
+        'person_set': "Change a person's pay scheme",
     }
     _proposal_fact_specs = {
         'employees_moved': {'type': 'int', 'label': 'People moved'},
         'schemes': {'type': 'int', 'label': 'Schemes involved'},
     }
 
+    # ---------------------------------------------------------- the words
+    def _proposal_kind_label(self, kind=None):
+        """The kind of request in the reader's language (the class
+        attribute stays the plain catalogue; `_()` needs a literal per word)."""
+        words = {
+            'attach': _('Wire a team to a scheme'),
+            'detach': _('Take a team off a scheme'),
+            'accept_draft': _('Accept the drafted map'),
+            'map_create': _('Add a scheme mapping'),
+            'map_delete': _('Remove a scheme mapping'),
+            'person_set': _("Change a person's pay scheme"),
+        }
+        return words.get(kind or self.kind) or super()._proposal_kind_label(kind)
+
+    def _person_board(self):
+        return self.env['pb.scheme.board'].sudo() \
+            if 'pb.scheme.board' in self.env else None
+
+    def _proposal_moved(self):
+        """PSCHEME PS1: a person's rows are compared per person and named
+        in plain words — never a key or an id on screen."""
+        self.ensure_one()
+        if self.kind != 'person_set':
+            return super()._proposal_moved()
+        board = self._person_board()
+        if board is None:
+            return []
+        return board._person_moved_words(self.snapshot() or {},
+                                         self._live_snapshot() or {})
+
+    def _approval_apply(self, request):
+        """PSCHEME PS1: "somebody changed this since" for a person's pay
+        scheme says WHOSE pay scheme moved, in one plain sentence."""
+        self.ensure_one()
+        if self.kind == 'person_set' and not self.applied:
+            moved = self._proposal_moved()
+            if moved:
+                note = _("Nothing was changed: %s.", '; '.join(moved[:4]))
+                self.sudo().write({'block_note': note})
+                raise UserError(_(
+                    "Nothing was changed. Somebody changed %s since this was "
+                    "asked for. Send it back and ask again for what is there "
+                    "now.", '; '.join(moved[:4])))
+        return super()._approval_apply(request)
+
     def _live_snapshot(self):
         self.ensure_one()
         payload = self.payload()
+        if self.kind == 'person_set':
+            board = self._person_board()
+            if board is None:
+                return {}
+            return board._person_snapshot(payload.get('employee_ids') or [],
+                                          payload.get('date_from'))
         Assign = self.env.get('hr.formula.scheme.assignment')
         if self.kind == 'detach' and Assign is not None:
             row = Assign.sudo().browse(
@@ -92,6 +147,26 @@ class PbSchemeMapProposal(models.Model):
         elif self.kind == 'accept_draft':
             rows.append((_('Lines in the drafted map'), '',
                          str(len(payload.get('rows') or []))))
+        elif self.kind == 'person_set':
+            ids = [int(e) for e in payload.get('employee_ids') or [] if e]
+            people = self.env['hr.employee'].sudo().with_context(
+                active_test=False).browse(ids).exists()
+            names = ', '.join(people[:6].mapped('name'))
+            if len(people) > 6:
+                names = _('%(names)s and %(count)s more', names=names,
+                          count=len(people) - 6)
+            rows.append((_('Who'), '', names))
+            rows.append((_('Pay scheme'), '', self._row_label(
+                'hr.formula.config', payload.get('config_id'))))
+            advance = payload.get('advance_config_id')
+            rows.append((_('Mid-month advance'), '',
+                         self._row_label('hr.formula.config', advance)
+                         if advance and advance != 'keep'
+                         else (_('Stays as it is') if advance == 'keep'
+                               else _('None'))))
+            day = fields.Date.to_date(payload.get('date_from')) \
+                if payload.get('date_from') else None
+            rows.append((_('From'), '', format_date(self.env, day, date_format='d MMM y') if day else ''))
         elif self.kind == 'map_create':
             args = payload.get('args') or [0, 0, 0, 0]
             rows.append((_('Team'), '',
@@ -128,6 +203,16 @@ class PbSchemeMapProposal(models.Model):
                                             payload.get('company_id'))
         result.pop('board', None)
         return result
+
+    def _apply_person_set(self):
+        payload = self.payload()
+        result = self._board().person_set(
+            payload.get('employee_ids') or [], payload.get('config_id'),
+            payload.get('advance_config_id', 'keep'), payload.get('date_from'),
+            payload.get('company_id'), payload.get('source') or 'hand',
+            payload.get('note') or '')
+        return {'changed': (result or {}).get('changed', 0),
+                'employee_ids': payload.get('employee_ids') or []}
 
     def _apply_map_create(self):
         payload = self.payload()

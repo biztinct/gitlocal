@@ -114,7 +114,8 @@ class PbPersonScheme(models.Model):
                     "person has one pay scheme of each kind at a time: end "
                     "that one first, or start this one later.",
                     person=person, scheme=clash.config_id.name or '',
-                    since=format_date(self.env, clash.date_from)))
+                    since=format_date(self.env, clash.date_from,
+                                      date_format='d MMM y')))
 
     # ------------------------------------------------- keeping "Paid by" true
     def _pb_flag(self, employee_ids=None):

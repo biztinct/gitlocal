@@ -27,5 +27,18 @@
         <field name="active" eval="True"/>
     </record>
 
+    <!-- PSCHEME P1 B.3 — daily: a person's own pay scheme that starts today,
+         or ended yesterday, changes who pays them from today. Marks exactly
+         those people; the job above settles them. -->
+    <record id="cron_person_scheme_boundaries" model="ir.cron">
+        <field name="name">Payroll: pay schemes that start or end today</field>
+        <field name="model_id" ref="model_pb_person_scheme"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_mark_boundaries() if 'pb.person.scheme' in env else None</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+
 </data>
 </odoo>

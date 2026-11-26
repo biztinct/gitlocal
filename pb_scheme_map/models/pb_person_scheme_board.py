@@ -35,7 +35,7 @@ from odoo.addons.pb_hr_payroll_formula.models.schememap_approval import (
 )
 
 from .pb_person_scheme import SOURCES
-from .pb_scheme_map import ADVANCE_RUNGS
+from .pb_scheme_map import ADVANCE_RUNGS, MAIN_QUESTION
 
 _logger = logging.getLogger(__name__)
 
@@ -109,7 +109,8 @@ class PbSchemeBoardPerson(models.AbstractModel):
 
     @api.model
     def _day_words(self, day):
-        return format_date(self.env, day) if day else ''
+        # "1 Dec 2026" in the reader's language — never a numeric date
+        return format_date(self.env, day, date_format='d MMM y') if day else ''
 
     @api.model
     def _month_words(self, day):
@@ -439,7 +440,8 @@ class PbSchemeBoardPerson(models.AbstractModel):
         Map = self.env['pb.scheme.map'].sudo()
         Config = self.env['hr.formula.config'].sudo()
         main_cycle = self.env['hr.employee']._pb_main_cycle(company.id)
-        main = Map.resolve(employee.id, main_cycle, on_date=today)
+        main = Map.with_context(**{MAIN_QUESTION: True}).resolve(
+            employee.id, main_cycle, on_date=today)
         second = Map.resolve(employee.id, 'mid_cycle', on_date=today)
         code = employee.payroll_country or ''
 
@@ -467,7 +469,8 @@ class PbSchemeBoardPerson(models.AbstractModel):
         counting, _ended = Map._person_rows_for(list(rows), today)
         later = rows.filtered(lambda r: r.date_from > today
                               and r not in counting.values())
-        upcoming = later.sorted(lambda r: (r.date_from, r.id))[:1]
+        upcoming = later.sorted(lambda r: (r.date_from, r.cycle_type == 'mid_cycle',
+                                           r.id))[:1]
 
         def block(answer, kind_ok):
             config = Config.browse(answer.get('config_id') or 0).exists()

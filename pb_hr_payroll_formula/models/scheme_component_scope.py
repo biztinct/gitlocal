@@ -104,7 +104,11 @@ class HrFormulaConfig(models.Model):
                 main_cycle = Employee.sudo()._pb_main_cycle(
                     person.company_id.id)
             found = []
-            main = Map.resolve(person, main_cycle) or {}
+            # PSCHEME: the MAIN question (a person's own regular scheme still
+            # answers in a company that runs end of month) — the key is the
+            # literal of `pb_scheme_map`'s MAIN_QUESTION (dependency rail).
+            main = Map.with_context(pb_scheme_main_question=True).resolve(
+                person, main_cycle) or {}
             if main.get('config_id'):
                 found.append(int(main['config_id']))
             second = Map.resolve(person, 'mid_cycle') or {}

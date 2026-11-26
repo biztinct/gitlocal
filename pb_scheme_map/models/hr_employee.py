@@ -33,7 +33,7 @@ import logging
 
 from odoo import api, fields, models
 
-from .pb_scheme_map import ADVANCE_RUNGS
+from .pb_scheme_map import ADVANCE_RUNGS, MAIN_QUESTION
 
 _logger = logging.getLogger(__name__)
 
@@ -137,6 +137,7 @@ class HrEmployee(models.Model):
         if not people:
             return 0
         Map = self.env['pb.scheme.map'].sudo()
+        Main = Map.with_context(**{MAIN_QUESTION: True})
         by_company = {}
         for employee in people:
             by_company.setdefault(employee.company_id.id, []).append(employee.id)
@@ -148,7 +149,7 @@ class HrEmployee(models.Model):
         newly_known = []
         for company_id, ids in by_company.items():
             main_cycle = self._pb_main_cycle(company_id)
-            main = Map.resolve_many(ids, main_cycle)
+            main = Main.resolve_many(ids, main_cycle)
             advance = Map.resolve_many(ids, 'mid_cycle')
             # Group the writes: on the demo company this turns 4,533 writes
             # into a handful, one per distinct answer.
