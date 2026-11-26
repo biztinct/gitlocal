@@ -537,7 +537,7 @@ class TestJobChange(TransactionCase):
         # above any team, so the what-if says their scheme stays, and the
         # preview never writes a row.
         own = self.env['hr.formula.config'].create({
-            'name': 'S8B Own scheme', 'code': 'S8BOWN', 'cycle_type': 'end_cycle',
+            'name': 'S8B Own scheme', 'code': 'S8BOWN', 'cycle_type': 'end_cycle', 'country_code': 'VN',
             'company_id': self.company.id, 'state': 'active'})
         Row = self.env['pb.person.scheme'].sudo()
         Row.create({'employee_id': emp.id, 'config_id': own.id, 'date_from': '2025-01-01'})
