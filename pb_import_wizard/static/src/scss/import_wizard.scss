@@ -57,6 +57,11 @@
     .iw-drop:hover { background: rgba(169,196,250,.16); }
     .iw-drop .fn { display: inline-flex; align-items: center; gap: 7px; color: var(--ink); font-weight: 700; }
     .iw-note { font-size: 12.5px; color: var(--muted); background: var(--p-soft); border-radius: 9px; padding: 10px 12px; margin-top: 10px; }
+    // PSCHEME P2b D — a calm grey line, an icon and one sentence
+    .iw-own { display: flex; align-items: flex-start; gap: 8px; margin: 0 0 12px; color: var(--ink);
+              animation: iw-own-in .25s ease-out both;
+              svg { flex: 0 0 auto; margin-top: 1px; color: var(--p-strong); } }
+    @media (prefers-reduced-motion: reduce) { .iw-own { animation: none; } }
 
     /* lines table */
     .iw-tablewrap { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; max-height: 320px; overflow-y: auto; }
@@ -118,3 +123,5 @@
     .iw-btn.ghost { background: #fff; border-color: var(--line); color: var(--ink); }
     .iw-btn svg { vertical-align: -.18em; }
 }
+
+@keyframes iw-own-in { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }

@@ -17,6 +17,8 @@ const IC = {
     x: '<path d="M18 6 6 18M6 6l12 12"/>',
     plus: '<path d="M12 5v14M5 12h14"/>',
     search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+    // PSCHEME P2b — the "other pay scheme of their own" line (Lucide layers)
+    layers: '<path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>',
 };
 const STEPS = [_t("Source & file"), _t("Review & match"), _t("Validate"), _t("Commit")];
 const LINE_CLS = { matched: "ok", validated: "ok", processed: "ok", new: "new", unmatched: "warn", error: "err", draft: "muted" };

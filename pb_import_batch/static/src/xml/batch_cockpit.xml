@@ -76,6 +76,12 @@
           <t t-set="qGlanceOn" t-value="state.filter === 'all' ? '' : state.filter"/>
         </t>
 
+        <!-- PSCHEME P2b D: people whose own pay scheme is another one are
+             listed and left alone (quiet at zero) -->
+        <div t-if="d.own_elsewhere and d.own_elsewhere.count" class="pbim-panel pbbc-own" role="note">
+          <t t-out="ic('layers',15)"/> <span t-esc="d.own_elsewhere.line"/>
+        </div>
+
         <!-- action bar -->
         <div class="pbbc-actions" t-if="(d.next_actions and d.next_actions.length) or (d.state === 'done' and (d.results.created_employees or d.results.created_payslips or d.results.payslip_run_id))">
           <div class="left">

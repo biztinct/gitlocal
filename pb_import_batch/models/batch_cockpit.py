@@ -119,6 +119,10 @@ class PbImportBatchCockpit(models.AbstractModel):
             'lines': lines,
             'next_actions': self._available_actions(b),
             'approval': self._approval_payload(b),
+            # PSCHEME P2b D — people of this file paid by another pay scheme of
+            # their own: listed, never changed.
+            'own_elsewhere': b.pb_own_scheme_elsewhere()
+            if hasattr(b, 'pb_own_scheme_elsewhere') else {'count': 0},
             'error': None,
         }
 

@@ -95,6 +95,10 @@
                 </span>
               </t>
             </div>
+            <!-- PSCHEME P2b D: quiet at zero; names the people, changes nobody -->
+            <p t-if="state.summary.own_elsewhere and state.summary.own_elsewhere.count" class="iw-note iw-own" role="note">
+              <t t-out="ic('layers', 15)"/><span t-esc="state.summary.own_elsewhere.line"/>
+            </p>
             <div class="iw-tablewrap">
               <table class="iw-table">
                 <thead><tr><th>Code</th><th>Employee</th><th>Status</th></tr></thead>
