@@ -18,7 +18,8 @@ no data written to existing letters, no job, no mail.
 See docs/handovers/docstudio/DOCSTUDIO_F_REPORT.md.
 """,
     # 1.4.1: Learn anchors (data-coach) for the DOCSTUDIO lessons, no behaviour change.
-    'version': '19.0.1.4.1',
+    # 1.5.0: name box follows the screen language, contract preview language hook (close-out Z3/Z4); carries 1.4.1.
+    'version': '19.0.1.5.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

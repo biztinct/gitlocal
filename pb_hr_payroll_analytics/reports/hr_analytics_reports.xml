@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- Odoo 19 dropped the <report> shortcut from the data RNG; these are the
-         explicit ir.actions.report equivalents (binding adds the Print-menu entry). -->
+         explicit ir.actions.report equivalents.
+
+         HIDDEN (owner ruling 2026-11-26, DOCSTUDIO close Z item 2): the three
+         page designs (report_personnel_costs / report_statutory_contrib /
+         report_headcount) were never written, so every print failed with
+         "Template not found". The actions keep their xml ids (the dashboard and
+         the export wizard still name them) but are bound to no Print menu
+         (binding_model_id False). Repair = write the three QWeb templates and
+         put the bindings back. -->
 
     <!-- Personnel Costs Report -->
     <record id="action_report_personnel_costs" model="ir.actions.report">
@@ -10,7 +18,7 @@
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">pb_hr_payroll_analytics.report_personnel_costs</field>
         <field name="report_file">pb_hr_payroll_analytics.report_personnel_costs</field>
-        <field name="binding_model_id" ref="model_hr_analytics_personnel_costs"/>
+        <field name="binding_model_id" eval="False"/>
         <field name="binding_type">report</field>
     </record>
 
@@ -21,7 +29,7 @@
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">pb_hr_payroll_analytics.report_statutory_contrib</field>
         <field name="report_file">pb_hr_payroll_analytics.report_statutory_contrib</field>
-        <field name="binding_model_id" ref="model_hr_analytics_statutory_contrib"/>
+        <field name="binding_model_id" eval="False"/>
         <field name="binding_type">report</field>
     </record>
 
@@ -32,7 +40,7 @@
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">pb_hr_payroll_analytics.report_headcount</field>
         <field name="report_file">pb_hr_payroll_analytics.report_headcount</field>
-        <field name="binding_model_id" ref="model_hr_analytics_headcount"/>
+        <field name="binding_model_id" eval="False"/>
         <field name="binding_type">report</field>
     </record>
 

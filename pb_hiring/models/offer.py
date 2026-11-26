@@ -420,7 +420,9 @@ class PbHiringOffer(models.Model):
             '</tr>') % {
                 'what': ln.name or '',
                 'amount': self._money(ln.amount),
-                'when': dict(OFFER_PERIODS).get(ln.period, ''),
+                # In the letter's language (this module's own translations).
+                'when': self.env._(dict(OFFER_PERIODS)[ln.period])
+                if ln.period in dict(OFFER_PERIODS) else '',
             } for ln in self.line_ids.sorted(lambda r: (r.sequence, r.id))]
         return Markup(
             '<table style="border-collapse:collapse; margin:10px 0;">'

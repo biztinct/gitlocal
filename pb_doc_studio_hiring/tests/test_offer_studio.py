@@ -440,3 +440,58 @@ class TestOfferStudio(OfferStudioCase):
                 table = str(self.offer._pbds_lines_table(lang))
                 self.assertIn(month, table)
                 self.assertIn(once, table)
+
+    # ------------------------------------------------------------ CZ-1
+    def test_cz_01_untouched_offer_letter_pay_words_in_its_language(self):
+        """DOCSTUDIO close Z item 1: an offer letter nobody has edited
+        (Hiring's own `${lines}`) writes "Every month" / "One-off" in the
+        letter's language, Indonesian included."""
+        expected = {'en_US': ('Every month', 'One-off'),
+                    'vi_VN': ('Hằng tháng', 'Một lần'),
+                    'id_ID': ('Setiap bulan', 'Sekali saja')}
+        for lang, (month, once) in expected.items():
+            with self.subTest(lang=lang):
+                table = str(self.offer.with_context(lang=lang)._lines_table())
+                self.assertIn(month, table)
+                self.assertIn(once, table)
+        # The real letter, written in Indonesian on Hiring's own path.
+        offer = self.offer_for(self.generic)
+        self.assertFalse(self.generic._pbds_is_studio())
+        offer.sudo().pbds_letter_lang = 'id_ID'
+        offer.action_prepare_letter()
+        html = str(offer.rendered_html)
+        self.assertIn('Setiap bulan', html)
+        self.assertIn('Sekali saja', html)
+        self.assertNotIn('Every month', html)
+        # No choice and an English screen: byte for byte as before.
+        offer.sudo().pbds_letter_lang = False
+        offer.with_context(lang='en_US').action_prepare_letter()
+        self.assertIn('Every month', str(offer.rendered_html))
+
+    # ------------------------------------------------------------ CZ-3
+    def test_cz_03_offer_letter_names_follow_the_screen_language(self):
+        """DOCSTUDIO close Z item 3: the shipped offer letters are named in
+        Vietnamese and Indonesian (gallery card AND the designer's name box);
+        English stays as shipped."""
+        names = {'en_US': ('Offer letter', 'Offer letter — Vietnam'),
+                 'vi_VN': ('Thư mời làm việc', 'Thư mời làm việc — Việt Nam'),
+                 'id_ID': ('Surat penawaran', 'Surat penawaran — Vietnam')}
+        if self.vn_tmpl.with_context(lang='vi_VN').name == 'Offer letter — Vietnam':
+            # the languages were switched on by this test class, after install
+            self.env['ir.module.module']._load_module_terms(
+                ['pb_doc_studio_hiring'], ['vi_VN', 'id_ID'])
+            self.env.invalidate_all()
+        for lang, (generic, vietnam) in names.items():
+            with self.subTest(lang=lang):
+                self.assertEqual(self.generic.with_context(lang=lang).name, generic)
+                self.assertEqual(self.vn_tmpl.with_context(lang=lang).name, vietnam)
+                Studio = self.Studio.with_context(lang=lang)
+                self.assertEqual(Studio.open(self.vn_tmpl.id)['name'], vietnam)
+                self.assertEqual(Studio._pbds_card(self.vn_tmpl.with_context(lang=lang))['name'], vietnam)
+        # Saving on a Vietnamese screen with the name untouched keeps both names.
+        Vi = self.Studio.with_context(lang='vi_VN')
+        opened = Vi.open(self.vn_tmpl.id)
+        Vi.save(self.vn_tmpl.id, {'name': opened['name'], 'body': opened['body']})
+        self.vn_tmpl.invalidate_recordset(['name'])
+        self.assertEqual(self.vn_tmpl.with_context(lang='en_US').name, 'Offer letter — Vietnam')
+        self.assertEqual(self.vn_tmpl.with_context(lang='vi_VN').name, 'Thư mời làm việc — Việt Nam')

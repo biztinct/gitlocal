@@ -63,7 +63,7 @@ export class DocStudio extends Component {
             // designer
             docLoading: false, doc: null, draft: null, lang: "en_US", editorKey: 1,
             dirty: false, saving: false, savedAt: "", rightTab: "preview",
-            person: null, previewLang: "", pv: { html: "", hidden: 0, missing: [], values: {}, loading: false, error: "" },
+            person: null, previewLang: "", previewPicked: false, pv: { html: "", hidden: 0, missing: [], values: {}, loading: false, error: "" },
             pvScale: 0.42, pvHeight: A4_H, ghosts: false, large: false,
             fieldTerm: "", collapsed: {}, picker: null, ruleEdit: null,
             peopleOpen: false, peopleTerm: "", people: [], peopleBusy: false,
@@ -446,6 +446,7 @@ export class DocStudio extends Component {
         this.state.person = this.state.person && this.state.doc ? this.state.person : doc.person;
         if (!this.state.person) { this.state.person = doc.person; }
         this.state.previewLang = this.state.person ? this.state.person.lang : doc.main_lang;
+        this.state.previewPicked = false;
         this.state.dirty = false;
         this.state.editorKey += 1;
         this.state.pv = { html: "", hidden: 0, missing: [], values: {}, loading: true, error: "" };
@@ -652,6 +653,7 @@ export class DocStudio extends Component {
         d.main_lang = code;
         this.state.lang = code;
         this.state.previewLang = code;
+        this.state.previewPicked = true;
         this.state.editorKey += 1;
         this.api = null;
         this.touched();
@@ -674,6 +676,7 @@ export class DocStudio extends Component {
         this.api = null;
         if (this.state.draft.versions[code] || code === this.mainLang) {
             this.state.previewLang = code;
+            this.state.previewPicked = true;
             this.schedulePreview(0);
         }
     }
@@ -690,6 +693,7 @@ export class DocStudio extends Component {
         }
         this.state.editorKey += 1;
         this.state.previewLang = code;
+        this.state.previewPicked = true;
         this.touched();
     }
     askRemoveVersion() {
@@ -856,7 +860,8 @@ export class DocStudio extends Component {
         this.state.pv.loading = true;
         try {
             const res = await this.orm.silent.call(FACADE, "preview",
-                [doc.id, this.payload(), this.state.person.id, this.state.previewLang || false]);
+                [doc.id, this.payload(), this.state.person.id, this.state.previewLang || false],
+                this.previewKwargs);
             if (seq !== this.pvSeq || !this.state.doc) { return; }
             this.prevValues = this.state.pv.values || {};
             this.state.pv = { ...res, loading: false, error: "" };
@@ -909,7 +914,12 @@ export class DocStudio extends Component {
     }
     toggleGhosts() { this.state.ghosts = !this.state.ghosts; }
     setRightTab(tab) { this.state.rightTab = tab; if (tab === "preview") { this.schedulePreview(0); } }
-    onPreviewLang(ev) { this.state.previewLang = ev.target.value; this.schedulePreview(0); }
+    /** Until somebody picks a language, the server may open the preview in
+     *  the language the real document prints in for this person. */
+    get previewKwargs() {
+        return this.state.previewPicked ? {} : { context: { pbds_preview_auto: true } };
+    }
+    onPreviewLang(ev) { this.state.previewLang = ev.target.value; this.state.previewPicked = true; this.schedulePreview(0); }
     get personLangName() {
         const p = this.state.person;
         return p ? p.lang_name : "";
@@ -945,6 +955,7 @@ export class DocStudio extends Component {
     choosePerson(p) {
         this.state.person = p;
         this.state.previewLang = p.lang;
+        this.state.previewPicked = false;
         this.state.peopleOpen = false;
         this.schedulePreview(0);
     }
@@ -952,7 +963,8 @@ export class DocStudio extends Component {
         if (this.state.pdfBusy || !this.state.person) { return; }
         this.state.pdfBusy = true;
         try {
-            const res = await this.orm.call(FACADE, "sample_pdf", [this.state.doc.id, this.payload(), this.state.person.id, this.state.previewLang || false]);
+            const res = await this.orm.call(FACADE, "sample_pdf", [this.state.doc.id, this.payload(), this.state.person.id, this.state.previewLang || false],
+                                            this.previewKwargs);
             if (!res.ok) {
                 this.notification.add(res.msg, { type: "warning" });
                 return;

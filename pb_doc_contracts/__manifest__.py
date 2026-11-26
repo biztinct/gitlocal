@@ -23,7 +23,8 @@ No e-signature. Silent install: no job, no mail, no data written on any
 existing record. See docs/handovers/docstudio/DOCSTUDIO_A2_REPORT.md.
 """,
     # 1.1.1: Learn anchors (data-coach) for the DOCSTUDIO lessons, no behaviour change.
-    'version': '19.0.1.1.1',
+    # 1.2.0: the designer previews a contract in the language the contract panel prints it in (close-out Z4); carries 1.1.1.
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

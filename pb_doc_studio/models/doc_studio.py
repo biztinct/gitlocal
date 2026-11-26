@@ -865,7 +865,7 @@ class PbDocStudio(models.AbstractModel):
         can_write = tmpl.has_access('write')
         return {
             'id': tmpl.id,
-            'name': main.name or '',
+            'name': tmpl.name or '',
             'subject': main.subject or '',
             'body': main_body,
             'versions': versions,
@@ -1075,14 +1075,21 @@ class PbDocStudio(models.AbstractModel):
             if v.lang not in clean_versions]
         rules = self._pbds_clean_rules(payload.get('rules', tmpl.pbds_rules or {}), all_bodies)
         page = self._pbds_clean_page(payload.get('page', tmpl.pbds_page or DEFAULT_PAGE))
-        name = str(payload.get('name') or main.name or '').strip()[:200]
+        # The name box shows the name in the screen's language (as the
+        # gallery card does); an unchanged box writes nothing.
+        shown = str(tmpl.name or '').strip()[:200]
+        name = str(payload.get('name') or shown or main.name or '').strip()[:200]
         if not name:
             raise UserError(_("Give the document a name."))
         if is_html_empty(body):
             raise UserError(_("The main wording is empty. Write the letter, then save."))
         self._pbds_snapshot_original(tmpl)
+        # A new name goes into the screen's language when the document has a
+        # name of its own in it (a shipped translation), else into the main
+        # name, as before.
+        own_name = (self.env.lang or MAIN_LANG) != MAIN_LANG and \
+            (tmpl.name or '') != (main.name or '')
         vals = {
-            'name': name,
             'subject': str(payload.get('subject', main.subject) or '')[:300],
             'body_html': body,
             'pbds_rules': rules or False,
@@ -1101,6 +1108,8 @@ class PbDocStudio(models.AbstractModel):
             stored = self._pbds_check_picture(mime, sign['data'])
             vals['pbds_sign_image'] = stored
         main.write(vals)
+        if name != shown:
+            (tmpl if own_name else main).write({'name': name})
         Version = self.env['pb.doc.version']
         existing = {v.lang: v for v in tmpl.pbds_version_ids}
         for lang, ver in clean_versions.items():
@@ -1121,10 +1130,9 @@ class PbDocStudio(models.AbstractModel):
         a save of a long letter stays well under a second, rail R7)."""
         _groups, flat = self._pbds_catalogue(tmpl)
         groups = _groups
-        main = tmpl.with_context(lang=MAIN_LANG)
         return {
             'id': tmpl.id,
-            'name': main.name or '',
+            'name': tmpl.name or '',
             'revision': fields.Datetime.to_string(tmpl.write_date) if tmpl.write_date else '',
             'edited': bool(tmpl.pbds_edited),
             'can_reset': bool(tmpl.pbds_edited and tmpl.pbds_original_json),
@@ -1412,6 +1420,14 @@ class PbDocStudio(models.AbstractModel):
         return emp
 
     @api.model
+    def _pbds_preview_lang(self, tmpl, employee, draft, lang):
+        """The language the preview opens in for this person while nobody
+        has picked one (context `pbds_preview_auto`): `lang`, the language
+        their letter is made in. A kind of document whose real print picks
+        differently (contracts) overrides this."""
+        return lang
+
+    @api.model
     def preview(self, template_id, draft, employee_id, lang=None):
         """The finished page for one real person, from the UNSAVED draft.
         → {html, hidden, missing, values, lang}. Nothing is stored."""
@@ -1420,6 +1436,8 @@ class PbDocStudio(models.AbstractModel):
         emp = self._pbds_person_for(employee_id)
         active = self._pbds_active_langs()
         lang = lang if lang in active else self.env['pb.hr.letter']._pbds_default_lang(tmpl, emp)
+        if self.env.context.get('pbds_preview_auto'):
+            lang = self._pbds_preview_lang(tmpl, emp, draft, lang)
         asked = lang
         body, heading, rules, page, lang = self._pbds_draft_parts(tmpl, draft, lang)
         _groups, flat = self._pbds_catalogue(tmpl)
@@ -1493,6 +1511,8 @@ class PbDocStudio(models.AbstractModel):
         emp = self._pbds_person_for(employee_id)
         active = self._pbds_active_langs()
         lang = lang if lang in active else self.env['pb.hr.letter']._pbds_default_lang(tmpl, emp)
+        if self.env.context.get('pbds_preview_auto'):
+            lang = self._pbds_preview_lang(tmpl, emp, draft, lang)
         body, heading, rules, page, lang = self._pbds_draft_parts(tmpl, draft, lang)
         letter = self._pbds_preview_letter(tmpl, emp)
         try:
