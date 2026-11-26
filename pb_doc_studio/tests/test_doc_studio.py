@@ -535,3 +535,47 @@ class TestDocStudio(DocStudioCase):
         letter = self.Letter.sudo().with_context(lang='id_ID').create({
             'employee_id': self.emp_vn.id, 'template_id': tmpl.id})
         self.assertEqual(letter.lang, 'id_ID')
+
+    # ------------------------------------------------------------ CZ-3
+    def test_cz_03_name_box_follows_the_screen_language(self):
+        """DOCSTUDIO close Z item 3: the designer's name box shows the name
+        in the screen's language, like the gallery card; saving with the box
+        untouched writes no name; a new name lands in the language it was
+        typed in when the document has a name of its own there."""
+        tmpl = self.Template.create({
+            'name': 'DEMO CZ name', 'letter_type': 'custom', 'company_id': False,
+            'body_html': '<p>DEMO ${employee_name}</p>'})
+        tmpl.with_context(lang='vi_VN').name = 'DEMO CZ tên'
+        Vi = self.Studio.with_context(lang='vi_VN')
+        opened = Vi.open(tmpl.id)
+        self.assertEqual(opened['name'], 'DEMO CZ tên')
+        card = Vi._pbds_card(tmpl.with_context(lang='vi_VN'))
+        self.assertEqual(card['name'], opened['name'])
+        # untouched box: nothing written in either language
+        saved = Vi.save(tmpl.id, {'name': opened['name'], 'body': opened['body']})
+        self.assertEqual(saved['name'], 'DEMO CZ tên')
+        tmpl.invalidate_recordset(['name'])
+        self.assertEqual(tmpl.with_context(lang='en_US').name, 'DEMO CZ name')
+        self.assertEqual(tmpl.with_context(lang='vi_VN').name, 'DEMO CZ tên')
+        # renamed on a Vietnamese screen: only the Vietnamese name changes
+        Vi.save(tmpl.id, {'name': 'DEMO CZ tên mới', 'body': opened['body']})
+        tmpl.invalidate_recordset(['name'])
+        self.assertEqual(tmpl.with_context(lang='vi_VN').name, 'DEMO CZ tên mới')
+        self.assertEqual(tmpl.with_context(lang='en_US').name, 'DEMO CZ name')
+        # renamed on an English screen: the main name, as before
+        self.Studio.with_context(lang='en_US').save(tmpl.id, {'name': 'DEMO CZ new', 'body': opened['body']})
+        tmpl.invalidate_recordset(['name'])
+        self.assertEqual(tmpl.with_context(lang='en_US').name, 'DEMO CZ new')
+        self.assertEqual(tmpl.with_context(lang='vi_VN').name, 'DEMO CZ tên mới')
+        # no name of its own in Indonesian: a rename there renames the main name
+        Id = self.Studio.with_context(lang='id_ID')
+        self.assertEqual(Id.open(tmpl.id)['name'], 'DEMO CZ new')
+        Id.save(tmpl.id, {'name': 'DEMO CZ renamed', 'body': opened['body']})
+        tmpl.invalidate_recordset(['name'])
+        self.assertEqual(tmpl.with_context(lang='en_US').name, 'DEMO CZ renamed')
+        self.assertEqual(tmpl.with_context(lang='id_ID').name, 'DEMO CZ renamed')
+        # "Put back the built-in wording" still restores every language
+        self.Studio.reset(tmpl.id)
+        tmpl.invalidate_recordset(['name'])
+        self.assertEqual(tmpl.with_context(lang='en_US').name, 'DEMO CZ name')
+        self.assertEqual(tmpl.with_context(lang='vi_VN').name, 'DEMO CZ tên')

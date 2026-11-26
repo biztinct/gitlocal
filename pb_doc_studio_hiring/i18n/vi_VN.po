@@ -305,8 +305,14 @@ msgstr "Lời mời cho %(who)s"
 #. module: pb_doc_studio_hiring
 #. odoo-python
 #: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+#: model:pb.letter.template,name:pb_hiring.letter_template_offer_generic
 msgid "Offer letter"
 msgstr "Thư mời làm việc"
+
+#. module: pb_doc_studio_hiring
+#: model:pb.letter.template,name:pb_hiring.letter_template_offer_vietnam
+msgid "Offer letter — Vietnam"
+msgstr "Thư mời làm việc — Việt Nam"
 
 #. module: pb_doc_studio_hiring
 #. odoo-javascript
