@@ -2209,3 +2209,15 @@ msgstr "Lập từ tổng thu nhập"
 #: code:addons/pb_contracts/static/src/js/contract_360.js:0
 msgid "These pay lines could not be filled in here: %s"
 msgstr "Không điền được các khoản lương này ở đây: %s"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contract_360.xml:0
+msgid "Change pay scheme"
+msgstr "Đổi chương trình lương"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contract_360.js:0
+msgid "Waiting for approval: %(scheme)s from %(date)s"
+msgstr "Đang chờ duyệt: %(scheme)s từ %(date)s"

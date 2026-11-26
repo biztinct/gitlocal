@@ -223,3 +223,83 @@ msgstr "“%s” hanya untuk informasi dan tidak bisa dipakai dalam rumus. Gaji 
 #: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
 msgid "From the clocks from %s — leave blank for those months"
 msgstr "Dari mesin absensi mulai %s — kosongkan untuk bulan-bulan itu"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "%(names)s and %(count)s more"
+msgstr "%(names)s dan %(count)s lainnya"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Accept the drafted map"
+msgstr "Terima pemetaan yang disusun"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Add a scheme mapping"
+msgstr "Tambah pemetaan skema"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Change a person's pay scheme"
+msgstr "Ubah skema gaji seseorang"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Mid-month advance"
+msgstr "Uang muka pertengahan bulan"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "None"
+msgstr "Tidak ada"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid ""
+"Nothing was changed. Somebody changed %s since this was asked for. Send it "
+"back and ask again for what is there now."
+msgstr "Tidak ada yang diubah. Seseorang telah mengubah %s sejak ini diajukan. Kembalikan dan ajukan lagi sesuai keadaan sekarang."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Nothing was changed: %s."
+msgstr "Tidak ada yang diubah: %s."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Remove a scheme mapping"
+msgstr "Hapus pemetaan skema"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Stays as it is"
+msgstr "Tetap seperti sekarang"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Take a team off a scheme"
+msgstr "Lepaskan tim dari skema"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Who"
+msgstr "Siapa"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Wire a team to a scheme"
+msgstr "Hubungkan tim ke skema"

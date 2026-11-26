@@ -2149,14 +2149,6 @@ msgstr "Ví dụ: Giám sát hiện trường"
 
 #. module: pb_new_hire
 #. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid ""
-"Four things are enough to begin. The team you pick next works out the pay "
-"scheme, the currency and the trial period for you."
-msgstr "Chỉ cần bốn thông tin để bắt đầu. Nhóm bạn chọn tiếp theo sẽ tự xác định chương trình lương, tiền tệ và thời gian thử việc cho bạn."
-
-#. module: pb_new_hire
-#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_new_hire/models/hiring.py:0
 #: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
@@ -3017,12 +3009,6 @@ msgstr "Không có giấy tờ nào được yêu cầu trong Tuyển dụng"
 #: code:addons/pb_new_hire/models/studio.py:0
 msgid "No pay scheme pays %(team)s yet."
 msgstr "Chưa có chương trình lương nào trả lương cho %(team)s."
-
-#. module: pb_new_hire
-#. odoo-python
-#: code:addons/pb_new_hire/models/payslip_example.py:0
-msgid "No pay scheme pays this team yet."
-msgstr "Chưa có chương trình lương nào trả lương cho nhóm này."
 
 #. module: pb_new_hire
 #. odoo-javascript
@@ -3917,12 +3903,6 @@ msgstr "Đặt từ studio Thêm nhân viên: người này sẽ được nhắc
 #: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
 msgid "Set up working weeks"
 msgstr "Thiết lập tuần làm việc"
-
-#. module: pb_new_hire
-#. odoo-python
-#: code:addons/pb_new_hire/models/payslip_example.py:0
-msgid "Set who pays this team in Mapping, then the example appears here."
-msgstr "Hãy đặt chương trình trả lương cho nhóm này trong Ánh xạ, rồi ví dụ sẽ hiện ở đây."
 
 #. module: pb_new_hire
 #. odoo-javascript
@@ -5595,14 +5575,6 @@ msgstr "Bạn sẽ được báo nếu còn thiếu thông tin cần cho tính l
 
 #. module: pb_new_hire
 #. odoo-python
-#: code:addons/pb_new_hire/models/studio.py:0
-msgid ""
-"You can still add the person. Set who pays this team in Mapping before the "
-"first pay run."
-msgstr "Bạn vẫn có thể thêm người này. Hãy đặt chương trình trả lương cho nhóm này trong Ánh xạ trước kỳ lương đầu tiên."
-
-#. module: pb_new_hire
-#. odoo-python
 #: code:addons/pb_new_hire/models/payslip_example.py:0
 msgid ""
 "You can still send the hire: once it is approved, it waits in Approvals "
@@ -6236,18 +6208,6 @@ msgstr "Chọn một nhóm"
 
 #. module: pb_new_hire
 #. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid ""
-"Pick the country of work first. The teams and jobs there come first in their"
-" lists, and the currency, trial period, contract letter and papers follow "
-"it. The team then decides who pays."
-msgstr ""
-"Chọn quốc gia làm việc trước. Các nhóm và công việc ở đó đứng đầu danh sách,"
-" còn tiền tệ, thời gian thử việc, thư hợp đồng và giấy tờ đi theo quốc gia "
-"đó. Sau đó nhóm quyết định ai trả lương."
-
-#. module: pb_new_hire
-#. odoo-javascript
 #: code:addons/pb_new_hire/static/src/js/step_role.js:0
 msgid "Show teams from other countries (%s)"
 msgstr "Hiện các nhóm ở quốc gia khác (%s)"
@@ -6346,35 +6306,9 @@ msgstr ""
 
 #. module: pb_new_hire
 #. odoo-python
-#: code:addons/pb_new_hire/models/studio.py:0
-msgid ""
-"%(scheme)s is used for the example. Set who pays %(team)s in Mapping so the "
-"pay run includes them."
-msgstr ""
-"%(scheme)s được dùng cho ví dụ. Hãy đặt chương trình trả lương cho %(team)s "
-"trong Ánh xạ để kỳ lương có tên người này."
-
-#. module: pb_new_hire
-#. odoo-python
-#: code:addons/pb_new_hire/models/studio.py:0
-msgid ""
-"%(scheme)s pays them through a rule on the map. Set who pays %(team)s in "
-"Mapping to make it the team's own."
-msgstr ""
-"%(scheme)s trả lương cho họ qua một quy tắc trên bản đồ. Hãy đặt chương "
-"trình trả lương cho %(team)s trong Ánh xạ để nó thành của chính nhóm."
-
-#. module: pb_new_hire
-#. odoo-python
 #: code:addons/pb_new_hire/models/checklist_p8.py:0
 msgid "%(step)s — done."
 msgstr "%(step)s — đã xong."
-
-#. module: pb_new_hire
-#. odoo-python
-#: code:addons/pb_new_hire/models/studio.py:0
-msgid "%(team)s is paid by %(run)s, and the pay run follows the team."
-msgstr "%(team)s được trả lương theo %(run)s, và kỳ lương đi theo nhóm."
 
 #. module: pb_new_hire
 #. odoo-python
@@ -6466,14 +6400,6 @@ msgstr ""
 "người đồng hành cho họ."
 
 #. module: pb_new_hire
-#. odoo-python
-#: code:addons/pb_new_hire/models/studio.py:0
-msgid "Set who pays %(team)s in Mapping to make %(scheme)s theirs."
-msgstr ""
-"Hãy đặt chương trình trả lương cho %(team)s trong Ánh xạ để %(scheme)s thành"
-" của họ."
-
-#. module: pb_new_hire
 #. odoo-javascript
 #: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
 msgid "Suggest who pays each team"
@@ -6498,12 +6424,6 @@ msgid "The only pay scheme for %(country)s."
 msgstr "Chương trình lương duy nhất của %(country)s."
 
 #. module: pb_new_hire
-#. odoo-python
-#: code:addons/pb_new_hire/models/studio.py:0
-msgid "The pay run will pay them by %(run)s, not %(scheme)s."
-msgstr "Kỳ lương sẽ trả cho họ theo %(run)s, không phải %(scheme)s."
-
-#. module: pb_new_hire
 #. odoo-javascript
 #: code:addons/pb_new_hire/static/src/js/step_check.js:0
 msgid "The slip could not be made."
@@ -6517,16 +6437,6 @@ msgstr "Phiếu có mật khẩu lần đầu mới, chỉ hiện một lần n�
 
 #. module: pb_new_hire
 #. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid ""
-"They follow the country of work. The pay scheme follows the team; when the "
-"country has several, you pick one."
-msgstr ""
-"Các mục này đi theo quốc gia làm việc. Chương trình lương đi theo nhóm; khi "
-"quốc gia có nhiều chương trình, bạn chọn một."
-
-#. module: pb_new_hire
-#. odoo-javascript
 #: code:addons/pb_new_hire/static/src/js/step_role.js:0
 msgid "This differs from the team's usual scheme, %s."
 msgstr "Khác với chương trình thường dùng của nhóm, %s."
@@ -6536,16 +6446,6 @@ msgstr "Khác với chương trình thường dùng của nhóm, %s."
 #: code:addons/pb_new_hire/models/checklist_p8.py:0
 msgid "Ticked when the laptop was handed over"
 msgstr "Đánh dấu xong khi đã bàn giao máy tính xách tay"
-
-#. module: pb_new_hire
-#. odoo-python
-#: code:addons/pb_new_hire/models/studio.py:0
-msgid ""
-"To pay them by %(scheme)s, pick one of its teams (they are listed first) or "
-"change who pays %(team)s in Mapping."
-msgstr ""
-"Để trả lương theo %(scheme)s, hãy chọn một nhóm của chương trình đó (được "
-"liệt kê đầu tiên) hoặc đổi chương trình trả lương cho %(team)s trong Ánh xạ."
 
 #. module: pb_new_hire
 #. odoo-javascript
@@ -6588,3 +6488,96 @@ msgstr "trả lương cho %s người"
 #: code:addons/pb_new_hire/static/src/js/step_role.js:0
 msgid "pays 1 person"
 msgstr "trả lương cho 1 người"
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "%(name)s will be paid by %(scheme)s from %(day)s."
+msgstr "%(name)s sẽ được trả lương theo %(scheme)s từ %(day)s."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Mid-month advance"
+msgstr "Tạm ứng giữa tháng"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Mid-month advance: %s"
+msgstr "Tạm ứng giữa tháng: %s"
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "No pay scheme for %(country)s yet."
+msgstr "Chưa có chương trình lương cho %(country)s."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid "No pay scheme for this person yet."
+msgstr "Người này chưa có chương trình lương."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid ""
+"Pick a Country of work that has a pay scheme, or add one in Mapping, then "
+"the example appears here."
+msgstr "Hãy chọn một Quốc gia làm việc có chương trình lương, hoặc thêm một chương trình trong Ánh xạ, rồi ví dụ sẽ hiện ở đây."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"Pick the country of work first. The teams and jobs there come first in their"
+" lists, and the pay scheme, currency, trial period, contract letter and "
+"papers follow it. You can change the pay scheme here."
+msgstr "Hãy chọn quốc gia làm việc trước. Các nhóm và công việc ở đó được xếp đầu danh sách, còn chương trình lương, tiền tệ, thời gian thử việc, thư hợp đồng và giấy tờ đi theo quốc gia đó. Bạn có thể đổi chương trình lương tại đây."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"They follow the country of work. When the country has several pay schemes, "
+"you pick the one that pays this person."
+msgstr "Các mục này theo quốc gia làm việc. Khi quốc gia có nhiều chương trình lương, bạn chọn chương trình trả lương cho người này."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "They will be paid by %(scheme)s from %(day)s."
+msgstr "Người này sẽ được trả lương theo %(scheme)s từ %(day)s."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid ""
+"You can still add the person, and give them a pay scheme from their record "
+"later."
+msgstr "Bạn vẫn có thể thêm người này, và gán chương trình lương sau từ hồ sơ của họ."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid ""
+"You can still add the person, and give them a pay scheme from their record "
+"once %(country)s has one."
+msgstr "Bạn vẫn có thể thêm người này, và gán chương trình lương từ hồ sơ của họ khi %(country)s đã có chương trình."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "their first day"
+msgstr "ngày đầu tiên của họ"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"Four things are enough to begin. The Country of work you pick next works out"
+" the pay scheme, the currency and the trial period for you."
+msgstr "Chỉ cần bốn thông tin để bắt đầu. Quốc gia làm việc bạn chọn tiếp theo sẽ tự xác định chương trình lương, tiền tệ và thời gian thử việc cho bạn."

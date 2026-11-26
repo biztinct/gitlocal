@@ -1,0 +1,25 @@
+# Translation of Payobook Server.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contract_360.xml:0
+msgid "Change pay scheme"
+msgstr "Ubah skema gaji"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/js/contract_360.js:0
+msgid "Waiting for approval: %(scheme)s from %(date)s"
+msgstr "Menunggu persetujuan: %(scheme)s mulai %(date)s"

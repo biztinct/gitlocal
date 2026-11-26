@@ -2149,14 +2149,6 @@ msgstr "Contoh: Pengawas Lapangan"
 
 #. module: pb_new_hire
 #. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid ""
-"Four things are enough to begin. The team you pick next works out the pay "
-"scheme, the currency and the trial period for you."
-msgstr "Empat hal sudah cukup untuk memulai. Tim yang Anda pilih berikutnya akan menentukan skema gaji, mata uang, dan masa percobaan untuk Anda."
-
-#. module: pb_new_hire
-#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_new_hire/models/hiring.py:0
 #: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
@@ -3017,12 +3009,6 @@ msgstr "Tidak ada dokumen yang diminta di Rekrutmen"
 #: code:addons/pb_new_hire/models/studio.py:0
 msgid "No pay scheme pays %(team)s yet."
 msgstr "Belum ada skema gaji yang membayar %(team)s."
-
-#. module: pb_new_hire
-#. odoo-python
-#: code:addons/pb_new_hire/models/payslip_example.py:0
-msgid "No pay scheme pays this team yet."
-msgstr "Belum ada skema gaji yang membayar tim ini."
 
 #. module: pb_new_hire
 #. odoo-javascript
@@ -3917,12 +3903,6 @@ msgstr "Diatur dari studio Tambah karyawan: orang ini diingatkan setiap 2 hari s
 #: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
 msgid "Set up working weeks"
 msgstr "Atur minggu kerja"
-
-#. module: pb_new_hire
-#. odoo-python
-#: code:addons/pb_new_hire/models/payslip_example.py:0
-msgid "Set who pays this team in Mapping, then the example appears here."
-msgstr "Atur siapa yang membayar tim ini di Pemetaan, lalu contohnya akan muncul di sini."
 
 #. module: pb_new_hire
 #. odoo-javascript
@@ -5595,14 +5575,6 @@ msgstr "Anda akan diberi tahu jika ada yang diperlukan untuk penggajian masih ku
 
 #. module: pb_new_hire
 #. odoo-python
-#: code:addons/pb_new_hire/models/studio.py:0
-msgid ""
-"You can still add the person. Set who pays this team in Mapping before the "
-"first pay run."
-msgstr "Anda tetap dapat menambahkan orang ini. Atur siapa yang membayar tim ini di Pemetaan sebelum proses penggajian pertama."
-
-#. module: pb_new_hire
-#. odoo-python
 #: code:addons/pb_new_hire/models/payslip_example.py:0
 msgid ""
 "You can still send the hire: once it is approved, it waits in Approvals "
@@ -6236,18 +6208,6 @@ msgstr "Pilih tim"
 
 #. module: pb_new_hire
 #. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid ""
-"Pick the country of work first. The teams and jobs there come first in their"
-" lists, and the currency, trial period, contract letter and papers follow "
-"it. The team then decides who pays."
-msgstr ""
-"Pilih negara kerja lebih dulu. Tim dan pekerjaan di sana muncul paling atas,"
-" dan mata uang, masa percobaan, surat kontrak, serta dokumen mengikutinya. "
-"Lalu tim menentukan siapa yang menggaji."
-
-#. module: pb_new_hire
-#. odoo-javascript
 #: code:addons/pb_new_hire/static/src/js/step_role.js:0
 msgid "Show teams from other countries (%s)"
 msgstr "Tampilkan tim dari negara lain (%s)"
@@ -6346,35 +6306,9 @@ msgstr ""
 
 #. module: pb_new_hire
 #. odoo-python
-#: code:addons/pb_new_hire/models/studio.py:0
-msgid ""
-"%(scheme)s is used for the example. Set who pays %(team)s in Mapping so the "
-"pay run includes them."
-msgstr ""
-"%(scheme)s dipakai untuk contoh. Atur siapa yang membayar %(team)s di "
-"Pemetaan agar proses penggajian menyertakan mereka."
-
-#. module: pb_new_hire
-#. odoo-python
-#: code:addons/pb_new_hire/models/studio.py:0
-msgid ""
-"%(scheme)s pays them through a rule on the map. Set who pays %(team)s in "
-"Mapping to make it the team's own."
-msgstr ""
-"%(scheme)s membayar mereka lewat aturan di peta. Atur siapa yang membayar "
-"%(team)s di Pemetaan agar menjadi milik tim itu sendiri."
-
-#. module: pb_new_hire
-#. odoo-python
 #: code:addons/pb_new_hire/models/checklist_p8.py:0
 msgid "%(step)s — done."
 msgstr "%(step)s — selesai."
-
-#. module: pb_new_hire
-#. odoo-python
-#: code:addons/pb_new_hire/models/studio.py:0
-msgid "%(team)s is paid by %(run)s, and the pay run follows the team."
-msgstr "%(team)s dibayar oleh %(run)s, dan proses penggajian mengikuti tim."
 
 #. module: pb_new_hire
 #. odoo-python
@@ -6463,14 +6397,6 @@ msgstr ""
 "baru dan pilih pendampingnya."
 
 #. module: pb_new_hire
-#. odoo-python
-#: code:addons/pb_new_hire/models/studio.py:0
-msgid "Set who pays %(team)s in Mapping to make %(scheme)s theirs."
-msgstr ""
-"Atur siapa yang membayar %(team)s di Pemetaan agar %(scheme)s menjadi milik "
-"mereka."
-
-#. module: pb_new_hire
 #. odoo-javascript
 #: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
 msgid "Suggest who pays each team"
@@ -6495,13 +6421,6 @@ msgid "The only pay scheme for %(country)s."
 msgstr "Satu-satunya skema gaji untuk %(country)s."
 
 #. module: pb_new_hire
-#. odoo-python
-#: code:addons/pb_new_hire/models/studio.py:0
-msgid "The pay run will pay them by %(run)s, not %(scheme)s."
-msgstr ""
-"Proses penggajian akan membayar mereka dengan %(run)s, bukan %(scheme)s."
-
-#. module: pb_new_hire
 #. odoo-javascript
 #: code:addons/pb_new_hire/static/src/js/step_check.js:0
 msgid "The slip could not be made."
@@ -6515,16 +6434,6 @@ msgstr "Slip berisi kata sandi pertama yang baru, hanya ditampilkan kali ini."
 
 #. module: pb_new_hire
 #. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid ""
-"They follow the country of work. The pay scheme follows the team; when the "
-"country has several, you pick one."
-msgstr ""
-"Semua ini mengikuti negara kerja. Skema gaji mengikuti tim; jika negaranya "
-"punya beberapa, Anda memilih satu."
-
-#. module: pb_new_hire
-#. odoo-javascript
 #: code:addons/pb_new_hire/static/src/js/step_role.js:0
 msgid "This differs from the team's usual scheme, %s."
 msgstr "Ini berbeda dari skema biasa tim, %s."
@@ -6534,16 +6443,6 @@ msgstr "Ini berbeda dari skema biasa tim, %s."
 #: code:addons/pb_new_hire/models/checklist_p8.py:0
 msgid "Ticked when the laptop was handed over"
 msgstr "Dicentang saat laptop diserahkan"
-
-#. module: pb_new_hire
-#. odoo-python
-#: code:addons/pb_new_hire/models/studio.py:0
-msgid ""
-"To pay them by %(scheme)s, pick one of its teams (they are listed first) or "
-"change who pays %(team)s in Mapping."
-msgstr ""
-"Untuk membayar mereka dengan %(scheme)s, pilih salah satu timnya (tercantum "
-"paling atas) atau ubah siapa yang membayar %(team)s di Pemetaan."
 
 #. module: pb_new_hire
 #. odoo-javascript
@@ -6586,3 +6485,96 @@ msgstr "membayar %s orang"
 #: code:addons/pb_new_hire/static/src/js/step_role.js:0
 msgid "pays 1 person"
 msgstr "membayar 1 orang"
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "%(name)s will be paid by %(scheme)s from %(day)s."
+msgstr "%(name)s akan dibayar dengan %(scheme)s mulai %(day)s."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Mid-month advance"
+msgstr "Uang muka pertengahan bulan"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Mid-month advance: %s"
+msgstr "Uang muka pertengahan bulan: %s"
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "No pay scheme for %(country)s yet."
+msgstr "Belum ada skema gaji untuk %(country)s."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid "No pay scheme for this person yet."
+msgstr "Orang ini belum punya skema gaji."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid ""
+"Pick a Country of work that has a pay scheme, or add one in Mapping, then "
+"the example appears here."
+msgstr "Pilih Negara kerja yang punya skema gaji, atau tambahkan satu di Pemetaan, lalu contohnya muncul di sini."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"Pick the country of work first. The teams and jobs there come first in their"
+" lists, and the pay scheme, currency, trial period, contract letter and "
+"papers follow it. You can change the pay scheme here."
+msgstr "Pilih negara kerja dulu. Tim dan jabatan di sana muncul lebih dulu di daftarnya, dan skema gaji, mata uang, masa percobaan, surat kontrak serta dokumen mengikutinya. Anda dapat mengubah skema gaji di sini."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"They follow the country of work. When the country has several pay schemes, "
+"you pick the one that pays this person."
+msgstr "Semua ini mengikuti negara kerja. Jika negara itu punya beberapa skema gaji, Anda memilih skema yang membayar orang ini."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "They will be paid by %(scheme)s from %(day)s."
+msgstr "Orang ini akan dibayar dengan %(scheme)s mulai %(day)s."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid ""
+"You can still add the person, and give them a pay scheme from their record "
+"later."
+msgstr "Anda tetap dapat menambahkan orang ini, dan memberinya skema gaji nanti dari datanya."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid ""
+"You can still add the person, and give them a pay scheme from their record "
+"once %(country)s has one."
+msgstr "Anda tetap dapat menambahkan orang ini, dan memberinya skema gaji dari datanya setelah %(country)s punya skema."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "their first day"
+msgstr "hari pertama mereka"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"Four things are enough to begin. The Country of work you pick next works out"
+" the pay scheme, the currency and the trial period for you."
+msgstr "Empat hal sudah cukup untuk memulai. Negara kerja yang Anda pilih berikutnya akan menentukan skema gaji, mata uang, dan masa percobaan untuk Anda."

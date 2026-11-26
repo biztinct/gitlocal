@@ -14773,8 +14773,6 @@ msgstr "Nạp dữ liệu lương kỳ trước"
 msgid "\"This run only\" pay data"
 msgstr "Dữ liệu lương “chỉ kỳ này”"
 
-
-
 # ===================================================================
 #  Approval Matrix phase 7 — the doors whose press IS the change.
 # ===================================================================
@@ -16226,3 +16224,83 @@ msgstr "“%s” chỉ để xem thông tin và không được dùng trong côn
 #: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
 msgid "From the clocks from %s — leave blank for those months"
 msgstr "Lấy từ máy chấm công từ %s — để trống cho các tháng đó"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "%(names)s and %(count)s more"
+msgstr "%(names)s và %(count)s người khác"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Accept the drafted map"
+msgstr "Chấp nhận ánh xạ đã soạn"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Add a scheme mapping"
+msgstr "Thêm một ánh xạ chương trình"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Change a person's pay scheme"
+msgstr "Đổi chương trình lương của một người"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Mid-month advance"
+msgstr "Tạm ứng giữa tháng"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "None"
+msgstr "Không có"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid ""
+"Nothing was changed. Somebody changed %s since this was asked for. Send it "
+"back and ask again for what is there now."
+msgstr "Không có gì thay đổi. Đã có người đổi %s kể từ khi đề nghị này được gửi. Hãy trả lại và đề nghị lại theo hiện trạng."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Nothing was changed: %s."
+msgstr "Không có gì thay đổi: %s."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Remove a scheme mapping"
+msgstr "Xóa một ánh xạ chương trình"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Stays as it is"
+msgstr "Giữ nguyên"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Take a team off a scheme"
+msgstr "Gỡ một nhóm khỏi chương trình"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Who"
+msgstr "Ai"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Wire a team to a scheme"
+msgstr "Gắn một nhóm vào chương trình"

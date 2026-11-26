@@ -2123,14 +2123,6 @@ msgstr ""
 
 #. module: pb_new_hire
 #. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid ""
-"Four things are enough to begin. The team you pick next works out the pay "
-"scheme, the currency and the trial period for you."
-msgstr ""
-
-#. module: pb_new_hire
-#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_new_hire/models/hiring.py:0
 #: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
@@ -2990,12 +2982,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_new_hire/models/studio.py:0
 msgid "No pay scheme pays %(team)s yet."
-msgstr ""
-
-#. module: pb_new_hire
-#. odoo-python
-#: code:addons/pb_new_hire/models/payslip_example.py:0
-msgid "No pay scheme pays this team yet."
 msgstr ""
 
 #. module: pb_new_hire
@@ -3890,12 +3876,6 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
 msgid "Set up working weeks"
-msgstr ""
-
-#. module: pb_new_hire
-#. odoo-python
-#: code:addons/pb_new_hire/models/payslip_example.py:0
-msgid "Set who pays this team in Mapping, then the example appears here."
 msgstr ""
 
 #. module: pb_new_hire
@@ -5569,14 +5549,6 @@ msgstr ""
 
 #. module: pb_new_hire
 #. odoo-python
-#: code:addons/pb_new_hire/models/studio.py:0
-msgid ""
-"You can still add the person. Set who pays this team in Mapping before the "
-"first pay run."
-msgstr ""
-
-#. module: pb_new_hire
-#. odoo-python
 #: code:addons/pb_new_hire/models/payslip_example.py:0
 msgid ""
 "You can still send the hire: once it is approved, it waits in Approvals "
@@ -6210,15 +6182,6 @@ msgstr ""
 
 #. module: pb_new_hire
 #. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid ""
-"Pick the country of work first. The teams and jobs there come first in their"
-" lists, and the currency, trial period, contract letter and papers follow "
-"it. The team then decides who pays."
-msgstr ""
-
-#. module: pb_new_hire
-#. odoo-javascript
 #: code:addons/pb_new_hire/static/src/js/step_role.js:0
 msgid "Show teams from other countries (%s)"
 msgstr ""
@@ -6313,30 +6276,8 @@ msgstr ""
 
 #. module: pb_new_hire
 #. odoo-python
-#: code:addons/pb_new_hire/models/studio.py:0
-msgid ""
-"%(scheme)s is used for the example. Set who pays %(team)s in Mapping so the "
-"pay run includes them."
-msgstr ""
-
-#. module: pb_new_hire
-#. odoo-python
-#: code:addons/pb_new_hire/models/studio.py:0
-msgid ""
-"%(scheme)s pays them through a rule on the map. Set who pays %(team)s in "
-"Mapping to make it the team's own."
-msgstr ""
-
-#. module: pb_new_hire
-#. odoo-python
 #: code:addons/pb_new_hire/models/checklist_p8.py:0
 msgid "%(step)s — done."
-msgstr ""
-
-#. module: pb_new_hire
-#. odoo-python
-#: code:addons/pb_new_hire/models/studio.py:0
-msgid "%(team)s is paid by %(run)s, and the pay run follows the team."
 msgstr ""
 
 #. module: pb_new_hire
@@ -6424,12 +6365,6 @@ msgid ""
 msgstr ""
 
 #. module: pb_new_hire
-#. odoo-python
-#: code:addons/pb_new_hire/models/studio.py:0
-msgid "Set who pays %(team)s in Mapping to make %(scheme)s theirs."
-msgstr ""
-
-#. module: pb_new_hire
 #. odoo-javascript
 #: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
 msgid "Suggest who pays each team"
@@ -6454,12 +6389,6 @@ msgid "The only pay scheme for %(country)s."
 msgstr ""
 
 #. module: pb_new_hire
-#. odoo-python
-#: code:addons/pb_new_hire/models/studio.py:0
-msgid "The pay run will pay them by %(run)s, not %(scheme)s."
-msgstr ""
-
-#. module: pb_new_hire
 #. odoo-javascript
 #: code:addons/pb_new_hire/static/src/js/step_check.js:0
 msgid "The slip could not be made."
@@ -6473,14 +6402,6 @@ msgstr ""
 
 #. module: pb_new_hire
 #. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid ""
-"They follow the country of work. The pay scheme follows the team; when the "
-"country has several, you pick one."
-msgstr ""
-
-#. module: pb_new_hire
-#. odoo-javascript
 #: code:addons/pb_new_hire/static/src/js/step_role.js:0
 msgid "This differs from the team's usual scheme, %s."
 msgstr ""
@@ -6489,14 +6410,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_new_hire/models/checklist_p8.py:0
 msgid "Ticked when the laptop was handed over"
-msgstr ""
-
-#. module: pb_new_hire
-#. odoo-python
-#: code:addons/pb_new_hire/models/studio.py:0
-msgid ""
-"To pay them by %(scheme)s, pick one of its teams (they are listed first) or "
-"change who pays %(team)s in Mapping."
 msgstr ""
 
 #. module: pb_new_hire
@@ -6539,4 +6452,97 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_new_hire/static/src/js/step_role.js:0
 msgid "pays 1 person"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "%(name)s will be paid by %(scheme)s from %(day)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Mid-month advance"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Mid-month advance: %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "No pay scheme for %(country)s yet."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid "No pay scheme for this person yet."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid ""
+"Pick a Country of work that has a pay scheme, or add one in Mapping, then "
+"the example appears here."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"Pick the country of work first. The teams and jobs there come first in their"
+" lists, and the pay scheme, currency, trial period, contract letter and "
+"papers follow it. You can change the pay scheme here."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"They follow the country of work. When the country has several pay schemes, "
+"you pick the one that pays this person."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "They will be paid by %(scheme)s from %(day)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid ""
+"You can still add the person, and give them a pay scheme from their record "
+"later."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid ""
+"You can still add the person, and give them a pay scheme from their record "
+"once %(country)s has one."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "their first day"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"Four things are enough to begin. The Country of work you pick next works out"
+" the pay scheme, the currency and the trial period for you."
 msgstr ""

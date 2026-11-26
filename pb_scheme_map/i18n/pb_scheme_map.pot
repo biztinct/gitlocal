@@ -1162,3 +1162,604 @@ msgstr ""
 #: code:addons/pb_scheme_map/static/src/js/scheme_map_board.js:0
 msgid "Can be set now: %(offers)s · Needs your choice: %(choices)s · Nobody in them yet: %(empty)s"
 msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "%(from)s to %(until)s"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "%(name)s is paid by %(scheme)s from %(date)s."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme.py:0
+msgid ""
+"%(person)s already has %(scheme)s from %(since)s. A person has one pay "
+"scheme of each kind at a time: end that one first, or start this one later."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid ""
+"%(person)s is archived, so their pay scheme cannot change. Bring them back "
+"first."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid "%(person)s's pay scheme (was %(was)s, now %(now)s)"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme.py:0
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid "%(scheme)s belongs to %(company)s, so it cannot pay %(person)s."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme.py:0
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid ""
+"%(scheme)s is a final settlement scheme. A person is not given one of their "
+"own: final settlements are worked out when somebody leaves."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid ""
+"%(scheme)s is a mid-month advance. Pick the pay scheme that pays the month, "
+"then add the advance with the switch below it."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid ""
+"%(scheme)s is not a mid-month advance, so it cannot pay one. Pick a mid-"
+"month advance, or switch the advance off."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid ""
+"%(scheme)s is not switched on, so it cannot pay anybody. Switch it on first,"
+" or pick another pay scheme."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "%s has no Country of work yet, so every pay scheme is shown."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid ""
+"%s is already their pay scheme. Pick another card, or change the advance."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid ""
+"A change during a month starts with the next pay run. %(old)s still pays "
+"%(month)s."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "A change is already waiting for approval: %(scheme)s from %(date)s."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid "A pay scheme change goes through approval."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid ""
+"A payroll manager carries out pay scheme changes here, and nobody is set up "
+"to approve one. Ask a payroll manager to make this change."
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme__active
+msgid "Active"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_scheme.xml:0
+msgid ""
+"Add a pay scheme for this country in Mapping, or pick one of another country"
+" below."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__pb_person_scheme__source__hire
+msgid "Add employee"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "Ask for this change"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_scheme.xml:0
+msgid "Cancel"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+#: code:addons/pb_scheme_map/static/src/xml/person_scheme.xml:0
+msgid "Change pay scheme"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__pb_person_scheme__source__hand
+msgid "Changed by hand"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "Changes to %(scheme)s on %(date)s"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid ""
+"Changing a person's pay scheme is for HR and payroll. Ask one of them to "
+"make the change."
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme__contract_id
+msgid "Contract"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/person_scheme_panel.py:0
+msgid "Country of work"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_scheme.xml:0
+msgid "Done"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__pb_person_scheme__source__fill
+msgid "Filled in once"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "First pay run: %s"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "First pay run: %s. A first pay scheme pays that whole month."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_scheme.xml:0
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme__date_from
+msgid "From"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "From %s"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid "From %s's usual pay scheme"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid "From a rule on the map"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid "From their division's usual pay scheme"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid "From their team's usual pay scheme"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "Hide pay schemes of other countries"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "History (%s)"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "History (1)"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__pb_person_scheme__source__job_change
+msgid "Job change"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme__cycle_type
+msgid "Kind of pay run"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "Mid-month advance changes to %(scheme)s on %(date)s"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "Mid-month advance: %s"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "No pay scheme for %s yet"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_scheme.xml:0
+msgid "No pay scheme yet"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid "Nobody was given to change. Reload the screen and try again."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_scheme.xml:0
+msgid "None"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme__note
+msgid "Note"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_scheme.xml:0
+msgid "Now"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_scheme.xml:0
+msgid "Open Mapping"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid "Pay %(count)s people by %(scheme)s from %(date)s"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid "Pay %(person)s by %(scheme)s from %(date)s"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__pb_person_scheme__source__import
+msgid "Pay data file"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_scheme_map/models/person_scheme_panel.py:0
+#: code:addons/pb_scheme_map/static/src/xml/person_scheme.xml:0
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme__config_id
+msgid "Pay scheme"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model,name:pb_scheme_map.model_pb_person_scheme
+msgid "Pay scheme of a person"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "Pay schemes for %(country)s come first, because %(name)s works there."
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model,name:pb_scheme_map.model_pb_people
+msgid "Payobook People cockpit data"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.actions.server,name:pb_scheme_map.cron_person_scheme_boundaries_ir_actions_server
+msgid "Payroll: pay schemes that start or end today"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme__employee_id
+msgid "Person"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "Pick a pay scheme first."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "Pick the first day the new pay scheme pays."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid "Pick the pay scheme first."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "Saved"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid "Saved."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "Sent for approval"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid "Sent for approval to %s."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+#: model:ir.model.fields.selection,name:pb_scheme_map.selection__pb_person_scheme__source__team
+msgid "Set for the whole team"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "Show pay schemes of other countries (%s)"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_scheme.xml:0
+msgid ""
+"Tax and insurance boxes follow the Country of work, not the pay scheme. "
+"Change the Country of work too if this person moved."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "That did not work. Try again."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid ""
+"That mid-month advance is not there any more. Reload the screen and try "
+"again."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme.py:0
+msgid ""
+"The end date is before the start date. A pay scheme cannot end before it "
+"starts."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid "The only pay scheme in this company"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "The pay scheme could not be read. Close this and try again."
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_hr_employee__pb_paid_by_own
+msgid "Their own pay scheme"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid "Their own pay scheme from %s"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "Their own pay scheme has ended and no new one follows."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid "Their own pay scheme since %s"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "Their own pay scheme, %(scheme)s, is switched off."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "They have their own pay scheme and no mid-month advance of their own."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "They have their own pay scheme, but none for this kind of pay run."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/xml/person_scheme.xml:0
+msgid "This person could not be found. Close this and open them again."
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme__date_to
+msgid "Until"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "Waiting for approval: %(scheme)s from %(date)s"
+msgstr ""
+
+#. module: pb_scheme_map
+#: model:ir.model.fields,field_description:pb_scheme_map.field_pb_person_scheme__source
+msgid "Where it came from"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "With %s"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid "You cannot see who pays this person."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_board.py:0
+msgid "no pay scheme of their own"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "pays %s people"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-javascript
+#: code:addons/pb_scheme_map/static/src/js/person_scheme.js:0
+msgid "pays 1 person"
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
+msgid "their own pay scheme, from %(date)s"
+msgstr ""
