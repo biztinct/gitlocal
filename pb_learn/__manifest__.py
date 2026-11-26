@@ -36,7 +36,11 @@
     # as a word and one "Filled in by Payobook · not checked" tag (JS only).
     # 20.8.9: FORM STUDIO — station "formbuilder" and lesson L42 "Add your own
     # fields" (five steps over a practice copy of Settings › Form builder).
-    'version': '19.0.20.9.0',
+    # 20.10.0: DOCSTUDIO close-out — six stations and lessons L43-L48 (Build a
+    # report, My Excel layout, the PDF of a report, Design a letter, offer
+    # letters and certificates, contract documents) over seven practice copies;
+    # Insights and Settings › HR orientation lines; HR and owner paths.
+    'version': '19.0.20.10.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Guided Journey, always-on Coach and bilingual lesson spine for the Pay Run desk',
     'author': 'Biztinct',
