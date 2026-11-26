@@ -38,6 +38,7 @@ import {
     dayLabel, rowStart, startBuckets, oneoffTotals, moneyLabel, leaveTotals, qtyLabel,
     LANE_ICON, laneLabel,
     SCHEME_TARGET, joinersToSend, bindRow, cellFromItem, newRowFrom, unmatchedPayload,
+    ADVANCE_TARGET, schemesToSend,
 } from "@pb_updates/js/updates_review";
 
 const MODEL = "pb.updates.desk";
@@ -167,6 +168,7 @@ export class PbUpdatesDesk extends Component {
             opening: 0,
             joinerSheet: { open: false, schemes: null, scheme: "", busy: false, msg: "", tone: "" },
             joinerOutlook: null,
+            schemeOutlook: null,
             applyingNow: 0,
         });
         this._draftTimer = null;
@@ -1050,13 +1052,16 @@ export class PbUpdatesDesk extends Component {
     /** UPDATES P2c — the start-date destination, first in "Goes to". */
     get whenOption() { return { value: WHEN, label: _t("Start date for this row") }; }
 
-    /** UPDATES P3b — "Pay scheme" for new employees: a check, never a value. */
-    get schemeOption() { return { value: SCHEME_TARGET, label: _t("Pay scheme (a check for new employees)") }; }
+    /** UPDATES P3b, PSCHEME P2b — the person's own pay scheme: set on a new
+     *  employee, changed from the row's start date for the others. */
+    get schemeOption() { return { value: SCHEME_TARGET, label: _t("Pay scheme") }; }
+    get advanceOption() { return { value: ADVANCE_TARGET, label: _t("Mid-month advance") }; }
 
     get fieldLabels() {
         const out = {};
         out[WHEN] = this.whenOption.label;
         out[SCHEME_TARGET] = this.schemeOption.label;
+        out[ADVANCE_TARGET] = this.advanceOption.label;
         for (const o of this.identityOptions) { out[o.value] = o.label; }
         for (const t of (this.state.match ? this.state.match.fields : [])) {
             for (const f of t.fields) { out[f.id] = f.label; }
@@ -1193,7 +1198,9 @@ export class PbUpdatesDesk extends Component {
         if (!t || t === "ignore") { return { label: "", tone: "none", icon: "" }; }
         if (t.startsWith("identity:")) { return { label: _t("Finds the person"), tone: "key", icon: "link" }; }
         if (t === WHEN) { return { label: _t("When it starts"), tone: "when", icon: "calendarClock" }; }
-        if (t === SCHEME_TARGET) { return { label: _t("Checks new employees"), tone: "when", icon: "shieldCheck" }; }
+        // PSCHEME P2b — the person's own pay scheme, from the row's start date
+        if (t === SCHEME_TARGET) { return { label: _t("Their pay scheme"), tone: "when", icon: "layers" }; }
+        if (t === ADVANCE_TARGET) { return { label: _t("Their mid-month advance"), tone: "when", icon: "layers" }; }
         const group = this.fieldGroups[t];
         return {
             employee: { label: _t("About the person"), tone: "person", icon: "user" },
@@ -1236,7 +1243,7 @@ export class PbUpdatesDesk extends Component {
             placed: placed.length,
             guesses: cols.filter((c) => c.how === "guess").length,
             identity: placed.filter((c) => c.target.startsWith("identity:")).length,
-            values: placed.filter((c) => !c.target.startsWith("identity:") && c.target !== WHEN && c.target !== SCHEME_TARGET).length,
+            values: placed.filter((c) => !c.target.startsWith("identity:") && c.target !== WHEN && c.target !== ADVANCE_TARGET).length,
             dated: placed.some((c) => c.target === WHEN),
         };
     }
@@ -1413,6 +1420,7 @@ export class PbUpdatesDesk extends Component {
         this.refreshPaid();
         this.refreshLanes();
         this.refreshJoinerOutlook();
+        this.refreshSchemeOutlook();
         this.refreshLeaveOutlook();
         this.refreshYtdOutlook();
     }
@@ -1431,6 +1439,40 @@ export class PbUpdatesDesk extends Component {
         } catch {
             this.state.joinerOutlook = { count: n, outcome: "approval", line: "" };
         }
+    }
+
+    // ================================================ PSCHEME P2b — pay schemes
+    get schemeCount() { return this.state.rv ? reviewCounts(this.state.rv).schemes : 0; }
+
+    async refreshSchemeOutlook() {
+        this.state.schemeOutlook = null;
+        if (!this.isLasting || !this.schemeCount) { return; }
+        try {
+            this.state.schemeOutlook = await this.orm.silent.call(MODEL, "scheme_outlook", []);
+        } catch {
+            this.state.schemeOutlook = { outcome: "approval", line: "" };
+        }
+    }
+    get schemeCardLine() {
+        const o = this.state.schemeOutlook;
+        return o ? o.line : _t("Working out who approves pay scheme changes…");
+    }
+    get schemeOutIcon() {
+        const o = this.state.schemeOutlook;
+        return { now: "check", approval: "clock", none: "alert" }[o && o.outcome] || "clock";
+    }
+    get schemeCountLine() {
+        return plural(this.schemeCount, _t("1 person's pay scheme changes"), _t("%s people's pay schemes change"));
+    }
+    get schemeBlocked() { return !!(this.schemeCount && this.state.schemeOutlook && this.state.schemeOutlook.outcome === "none"); }
+    get doneSchemes() { return (this.state.done && this.state.done.schemes) || []; }
+    doneSchemeLine(g) {
+        const who = plural(g.people, _t("1 person"), _t("%s people"));
+        const when = dayLabel(g.date);
+        if (g.pending) {
+            return _t("%(who)s from %(date)s, waiting for approval", { who, date: when });
+        }
+        return _t("%(who)s from %(date)s", { who, date: when });
     }
 
     get joinerCardLine() {
@@ -1715,6 +1757,14 @@ export class PbUpdatesDesk extends Component {
         const now = this.nowCount;
         // UPDATES P3b — new employees, alone or with changes.
         const fresh = this.newCount;
+        // PSCHEME P2b — pay scheme changes alone
+        const schemes = this.schemeCount;
+        if (schemes && !n && !fresh) {
+            if (this.state.apply.busy) { return _t("Sending…"); }
+            return this.state.schemeOutlook && this.state.schemeOutlook.outcome === "now"
+                ? plural(schemes, _t("Change 1 pay scheme"), _t("Change %s pay schemes"))
+                : plural(schemes, _t("Send 1 pay scheme change for approval"), _t("Send %s pay scheme changes for approval"));
+        }
         if (this.state.apply.busy) {
             return !n && fresh ? _t("Sending…") : plural(n, _t("Applying 1 change…"), _t("Applying %s changes…"));
         }
@@ -1794,6 +1844,8 @@ export class PbUpdatesDesk extends Component {
                 // UPDATES P3b — the draft becomes this update; new employees.
                 draft_id: this.state.draftId || 0,
                 joiners: this.isLasting ? joinersToSend(rv) : [],
+                // PSCHEME P2b — pay scheme changes of the people already here
+                schemes: this.isLasting ? schemesToSend(rv) : [],
             }));
             if (!answer.ok) {
                 a.error = answer.msg;
@@ -1872,6 +1924,13 @@ export class PbUpdatesDesk extends Component {
     get doneTitle() {
         const d = this.state.done;
         if (d.nothing) { return _t("Nothing needed changing"); }
+        if (d.only_schemes) {
+            const waiting = this.doneSchemes.some((g) => g.pending);
+            const people = this.doneSchemes.reduce((a, g) => a + (g.people || 0), 0);
+            return waiting
+                ? _t("Sent for approval")
+                : plural(people, _t("1 pay scheme changed"), _t("%s pay schemes changed"));
+        }
         if (this.doneJoiners.length && !d.written && !d.pending && !(d.apply_ids || []).length) {
             return d.joiners_waiting
                 ? plural(d.joiners_waiting, _t("1 new-hire request sent"), _t("%s new-hire requests sent"))
@@ -1951,6 +2010,11 @@ export class PbUpdatesDesk extends Component {
     get doneLine() {
         const d = this.state.done;
         if (d.nothing) { return d.msg; }
+        if (d.only_schemes) {
+            return this.doneSchemes.some((g) => g.pending)
+                ? _t("Nothing changes until a payroll manager approves. Each person's record shows the change that is waiting.")
+                : _t("Each person's record shows their new pay scheme and the day it starts.");
+        }
         if (this.doneJoiners.length && !d.written && !d.pending && !(d.apply_ids || []).length) {
             return d.joiners_waiting
                 ? _t("Nobody is added until the request is approved. The rest of each row follows by itself once the person exists.")

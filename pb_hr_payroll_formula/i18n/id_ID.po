@@ -303,3 +303,19 @@ msgstr "Siapa"
 #: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
 msgid "Wire a team to a scheme"
 msgstr "Hubungkan tim ke skema"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
+msgid ""
+"%(n)s people in this file have another pay scheme of their own: %(names)s. "
+"They are not changed."
+msgstr "%(n)s orang di berkas ini punya skema gaji sendiri yang lain: %(names)s. Mereka tidak diubah."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
+msgid ""
+"1 person in this file has another pay scheme of their own: %s. They are not "
+"changed."
+msgstr "1 orang di berkas ini punya skema gaji sendiri yang lain: %s. Orang ini tidak diubah."

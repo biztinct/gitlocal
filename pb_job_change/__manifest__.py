@@ -17,7 +17,7 @@ starts in a month already paid is allowed; pay-line changes are written as dated
 contract amount changes so the Past-month re-work can find them, and the finished
 request offers to open that re-work. No back pay is written here.
 """,
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

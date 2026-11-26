@@ -1816,8 +1816,87 @@ class HrPayrollImportBatch(models.Model):
         employee = self.env['hr.employee'].create(vals)
         self._update_employee_from_raw_data(employee, raw_data, line=line)
         self._log("Created employee: %s [%s]" % (employee.name, employee.identification_id))
+        self._pb_person_scheme_for_new(employee)
 
         return employee
+
+    # ------------------------------------------------------------------
+    # PSCHEME P2b D — the person a file creates is paid by the file's scheme
+    # ------------------------------------------------------------------
+    def _pb_person_scheme_for_new(self, employee):
+        """A person this file creates gets the file's pay scheme as their OWN,
+        from the first day of the file's period (`source='import'`), through
+        the scheme map's one writer. A soft probe: this module never depends
+        on the scheme map (dependency rail). A file of a mid-month advance
+        gives them the end-of-month scheme it is paired with (when there is
+        exactly one) plus that advance; a final settlement file gives nothing.
+        Never fails the row: the person is still created, and the log says
+        why there is no pay scheme."""
+        self.ensure_one()
+        config = self.formula_config_id
+        if not config or 'pb.scheme.board' not in self.env \
+                or 'pb.person.scheme' not in self.env:
+            return 0
+        Config = self.env['hr.formula.config'].sudo()
+        main, advance = config.sudo(), Config
+        if config.cycle_type == 'mid_cycle':
+            pairs = self.env['hr.payroll.cycle.component.mapping'].sudo().search([
+                ('mid_cycle_config_id', '=', config.id), ('active', '=', True)]) \
+                if 'hr.payroll.cycle.component.mapping' in self.env else []
+            ends = {p.end_cycle_config_id for p in pairs if p.end_cycle_config_id
+                    and p.end_cycle_config_id.state == 'active'}
+            if len(ends) != 1:
+                return 0
+            main, advance = list(ends)[0].sudo(), config.sudo()
+        elif config.cycle_type not in ('regular', 'end_cycle'):
+            return 0
+        day = self.date_from or fields.Date.context_today(self)
+        from .schememap_approval import SCHEMEMAP_WRITE
+        board = self.env['pb.scheme.board'].sudo().with_context(**{SCHEMEMAP_WRITE: True})
+        try:
+            with self.env.cr.savepoint():
+                return board._person_set_write(employee.sudo(), main, advance or False,
+                                               day, source='import')
+        except Exception as error:      # noqa: BLE001 — the person still stands
+            _logger.info("Pay data file %s: no own pay scheme for %s: %s",
+                         self.id, employee.id, error)
+            self._log("No pay scheme of their own for %s: %s" % (employee.name, error))
+            return 0
+
+    def pb_own_scheme_elsewhere(self, limit=50):
+        """`{'count', 'names', 'line'}` — the people of this file (matched, not
+        created by it) who have a pay scheme of their OWN other than the
+        file's. They are not changed (owner ruling R1: the scheme belongs to
+        the person); the review says so, quiet at zero. Soft probe."""
+        self.ensure_one()
+        out = {'count': 0, 'names': [], 'line': ''}
+        config = self.formula_config_id
+        if not config or 'pb.scheme.board' not in self.env:
+            return out
+        people = self.import_line_ids.mapped('employee_id') - self.created_employee_ids
+        if not people:
+            return out
+        day = self.date_from or fields.Date.context_today(self)
+        board = self.env['pb.scheme.board'].sudo()
+        names = []
+        for employee in people.sudo():
+            main, advance = board._person_scheme_now(employee, day)
+            if not main and not advance:
+                continue
+            if config in (main | advance):
+                continue
+            names.append(employee.name or '')
+        names.sort(key=lambda n: n.lower())
+        out['count'] = len(names)
+        out['names'] = names[:int(limit or 50)]
+        if names:
+            out['line'] = _("%(n)s people in this file have another pay scheme of "
+                            "their own: %(names)s. They are not changed.",
+                            n=len(names), names=', '.join(names[:int(limit or 50)])) \
+                if len(names) > 1 else \
+                _("1 person in this file has another pay scheme of their own: %s. "
+                  "They are not changed.", names[0])
+        return out
 
     def _create_contract(self, employee, line):
         """Create a new contract for employee"""

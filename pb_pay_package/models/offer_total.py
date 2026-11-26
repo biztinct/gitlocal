@@ -157,9 +157,23 @@ class PbPayPackageOffer(models.AbstractModel):
         return offer
 
     @api.model
+    def _offer_country(self, offer):
+        """The Country of work of the person this offer is for: the
+        requisition's country, else the company's (the letter reads the same
+        two, `pb.hiring.offer`)."""
+        req = offer.requisition_id.sudo()
+        country = req.country_id or offer.company_id.country_id
+        return (country.code or '').upper() if country else ''
+
+    @api.model
     def _offer_schemes(self, offer):
-        """The live pay schemes of the offer's company, the one the role's
-        team is paid by first."""
+        """The live pay schemes of the offer's company, the default first.
+
+        PSCHEME P2b C (owner ruling R1): the default is the usual pay scheme
+        of the offer's Country of work — the same answer Add employee gives
+        (`pb.scheme.map.usual_scheme`: the country's only or usual scheme,
+        the team's usual scheme only to break a tie). Reached by a soft probe:
+        this module does not depend on the scheme map."""
         Config = self.env['hr.formula.config'].sudo()
         company = offer.company_id
         schemes = Config.search([('state', '=', 'active'), '|',
@@ -168,12 +182,11 @@ class PbPayPackageOffer(models.AbstractModel):
         first = Config.browse()
         Map = self.env.get('pb.scheme.map')
         dept = offer.requisition_id.sudo().department_id
-        if Map is not None and dept:
+        if Map is not None and hasattr(Map, 'usual_scheme'):
             try:
-                rows = Map.sudo()._map_rows([company.id])
-                pick = Map._pick(Map._by_department(rows).get(dept.id), 'any')
-                if pick:
-                    first = pick.config_id
+                found = Map.sudo().usual_scheme(company.id, self._offer_country(offer),
+                                                dept.id if dept else 0)
+                first = found['config'] or Config.browse()
             except Exception:   # noqa: BLE001 — a default is only a default
                 _logger.debug('pb_pay_package: map unreadable for an offer', exc_info=True)
         if not first and Map is not None:

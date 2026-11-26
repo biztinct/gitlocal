@@ -628,8 +628,9 @@
                             <option t-att-value="o.value" t-att-selected="col.target === o.value" t-esc="o.label"/>
                           </t>
                         </optgroup>
-                        <optgroup t-if="isLasting" label="For new employees">
+                        <optgroup t-if="isLasting" label="Pay scheme">
                           <option t-att-value="schemeOption.value" t-att-selected="col.target === schemeOption.value" t-esc="schemeOption.label"/>
+                          <option t-att-value="advanceOption.value" t-att-selected="col.target === advanceOption.value" t-esc="advanceOption.label"/>
                         </optgroup>
                         <t t-foreach="goesTo" t-as="g" t-key="g.key">
                           <optgroup t-att-label="g.label" t-att-disabled="g.divider ? 'disabled' : undefined" t-att-class="g.divider ? 'pbu-divider' : undefined">
@@ -766,6 +767,20 @@
                 </div>
               </section>
 
+              <!-- PSCHEME P2b — the pay scheme card: who approves a change. -->
+              <section t-if="isLasting and schemeCount" class="pbu-lanecards pbu-lanecards--new" aria-live="polite">
+                <div t-attf-class="pbu-lanecard pbu-lanecard--scheme {{ schemeBlocked ? 'is-warn' : '' }}">
+                  <span class="pbu-lanecard-ic"><t t-out="icon('layers', 17)"/></span>
+                  <div class="pbu-lanecard-t">
+                    <b>Pay scheme</b>
+                    <span class="pbu-sub" t-esc="schemeCountLine"/>
+                  </div>
+                  <span t-attf-class="pbu-lanecard-out is-{{ state.schemeOutlook ? (state.schemeOutlook.outcome === 'none' ? 'nobody' : state.schemeOutlook.outcome) : 'approval' }}">
+                    <t t-out="icon(schemeOutIcon, 14)"/><span t-esc="schemeCardLine"/>
+                  </span>
+                </div>
+              </section>
+
               <!-- UPDATES P2d — the pay month and its totals. -->
               <section t-if="isOneoff" class="pbu-when-card pbu-month-card" aria-labelledby="pbu-month-h">
                 <div class="pbu-when-head">
@@ -858,9 +873,13 @@
                 <t t-out="icon(leaveApply and leaveApply.policy and !leaveApply.plain ? 'lock' : 'undo', 16)"/>
                 <div><b>What undo can do.</b> <span t-esc="leaveUndoLine"/></div>
               </div>
+              <div t-elif="schemeCount and !applyCounts.changes and !newCount" class="pbu-note">
+                <t t-out="icon('layers', 16)"/>
+                <div><b>A pay scheme change is changed back from the person's record.</b> Open them and press Change pay scheme. If your company asks for approval, nothing changes until it is approved.</div>
+              </div>
               <div t-else="" class="pbu-note">
                 <t t-out="icon('undo', 16)"/>
-                <div><b>You can undo this.</b> One click in Past updates puts every value back the way it was, unless someone has changed it since. If your company asks for approval, nothing changes until it is approved.</div>
+                <div><b>You can undo this.</b> One click in Past updates puts every value back the way it was, unless someone has changed it since. If your company asks for approval, nothing changes until it is approved.<t t-if="schemeCount"> <span>Pay scheme changes are changed back from each person's record, not from Past updates.</span></t></div>
               </div>
               <div t-if="isLasting and newCount" class="pbu-note pbu-note--warn">
                 <t t-out="icon('userPlus', 16)"/>
@@ -876,7 +895,7 @@
                 <t t-out="icon('back', 15)"/> Back
               </button>
               <button t-if="isLeave ? mayLeave : isYtd ? ytdInfo.may_send : canWrite" type="button" class="pbim-btn primary"
-                      t-att-disabled="state.apply.busy or nameMissing or (!applyCounts.changes and !newCount) or (isLasting and (whenDateError or tooManyDates)) or (newCount and state.joinerOutlook and state.joinerOutlook.outcome === 'none')"
+                      t-att-disabled="state.apply.busy or nameMissing or (!applyCounts.changes and !newCount and !schemeCount) or (isLasting and (whenDateError or tooManyDates)) or (newCount and state.joinerOutlook and state.joinerOutlook.outcome === 'none') or schemeBlocked"
                       t-on-click="applyNow">
                 <span t-if="state.apply.busy" class="pbu-spin sm on-dark"/>
                 <t t-else="" t-out="icon(applyIcon, 15)"/>
@@ -916,6 +935,17 @@
                   <span t-if="j.note and j.state !== 'needs_attention'" class="pbu-sub pbu-warn-text" t-esc="j.note"/>
                 </div>
                 <span t-attf-class="pbu-chip pbu-chip--{{ joinerTone(j) }}" t-esc="j.state_label"/>
+              </li>
+            </ul>
+            <ul t-if="doneSchemes.length" class="pbu-hlanes pbu-hschemes" aria-label="Pay schemes">
+              <li t-foreach="doneSchemes" t-as="g" t-key="g_index" class="pbu-hlane pbu-hlane--scheme">
+                <span class="pbu-hlane-ic"><t t-out="icon('layers', 14)"/></span>
+                <div class="pbu-hlane-t">
+                  <b t-esc="g.scheme"/>
+                  <span class="pbu-sub" t-esc="doneSchemeLine(g)"/>
+                  <span t-if="g.names" class="pbu-sub" t-esc="g.names"/>
+                </div>
+                <span t-attf-class="pbu-chip pbu-chip--{{ g.pending ? 'info' : 'ok' }}"><t t-if="g.pending">Waiting</t><t t-else="">Done</t></span>
               </li>
             </ul>
             <p t-if="doneNotAddedLine" class="pbu-inline-note"><t t-out="icon('userX', 14)"/><span t-esc="doneNotAddedLine"/></p>
@@ -1216,7 +1246,18 @@
                     <t t-if="row.code"> · <t t-esc="row.code"/></t>
                     · <span t-attf-class="pbu-tag pbu-tag--new is-{{ newState(row) }}"><t t-out="icon('userPlus', 11)"/><t t-esc="newStateLabel(row)"/></span>
                   </span>
-                  <span t-if="row.scheme" class="pbu-who-sch" t-att-title="row.scheme"><t t-esc="row.scheme"/></span>
+                  <!-- PSCHEME P2b B.1 — their own pay scheme, from their first day -->
+                  <span t-if="row.schemeWhy" class="pbu-who-note is-err pbu-sch-why" t-att-data-cell="row.key + '|scheme'"><t t-out="icon('alert', 11)"/><t t-esc="row.schemeWhy"/></span>
+                  <label t-if="row.schemeWhy and row.schemeOptions.length" class="pbu-sch-pick">
+                    <select class="pbu-select pbu-select--sm" t-att-aria-label="schemePickLabel(row)" t-on-change="(ev) => this.pickNewScheme(row, ev)" t-on-click.stop="">
+                      <option value="">Pick the pay scheme…</option>
+                      <option t-foreach="row.schemeOptions" t-as="so" t-key="so.id" t-att-value="so.id" t-esc="so.name"/>
+                    </select>
+                  </label>
+                  <span t-elif="row.scheme" t-attf-class="pbu-who-sch {{ row.schemeId ? 'is-own' : '' }}" t-att-title="row.schemeFrom or row.scheme" t-att-data-cell="row.key + '|scheme'">
+                    <t t-if="row.schemeId" t-out="icon('layers', 11)"/><t t-esc="row.scheme"/><t t-if="row.advance"> · <t t-esc="row.advance"/></t>
+                  </span>
+                  <span t-if="row.schemeId and row.schemeFrom and !row.schemeWhy" class="pbu-who-note"><t t-esc="row.schemeFrom"/></span>
                   <span t-if="row.schemeNote" class="pbu-who-note is-warn"><t t-out="icon('info', 11)"/><t t-esc="row.schemeNote"/></span>
                   <span t-if="row.noContract" class="pbu-who-note"><t t-out="icon('fileText', 11)"/>No contract yet: no wage in the file</span>
                   <span t-if="row.block" class="pbu-who-note is-err"><t t-out="icon('alert', 11)"/><t t-esc="row.block"/></span>
@@ -1234,9 +1275,25 @@
                     <t t-if="rv.leave and row.policy"> · <span class="pbu-tag">Absence policy</span></t>
                     <t t-if="rv.ytd and row.late"> · <span class="pbu-tag pbu-tag--warn" t-att-title="row.late_note">Joined after this date</span></t>
                   </span>
-                  <span t-if="rv.pay_items" class="pbu-who-sch" t-att-title="row.scheme or noSchemeTitle()">
+                  <span t-if="rv.pay_items and !row.scheme_change" class="pbu-who-sch" t-att-title="row.scheme or noSchemeTitle()">
                     <t t-if="row.scheme" t-esc="row.scheme"/>
                     <t t-else="">No pay scheme yet</t>
+                  </span>
+                  <!-- PSCHEME P2b B.2 — their own pay scheme, from the row's start date -->
+                  <t t-set="sc" t-value="row.scheme_change"/>
+                  <span t-if="sc and sc.status === 'ok'" t-attf-class="pbu-sch-chg {{ sc.left ? 'is-left' : '' }}" t-att-data-cell="row.key + '|scheme'">
+                    <span class="pbu-sch-chg-l"><t t-out="icon('layers', 11)"/> Pay scheme</span>
+                    <span class="pbu-sch-chg-v"><span class="pbu-was" t-esc="sc.old or '—'"/> <t t-out="icon('arrowRight', 11)"/> <b t-esc="sc.new"/></span>
+                    <span class="pbu-sub" t-esc="schemeWhenLine(row)"/>
+                    <span t-if="!sc.left and schemeR6Of(row)" class="pbu-sub pbu-sch-r6" t-esc="schemeR6Of(row)"/>
+                    <button t-if="!sc.left" type="button" class="pbu-link pbu-who-act" t-on-click.stop="() => this.leaveScheme(row)">Leave this one out</button>
+                    <button t-else="" type="button" class="pbu-link pbu-who-act" t-on-click.stop="() => this.keepScheme(row)">Bring it back</button>
+                  </span>
+                  <span t-elif="sc and sc.status === 'refused'" class="pbu-who-note is-err" t-att-data-cell="row.key + '|scheme'"><t t-out="icon('alert', 11)"/><t t-esc="sc.why"/></span>
+                  <span t-elif="sc and sc.status === 'same'" class="pbu-who-sch" t-att-title="sc.old"><t t-out="icon('layers', 11)"/><t t-esc="sc.old"/></span>
+                  <span t-if="row.scheme_suggest" class="pbu-sch-sug" t-att-data-cell="row.key + '|scheme'">
+                    <span class="pbu-sub"><t t-out="icon('info', 11)"/> <t t-esc="row.scheme_suggest.line"/></span>
+                    <button type="button" class="pbu-link pbu-who-act" t-on-click.stop="() => this.takeSuggest(row)"><t t-out="icon('layers', 11)"/> <span t-esc="suggestLabel(row)"/></button>
                   </span>
                 </th>
                 <td t-if="showStarts" class="pbu-starts">

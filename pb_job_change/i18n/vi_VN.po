@@ -1136,12 +1136,6 @@ msgstr "Nhóm và nơi làm việc"
 #. module: pb_job_change
 #. odoo-javascript
 #: code:addons/pb_job_change/static/src/xml/job_change.xml:0
-msgid "Team, manager, place of work, working hours or company"
-msgstr "Nhóm, quản lý, nơi làm việc, giờ làm việc hoặc công ty"
-
-#. module: pb_job_change
-#. odoo-javascript
-#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
 msgid "Tell the pay team: they can work out any difference by hand on the next pay run."
 msgstr "Hãy báo bộ phận lương: họ có thể tự tính phần chênh lệch ở kỳ lương sau."
 
@@ -1791,3 +1785,198 @@ msgid ""
 "Pick the person. Their new pay opens in Change job: one sign-off for the "
 "whole change, and the new pay starts on the date you choose."
 msgstr "Chọn người. Lương mới của họ được mở trong Đổi công việc: một lần duyệt cho cả thay đổi, và lương mới bắt đầu từ ngày bạn chọn."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "%(scheme)s belongs to %(company)s, so it cannot pay %(person)s."
+msgstr "%(scheme)s thuộc %(company)s, nên không thể trả lương cho %(person)s."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid ""
+"%(scheme)s cannot be somebody's own pay scheme: pick the pay scheme that "
+"pays the month."
+msgstr "%(scheme)s không thể là chương trình lương riêng của một người: hãy chọn chương trình trả lương của tháng."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid ""
+"%(scheme)s is not a mid-month advance, so it cannot pay one. Pick a mid-"
+"month advance, or switch the advance off."
+msgstr "%(scheme)s không phải tạm ứng giữa tháng, nên không thể trả tạm ứng. Hãy chọn một tạm ứng giữa tháng, hoặc tắt tạm ứng."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid ""
+"%(scheme)s is not switched on, so it cannot pay anybody. Switch it on first,"
+" or pick another pay scheme."
+msgstr "%(scheme)s chưa được bật, nên không thể trả lương cho ai. Hãy bật nó trước, hoặc chọn chương trình lương khác."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Change pay scheme"
+msgstr "Đổi chương trình lương"
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Country of work"
+msgstr "Quốc gia làm việc"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "Keep %s"
+msgstr "Giữ %s"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "Keep their pay scheme"
+msgstr "Giữ chương trình lương hiện tại"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Leave the pay scheme out of this change"
+msgstr "Không đổi chương trình lương trong thay đổi này"
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Mid-month advance"
+msgstr "Tạm ứng giữa tháng"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "Mid-month advance: %s"
+msgstr "Tạm ứng giữa tháng: %s"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__new_payroll_country
+msgid "New Country of work"
+msgstr "Quốc gia làm việc mới"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__new_advance_scheme_id
+msgid "New mid-month advance"
+msgstr "Tạm ứng giữa tháng mới"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__new_scheme_id
+msgid "New pay scheme"
+msgstr "Chương trình lương mới"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "No mid-month advance"
+msgstr "Không tạm ứng giữa tháng"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid ""
+"No pay scheme for %(country)s in %(company)s yet. Add one in Mapping first."
+msgstr "Chưa có chương trình lương cho %(country)s tại %(company)s. Hãy thêm một chương trình trong Ánh xạ trước."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "Pay schemes at %s, from the start date"
+msgstr "Các chương trình lương tại %s, từ ngày bắt đầu"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "Pay schemes for %(country)s at %(company)s, from the start date"
+msgstr "Các chương trình lương cho %(country)s tại %(company)s, từ ngày bắt đầu"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Pick the pay scheme first, then its mid-month advance."
+msgstr "Hãy chọn chương trình lương trước, rồi đến tạm ứng giữa tháng của nó."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid ""
+"Pick the pay scheme that pays %(person)s at %(company)s. A move to another "
+"company needs one of its pay schemes."
+msgstr "Hãy chọn chương trình lương trả cho %(person)s tại %(company)s. Chuyển sang công ty khác cần một chương trình lương của công ty đó."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid ""
+"Team, manager, place of work, working hours, company or Country of work"
+msgstr "Nhóm, quản lý, nơi làm việc, giờ làm, công ty hoặc Quốc gia làm việc"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "The pay schemes could not be read just now."
+msgstr "Hiện không đọc được các chương trình lương."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Their pay scheme changes from %(old)s to %(new)s from %(date)s."
+msgstr "Chương trình lương chuyển từ %(old)s sang %(new)s từ %(date)s."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Their pay scheme does not change"
+msgstr "Chương trình lương không đổi"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid ""
+"Their pay scheme stays %s. Change it here if this move changes who pays "
+"them."
+msgstr "Chương trình lương vẫn là %s. Hãy đổi ở đây nếu lần chuyển này thay đổi nơi trả lương cho họ."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "This country has several pay schemes. Pick the one that pays them."
+msgstr "Quốc gia này có nhiều chương trình lương. Hãy chọn chương trình trả lương cho họ."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "none"
+msgstr "không có"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "pay scheme"
+msgstr "chương trình lương"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "their pay scheme now"
+msgstr "chương trình lương hiện tại"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "usual for this country"
+msgstr "thường dùng cho quốc gia này"

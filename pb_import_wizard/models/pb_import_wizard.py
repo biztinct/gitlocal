@@ -112,6 +112,10 @@ class PbImportWizard(models.AbstractModel):
             # only counted what was created would read as "nothing happened" on
             # a file that is perfectly fine and simply waiting for somebody.
             **self._approval_summary(b),
+            # PSCHEME P2b D — people of this file whose own pay scheme is
+            # another one: listed, never changed (quiet at zero).
+            'own_elsewhere': b.pb_own_scheme_elsewhere()
+            if hasattr(b, 'pb_own_scheme_elsewhere') else {'count': 0},
             'error': None,
         }
 

@@ -1136,12 +1136,6 @@ msgstr "Tim dan tempat"
 #. module: pb_job_change
 #. odoo-javascript
 #: code:addons/pb_job_change/static/src/xml/job_change.xml:0
-msgid "Team, manager, place of work, working hours or company"
-msgstr "Tim, atasan, tempat kerja, jam kerja atau perusahaan"
-
-#. module: pb_job_change
-#. odoo-javascript
-#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
 msgid "Tell the pay team: they can work out any difference by hand on the next pay run."
 msgstr "Beri tahu tim penggajian: mereka bisa menghitung selisihnya secara manual pada penggajian berikutnya."
 
@@ -1791,3 +1785,198 @@ msgid ""
 "Pick the person. Their new pay opens in Change job: one sign-off for the "
 "whole change, and the new pay starts on the date you choose."
 msgstr "Pilih orangnya. Gaji barunya dibuka di Ubah jabatan: satu persetujuan untuk seluruh perubahan, dan gaji baru mulai pada tanggal yang Anda pilih."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "%(scheme)s belongs to %(company)s, so it cannot pay %(person)s."
+msgstr "%(scheme)s milik %(company)s, jadi tidak dapat membayar %(person)s."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid ""
+"%(scheme)s cannot be somebody's own pay scheme: pick the pay scheme that "
+"pays the month."
+msgstr "%(scheme)s tidak dapat menjadi skema gaji milik seseorang: pilih skema gaji yang membayar bulan itu."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid ""
+"%(scheme)s is not a mid-month advance, so it cannot pay one. Pick a mid-"
+"month advance, or switch the advance off."
+msgstr "%(scheme)s bukan uang muka pertengahan bulan, jadi tidak dapat membayarnya. Pilih uang muka pertengahan bulan, atau matikan uang muka."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid ""
+"%(scheme)s is not switched on, so it cannot pay anybody. Switch it on first,"
+" or pick another pay scheme."
+msgstr "%(scheme)s belum aktif, jadi tidak dapat membayar siapa pun. Aktifkan dulu, atau pilih skema gaji lain."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Change pay scheme"
+msgstr "Ubah skema gaji"
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Country of work"
+msgstr "Negara kerja"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "Keep %s"
+msgstr "Tetap %s"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "Keep their pay scheme"
+msgstr "Tetap pakai skema gajinya"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Leave the pay scheme out of this change"
+msgstr "Jangan ubah skema gaji dalam perubahan ini"
+
+#. module: pb_job_change
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Mid-month advance"
+msgstr "Uang muka pertengahan bulan"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "Mid-month advance: %s"
+msgstr "Uang muka pertengahan bulan: %s"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__new_payroll_country
+msgid "New Country of work"
+msgstr "Negara kerja baru"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__new_advance_scheme_id
+msgid "New mid-month advance"
+msgstr "Uang muka pertengahan bulan baru"
+
+#. module: pb_job_change
+#: model:ir.model.fields,field_description:pb_job_change.field_pb_job_change__new_scheme_id
+msgid "New pay scheme"
+msgstr "Skema gaji baru"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "No mid-month advance"
+msgstr "Tanpa uang muka pertengahan bulan"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change_board.py:0
+msgid ""
+"No pay scheme for %(country)s in %(company)s yet. Add one in Mapping first."
+msgstr "Belum ada skema gaji untuk %(country)s di %(company)s. Tambahkan dulu di Pemetaan."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "Pay schemes at %s, from the start date"
+msgstr "Skema gaji di %s, mulai tanggal berlaku"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "Pay schemes for %(country)s at %(company)s, from the start date"
+msgstr "Skema gaji untuk %(country)s di %(company)s, mulai tanggal berlaku"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Pick the pay scheme first, then its mid-month advance."
+msgstr "Pilih skema gaji dulu, lalu uang muka pertengahan bulannya."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid ""
+"Pick the pay scheme that pays %(person)s at %(company)s. A move to another "
+"company needs one of its pay schemes."
+msgstr "Pilih skema gaji yang membayar %(person)s di %(company)s. Pindah ke perusahaan lain memerlukan salah satu skema gajinya."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid ""
+"Team, manager, place of work, working hours, company or Country of work"
+msgstr "Tim, atasan, tempat kerja, jam kerja, perusahaan atau Negara kerja"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/js/job_change.js:0
+msgid "The pay schemes could not be read just now."
+msgstr "Skema gaji tidak dapat dibaca saat ini."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "Their pay scheme changes from %(old)s to %(new)s from %(date)s."
+msgstr "Skema gajinya berubah dari %(old)s ke %(new)s mulai %(date)s."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "Their pay scheme does not change"
+msgstr "Skema gajinya tidak berubah"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid ""
+"Their pay scheme stays %s. Change it here if this move changes who pays "
+"them."
+msgstr "Skema gajinya tetap %s. Ubah di sini jika perpindahan ini mengubah siapa yang membayarnya."
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "This country has several pay schemes. Pick the one that pays them."
+msgstr "Negara ini punya beberapa skema gaji. Pilih yang membayarnya."
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "none"
+msgstr "tidak ada"
+
+#. module: pb_job_change
+#. odoo-python
+#: code:addons/pb_job_change/models/job_change.py:0
+msgid "pay scheme"
+msgstr "skema gaji"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "their pay scheme now"
+msgstr "skema gajinya sekarang"
+
+#. module: pb_job_change
+#. odoo-javascript
+#: code:addons/pb_job_change/static/src/xml/job_change.xml:0
+msgid "usual for this country"
+msgstr "biasa untuk negara ini"

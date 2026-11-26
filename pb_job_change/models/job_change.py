@@ -48,6 +48,9 @@ from odoo.tools.misc import format_date
 from odoo.addons.biz_approval_workflow.models.chain_shim import (
     manager_step, role_step, route,
 )
+from odoo.addons.pb_hr_payroll_formula.models.schememap_approval import (
+    SCHEMEMAP_WRITE,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -90,6 +93,9 @@ REASON_KINDS = [
 #: title (Odoo recomputes the title from the job).
 EMPLOYEE_MAP = (
     ('new_company_id', 'company_id'),
+    # PSCHEME P2b A.2 — Country of work moves with a permanent move (it was in
+    # no map before, so a transfer to another country left it behind).
+    ('new_payroll_country', 'payroll_country'),
     ('new_job_id', 'job_id'),
     ('new_job_title', 'job_title'),
     ('new_department_id', 'department_id'),
@@ -169,6 +175,15 @@ class PbJobChange(models.Model):
     new_resource_calendar_id = fields.Many2one('resource.calendar',
                                                string='New working hours')
     new_company_id = fields.Many2one('res.company', string='New company')
+    # PSCHEME P2b A.1 — a permanent move changes the pay scheme from the start
+    # date (owner rulings R5, R6; ledger A9). Empty = the pay scheme is not
+    # part of this change.
+    new_payroll_country = fields.Selection(
+        selection='_pb_country_selection', string='New Country of work')
+    new_scheme_id = fields.Many2one('hr.formula.config', string='New pay scheme',
+                                    ondelete='set null')
+    new_advance_scheme_id = fields.Many2one(
+        'hr.formula.config', string='New mid-month advance', ondelete='set null')
     change_pay = fields.Boolean(string='Changes pay')
     new_wage = fields.Monetary(string='New monthly pay',
                                currency_field='currency_id')
@@ -222,6 +237,12 @@ class PbJobChange(models.Model):
     seat_user_ids = fields.Many2many(
         'res.users', 'pb_job_change_seat_rel', 'change_id', 'user_id',
         string='Asked to decide', copy=False)
+
+    @api.model
+    def _pb_country_selection(self):
+        field = self.env['hr.employee']._fields.get('payroll_country')
+        return list(field.selection) if field and isinstance(field.selection, list) \
+            else []
 
     # ==================================================================
     # Small readers
@@ -410,7 +431,12 @@ class PbJobChange(models.Model):
     # ------------------------------------------------------------ the scheme
     def _scheme_now_and_after(self):
         """`(now {id,name}, after {id,name})` — who pays them, today and with
-        the new team/company (`pb.scheme.map`, the pay run's own ladder)."""
+        the new team/company (`pb.scheme.map`, the pay run's own ladder).
+
+        PSCHEME P2b A.1: the ladder reads the person's OWN pay scheme first
+        (the person rung sits above the team), so a person with their own
+        scheme who moves team "stays" on it. A pay scheme chosen on this
+        change is the answer after."""
         self.ensure_one()
         Map = self.env.get('pb.scheme.map')
         blank = {'id': 0, 'name': ''}
@@ -423,7 +449,11 @@ class PbJobChange(models.Model):
             _logger.debug('job change: scheme read failed', exc_info=True)
             return blank, blank
         now_row = {'id': now.get('config_id') or 0,
-                   'name': now.get('config_name') or ''}
+                   'name': now.get('config_name') or '',
+                   'own': now.get('rung') == 'person'}
+        if self.new_scheme_id:
+            return now_row, {'id': self.new_scheme_id.id,
+                             'name': self.new_scheme_id.name or '', 'own': True}
         vals = self._employee_vals()
         if 'department_id' not in vals and 'company_id' not in vals:
             return now_row, now_row
@@ -437,7 +467,73 @@ class PbJobChange(models.Model):
             _logger.debug('job change: scheme what-if failed', exc_info=True)
             return now_row, now_row
         return now_row, {'id': after.get('config_id') or 0,
-                         'name': after.get('config_name') or ''}
+                         'name': after.get('config_name') or '',
+                         'own': after.get('rung') == 'person'}
+
+    def _scheme_moves(self):
+        """True when this change writes the person's pay scheme: a new
+        scheme chosen, or a move to another company (ledger A9: that one
+        always needs a scheme of the new company)."""
+        self.ensure_one()
+        return bool(self.new_scheme_id) or 'company_id' in self._employee_vals()
+
+    def _scheme_problems(self):
+        """Every reason the pay scheme part cannot be sent, as sentences
+        (PSCHEME P2b A.1). The words are the person panel's own."""
+        self.ensure_one()
+        out = []
+        emp = self.employee_id.sudo()
+        target = self._target_company()
+        moves_company = 'company_id' in self._employee_vals()
+        scheme = self.new_scheme_id.sudo()
+        if moves_company and not scheme:
+            out.append(_("Pick the pay scheme that pays %(person)s at %(company)s. "
+                         "A move to another company needs one of its pay schemes.",
+                         person=emp.name or '', company=target.name or ''))
+        for config in (scheme, self.new_advance_scheme_id.sudo()):
+            if not config:
+                continue
+            if config.company_id and config.company_id != target:
+                out.append(_("%(scheme)s belongs to %(company)s, so it cannot pay "
+                             "%(person)s.", scheme=config.name or '',
+                             company=config.company_id.name or '',
+                             person=emp.name or ''))
+            elif config.state != 'active':
+                out.append(_("%(scheme)s is not switched on, so it cannot pay "
+                             "anybody. Switch it on first, or pick another pay "
+                             "scheme.", scheme=config.name or ''))
+        if scheme and scheme.cycle_type not in ('regular', 'end_cycle'):
+            out.append(_("%(scheme)s cannot be somebody's own pay scheme: pick "
+                         "the pay scheme that pays the month.",
+                         scheme=scheme.name or ''))
+        advance = self.new_advance_scheme_id
+        if advance and advance.cycle_type != 'mid_cycle':
+            out.append(_("%(scheme)s is not a mid-month advance, so it cannot pay "
+                         "one. Pick a mid-month advance, or switch the advance off.",
+                         scheme=advance.name or ''))
+        if advance and not scheme:
+            out.append(_("Pick the pay scheme first, then its mid-month advance."))
+        return out
+
+    def _scheme_words(self):
+        """`{'line', 'r6', 'stays'}` — what the impact panel says about the
+        pay scheme (handover A.1 / A.3), in screen words."""
+        self.ensure_one()
+        now, after = self._scheme_now_and_after()
+        out = {'line': '', 'r6': '', 'stays': ''}
+        if self.new_scheme_id and now['id'] != after['id']:
+            out['line'] = _("Their pay scheme changes from %(old)s to %(new)s "
+                            "from %(date)s.", old=now['name'] or _("none"),
+                            new=after['name'], date=self._day(self.effective_date)) \
+                if self.effective_date else ''
+            out['r6'] = self.env['pb.scheme.board'].r6_words(
+                now['name'], after['name'], self.effective_date) \
+                if 'pb.scheme.board' in self.env else ''
+        elif not self._scheme_moves() and now['name'] and (
+                self._changes_team() or self.new_payroll_country):
+            out['stays'] = _("Their pay scheme stays %s. Change it here if this "
+                             "move changes who pays them.", now['name'])
+        return out
 
     def _scheme_reads(self, config_id):
         """The pay items of the person's scheme that READ a value this change
@@ -520,7 +616,8 @@ class PbJobChange(models.Model):
         lines = self._line_plan(contract) if contract else []
         wage_moves = bool(self.change_pay and self.new_wage and contract and
                           float(self.new_wage) != float(contract.wage or 0.0))
-        if not emp_vals and not wage_moves and not lines:
+        if not emp_vals and not wage_moves and not lines \
+                and not self.new_scheme_id:
             out.append(_("Nothing changes yet. Choose a new job, team, manager "
                          "or pay."))
         if self.change_pay and not contract:
@@ -577,6 +674,7 @@ class PbJobChange(models.Model):
             out.append(_("%(co)s pays in %(cur)s. Type the new monthly pay in "
                          "%(cur)s too.", co=self.new_company_id.name,
                          cur=self.new_company_id.currency_id.name))
+        out += self._scheme_problems()
         other = self.sudo().search([
             ('employee_id', '=', emp.id), ('state', 'in', LIVE_STATES),
             ('id', '!=', self._origin.id or 0)], limit=1)
@@ -611,6 +709,11 @@ class PbJobChange(models.Model):
                     ('advantage_template_code', '=', row.code)], limit=1)
                 out['l.' + (row.code or '')] = float(line.amount or 0.0) \
                     if line else 0.0
+        # PSCHEME P2b — the person's own pay scheme rows, as they are now.
+        if 'pb.scheme.board' in self.env:
+            out['p.rows'] = json.dumps(self.env['pb.scheme.board'].sudo()
+                                       ._person_rows_state(emp.ids), sort_keys=True)
+            out['p.scheme'] = self._scheme_now_and_after()[0].get('name') or ''
         return out
 
     def _covered_keys(self):
@@ -622,6 +725,8 @@ class PbJobChange(models.Model):
         keys |= {'c.' + k for k in self._contract_vals(contract)}
         keys |= {'l.' + r['code'] for r in self._line_plan(contract)}
         keys.add('contract_id')
+        if self._scheme_moves():
+            keys.add('p.rows')
         return keys
 
     def _compute_facts(self):
@@ -741,6 +846,8 @@ class PbJobChange(models.Model):
             'lines': [(r.code, float(r.new_amount or 0.0))
                       for r in rec.line_ids],
             'kind': rec.reason_kind,
+            # PSCHEME P2b — the pay scheme is part of what is signed off.
+            'scheme': [rec.new_scheme_id.id or 0, rec.new_advance_scheme_id.id or 0],
         }
         return {
             'company_id': company.id,
@@ -835,7 +942,10 @@ class PbJobChange(models.Model):
             'job_title': _('Job title'), 'department_id': _('Team'),
             'parent_id': _('Manager'), 'work_location_id': _('Place of work'),
             'resource_calendar_id': _('Working hours'),
+            'payroll_country': _('Country of work'),
         }
+        countries = dict(self._fields['new_payroll_country']._description_selection(
+            self.env))
         models_of = {
             'company_id': 'res.company', 'job_id': 'hr.job',
             'department_id': 'hr.department', 'parent_id': 'hr.employee',
@@ -857,11 +967,23 @@ class PbJobChange(models.Model):
             if theirs in models_of:
                 old_label = self._label(models_of[theirs], old_value)
                 new_label = new.display_name
+            elif theirs == 'payroll_country':
+                old_label = countries.get(old_value) or old_value or ''
+                new_label = countries.get(new_value) or new_value or ''
             else:
                 old_label, new_label = old_value or '', new_value or ''
             if old_label == new_label:
                 continue
             rows.append((words[theirs], old_label or '—', new_label or '—'))
+        if rec.new_scheme_id:
+            # PSCHEME P2b — who pays them, before and after.
+            now, after = rec._scheme_now_and_after()
+            was = before.get('p.scheme', now['name']) if before else now['name']
+            if (was or '') != (after['name'] or ''):
+                rows.append((_('Pay scheme'), was or '—', after['name']))
+            if rec.new_advance_scheme_id:
+                rows.append((_('Mid-month advance'), '—',
+                             rec.new_advance_scheme_id.name or ''))
         if rec.change_pay and show_pay:
             cur = rec.currency_id or (contract.company_id
                                       or emp.company_id).currency_id
@@ -999,7 +1121,9 @@ class PbJobChange(models.Model):
                  'c.job_id': _('job on the contract'),
                  'c.department_id': _('team on the contract'),
                  'c.resource_calendar_id': _('working hours on the contract'),
-                 'c.company_id': _('company on the contract')}
+                 'c.company_id': _('company on the contract'),
+                 'e.payroll_country': _('Country of work'),
+                 'p.rows': _('pay scheme')}
         names = [words.get(k) or k.split('.', 1)[-1] for k in moved[:6]]
         return _("Nothing was changed: somebody else changed %s since this "
                  "was sent in. Send it back and prepare it again against what "
@@ -1055,7 +1179,21 @@ class PbJobChange(models.Model):
         C = me['hr.contract'].with_context(pb_pay_no_rebuild=True)
         written = {'employee': {}, 'contract': {}, 'lines': [],
                    'old_employee': {}, 'old_contract': {}}
+        # PSCHEME P2b A.2 — the person's own pay scheme moves with the change,
+        # from its start date, through the scheme map's own writer. The job
+        # change's approval IS the approval (no second request).
+        Board = self.env['pb.scheme.board'].sudo().with_context(
+            **{SCHEMEMAP_WRITE: True}) if 'pb.scheme.board' in self.env else None
+        scheme_moves = bool(Board is not None and rec._scheme_moves())
+        rows_before = Board._person_rows_state(emp.ids) if scheme_moves else {}
         with self.env.cr.savepoint():
+            if scheme_moves and 'company_id' in emp_vals:
+                # Ledger A9: the old company's schemes stop paying them the
+                # day before, FIRST — a row of another company's scheme cannot
+                # stay on a person of this one.
+                Board._person_end_company(
+                    emp, self.env['res.company'].browse(emp_vals['company_id']),
+                    effective)
             if emp_vals:
                 employee = E.browse(emp.id)
                 for key in emp_vals:
@@ -1081,6 +1219,15 @@ class PbJobChange(models.Model):
                                                      else old or False)
                 record.write(contract_vals)
                 written['contract'] = contract_vals
+            if scheme_moves and rec.new_scheme_id:
+                Board._person_set_write(
+                    emp.sudo(), rec.new_scheme_id.sudo(),
+                    rec.new_advance_scheme_id.sudo() or False, effective,
+                    source='job_change', note=rec.name or '')
+            if scheme_moves:
+                written['person_rows'] = {
+                    'employees': emp.ids, 'before': rows_before,
+                    'after': Board._person_rows_state(emp.ids)}
             Advantage = me['hr.contract.advantage']
             Change = me['hr.contract.advantage.change']
             note = _("Change job %(ref)s, from %(day)s", ref=rec.name,
@@ -1481,6 +1628,15 @@ class PbJobChange(models.Model):
             if old_contract and contract:
                 me['hr.contract'].with_context(pb_pay_no_rebuild=True).browse(
                     contract.id).write(old_contract)
+            rows = written.get('person_rows') or {}
+            if rows and 'pb.scheme.board' in self.env:
+                # PSCHEME P2b A.2 — the rows exactly as they were: rows this
+                # change made removed, rows it ended re-opened. After the
+                # company is back, so a re-opened row's scheme fits it again.
+                # Refused in a sentence when somebody changed them since.
+                self.env['pb.scheme.board'].sudo()._person_rows_restore(
+                    rows.get('before') or {}, rows.get('after') or {},
+                    rows.get('employees') or emp.ids)
             rec.apply_ids.filtered(lambda a: a.state == 'applied')._restore()
             Change = me['hr.contract.advantage.change']
             Advantage = me['hr.contract.advantage']
@@ -1578,7 +1734,9 @@ class PbJobChange(models.Model):
     START_KEYS = ('job_id', 'job_title', 'department_id', 'parent_id',
                   'work_location_id', 'resource_calendar_id', 'company_id',
                   'wage', 'lines', 'effective_date', 'reason', 'reason_kind',
-                  'source', 'source_ref')
+                  'source', 'source_ref',
+                  # PSCHEME P2b
+                  'payroll_country', 'scheme_id', 'advance_scheme_id')
 
     @api.model
     def pb_start_for_employee(self, employee_id, vals=None):
@@ -1610,7 +1768,7 @@ class PbJobChange(models.Model):
                 if rows:
                     clean['lines'] = rows
             elif key in ('job_title', 'reason', 'source', 'source_ref',
-                         'reason_kind'):
+                         'reason_kind', 'payroll_country'):
                 clean[key] = str(value)[:2000]
             elif key == 'effective_date':
                 clean[key] = fields.Date.to_string(fields.Date.to_date(value))

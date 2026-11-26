@@ -1322,3 +1322,41 @@ $pbu-since-kinds: (pay: (#5A4BB0, #EEEBFA), contract: (#3E4784, #EEF0FA), bank: 
                       svg { flex: none; margin-top: 2px; } }
     .pbu-lanecard .pbu-wayout { grid-column: 1 / -1; }
 }
+
+// ===========================================================================
+// PSCHEME P2b — the person's own pay scheme in the review and on Apply.
+// Indigo = a change of who pays them; rose only for a cell that cannot be
+// used; grey for "the same as today". One short entrance when a row changes.
+// ===========================================================================
+.pbim.pbu-root {
+    .pbu-grid tbody th.pbu-who .pbu-who-sch.is-own {
+        display: flex; align-items: center; gap: 4px; color: var(--pbim-primary);
+        svg { flex: none; }
+    }
+    .pbu-who-note.pbu-sch-why { color: #C01048; }
+    .pbu-sch-pick {
+        display: block; margin-top: 4px;
+        .pbu-select { max-width: 240px; padding: 4px 8px; font-size: 12px; min-height: 0; }
+    }
+    .pbu-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .pbu-sch-chg, .pbu-sch-sug {
+        display: flex; flex-direction: column; gap: 1px; margin-top: 4px; padding: 5px 8px; max-width: 260px;
+        border-radius: 8px; background: var(--pbim-soft, #EDEAF8); font-size: 11.5px; white-space: normal;
+        animation: pbu-sch-in .22s ease-out both;
+        .pbu-sub { font-size: 11px; display: flex; align-items: flex-start; gap: 4px; svg { flex: none; margin-top: 2px; } }
+        .pbu-who-act { display: inline-flex; align-items: center; gap: 4px; margin-top: 3px; font-size: 11.5px; }
+    }
+    .pbu-sch-chg-l { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; color: var(--pbim-primary); }
+    .pbu-sch-chg-v { display: inline-flex; align-items: center; gap: 4px; flex-wrap: wrap;
+        .pbu-was { text-decoration: line-through; text-decoration-color: rgba(138, 143, 163, .6); }
+        b { color: var(--pbim-ink); } }
+    .pbu-sch-r6 { color: var(--pbim-primary-dark, #241F52); font-weight: 600; }
+    .pbu-sch-chg.is-left { background: var(--pbim-line-2, #F1F2F7); opacity: .7;
+        .pbu-sch-chg-l { color: var(--pbim-slate); } }
+    .pbu-sch-sug { background: #FFF7E8; }
+    .pbu-lanecard--scheme .pbu-lanecard-ic, .pbu-hlane--scheme .pbu-hlane-ic {
+        background: var(--pbim-soft, #EDEAF8); color: var(--pbim-primary);
+    }
+    @media (prefers-reduced-motion: reduce) { .pbu-sch-chg, .pbu-sch-sug { animation: none; } }
+}
+@keyframes pbu-sch-in { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: none; } }

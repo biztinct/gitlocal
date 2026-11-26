@@ -66,6 +66,9 @@ WHEN_TARGET = 'when:start'
 #: UPDATES P3b — the "Goes to" target of a "Pay scheme" column: a CHECK of a
 #: new employee's team, never a value to write (`updates_joiners.py`).
 SCHEME_TARGET = 'check:scheme'
+#: PSCHEME P2b — the "Goes to" target of a "Mid-month advance" column: read by
+#: Updates itself with the pay scheme column (`updates_person_scheme.py`).
+ADVANCE_TARGET = 'check:advance'
 #: At most this many different start dates in one file (keeps approvals
 #: readable): more is refused before the review.
 MAX_START_DATES = 6
@@ -570,8 +573,12 @@ class PbUpdatesDesk(models.AbstractModel):
         start_col = cols.get('start') or 0
         # UPDATES P3b — a "Pay scheme" column is read by Updates itself, for
         # rows that may be added as new employees; never a value to write.
+        # PSCHEME P2b — and for the people already here: their own pay scheme
+        # from the row's start date (`updates_person_scheme.py`), with the
+        # "Mid-month advance" column beside it.
         scheme_col = cols.get('scheme') or 0
-        extras = [c for c in (start_col, scheme_col) if c]
+        advance_col = cols.get('advance') or 0
+        extras = [c for c in (start_col, scheme_col, advance_col) if c]
         peek = desk.import_peek(
             0, file_b64, filename,
             columns={'used': {str(k): v for k, v in cols['used'].items()},
@@ -737,6 +744,12 @@ class PbUpdatesDesk(models.AbstractModel):
                 row['start'] = start
             if scheme_ctx:
                 row.update(self._person_scheme(scheme_ctx, m['emp_id']))
+            if scheme_col or advance_col:
+                extra = m.get('extra') or {}
+                raw = extra.get(scheme_col) if scheme_col else None
+                row['scheme_text'] = '' if raw in (None, False) else str(raw).strip()
+                raw = extra.get(advance_col) if advance_col else None
+                row['advance_text'] = '' if raw in (None, False) else str(raw).strip()
             rows.append(row)
         if scheme_ctx:
             base.update(self._strip(scheme_ctx, [m['emp_id'] for m in matched]))
@@ -748,6 +761,9 @@ class PbUpdatesDesk(models.AbstractModel):
             if scheme_col:
                 value = extra.get(scheme_col)
                 entry['scheme'] = '' if value in (None, False) else str(value).strip()
+            if advance_col:
+                value = extra.get(advance_col)
+                entry['advance'] = '' if value in (None, False) else str(value).strip()
         base.update(rows=rows, unmatched=unmatched, changes=ok_changes)
         return base
 

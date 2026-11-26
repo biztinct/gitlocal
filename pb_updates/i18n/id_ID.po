@@ -112,3 +112,345 @@ msgstr "Tahun pajak dimulai pada (bulan)"
 #: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_line__tax_year_label
 msgid "Tax year"
 msgstr "Tahun pajak"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "%(country)s has %(n)s pay schemes. Pick the one that pays %(person)s."
+msgstr "%(country)s punya %(n)s skema gaji. Pilih yang membayar %(person)s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "%(old)s still pays %(month)s. %(new)s starts with the next pay run."
+msgstr "%(old)s tetap membayar %(month)s. %(new)s mulai pada penggajian berikutnya."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "%(scheme)s belongs to %(company)s, so it cannot pay %(person)s."
+msgstr "%(scheme)s milik %(company)s, jadi tidak dapat membayar %(person)s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid ""
+"%(scheme)s cannot be somebody's own pay scheme: pick the pay scheme that "
+"pays the month."
+msgstr "%(scheme)s tidak dapat menjadi skema gaji milik seseorang: pilih skema gaji yang membayar bulan itu."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "%(scheme)s has no mid-month advance. Leave the cell empty, or type No."
+msgstr "%(scheme)s tidak punya uang muka pertengahan bulan. Biarkan sel kosong, atau ketik Tidak."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid ""
+"%(scheme)s is a pay scheme for %(theirs)s, but %(person)s works in %(mine)s."
+msgstr "%(scheme)s adalah skema gaji untuk %(theirs)s, tetapi %(person)s bekerja di %(mine)s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid ""
+"%(text)s is not a mid-month advance of %(scheme)s. Type one of: %(names)s, "
+"or No, or leave the cell empty."
+msgstr "%(text)s bukan uang muka pertengahan bulan dari %(scheme)s. Ketik salah satu: %(names)s, atau Tidak, atau biarkan sel kosong."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(who)s from %(date)s"
+msgstr "%(who)s mulai %(date)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(who)s from %(date)s, waiting for approval"
+msgstr "%(who)s mulai %(date)s, menunggu persetujuan"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s pay schemes changed"
+msgstr "%s skema gaji diubah"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s people's pay schemes change"
+msgstr "Skema gaji %s orang berubah"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 pay scheme changed"
+msgstr "1 skema gaji diubah"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 person's pay scheme changes"
+msgstr "Skema gaji 1 orang berubah"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Change %s pay schemes"
+msgstr "Ubah %s skema gaji"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Change 1 pay scheme"
+msgstr "Ubah 1 skema gaji"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Change it to %s"
+msgstr "Ubah ke %s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "Change their Country of work in the same row, or pick one of: %s."
+msgstr "Ubah Negara kerjanya di baris yang sama, atau pilih salah satu: %s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "Change their Country of work in the same row."
+msgstr "Ubah Negara kerjanya di baris yang sama."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "Changed at once. No approval needed."
+msgstr "Langsung diubah. Tidak perlu persetujuan."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid ""
+"Changing a person's pay scheme is for HR and payroll. Ask one of them to "
+"make the change."
+msgstr "Mengubah skema gaji seseorang adalah tugas HR dan penggajian. Minta salah satu dari mereka melakukannya."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Each person's record shows their new pay scheme and the day it starts."
+msgstr "Catatan setiap orang menampilkan skema gaji barunya dan tanggal mulainya."
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Mid-month advance"
+msgstr "Uang muka pertengahan bulan"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"Mid-month advance: leave it empty for the pay scheme's own mid-month "
+"advance, type No for none, or type the name of the advance."
+msgstr "Uang muka pertengahan bulan: biarkan kosong untuk uang muka milik skema gaji, ketik Tidak jika tidak ada, atau ketik nama uang mukanya."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid ""
+"No pay scheme for %(country)s yet. They are added without one: give them a "
+"pay scheme from their record once %(country)s has one."
+msgstr "Belum ada skema gaji untuk %(country)s. Mereka ditambahkan tanpa skema: beri skema gaji dari catatannya setelah %(country)s punya."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Nothing changes until a payroll manager approves. Each person's record shows"
+" the change that is waiting."
+msgstr "Tidak ada yang berubah sampai manajer penggajian menyetujui. Catatan setiap orang menampilkan perubahan yang menunggu."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "Nothing was changed: %s"
+msgstr "Tidak ada yang diubah: %s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid ""
+"Nothing was changed: a pay scheme change can start up to a year back or a "
+"year ahead."
+msgstr "Tidak ada yang diubah: perubahan skema gaji dapat dimulai paling jauh setahun ke belakang atau ke depan."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid ""
+"Nothing was changed: a person or a pay scheme in this sheet is not there any"
+" more. Review the sheet again."
+msgstr "Tidak ada yang diubah: seseorang atau skema gaji di lembar ini sudah tidak ada. Tinjau lembar ini lagi."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "One request per pay scheme, for a payroll manager to approve"
+msgstr "Satu permintaan per skema gaji, untuk disetujui manajer penggajian"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Pay scheme for %s"
+msgstr "Skema gaji untuk %s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"Pay scheme is the person's own pay scheme. Leave it empty and the usual pay "
+"scheme of their Country of work is used. If you type one, it must be a pay "
+"scheme of their Country of work."
+msgstr "Skema gaji adalah skema gaji milik orang itu. Biarkan kosong maka skema gaji biasa dari Negara kerjanya dipakai. Jika Anda mengetiknya, itu harus skema gaji dari Negara kerjanya."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Pay schemes"
+msgstr "Skema gaji"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "Pick one of: %s."
+msgstr "Pilih salah satu: %s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Pick the pay scheme…"
+msgstr "Pilih skema gaji…"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Send %s pay scheme changes for approval"
+msgstr "Kirim %s perubahan skema gaji untuk disetujui"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Send 1 pay scheme change for approval"
+msgstr "Kirim 1 perubahan skema gaji untuk disetujui"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "The only pay scheme for %s."
+msgstr "Satu-satunya skema gaji untuk %s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "The usual pay scheme for %s."
+msgstr "Skema gaji biasa untuk %s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid ""
+"Their Country of work changes to %(country)s. Their pay scheme stays %(old)s"
+" unless you change it."
+msgstr "Negara kerjanya berubah ke %(country)s. Skema gajinya tetap %(old)s kecuali Anda mengubahnya."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_joiner__advance_scheme_id
+msgid "Their mid-month advance"
+msgstr "Uang muka pertengahan bulannya"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "Their own pay scheme, from the sheet."
+msgstr "Skema gaji miliknya, dari lembar ini."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_joiner__scheme_id
+msgid "Their pay scheme"
+msgstr "Skema gajinya"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "Their pay scheme could not be set: give them one from their record."
+msgstr "Skema gajinya tidak dapat diatur: beri dari catatannya."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Working out who approves pay scheme changes…"
+msgstr "Menentukan siapa yang menyetujui perubahan skema gaji…"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "from %(date)s · Mid-month advance: %(advance)s"
+msgstr "mulai %(date)s · Uang muka pertengahan bulan: %(advance)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "from %s"
+msgstr "mulai %s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "none"
+msgstr "tidak ada"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "A pay scheme change is changed back from the person's record."
+msgstr "Perubahan skema gaji dikembalikan dari catatan orang itu."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Open them and press Change pay scheme. If your company asks for approval, "
+"nothing changes until it is approved."
+msgstr "Buka catatannya dan tekan Ubah skema gaji. Jika perusahaan Anda meminta persetujuan, tidak ada yang berubah sampai disetujui."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Pay scheme changes are changed back from each person's record, not from Past"
+" updates."
+msgstr "Perubahan skema gaji dikembalikan dari catatan setiap orang, bukan dari Pembaruan sebelumnya."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "This file changes %s people's pay schemes."
+msgstr "Berkas ini mengubah skema gaji %s orang."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "This file changes 1 person's pay scheme."
+msgstr "Berkas ini mengubah skema gaji 1 orang."

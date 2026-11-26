@@ -160,3 +160,25 @@ line only if the code under it moved).
   screen. Not this phase's; listed for P3 with the 149 old msgids `id_ID.po` still lacks.
 - PS-a9. The Chrome automation's login page remembers users ("Choose a user"): typing into the email box appends to
   a remembered login. Pick the user from the list, then type the password.
+- PS-b1. The Records Desk's `import_peek` refuses a file whose only value column is one Updates reads itself ("Pay
+  scheme", start date): `used` is empty → "None of the headings match a field". A sheet that only changes pay schemes
+  is matched by Updates' own path (`_scheme_only_review`, the desk's `_io_index` / `_io_match` ladder).
+- PS-b2. `pb.person.scheme` checks the scheme's company against the PERSON's company on every row write. A company
+  move must end the old company's rows BEFORE `hr.employee.company_id` is written (`_person_end_company`), and the new
+  row after; a take-back must restore the company first and the rows after (re-opening an old-company row before the
+  company is back raises).
+- PS-b3. QWeb text split by `<t t-esc>` is extracted as fragments ("Pay schemes for", "at", "Keep"): every sentence
+  with a name in it is a JS getter `_t("… %(x)s …", {...})`, never mixed template text.
+- PS-b4. A job change dated in the future writes the person rows on its day (the hourly job), like every other value
+  it carries: until then the person's panel shows the job change chip ("Job change from …"), not "Changes to <scheme>
+  on <date>". By design (T3: nothing before the day).
+- PS-b5. Walk-only: `set_no_approval_needed(company, 'schememap')` leaves its "No approval needed" binding active;
+  `_approval_seed_default` afterwards does not re-activate the route's binding. Flip the bindings to walk the
+  second-approver lane on a database that was put in the fast lane.
+- PS-b6. Walk-only: Chrome's own page translation can be on in the walk tab — a Vietnamese screen reads back as
+  machine English ("Made in Prague", 172 `font` nodes). Check vi/id with `_t` from `odoo.loader.modules` and with
+  ORM calls carrying `context.lang`, or turn the browser translation off.
+- PS-b7. The year-to-date "whose tax year" reader `_ty_months_of` is on `pb.updates.ytd.line`, not on
+  `pb.updates.desk`.
+- PS-b8. Change job lists only the companies ticked in the company switcher (`self.env.companies`): tick the second
+  company to walk a company move.

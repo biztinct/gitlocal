@@ -188,7 +188,8 @@ export class PbJobChange extends Component {
         const sections = {
             job: !!(draft.new_job_id || draft.new_job_title),
             team: !!(draft.new_department_id || draft.new_parent_id || draft.new_work_location_id
-                     || draft.new_resource_calendar_id || draft.new_company_id),
+                     || draft.new_resource_calendar_id || draft.new_company_id
+                     || draft.new_payroll_country || draft.new_scheme_id),
             pay: !!draft.change_pay,
         };
         if (!sections.job && !sections.team && !sections.pay) {
@@ -220,16 +221,25 @@ export class PbJobChange extends Component {
                 new_work_location_id: draft.new_work_location_id || 0,
                 new_resource_calendar_id: draft.new_resource_calendar_id || 0,
                 new_company_id: draft.new_company_id || 0,
+                // PSCHEME P2b — Country of work and the person's pay scheme
+                new_payroll_country: draft.new_payroll_country || "",
+                new_scheme_id: draft.new_scheme_id || 0,
+                new_advance_scheme_id: draft.new_advance_scheme_id || 0,
                 new_wage: draft.new_wage || (d.now.wage || 0),
                 source: draft.source || "",
                 source_ref: draft.source_ref || "",
             },
             lines,
+            // PSCHEME P2b — the pay scheme chooser (opened by a new country, a
+            // new company or "Change it here"); `keep` = their scheme stays.
+            scheme: { open: !!draft.new_scheme_id, loading: false, opts: null, keep: false,
+                      key: "", picked: !!draft.new_scheme_id },
             addCode: "",
             preview: null, previewBusy: false,
             mgr: { term: draft.new_parent || "", rows: [], open: false },
         };
         this.state.view = "flow";
+        if (this.schemeShown) { await this.loadSchemes(); }
         await this.runPreview();
     }
 
@@ -262,7 +272,116 @@ export class PbJobChange extends Component {
         let v = ev.target.value;
         if (number) { v = v === "" ? 0 : parseInt(v, 10) || 0; }
         this.F.draft[key] = v;
+        if (["new_payroll_country", "new_company_id", "new_department_id"].includes(key) && this.schemeShown) {
+            this.loadSchemes();
+        }
         this.schedulePreview();
+    }
+
+    // ================================================ PSCHEME P2b: pay scheme
+    /** The chooser shows for a new Country of work, a new company (which
+     *  must have a scheme of its own, ledger A9), or when asked. */
+    get schemeShown() {
+        const f = this.F;
+        return !!(f && f.sections.team && (f.scheme.open || f.draft.new_payroll_country || f.draft.new_company_id));
+    }
+    get schemeNeeded() { return !!(this.F && this.F.draft.new_company_id && this.F.draft.new_company_id !== this.F.d.now.company_id); }
+    get schemeCards() { const o = this.F.scheme.opts; return (o && o.cards) || []; }
+    get schemeStart() { return this.F.draft.effective_date || this.F.d.today; }
+    get schemeSub() {
+        const o = this.F.scheme.opts || {};
+        return o.country_name
+            ? _t("Pay schemes for %(country)s at %(company)s, from the start date", { country: o.country_name, company: o.company || "" })
+            : _t("Pay schemes at %s, from the start date", o.company || "");
+    }
+    get keepLabel() {
+        const o = this.F.scheme.opts || {};
+        const name = o.now_name || this.F.d.now.scheme;
+        return name ? _t("Keep %s", name) : _t("Keep their pay scheme");
+    }
+    get advanceLine() {
+        const list = this.pickedAdvances;
+        return list.length ? _t("Mid-month advance: %s", list[0].name) : "";
+    }
+    openScheme() {
+        const f = this.F;
+        f.sections.team = true;
+        f.scheme.open = true;
+        if (f.step !== 2) { f.step = 2; }
+        this.loadSchemes();
+    }
+    closeScheme() {
+        const f = this.F;
+        f.scheme.open = false;
+        if (!f.draft.new_payroll_country && !f.draft.new_company_id) {
+            f.draft.new_scheme_id = 0;
+            f.draft.new_advance_scheme_id = 0;
+        }
+        this.schedulePreview();
+    }
+    async loadSchemes() {
+        const f = this.F;
+        const d = f.draft;
+        const key = [d.new_payroll_country, d.new_company_id, d.new_department_id].join("|");
+        if (f.scheme.opts && f.scheme.key === key) { return; }
+        f.scheme.loading = true;
+        try {
+            const o = await this.orm.call(MODEL, "scheme_options", [f.d.person.id, d.new_payroll_country || "",
+                d.new_company_id || 0, d.new_department_id || 0, f.changeId || 0]);
+            if (!this.state.flow) { return; }
+            f.scheme.opts = o;
+            f.scheme.key = key;
+            const ids = (o.cards || []).map((c) => c.id);
+            if (!f.scheme.picked || !ids.includes(d.new_scheme_id)) {
+                // pre-filled: the usual scheme of that country (none when it must ask)
+                const keepable = !this.schemeNeeded && !d.new_payroll_country;
+                f.scheme.keep = keepable && !o.default_id;
+                this.pickScheme(o.default_id || 0, false);
+            }
+        } catch (e) {
+            f.scheme.opts = { cards: [], none_words: errText(e, _t("The pay schemes could not be read just now.")) };
+        } finally {
+            if (this.state.flow) { f.scheme.loading = false; }
+        }
+        this.schedulePreview();
+    }
+    pickScheme(id, byHand = true) {
+        const f = this.F;
+        f.draft.new_scheme_id = id || 0;
+        f.scheme.keep = !id;
+        if (byHand) { f.scheme.picked = true; }
+        const o = f.scheme.opts || {};
+        const dflt = (o.advance_default || {})[String(id)] || 0;
+        f.draft.new_advance_scheme_id = id ? dflt : 0;
+        this.schedulePreview();
+    }
+    keepScheme() { this.pickScheme(0, true); }
+    schemeAdvances(id) { const o = this.F.scheme.opts || {}; return ((o.advances || {})[String(id)]) || []; }
+    get pickedAdvances() { return this.F.draft.new_scheme_id ? this.schemeAdvances(this.F.draft.new_scheme_id) : []; }
+    get pickedAdvanceName() {
+        const a = this.pickedAdvances.find((x) => x.id === this.F.draft.new_advance_scheme_id);
+        return a ? a.name : "";
+    }
+    toggleAdvance() {
+        const f = this.F;
+        const list = this.pickedAdvances;
+        if (!list.length) { return; }
+        f.draft.new_advance_scheme_id = f.draft.new_advance_scheme_id ? 0 : list[0].id;
+        this.schedulePreview();
+    }
+    onAdvance(ev) { this.F.draft.new_advance_scheme_id = parseInt(ev.target.value, 10) || 0; this.schedulePreview(); }
+    onSchemeKey(ev) {
+        const keys = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 };
+        if (ev.key === " " || ev.key === "Enter") { ev.preventDefault(); return; }
+        if (!(ev.key in keys)) { return; }
+        ev.preventDefault();
+        const ids = [...(this.schemeNeeded ? [] : [0]), ...this.schemeCards.map((c) => c.id)];
+        if (!ids.length) { return; }
+        const at = Math.max(0, ids.indexOf(this.F.draft.new_scheme_id || 0));
+        const next = ids[(at + keys[ev.key] + ids.length) % ids.length];
+        this.pickScheme(next, true);
+        const el = ev.currentTarget.querySelector(`[data-scheme="${next}"]`);
+        if (el) { el.focus(); }
     }
     onMoney(key, ev) {
         const v = parseFloat(String(ev.target.value).replace(/[^0-9.\-]/g, ""));
@@ -332,6 +451,9 @@ export class PbJobChange extends Component {
             new_work_location_id: s.team ? d.new_work_location_id : 0,
             new_resource_calendar_id: s.team ? d.new_resource_calendar_id : 0,
             new_company_id: s.team ? d.new_company_id : 0,
+            new_payroll_country: s.team ? d.new_payroll_country : "",
+            new_scheme_id: s.team && this.schemeShown ? d.new_scheme_id : 0,
+            new_advance_scheme_id: s.team && this.schemeShown && d.new_scheme_id ? d.new_advance_scheme_id : 0,
             change_pay: !!(s.pay && f.d.can_pay),
             new_wage: d.new_wage,
             lines: s.pay ? f.lines.map((l) => ({ code: l.code, name: l.name, old: l.old, new: l.new })) : [],

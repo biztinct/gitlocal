@@ -532,6 +532,21 @@ class TestJobChange(TransactionCase):
         self.assertTrue(preview['changes_scheme'])
         self.assertEqual((preview['scheme_now'], preview['scheme_after']),
                          ('Office', 'Shop floor'))
+        # PSCHEME P2b (deliberate update, T6/T7): the override moves the TEAM
+        # only — a person with a pay scheme of their own is answered by it
+        # above any team, so the what-if says their scheme stays, and the
+        # preview never writes a row.
+        own = self.env['hr.formula.config'].create({
+            'name': 'S8B Own scheme', 'code': 'S8BOWN', 'cycle_type': 'end_cycle', 'country_code': 'VN',
+            'company_id': self.company.id, 'state': 'active'})
+        Row = self.env['pb.person.scheme'].sudo()
+        Row.create({'employee_id': emp.id, 'config_id': own.id, 'date_from': '2025-01-01'})
+        rows_before = Row.search_count([('employee_id', '=', emp.id)])
+        preview = self.Board.preview(self._vals(emp))
+        self.assertFalse(preview['changes_scheme'])
+        self.assertEqual(preview['scheme_after'], 'S8B Own scheme')
+        self.assertIn('Their pay scheme stays S8B Own scheme', preview['scheme_stays'])
+        self.assertEqual(Row.search_count([('employee_id', '=', emp.id)]), rows_before)
 
     # ================================================================ JC13
     def test_jc13_golden_finished_payslip_untouched(self):

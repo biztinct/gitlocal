@@ -56,3 +56,8 @@
     color: #B42318;
     font-size: 13px;
 }
+
+// PSCHEME P2b D — the "another pay scheme of their own" line: calm, one sentence
+.pbbc-own { display: flex; align-items: flex-start; gap: 8px; padding: 10px 14px; margin-bottom: 12px;
+            font-size: 13px; color: var(--pbim-text, #1B1733);
+            svg { flex: 0 0 auto; margin-top: 1px; color: var(--pbim-primary, #5A4BB0); } }
