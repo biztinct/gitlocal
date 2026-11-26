@@ -4314,14 +4314,6 @@ msgstr "%(product)s nhân viên mới %(date)s"
 
 #. module: pb_updates
 #. odoo-python
-#: code:addons/pb_updates/models/updates_joiners.py:0
-msgid ""
-"%(team)s is paid under %(scheme)s, not %(named)s. Change the team or the pay"
-" scheme column."
-msgstr "%(team)s được trả lương theo %(scheme)s, không phải %(named)s. Hãy đổi bộ phận hoặc cột chế độ lương."
-
-#. module: pb_updates
-#. odoo-python
 #: code:addons/pb_updates/models/updates_sincerun.py:0
 msgid "%(text)s, by %(who)s"
 msgstr "%(text)s, bởi %(who)s"
@@ -4601,12 +4593,6 @@ msgid "Cannot be added"
 msgstr "Không thể thêm"
 
 #. module: pb_updates
-#. odoo-javascript
-#: code:addons/pb_updates/static/src/js/updates_desk.js:0
-msgid "Checks new employees"
-msgstr "Kiểm tra nhân viên mới"
-
-#. module: pb_updates
 #: model:ir.model.fields,field_description:pb_updates.field_pb_updates_batch__draft_choices
 msgid "Choices (draft)"
 msgstr "Lựa chọn (bản nháp)"
@@ -4736,12 +4722,6 @@ msgid ""
 "Find the right person, or skip the row. Nobody is created from a file unless"
 " you switch on adding new employees above."
 msgstr "Tìm đúng người, hoặc bỏ qua dòng. Không ai được tạo từ tệp trừ khi bạn bật thêm nhân viên mới ở trên."
-
-#. module: pb_updates
-#. odoo-javascript
-#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
-msgid "For new employees"
-msgstr "Cho nhân viên mới"
 
 #. module: pb_updates
 #. odoo-javascript
@@ -4973,20 +4953,6 @@ msgstr "Mỗi người mới một dòng. Mỗi dòng cần ít nhất Tên, m�
 #: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
 msgid "Pay items of"
 msgstr "Khoản lương của"
-
-#. module: pb_updates
-#. odoo-javascript
-#: code:addons/pb_updates/static/src/js/updates_desk.js:0
-msgid "Pay scheme (a check for new employees)"
-msgstr "Chế độ lương (kiểm tra cho nhân viên mới)"
-
-#. module: pb_updates
-#. odoo-python
-#: code:addons/pb_updates/models/updates_joiners.py:0
-msgid ""
-"Pay scheme is a check only: it must be the scheme the team is paid under. It"
-" never changes who is paid by what."
-msgstr "Chế độ lương chỉ dùng để kiểm tra: phải đúng chế độ mà bộ phận đang được trả. Cột này không bao giờ thay đổi ai được trả theo chế độ nào."
 
 #. module: pb_updates
 #: model:ir.model,name:pb_updates.model_pb_newhire_proposal
@@ -9373,3 +9339,311 @@ msgstr "Năm tính thuế %(year)s: số mỗi người đã được trả và 
 #: model:ir.model.fields,field_description:pb_updates.field_pb_updates_ytd_line__tax_year_start_month
 msgid "Tax year starts in (month)"
 msgstr "Năm tính thuế bắt đầu từ (tháng)"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "%(country)s has %(n)s pay schemes. Pick the one that pays %(person)s."
+msgstr "%(country)s có %(n)s chương trình lương. Hãy chọn chương trình trả lương cho %(person)s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "%(old)s still pays %(month)s. %(new)s starts with the next pay run."
+msgstr "%(old)s vẫn trả lương %(month)s. %(new)s bắt đầu từ kỳ lương sau."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "%(scheme)s belongs to %(company)s, so it cannot pay %(person)s."
+msgstr "%(scheme)s thuộc %(company)s, nên không thể trả lương cho %(person)s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid ""
+"%(scheme)s cannot be somebody's own pay scheme: pick the pay scheme that "
+"pays the month."
+msgstr "%(scheme)s không thể là chương trình lương riêng của một người: hãy chọn chương trình trả lương của tháng."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "%(scheme)s has no mid-month advance. Leave the cell empty, or type No."
+msgstr "%(scheme)s không có tạm ứng giữa tháng. Hãy để trống ô, hoặc gõ Không."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid ""
+"%(scheme)s is a pay scheme for %(theirs)s, but %(person)s works in %(mine)s."
+msgstr "%(scheme)s là chương trình lương cho %(theirs)s, nhưng %(person)s làm việc tại %(mine)s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid ""
+"%(text)s is not a mid-month advance of %(scheme)s. Type one of: %(names)s, "
+"or No, or leave the cell empty."
+msgstr "%(text)s không phải tạm ứng giữa tháng của %(scheme)s. Hãy gõ một trong: %(names)s, hoặc Không, hoặc để trống ô."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(who)s from %(date)s"
+msgstr "%(who)s từ %(date)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%(who)s from %(date)s, waiting for approval"
+msgstr "%(who)s từ %(date)s, đang chờ duyệt"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s pay schemes changed"
+msgstr "Đã đổi %s chương trình lương"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "%s people's pay schemes change"
+msgstr "Chương trình lương của %s người thay đổi"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 pay scheme changed"
+msgstr "Đã đổi 1 chương trình lương"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "1 person's pay scheme changes"
+msgstr "Chương trình lương của 1 người thay đổi"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Change %s pay schemes"
+msgstr "Đổi %s chương trình lương"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Change 1 pay scheme"
+msgstr "Đổi 1 chương trình lương"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Change it to %s"
+msgstr "Đổi sang %s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "Change their Country of work in the same row, or pick one of: %s."
+msgstr "Hãy đổi Quốc gia làm việc của họ trong cùng dòng, hoặc chọn một trong: %s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "Change their Country of work in the same row."
+msgstr "Hãy đổi Quốc gia làm việc của họ trong cùng dòng."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "Changed at once. No approval needed."
+msgstr "Đổi ngay. Không cần duyệt."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid ""
+"Changing a person's pay scheme is for HR and payroll. Ask one of them to "
+"make the change."
+msgstr "Việc đổi chương trình lương của một người thuộc về nhân sự và bộ phận lương. Hãy nhờ họ thực hiện."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Each person's record shows their new pay scheme and the day it starts."
+msgstr "Hồ sơ của từng người hiển thị chương trình lương mới và ngày bắt đầu."
+
+#. module: pb_updates
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Mid-month advance"
+msgstr "Tạm ứng giữa tháng"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"Mid-month advance: leave it empty for the pay scheme's own mid-month "
+"advance, type No for none, or type the name of the advance."
+msgstr "Tạm ứng giữa tháng: để trống để dùng tạm ứng giữa tháng của chương trình lương, gõ Không nếu không có, hoặc gõ tên khoản tạm ứng."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid ""
+"No pay scheme for %(country)s yet. They are added without one: give them a "
+"pay scheme from their record once %(country)s has one."
+msgstr "Chưa có chương trình lương cho %(country)s. Họ được thêm mà không có chương trình lương: hãy gán từ hồ sơ của họ khi %(country)s đã có."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid ""
+"Nothing changes until a payroll manager approves. Each person's record shows"
+" the change that is waiting."
+msgstr "Không có gì thay đổi cho đến khi quản lý lương duyệt. Hồ sơ của từng người hiển thị thay đổi đang chờ."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "Nothing was changed: %s"
+msgstr "Không có gì được thay đổi: %s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid ""
+"Nothing was changed: a pay scheme change can start up to a year back or a "
+"year ahead."
+msgstr "Không có gì được thay đổi: thay đổi chương trình lương chỉ có thể bắt đầu trong vòng một năm trước hoặc sau."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid ""
+"Nothing was changed: a person or a pay scheme in this sheet is not there any"
+" more. Review the sheet again."
+msgstr "Không có gì được thay đổi: một người hoặc một chương trình lương trong bảng này không còn nữa. Hãy xem lại bảng."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "One request per pay scheme, for a payroll manager to approve"
+msgstr "Mỗi chương trình lương một yêu cầu, để quản lý lương duyệt"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "Pay scheme for %s"
+msgstr "Chương trình lương cho %s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid ""
+"Pay scheme is the person's own pay scheme. Leave it empty and the usual pay "
+"scheme of their Country of work is used. If you type one, it must be a pay "
+"scheme of their Country of work."
+msgstr "Chương trình lương là chương trình lương riêng của người đó. Để trống thì dùng chương trình lương thường dùng của Quốc gia làm việc. Nếu bạn gõ, đó phải là chương trình lương của Quốc gia làm việc của họ."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Pay schemes"
+msgstr "Chương trình lương"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "Pick one of: %s."
+msgstr "Hãy chọn một trong: %s."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "Pick the pay scheme…"
+msgstr "Chọn chương trình lương…"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Send %s pay scheme changes for approval"
+msgstr "Gửi %s thay đổi chương trình lương để duyệt"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Send 1 pay scheme change for approval"
+msgstr "Gửi 1 thay đổi chương trình lương để duyệt"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "The only pay scheme for %s."
+msgstr "Chương trình lương duy nhất cho %s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "The usual pay scheme for %s."
+msgstr "Chương trình lương thường dùng cho %s."
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid ""
+"Their Country of work changes to %(country)s. Their pay scheme stays %(old)s"
+" unless you change it."
+msgstr "Quốc gia làm việc của họ chuyển sang %(country)s. Chương trình lương vẫn là %(old)s trừ khi bạn đổi."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_joiner__advance_scheme_id
+msgid "Their mid-month advance"
+msgstr "Tạm ứng giữa tháng của họ"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "Their own pay scheme, from the sheet."
+msgstr "Chương trình lương riêng của họ, theo bảng."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+#: model:ir.model.fields,field_description:pb_updates.field_pb_updates_joiner__scheme_id
+msgid "Their pay scheme"
+msgstr "Chương trình lương của họ"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_joiners.py:0
+msgid "Their pay scheme could not be set: give them one from their record."
+msgstr "Không đặt được chương trình lương: hãy gán từ hồ sơ của họ."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_desk.js:0
+msgid "Working out who approves pay scheme changes…"
+msgstr "Đang xác định ai duyệt thay đổi chương trình lương…"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "from %(date)s · Mid-month advance: %(advance)s"
+msgstr "từ %(date)s · Tạm ứng giữa tháng: %(advance)s"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "from %s"
+msgstr "từ %s"
+
+#. module: pb_updates
+#. odoo-python
+#: code:addons/pb_updates/models/updates_person_scheme.py:0
+msgid "none"
+msgstr "không có"

@@ -1793,3 +1793,17 @@ msgstr ""
 #: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
 msgid "regular payroll"
 msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_tools.py:0
+msgid "%(old)s still pays %(month)s. %(new)s starts with the next pay run."
+msgstr ""
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_tools.py:0
+msgid ""
+"Somebody has changed %s's pay scheme since, so this cannot be taken back "
+"here."
+msgstr ""

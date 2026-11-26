@@ -1974,3 +1974,17 @@ msgstr "tạm ứng giữa tháng"
 #: code:addons/pb_scheme_map/models/pb_scheme_map.py:0
 msgid "regular payroll"
 msgstr "kỳ lương thường"
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_tools.py:0
+msgid "%(old)s still pays %(month)s. %(new)s starts with the next pay run."
+msgstr "%(old)s vẫn trả lương %(month)s. %(new)s bắt đầu từ kỳ lương sau."
+
+#. module: pb_scheme_map
+#. odoo-python
+#: code:addons/pb_scheme_map/models/pb_person_scheme_tools.py:0
+msgid ""
+"Somebody has changed %s's pay scheme since, so this cannot be taken back "
+"here."
+msgstr "Đã có người đổi chương trình lương của %s sau đó, nên không thể hoàn tác ở đây."
