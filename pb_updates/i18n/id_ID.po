@@ -420,3 +420,37 @@ msgstr "mulai %s"
 #: code:addons/pb_updates/models/updates_person_scheme.py:0
 msgid "none"
 msgstr "tidak ada"
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid "A pay scheme change is changed back from the person's record."
+msgstr "Perubahan skema gaji dikembalikan dari catatan orang itu."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Open them and press Change pay scheme. If your company asks for approval, "
+"nothing changes until it is approved."
+msgstr "Buka catatannya dan tekan Ubah skema gaji. Jika perusahaan Anda meminta persetujuan, tidak ada yang berubah sampai disetujui."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/xml/updates_desk.xml:0
+msgid ""
+"Pay scheme changes are changed back from each person's record, not from Past"
+" updates."
+msgstr "Perubahan skema gaji dikembalikan dari catatan setiap orang, bukan dari Pembaruan sebelumnya."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "This file changes %s people's pay schemes."
+msgstr "Berkas ini mengubah skema gaji %s orang."
+
+#. module: pb_updates
+#. odoo-javascript
+#: code:addons/pb_updates/static/src/js/updates_review.js:0
+msgid "This file changes 1 person's pay scheme."
+msgstr "Berkas ini mengubah skema gaji 1 orang."

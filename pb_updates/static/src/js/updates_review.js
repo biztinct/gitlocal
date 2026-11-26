@@ -688,6 +688,14 @@ export class UpdReview extends Component {
 
     get heroParts() {
         const c = this.counts;
+        if (c.schemes && !c.changes && !c.newPeople) {
+            // PSCHEME P2b — a sheet whose only change is who pays people
+            const lead = plural(c.schemes, _t("This file changes 1 person's pay scheme."),
+                                _t("This file changes %s people's pay schemes."));
+            if (!c.attention) { return { lead, tail: _t("Everything checks out."), tone: "fine" }; }
+            return { lead, tone: "att", tail: c.attention === 1 ? _t("1 thing needs your attention.")
+                                                               : _t("%s things need your attention.", grouped(c.attention)) };
+        }
         if (!c.changes && !c.attention && !c.newPeople) {
             return { lead: _t("Every value in this file is already on record."),
                      tail: _t("There is nothing to change."), tone: "fine" };

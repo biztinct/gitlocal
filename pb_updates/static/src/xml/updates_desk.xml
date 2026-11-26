@@ -873,9 +873,13 @@
                 <t t-out="icon(leaveApply and leaveApply.policy and !leaveApply.plain ? 'lock' : 'undo', 16)"/>
                 <div><b>What undo can do.</b> <span t-esc="leaveUndoLine"/></div>
               </div>
+              <div t-elif="schemeCount and !applyCounts.changes and !newCount" class="pbu-note">
+                <t t-out="icon('layers', 16)"/>
+                <div><b>A pay scheme change is changed back from the person's record.</b> Open them and press Change pay scheme. If your company asks for approval, nothing changes until it is approved.</div>
+              </div>
               <div t-else="" class="pbu-note">
                 <t t-out="icon('undo', 16)"/>
-                <div><b>You can undo this.</b> One click in Past updates puts every value back the way it was, unless someone has changed it since. If your company asks for approval, nothing changes until it is approved.</div>
+                <div><b>You can undo this.</b> One click in Past updates puts every value back the way it was, unless someone has changed it since. If your company asks for approval, nothing changes until it is approved.<t t-if="schemeCount"> <span>Pay scheme changes are changed back from each person's record, not from Past updates.</span></t></div>
               </div>
               <div t-if="isLasting and newCount" class="pbu-note pbu-note--warn">
                 <t t-out="icon('userPlus', 16)"/>
