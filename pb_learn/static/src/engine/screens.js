@@ -408,7 +408,16 @@ function newEmployeeHTML() {
                 <option>F&amp;B</option>
                 <option>${esc(tx(B("IT Services", "Dịch vụ CNTT")))}</option>
             </select>
-            <p class="lrn-note">${esc(tx(B("Paid by", "Trả lương theo")))}:${SP}<b>${esc(RUN.scheme)}</b>${DOT}${esc(tx(B(
+            <!-- PSCHEME P3: as the live step 2, the Country of work fills in the
+                 person's OWN pay scheme ("What this decides" > Pay scheme); the
+                 team is where they work, its usual scheme only a starting point. -->
+            <label class="lrn-flabel">${esc(tx(B("Pay scheme", "Chương trình lương")))}</label>
+            <div class="lrn-strip">
+                <span class="lrn-chip b">${ic("banknote")}${esc(RUN.scheme)}${DOT}${esc(tx(B("Usual", "Thường dùng")))}</span>
+            </div>
+            <p class="lrn-note">${esc(tx(B(
+                "Filled in from the Country of work. This person's own pay scheme; you can pick another pay scheme of Vietnam.",
+                "Điền sẵn từ quốc gia làm việc. Đây là chương trình lương riêng của người này; bạn có thể chọn một chương trình lương khác của Việt Nam.")))}${DOT}${esc(tx(B(
                 "Paid in ₫, the money of the country of work", "Trả bằng ₫, đồng tiền của quốc gia làm việc")))}</p>
             ${step(3, B("Contract and pay", "Hợp đồng và lương"))}
             ${inputRow("rep-newemp-wage",

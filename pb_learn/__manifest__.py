@@ -40,7 +40,7 @@
     # report, My Excel layout, the PDF of a report, Design a letter, offer
     # letters and certificates, contract documents) over seven practice copies;
     # Insights and Settings › HR orientation lines; HR and owner paths.
-    'version': '19.0.20.10.0',
+    'version': '19.0.20.11.0',
     'category': 'Human Resources/Payroll',
     'summary': 'Guided Journey, always-on Coach and bilingual lesson spine for the Pay Run desk',
     'author': 'Biztinct',

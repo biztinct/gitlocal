@@ -1977,9 +1977,7 @@ msgstr ""
 #. module: pb_new_hire
 #. odoo-javascript
 #: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid ""
-"Every new person joins a team, and the team decides how they are paid. This "
-"company has no team yet."
+msgid "Every new person joins a team. This company has no team yet."
 msgstr ""
 
 #. module: pb_new_hire

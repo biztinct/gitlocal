@@ -3459,8 +3459,8 @@
     },
     {
       "definition": {
-        "en": "A part of the business. Each division usually has its own pay scheme, so the division people work in decides which rulebook pays them.",
-        "vi": "Một phần của doanh nghiệp. Mỗi bộ phận thường có chương trình lương riêng, nên bộ phận một người làm việc quyết định bộ quy tắc nào trả lương cho họ."
+        "en": "A part of the business. A division can have a usual pay scheme: people without a pay scheme of their own start from it. What pays a person is their own pay scheme.",
+        "vi": "Một phần của doanh nghiệp. Một bộ phận có thể có chương trình lương thường dùng: người chưa có chương trình lương riêng bắt đầu từ đó. Thứ trả lương cho một người là chương trình lương riêng của họ."
       },
       "key": "division",
       "match": {
@@ -5838,8 +5838,8 @@
         },
         {
           "body": {
-            "en": "The team you pick decides the pay scheme, and the currency and the trial period follow from it. The other four steps already hold sensible answers, so you only change what is different.",
-            "vi": "Nhóm bạn chọn quyết định chương trình lương, rồi tiền tệ và thời gian thử việc đi theo đó. Bốn bước còn lại đã có sẵn câu trả lời hợp lý, nên bạn chỉ sửa những gì khác."
+            "en": "The Country of work you pick fills in the person's own pay scheme, and the currency and the trial period follow from it. You can pick another pay scheme of that country. The other four steps already hold sensible answers, so you only change what is different.",
+            "vi": "Quốc gia làm việc bạn chọn điền sẵn chương trình lương riêng của người đó, rồi tiền tệ và thời gian thử việc đi theo đó. Bạn có thể chọn một chương trình lương khác của quốc gia đó. Bốn bước còn lại đã có sẵn câu trả lời hợp lý, nên bạn chỉ sửa những gì khác."
           },
           "capability": "any",
           "kind": "p",
@@ -15334,8 +15334,8 @@
         {
           "act": "click",
           "affects": {
-            "en": "The currency, the trial period, the contract letter and the papers follow the country, and Paid by on the right shows the scheme.",
-            "vi": "Tiền tệ, thời gian thử việc, thư hợp đồng và giấy tờ đi theo quốc gia, và mục Trả lương theo ở bên phải cho thấy chương trình lương."
+            "en": "The currency, the trial period, the contract letter and the papers follow the country, and the Pay scheme box shows the pay scheme that will pay this person.",
+            "vi": "Tiền tệ, thời gian thử việc, thư hợp đồng và giấy tờ đi theo quốc gia, và ô Chương trình lương cho thấy chương trình lương sẽ trả lương cho người này."
           },
           "anchor": "rep-newemp-team",
           "body": "",
@@ -15350,8 +15350,8 @@
             "vi": "Bước 2, Vị trí và nơi làm việc. Quốc gia làm việc đứng đầu và đã chọn sẵn Việt Nam. Mở danh sách Nhóm ở dưới và chọn một nhóm."
           },
           "means": {
-            "en": "The country of work leads: the teams and jobs of that country come first in their lists. The team you pick then decides which pay scheme pays this person.",
-            "vi": "Quốc gia làm việc đi trước: các nhóm và công việc của quốc gia đó đứng đầu danh sách. Nhóm bạn chọn sau đó quyết định chương trình lương nào trả lương cho người này."
+            "en": "The country of work leads: the teams and jobs of that country come first in their lists, and it fills in this person's own pay scheme. The team is where they work; its usual pay scheme is only a starting point.",
+            "vi": "Quốc gia làm việc đi trước: các nhóm và công việc của quốc gia đó đứng đầu danh sách, và nó điền sẵn chương trình lương riêng của người này. Nhóm là nơi họ làm việc; chương trình lương thường dùng của nhóm chỉ là điểm khởi đầu."
           },
           "modes": [
             "try"
@@ -25593,8 +25593,8 @@
           },
           "scheme": {
             "line": {
-              "en": "Which pay scheme pays each part of the workforce.",
-              "vi": "Chương trình lương nào trả lương cho từng bộ phận nhân sự."
+              "en": "Each team's usual pay scheme, and who has a pay scheme of their own. Give everyone their own pay scheme starts here.",
+              "vi": "Chương trình lương thường dùng của từng nhóm, và ai có chương trình lương riêng. Cho mọi người chương trình lương riêng bắt đầu từ đây."
             },
             "name": {
               "en": "Who is paid by what",
@@ -36044,8 +36044,8 @@
                 "vi": "Trả lương theo, phía trên các thành phần, và nhãn dưới mỗi khoản."
               },
               "means": {
-                "en": "Paid by names the pay scheme. Each chip says Held on this contract, From a pay data file, or worked out by a formula.",
-                "vi": "Trả lương theo ghi chương trình lương. Mỗi nhãn ghi Lưu trên hợp đồng này, Từ tệp dữ liệu lương, hoặc do công thức tính ra."
+                "en": "Paid by names the person's own pay scheme. Change pay scheme changes it from a date; a change during a month starts with the next pay run. Each chip says Held on this contract, From a pay data file, or worked out by a formula.",
+                "vi": "Trả lương theo ghi chương trình lương riêng của người này. Đổi chương trình lương sẽ đổi nó từ một ngày; thay đổi giữa tháng bắt đầu từ kỳ lương sau. Mỗi nhãn ghi Lưu trên hợp đồng này, Từ tệp dữ liệu lương, hoặc do công thức tính ra."
               },
               "moment_chain": "",
               "moment_from": "",
@@ -44504,5 +44504,5 @@
       }
     }
   ],
-  "version": "54784dbbc561"
+  "version": "514bec1aa227"
 }

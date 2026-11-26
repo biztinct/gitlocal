@@ -2220,7 +2220,7 @@
     "nh-step-role": {
       "screen": "newhire",
       "file": "pb_new_hire/static/src/xml/new_hire_studio.xml",
-      "desc": "Step 2, Role and place: the country of work first, then the team, the job, the manager and the work site. The country leads: its teams and jobs come first in their lists, and the currency, the trial period, the letter and the papers follow it. The team decides the pay scheme; the country is checked against it.",
+      "desc": "Step 2, Role and place: the country of work first, then the team, the job, the manager and the work site. The country leads: its teams and jobs come first in their lists, and the pay scheme, the currency, the trial period, the letter and the papers follow it. The pay scheme is the person's own, filled in from the country of work; another pay scheme of that country can be picked.",
       "reserved": true
     },
     "nh-step-pay": {
@@ -2548,7 +2548,7 @@
     "rep-impmatch": "The Match button on that same row. Practice-only because the product's importer offers its fixes differently; here it is what 'accept this row' looks like.",
     "rep-newemp-open": "The Add employee button on the Employees replica. In the product it opens the guided Add employee screen (pb_new_hire); here it is the step that takes the learner down to the practice copy of that screen.",
     "rep-newemp-name": "The practice Add employee screen's Full name box (step 1, Who is joining). A real input, declared in INPUT_ANCHORS as text, so tone marks are optional when it is checked.",
-    "rep-newemp-team": "The practice Add employee screen's Team list (step 2, Role and place). A click target, not an input: choosing the team is choosing which pay scheme pays this person, as in the product.",
+    "rep-newemp-team": "The practice Add employee screen's Team list (step 2, Role and place). A click target, not an input: the team is where the person works; their own pay scheme comes from the Country of work, as in the product.",
     "rep-newemp-wage": "The practice Add employee screen's Monthly wage box (step 3, Contract and pay). A real input, declared in INPUT_ANCHORS as a number, so the reader's own thousands mark is accepted.",
     "rep-newemp-send": "The practice Add employee screen's Send button (step 7, Check and add). It sends nothing — there is no server behind the replica — and the step that presses it is guarded for the same reason the real one would be.",
     "rep-watermark": "The practice-mode watermark. Says on every free-roam screen that none of this is real. Drawn unconditionally by the practice view builder; no product screen has one.",

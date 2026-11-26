@@ -74,7 +74,7 @@
       <div class="pbnh-card pbnh-fail">
         <span class="pbnh-fail-ic is-p" t-out="icon('building', 22)"/>
         <h2>Add a team first</h2>
-        <p>Every new person joins a team, and the team decides how they are paid. This company has no team yet.</p>
+        <p>Every new person joins a team. This company has no team yet.</p>
         <div class="pbnh-fail-b">
           <button type="button" class="pbnh-btn pbnh-btn--pri" t-on-click="openTeams"><t t-out="icon('plus', 16)"/>Add a team</button>
           <button type="button" class="pbnh-btn" t-on-click="backToEmployees">Back to Employees</button>

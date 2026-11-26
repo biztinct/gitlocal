@@ -2003,10 +2003,8 @@ msgstr "Thiết bị"
 #. module: pb_new_hire
 #. odoo-javascript
 #: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid ""
-"Every new person joins a team, and the team decides how they are paid. This "
-"company has no team yet."
-msgstr "Mỗi người mới đều thuộc một nhóm, và nhóm quyết định cách trả lương cho họ. Công ty này chưa có nhóm nào."
+msgid "Every new person joins a team. This company has no team yet."
+msgstr "Mỗi người mới đều thuộc một nhóm. Công ty này chưa có nhóm nào."
 
 #. module: pb_new_hire
 #. odoo-python

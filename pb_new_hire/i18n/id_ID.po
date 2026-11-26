@@ -2003,10 +2003,8 @@ msgstr "Perlengkapan"
 #. module: pb_new_hire
 #. odoo-javascript
 #: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid ""
-"Every new person joins a team, and the team decides how they are paid. This "
-"company has no team yet."
-msgstr "Setiap orang baru masuk ke sebuah tim, dan tim menentukan cara mereka digaji. Perusahaan ini belum punya tim."
+msgid "Every new person joins a team. This company has no team yet."
+msgstr "Setiap orang baru masuk ke sebuah tim. Perusahaan ini belum punya tim."
 
 #. module: pb_new_hire
 #. odoo-python
