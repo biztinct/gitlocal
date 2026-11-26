@@ -233,3 +233,24 @@ PS-c1 (lesson content is generated from the author source), PS-c2 (plural hack e
    block), then Mapping › Who is paid by what (the line "N people still follow their team"), and open and close
    "Change pay scheme" without saving. I did not sign in to the live site myself.
 
+
+## 10. Addendum (27 Nov): the fill applied on rize and payobook (owner decisions)
+
+Owner decisions by card: apply on rize and payobook only; rize's 4 people without Country of work left for HR ("Fill
+empty Country of Work" NOT run); payobook's 44 "needs your choice" people to get their TEAM's usual scheme where one
+exists; sudima waits; template / p0clone not run. Full account in `PSCHEME_CLOSEOUT.md` §2–§3.
+
+- First apply on rize failed before anything was written (the `odoo` user could not read its settings file inside
+  the root-only backup folder; FAILED line in the notes, 0 rows). `ps3_fill.sh` now works in a private temp folder and
+  copies the results next to the dump; re-run → DONE.
+- rize: **227** people given their own scheme (227 rows). payobook company 5: **4,510** people (9,020 rows: main + its
+  real mid-month advance). payobook company 2: 7 people **sent for approval** (second approver; 0 rows until approved).
+- The 44: every one has NO team usual scheme (23 without a team, 21 in five teams with no map line; the ladder without
+  the person rule answers nothing) — none could be given one by the owner's rule; all 44 left.
+- Before/after (`ps3_fillcheck.py`): main "who pays them" changed 0, real advance changed 0, next month nobody in two
+  main runs, nobody missing, nobody moved (both databases, every company). The 227 rize "advance" answers that were the
+  main scheme by a team line "for any run" (PS6) are no longer shown as an advance (A13; expected).
+- "Paid by" settled with Mapping's "Work it out again" (`ps3_settle.py`, `pb.scheme.board.recompute`): rize 227 stored
+  advance artefacts cleared; payobook 1 stored-empty person filled with the scheme the map already gave; 0 left stale.
+- Banner: rize 227 of 231 have their own (4 follow their team); payobook company 5 4,510 of 4,554 (44).
+- Server log: 0 ERROR / CRITICAL since the release. No service stop.

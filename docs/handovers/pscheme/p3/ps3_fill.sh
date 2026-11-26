@@ -16,7 +16,7 @@ case "$MODE" in dry|apply) ;; *) echo "dry or apply"; exit 1 ;; esac
 TS=$(date -u +%Y%m%dT%H%MZ)
 OUT=$HERE/run-$DB-$MODE-$TS
 TAG="Claude PSCHEME fill"
-mkdir -p $OUT && chown odoo:odoo $OUT && chmod 750 $OUT
+mkdir -p $OUT && chmod 700 $OUT
 note() { echo "$(date -u '+%Y-%m-%d %H:%M UTC') | $TAG | $1" >> /opt/deploy-notes.md; }
 if [ "$MODE" = apply ]; then
   OPEN=$(python3 - "$TAG" <<'PY'
@@ -47,10 +47,14 @@ PY
   sudo -u postgres pg_dump -Fc $DB > $OUT/$DB-before-fill.dump && pg_restore -l $OUT/$DB-before-fill.dump > /dev/null \
     || { note "FAILED | fill not run: the dump could not be taken | $DB | nothing changed"; exit 1; }
 fi
-sed -e "s#^logfile.*#logfile = $OUT/odoo.log#" /etc/odoo-server.conf > $OUT/probe.conf; chown odoo:odoo $OUT/probe.conf; chmod 600 $OUT/probe.conf
-cp $HERE/ps3_fill.py $OUT/ && chown odoo:odoo $OUT/ps3_fill.py
-sudo -u odoo env PS3_MODE=$MODE PS3_OUT=$OUT python3 /odoo/odoo-server/odoo-bin shell -c $OUT/probe.conf -d $DB --no-http --max-cron-threads=0 < $OUT/ps3_fill.py > $OUT/fill.out 2>&1
-rm -f $OUT/probe.conf
+# the odoo user cannot enter the root-only backup folder: it works in a private temp folder, the results
+# are copied next to the dump afterwards
+WORK=$(mktemp -d /tmp/ps3fill.XXXXXX); chown odoo:odoo $WORK; chmod 700 $WORK
+sed -e "s#^logfile.*#logfile = $WORK/odoo.log#" /etc/odoo-server.conf > $WORK/probe.conf; chown odoo:odoo $WORK/probe.conf; chmod 600 $WORK/probe.conf
+cp $HERE/ps3_fill.py $WORK/ && chown odoo:odoo $WORK/ps3_fill.py
+sudo -u odoo env PS3_MODE=$MODE PS3_OUT=$WORK python3 /odoo/odoo-server/odoo-bin shell -c $WORK/probe.conf -d $DB --no-http --max-cron-threads=0 < $WORK/ps3_fill.py > $WORK/fill.out 2>&1
+rm -f $WORK/probe.conf
+cp -a $WORK/. $OUT/ && rm -rf $WORK
 grep -E '^PROBE|Traceback' $OUT/fill.out | cut -c1-900
 if [ "$MODE" = apply ]; then
   if grep -q '^PROBE committed' $OUT/fill.out; then
