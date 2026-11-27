@@ -13,7 +13,7 @@
 import { printSignInSlips } from "@biz_access/js/access_board";
 import { Component, useState, useEffect } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
-import { icon, fmtDay, money, rich, weekNameOf, ownMissingOf, docItemsOf, docChoiceOf, docGapsOf, docTallyOf,
+import { icon, fmtDay, money, rich, weekNameOf, ownMissingOf, docItemsOf, docSummaryChoiceOf, docGapsOf, docTallyOf,
          docAskedOf, errorText, copyText } from "./studio_util";
 
 export class StepCheck extends Component {
@@ -115,15 +115,15 @@ export class StepCheck extends Component {
                      s: _t("Choose the country of work first."), go: "docs", field: false };
         }
         const t = docTallyOf(this.nh);
-        const pick = (c) => items.filter((i) => docChoiceOf(this.nh, i) === c).map((i) => i.label);
+        const pick = (c) => items.filter((i) => docSummaryChoiceOf(this.nh, i) === c).map((i) => i.label);
         const bits = [];
         if (t.ask) {
             bits.push(_t("Asked: %s", docAskedOf(this.nh).map((a) => a.label).join(", ")));
         }
         if (t.have) {
             // a number-only card row: the number is with you
-            const mine = items.filter((i) => ["have", "number"].includes(docChoiceOf(this.nh, i)))
-                .map((i) => (docChoiceOf(this.nh, i) === "number" ? i.fields[0].label : i.label));
+            const mine = items.filter((i) => ["have", "number"].includes(docSummaryChoiceOf(this.nh, i)))
+                .map((i) => (docSummaryChoiceOf(this.nh, i) === "number" ? i.fields[0].label : i.label));
             bits.push(_t("With you: %s", mine.join(", ")));
         }
         if (t.later) {
@@ -169,7 +169,7 @@ export class StepCheck extends Component {
                        go: "docs", field: `doc-${item.key}` });
         }
         for (const item of docItemsOf(this.nh)) {
-            if (item.need === "first_pay" && docChoiceOf(this.nh, item) === "later") {
+            if (item.need === "first_pay" && docSummaryChoiceOf(this.nh, item) === "later") {
                 out.push({ key: `later-${item.key}`, b: _t("%s is needed before the first pay", item.label),
                            s: _t("Nobody is asked for it. Add it on the record before the first pay run."),
                            go: "docs", field: `doc-${item.key}` });
@@ -214,7 +214,7 @@ export class StepCheck extends Component {
                           { when: e.past ? _t("Straight away") : fmtDay(e.when) }, { what: e.title, who: e.who }));
         }
         const bank = docItemsOf(this.nh).find((i) => i.key === "bank");
-        const bankChoice = bank ? docChoiceOf(this.nh, bank) : "";
+        const bankChoice = bank ? docSummaryChoiceOf(this.nh, bank) : "";
         if (bankChoice === "have") {
             out.push(rich(_t("The bank account goes to a second person for approval, as every bank change does.")));
         } else if (bankChoice === "ask") {

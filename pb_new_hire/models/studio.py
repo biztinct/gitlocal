@@ -933,6 +933,10 @@ class PbNewHire(models.AbstractModel):
         return vals, decided
 
     @api.model
+    def _draft_keys(self):
+        return DRAFT_KEYS
+
+    @api.model
     def send(self, draft, files=None):
         """Validate, build the values and propose ONE new hire. Nothing else
         is written. A user mistake comes back as `{ok: False, step, field,
@@ -944,7 +948,7 @@ class PbNewHire(models.AbstractModel):
         hire holds them as attachments of its proposal; the fast lane hands
         them to the papers leg through a context key for this call only."""
         self._gate()
-        d = {k: v for k, v in (draft or {}).items() if k in DRAFT_KEYS} \
+        d = {k: v for k, v in (draft or {}).items() if k in self._draft_keys()} \
             if isinstance(draft, dict) else {}
         refused = self._validate(d) or self._validate_docs(d, files)
         if refused:

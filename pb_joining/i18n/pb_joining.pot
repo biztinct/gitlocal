@@ -1,21 +1,19 @@
-# Translation of Joining portal.
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_joining
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: Payobook 19.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-27 07:42+0000\n"
+"PO-Revision-Date: 2026-11-27 07:42+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-
-#. module: pb_joining
-#. odoo-python
-#: code:addons/pb_joining/models/messages.py:0
-msgid "{{code}} is your code"
-msgstr ""
-
-#. module: pb_joining
-#. odoo-python
-#: code:addons/pb_joining/models/messages.py:0
-msgid "{{first_name}}, your details for {{brand}}"
-msgstr ""
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
 
 #. module: pb_joining
 #. odoo-python
@@ -31,8 +29,39 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "%(who)s viewed a number in %(item)s."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid ""
+"%s's details, papers and signed papers came across from the Joining board."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "1 minute"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "8:00 am"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "A note from the manager"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "A signed copy is missing."
 msgstr ""
 
 #. module: pb_joining
@@ -48,8 +77,72 @@ msgid "About you"
 msgstr ""
 
 #. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Accept"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Accept everything"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__state__accepted
+msgid "Accepted"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid ""
+"Accepting saves nothing yet. The details go into the employee record only "
+"when you press Add in the next screen."
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__actions_at
+msgid "Actions At"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__active
+msgid "Active"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
 msgid "Add a paper"
 msgstr ""
 
@@ -57,6 +150,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_joining/models/board.py:0
 msgid "Add an email or a mobile number so the link can reach them."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Add as employee"
 msgstr ""
 
 #. module: pb_joining
@@ -90,6 +189,11 @@ msgid "Add your details before continuing."
 msgstr ""
 
 #. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__added_at
+msgid "Added At"
+msgstr ""
+
+#. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "All done, %(name)s. See you on %(date)s."
@@ -97,8 +201,61 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid ""
+"Ask an HR colleague who can open this signed offer in Hiring to add the "
+"employee."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Ask for"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "Ask the person who sent it for a new one."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Ask the recruiter handling this offer or HR to pass on the link."
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__at_risk
+msgid "At Risk"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "At risk"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "At risk: %(missing)s, %(days)s days left"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__attachment_ids
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__attachment_id
+msgid "Attachment"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__available
+msgid "Available"
 msgstr ""
 
 #. module: pb_joining
@@ -111,6 +268,11 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "Back of the card"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__bank_later
+msgid "Bank Later"
 msgstr ""
 
 #. module: pb_joining
@@ -128,6 +290,24 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Bank account still to come"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Bank still to come"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Before they join"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "Before you join"
 msgstr ""
@@ -135,13 +315,43 @@ msgstr ""
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/models/messages.py:0
-msgid "Before you start on {{first_day}}, please finish these sections: {{sections}}."
+msgid ""
+"Before you start on {{first_day}}, please finish these sections: "
+"{{sections}}."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Cancel"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__cancel_reason
+msgid "Cancel Reason"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__cancelled_at
+msgid "Cancelled At"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__applicant_id
+msgid "Candidate"
 msgstr ""
 
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "Change"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Change the first day"
 msgstr ""
 
 #. module: pb_joining
@@ -154,6 +364,32 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "Check the date and try again."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Checked and added as an employee."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "Checklist is ready"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Choose a JPEG, PNG or PDF."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+#: code:addons/pb_joining/static/src/js/papers.js:0
+msgid "Choose a PDF up to 5 MB."
 msgstr ""
 
 #. module: pb_joining
@@ -171,13 +407,95 @@ msgstr ""
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/models/items.py:0
-msgid "Choose a JPEG, PNG or PDF."
+msgid "Choose a photo or PDF up to 10 MB."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+#: code:addons/pb_joining/static/src/js/papers.js:0
+msgid "Choose a readable PDF up to 5 MB."
 msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/models/items.py:0
-msgid "Choose a photo or PDF up to 10 MB."
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Choose an item the person sent."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+msgid "Clear"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Close"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Close the link"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_by_hr
+msgid "Code By Hr"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_delivery_failed
+msgid "Code Delivery Failed"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_hash
+msgid "Code Hash"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_issue_count
+msgid "Code Issue Count"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_issued_at
+msgid "Code Issued At"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_issues
+msgid "Code Issues"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_locked_until
+msgid "Code Locked Until"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_tries
+msgid "Code Tries"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_until
+msgid "Code Until"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_window_start
+msgid "Code Window Start"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Code copied."
 msgstr ""
 
 #. module: pb_joining
@@ -187,9 +505,59 @@ msgid "Code shown by %(name)s"
 msgstr ""
 
 #. module: pb_joining
+#: model:ir.model,name:pb_joining.model_res_company
+msgid "Companies"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__company_id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__company_id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__company_id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__company_id
+msgid "Company"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_joining_paper
+msgid "Company paper to sign"
+msgstr ""
+
+#. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/controllers/papers.py:0
 msgid "Continue"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Copy"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Copy link"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Copy the link and show a code to pass on."
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__country_code
+msgid "Country Code"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Country of work"
 msgstr ""
 
 #. module: pb_joining
@@ -199,15 +567,105 @@ msgid "Country of work changed."
 msgstr ""
 
 #. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__create_uid
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__create_uid
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__create_uid
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__create_date
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__create_date
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__create_date
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__day_ask_for
+msgid "Day Ask For"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__day_bring
+msgid "Day Bring"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__day_opened
+msgid "Day Opened"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__day_place
+msgid "Day Place"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__day_time
+msgid "Day Time"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__decided_by_id
+msgid "Decided By"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__decided_on
+msgid "Decided On"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__department_id
+msgid "Department"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Details %(percent)s%% in"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Details %(percent)s%% in · checked"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_joining_item
+msgid "Details before joining"
+msgstr ""
+
+#. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/models/joining.py:0
 msgid "Details still to send"
 msgstr ""
 
 #. module: pb_joining
-#. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
-msgid "done"
+#: model:ir.model.fields,field_description:pb_joining.field_ir_http__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_hiring__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_hiring_message_template__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_hiring_offer__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_board__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_new_hire__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_new_hire_legs__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_newhire_proposal__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_report_pb_joining_sign_page__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_res_company__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_joining
+#: model_terms:ir.ui.view,arch_db:pb_joining.sign_page
+msgid "Document SHA-256"
 msgstr ""
 
 #. module: pb_joining
@@ -217,9 +675,31 @@ msgid "Done"
 msgstr ""
 
 #. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__draft
+msgid "Draft"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__email
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__link_mode__email
+msgid "Email"
+msgstr ""
+
+#. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "Emergency contact"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__employee_id
+msgid "Employee"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Employee record made"
 msgstr ""
 
 #. module: pb_joining
@@ -241,9 +721,39 @@ msgid "Enter your code"
 msgstr ""
 
 #. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Every country"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Everything sent. Nothing is in the employee record yet."
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__expiry_date
+msgid "Expiry Date"
+msgstr ""
+
+#. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/models/messages.py:0
 msgid "Fill in my details"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__state__filling
+msgid "Filling in"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Finish checking the joining before adding the employee."
 msgstr ""
 
 #. module: pb_joining
@@ -253,21 +763,119 @@ msgid "Finish the sections first."
 msgstr ""
 
 #. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__first_day
+msgid "First Day"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "First day"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "First day soonest"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__need__first_pay
+msgid "First pay"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "First-day details"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+#: model:ir.model.fields,field_description:pb_joining.field_res_company__pb_joining_day_place
+msgid "First-day place"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Flags"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "From %s"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "From %s, checked by you"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__from_hiring
+msgid "From Hiring"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "From the signed offer"
+msgstr ""
+
+#. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "From today you use My Payobook. %(hr)s will give you your sign-in."
 msgstr ""
 
 #. module: pb_joining
-#. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
-msgid "Got it"
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Full name"
 msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/models/messages.py:0
-msgid "Hello {{name}},\nBefore {{first_day}} we need a few details from you. It takes about 10 minutes on your phone. You will be asked for a 6-digit code. We send it when you open the link."
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Give a reason for closing the joining link."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "Give the paper a name and choose a country of work."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Got it"
 msgstr ""
 
 #. module: pb_joining
@@ -279,7 +887,9 @@ msgstr ""
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/models/messages.py:0
-msgid "HR asked you to check these details:\n{{notes}}"
+msgid ""
+"HR asked you to check these details:\n"
+"{{notes}}"
 msgstr ""
 
 #. module: pb_joining
@@ -297,7 +907,50 @@ msgstr ""
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
-msgid "HR will check what you sent. If anything needs fixing you will get a message and it will show here."
+msgid ""
+"HR will check what you sent. If anything needs fixing you will get a message"
+" and it will show here."
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_ir_http
+msgid "HTTP Routing"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Hello %(name)s, please finish %(sections)s before %(date)s. %(url)s"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid ""
+"Hello {{name}},\n"
+"Before {{first_day}} we need a few details from you. It takes about 10 minutes on your phone. You will be asked for a 6-digit code. We send it when you open the link."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__origin__hiring
+msgid "Hiring"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_hiring_message_template
+msgid "Hiring communication template"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__hr_nudged_at
+msgid "Hr Nudged At"
 msgstr ""
 
 #. module: pb_joining
@@ -314,8 +967,102 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+msgid "I have read %(paper)s and I agree to it."
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_ir_http__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_hiring__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_hiring_message_template__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_hiring_offer__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_board__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_new_hire__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_new_hire_legs__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_newhire_proposal__id
+#: model:ir.model.fields,field_description:pb_joining.field_report_pb_joining_sign_page__id
+#: model:ir.model.fields,field_description:pb_joining.field_res_company__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: pb_joining
+#: model:pb.employee.document.category,name:pb_joining.cat_permanent_id
+msgid "Identity card — no end date"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__message_has_error
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "If you have it"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "In the record"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Invite"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Invite someone"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__origin__invited
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__state__invited
+msgid "Invited"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__ip
+msgid "Ip"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__issue_date
+msgid "Issue Date"
 msgstr ""
 
 #. module: pb_joining
@@ -325,9 +1072,125 @@ msgid "Issue date"
 msgstr ""
 
 #. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__item_ids
+msgid "Item"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__job_id
+msgid "Job"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__job_title
+msgid "Job Title"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Job title"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+#: model:ir.model,name:pb_joining.model_pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__joining_id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__joining_id
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__need__joining
+msgid "Joining"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_joining_board
+msgid "Joining board"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_hiring_message_template__key__joining_code
+msgid "Joining code"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_hiring_message_template__key__joining_back
+msgid "Joining details to fix"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Joining is looked after by the hiring team"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_hiring_message_template__key__joining_link
+msgid "Joining link"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_joining_sign
+msgid "Joining paper signature"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_hiring_message_template__key__joining_reminder
+msgid "Joining reminder"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "Keep unsent hire"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "Keep your unsent hire?"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_hiring_message_template__key
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__key
+msgid "Key"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__lang
+msgid "Lang"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
 msgid "Language"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__last_seen_at
+msgid "Last Seen At"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__write_uid
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__write_uid
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__write_uid
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__write_date
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__write_date
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__write_date
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__write_date
+msgid "Last Updated on"
 msgstr ""
 
 #. module: pb_joining
@@ -338,8 +1201,121 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Least complete"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__link_copied_at
+msgid "Link Copied At"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__link_mode
+msgid "Link Mode"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__link_sent_at
+msgid "Link Sent At"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Link copied."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Link emailed to %s on %s."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Link not opened"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Link to pass on"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__manager_id
+msgid "Manager"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__manager_note
+msgid "Manager Note"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Message copied. Paste it into WhatsApp or a text."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Message sent."
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Mobile"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "More actions"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Most complete"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "My card has no end date"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__name
+msgid "Name"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__need
+msgid "Need"
 msgstr ""
 
 #. module: pb_joining
@@ -355,15 +1331,130 @@ msgid "Needed when you join"
 msgstr ""
 
 #. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_new_hire
+msgid "New hire studio"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_new_hire_legs
+msgid "New hire studio: the welcome after approval"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Newest"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Next 2 weeks"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__no_expiry
+msgid "No Expiry"
+msgstr ""
+
+#. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "No code? Ask %(name)s to show you a new one."
 msgstr ""
 
 #. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Nobody here"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Nobody is joining yet"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__none_fields
+msgid "None Fields"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Not opened yet"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__state__empty
+msgid "Not sent yet"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "Numbers you already have"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_hiring_offer
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__offer_id
+msgid "Offer"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Offer signed. The link has gone out."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "On"
 msgstr ""
 
 #. module: pb_joining
@@ -380,8 +1471,56 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Only accepted items can come across from Joining."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "Only if you already have one"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Open in Joiners"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "Open joining"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Open signed copy"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+msgid "Open the paper"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "Open the paper, agree to it and enter your name."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "Open this joining in Add employee or carry on with your unsent hire."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+msgid "Open this page in your phone's browser to sign."
 msgstr ""
 
 #. module: pb_joining
@@ -391,15 +1530,71 @@ msgid "Open your joining link again and try once more."
 msgstr ""
 
 #. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Opened"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__opened_at
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__opened_at
+msgid "Opened At"
+msgstr ""
+
+#. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "Opened with your code"
 msgstr ""
 
 #. module: pb_joining
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__need__optional
+msgid "Optional"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Order"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__origin
+msgid "Origin"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__original_id
+msgid "Original"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "PDF"
+msgstr ""
+
+#. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/models/items.py:0
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__paper_id
 msgid "Paper"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__paper_name
+msgid "Paper Name"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__paper_sha256
+msgid "Paper Sha256"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Paper name"
 msgstr ""
 
 #. module: pb_joining
@@ -409,9 +1604,74 @@ msgid "Papers needed before you start"
 msgstr ""
 
 #. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Papers to sign"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__link_mode__pass_on
+msgid "Pass on"
+msgstr ""
+
+#. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/models/hiring.py:0
 msgid "Pass on the joining link to %(name)s"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/models/papers.py:0
+msgid "Pass on the request to fix details to %(name)s"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_hiring
+msgid "Payobook Hiring cockpit data"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__payroll_country
+msgid "Payroll Country"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid ""
+"People appear here the moment their offer is signed in Hiring. You can also "
+"invite someone hired another way."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "People who have signed and not yet started"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Personal email"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__phone
+msgid "Phone"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Place"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.constraint,message:pb_joining.constraint_pb_joining_token_unique
+msgid "Please make a new joining link."
 msgstr ""
 
 #. module: pb_joining
@@ -427,9 +1687,79 @@ msgid "Please wait before asking for a new code."
 msgstr ""
 
 #. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__progress
+msgid "Progress"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__proposal_id
+msgid "Proposal"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_newhire_proposal
+msgid "Proposed new hire"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__rating_ids
+msgid "Ratings"
+msgstr ""
+
+#. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/controllers/papers.py:0
+#: code:addons/pb_joining/models/papers.py:0
 msgid "Read and sign"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Read from Hiring's paper"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__state__added
+msgid "Ready for day one"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__state__to_check
+msgid "Ready for you to check"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Ready: %s."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Reason"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__remind_count
+msgid "Remind Count"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Reminded"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__reminded_at
+msgid "Reminded At"
 msgstr ""
 
 #. module: pb_joining
@@ -439,9 +1769,46 @@ msgid "Remove"
 msgstr ""
 
 #. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__reopened
+msgid "Reopened"
+msgstr ""
+
+#. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "Replace"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__return_note
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__return_note
+msgid "Return Note"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__review_revision
+msgid "Review Revision"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__risk_reason
+msgid "Risk Reason"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Save"
 msgstr ""
 
 #. module: pb_joining
@@ -452,7 +1819,17 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "Save up to 100 papers at once."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: code:addons/pb_joining/static/src/js/papers.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__state__saved
 msgid "Saved"
 msgstr ""
 
@@ -469,9 +1846,35 @@ msgid "Saved as you go. You start in %(n)s days."
 msgstr ""
 
 #. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Search by name, job or team"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Send a link when an offer is signed"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Send a reminder now"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
 msgid "Send again"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Send back"
 msgstr ""
 
 #. module: pb_joining
@@ -481,21 +1884,71 @@ msgid "Send me a new code"
 msgstr ""
 
 #. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Send the link and the code separately."
+msgstr ""
+
+#. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "Send to HR"
 msgstr ""
 
 #. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Sent"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__sent_back_count
+msgid "Sent Back Count"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Sent back"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__state__returned
 msgid "Sent back to fix"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Sent back · %s"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Sent by %(first)s on %(day)s · accepted by %(hr)s"
 msgstr ""
 
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "Sent to HR"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__sequence
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Show a code"
 msgstr ""
 
 #. module: pb_joining
@@ -511,9 +1964,98 @@ msgid "Show fields for this country"
 msgstr ""
 
 #. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Show for 30 seconds"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Show more"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__sign_ids
+msgid "Sign"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+msgid "Sign here with your finger"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "Sign here with your finger."
+msgstr ""
+
+#. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/controllers/papers.py:0
 msgid "Sign your papers"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__signature
+#: model_terms:ir.ui.view,arch_db:pb_joining.sign_page
+msgid "Signature"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+#: code:addons/pb_joining/models/papers.py:0
+msgid "Signed"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "Signed %s"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__signed_attachment_id
+msgid "Signed Attachment"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__signed_on
+msgid "Signed On"
+msgstr ""
+
+#. module: pb_joining
+#: model_terms:ir.ui.view,arch_db:pb_joining.sign_page
+msgid "Signed by"
+msgstr ""
+
+#. module: pb_joining
+#: model_terms:ir.ui.view,arch_db:pb_joining.sign_page
+msgid "Signed on a phone through the joining link sent to"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__signer_name
+msgid "Signer Name"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.actions.report,name:pb_joining.report_sign
+#: model:ir.model,name:pb_joining.model_report_pb_joining_sign_page
+#: model_terms:ir.ui.view,arch_db:pb_joining.sign_page
+msgid "Signing confirmation"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "So the link can reach them."
 msgstr ""
 
 #. module: pb_joining
@@ -523,9 +2065,41 @@ msgid "Start"
 msgstr ""
 
 #. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Starts"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__state
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__state
+msgid "State"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Step"
+msgstr ""
+
+#. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "Still needed"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__submitted_at
+msgid "Submitted At"
 msgstr ""
 
 #. module: pb_joining
@@ -544,6 +2118,20 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "Tax and social insurance"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Team"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "Team defaults"
 msgstr ""
 
 #. module: pb_joining
@@ -571,6 +2159,12 @@ msgid "That did not save. Open the link and try again."
 msgstr ""
 
 #. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "That did not save. Try again."
+msgstr ""
+
+#. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "That file did not upload. Try again, or use a smaller photo."
@@ -578,20 +2172,126 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "The checked details could not be saved. Review the hire and try again."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "The joining does not belong to this approved hire."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "The offer and country of work must match the checked joining."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "The papers could not be filed. Review the hire and try again."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "The papers still need to be filed."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "The signed copy could not be made. Please try again."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "The signed copy is too large to file. Ask HR for a smaller paper."
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.constraint,message:pb_joining.constraint_pb_joining_offer_unique
+msgid "There is already a joining link for this offer."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
 #: code:addons/pb_joining/models/items.py:0
-msgid "There is no room for another file. Replace a file or use a smaller photo."
+msgid ""
+"There is no room for another file. Replace a file or use a smaller photo."
 msgstr ""
 
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
-msgid "These are the numbers %(country)s asks for. Leave any you do not have yet; HR will help you get one."
+msgid ""
+"These are the numbers %(country)s asks for. Leave any you do not have yet; "
+"HR will help you get one."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__state__cancelled
+msgid "They are not joining"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "They do not have one yet"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "They have started. Reminders run by themselves."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "They will add it later"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "This hire has already gone to Add employee."
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.constraint,message:pb_joining.constraint_pb_joining_item_key_unique
+msgid "This item already belongs to the joining."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "This item is no longer available."
 msgstr ""
 
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/board_review.py:0
 msgid "This link is not active"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "This month"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "This number is not available."
 msgstr ""
 
 #. module: pb_joining
@@ -601,15 +2301,92 @@ msgid "This page is only for %(name)s. If that is not you, close it."
 msgstr ""
 
 #. module: pb_joining
+#: model:ir.model.constraint,message:pb_joining.constraint_pb_joining_sign_unique_paper
+msgid "This paper is already on the list."
+msgstr ""
+
+#. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
-msgid "To finish later"
+#: code:addons/pb_joining/models/papers.py:0
+msgid "This paper is no longer waiting for a signature."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "This paper is not waiting for your check."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "This person has already sent their details."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "This person is not waiting for your check."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "This site cannot send email. Pass the link and a code to %s yourself."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "This week"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Time"
 msgstr ""
 
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__state__later
+msgid "To finish later"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "To pass on"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__token
+msgid "Token"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/board_review.py:0
 msgid "Too many tries. Wait 15 minutes, then ask for a new code."
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Undo"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Updated by %(name)s just now."
 msgstr ""
 
 #. module: pb_joining
@@ -620,8 +2397,56 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Use Add as employee on the Joining board."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+msgid "Use the signature I just drew"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__user_agent
+msgid "User Agent"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "Valid until"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__values
+msgid "Values"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Wait a minute before trying again."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Waiting for"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Waiting for approval of the hire"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Waiting for your check"
 msgstr ""
 
 #. module: pb_joining
@@ -633,13 +2458,30 @@ msgstr ""
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
-msgid "We already have your name, email and phone from your application. You will not be asked again."
+msgid ""
+"We already have your name, email and phone from your application. You will "
+"not be asked again."
 msgstr ""
 
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "We sent a 6-digit code to %(email)s. It works for 10 minutes."
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__welcome_started
+msgid "Welcome Started"
 msgstr ""
 
 #. module: pb_joining
@@ -650,20 +2492,63 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/models/messages.py:0
-msgid "Welcome to {{brand}}. A few details before you start"
-msgstr ""
-
-#. module: pb_joining
-#. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "Welcome to %(company)s, %(name)s"
 msgstr ""
 
 #. module: pb_joining
 #. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "Welcome to {{brand}}. A few details before you start"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "What a joiner is asked"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "What should"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "What they sent"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "What to bring"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+#: model:ir.model.fields,field_description:pb_joining.field_res_company__pb_joining_day_bring
+msgid "What to bring on the first day"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "When, where, what to bring"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Where everyone is before day one"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Where from"
 msgstr ""
 
 #. module: pb_joining
@@ -686,6 +2571,13 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/models/papers.py:0
+msgid "Write what needs fixing in 200 characters or fewer."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "You can ask again in {time}"
 msgstr ""
@@ -693,12 +2585,23 @@ msgstr ""
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
-msgid "You can stop at any point and come back with the same link. Have your identity card, tax card and bank details nearby."
+msgid ""
+"You can stop at any point and come back with the same link. Have your "
+"identity card, tax card and bank details nearby."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/models/papers.py:0
+msgid "You cannot open this file."
 msgstr ""
 
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/models/board.py:0
+#: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/models/studio.py:0
 msgid "You cannot open this joining."
 msgstr ""
 
@@ -723,12 +2626,15 @@ msgstr ""
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/models/messages.py:0
-msgid "Your code for {{brand}} is {{code}}. It works for 10 minutes. If you did not ask for it, ignore this message."
+msgid ""
+"Your code for {{brand}} is {{code}}. It works for 10 minutes. If you did not"
+" ask for it, ignore this message."
 msgstr ""
 
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/board_review.py:0
 msgid "Your first day"
 msgstr ""
 
@@ -752,6 +2658,12 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+msgid "Your name as you sign it"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "Your papers"
 msgstr ""
@@ -759,5 +2671,248 @@ msgstr ""
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
-msgid "Your pay is sent here. The name on the account must match your identity card."
+msgid ""
+"Your pay is sent here. The name on the account must match your identity "
+"card."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "at risk of missing first pay"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "at_risk"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "bank"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "bank_later"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "day"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "days"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "done"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "emergency"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "first_day"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "fix?"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "hiring"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "id_number"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "invited"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "is an employee."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "joining in the next 30 days"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "least"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "link to pass on"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "link_copied_at"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "link_mode"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "most"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "new"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "of"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "origin"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "papers"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "people joining"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "risk"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "sent_back_count"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "sign"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "started filling in this week"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "tax"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "thing(s)."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "times"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "to fix"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "waiting for your check"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "week"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "{{code}} is your code"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "{{first_name}}, your details for {{brand}}"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "· last seen"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "· starts"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "· works for 48 hours, once"
 msgstr ""

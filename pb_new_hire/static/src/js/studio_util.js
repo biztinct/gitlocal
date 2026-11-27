@@ -197,6 +197,11 @@ export function docChoiceOf(nh, item) {
     }
     return c;
 }
+/** How a source choice is described in the review, progress tally and record preview. */
+export function docSummaryChoiceOf(nh, item) {
+    const choice = docChoiceOf(nh, item);
+    return item.tallyAs?.[choice] || choice;
+}
 function isEmail(text) {
     return String(text || "").includes("@");
 }
@@ -261,7 +266,7 @@ export function docGapsOf(nh) {
 export function docTallyOf(nh) {
     const out = { ask: 0, have: 0, skip: 0, later: 0 };
     for (const item of docItemsOf(nh)) {
-        const c = docChoiceOf(nh, item);
+        const c = docSummaryChoiceOf(nh, item);
         if (c === "number") {
             out.ask += 1;
             out.have += 1;

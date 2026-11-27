@@ -51,7 +51,9 @@ msgstr "Tentang Anda"
 
 #. module: pb_joining
 #. odoo-python
+#. odoo-javascript
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
 msgid "Add a paper"
 msgstr "Tambah dokumen"
 
@@ -191,6 +193,7 @@ msgstr "Kode ditampilkan oleh %(name)s"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/controllers/papers.py:0
 msgid "Continue"
 msgstr "Lanjutkan"
 
@@ -403,6 +406,7 @@ msgstr "Dibuka dengan kode Anda"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/models/items.py:0
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__paper_id
 msgid "Paper"
 msgstr "Dokumen"
 
@@ -433,6 +437,8 @@ msgstr "Harap tunggu sebelum meminta kode baru."
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/controllers/papers.py:0
+#: code:addons/pb_joining/models/papers.py:0
 msgid "Read and sign"
 msgstr "Baca dan tanda tangani"
 
@@ -460,6 +466,7 @@ msgstr "Simpan dan lanjutkan"
 #: code:addons/pb_joining/controllers/joining.py:0
 #: code:addons/pb_joining/static/src/js/joining_board.js:0
 #: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__state__saved
+#: code:addons/pb_joining/static/src/js/papers.js:0
 msgid "Saved"
 msgstr "Tersimpan"
 
@@ -525,6 +532,7 @@ msgstr "Tampilkan kolom untuk negara ini"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/controllers/papers.py:0
 msgid "Sign your papers"
 msgstr "Tandatangani dokumen Anda"
 
@@ -715,6 +723,7 @@ msgstr "Anda dapat berhenti kapan saja dan kembali melalui tautan yang sama. Sia
 #. odoo-python
 #: code:addons/pb_joining/models/board.py:0
 #: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/models/studio.py:0
 msgid "You cannot open this joining."
 msgstr "Anda tidak dapat membuka rincian orang ini."
 
@@ -899,6 +908,7 @@ msgstr "Berisiko: %(missing)s, tersisa %(days)s hari"
 
 #. module: pb_joining
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__attachment_ids
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__attachment_id
 msgid "Attachment"
 msgstr "Lampiran"
 
@@ -1051,6 +1061,8 @@ msgstr "Perusahaan"
 #. module: pb_joining
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining__company_id
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__company_id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__company_id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__company_id
 msgid "Company"
 msgstr "Perusahaan"
 
@@ -1083,12 +1095,16 @@ msgstr "Negara kerja"
 #. module: pb_joining
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining__create_uid
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__create_uid
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__create_uid
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__create_uid
 msgid "Created by"
 msgstr "Dibuat oleh"
 
 #. module: pb_joining
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining__create_date
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__create_date
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__create_date
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__create_date
 msgid "Created on"
 msgstr "Dibuat pada"
 
@@ -1146,6 +1162,12 @@ msgstr "Data sebelum mulai bekerja"
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_board__display_name
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__display_name
 #: model:ir.model.fields,field_description:pb_joining.field_res_company__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_new_hire__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_new_hire_legs__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_newhire_proposal__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_report_pb_joining_sign_page__display_name
 msgid "Display Name"
 msgstr "Nama tampilan"
 
@@ -1250,8 +1272,10 @@ msgstr "Ikon, misalnya fa-tasks"
 
 #. module: pb_joining
 #. odoo-python
+#. odoo-javascript
 #: code:addons/pb_joining/models/board_review.py:0
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__from_hiring
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
 msgid "From Hiring"
 msgstr "Dari Rekrutmen"
 
@@ -1309,6 +1333,12 @@ msgstr "Waktu pengingat untuk HR"
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_board__id
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__id
 #: model:ir.model.fields,field_description:pb_joining.field_res_company__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_new_hire__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_new_hire_legs__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_newhire_proposal__id
+#: model:ir.model.fields,field_description:pb_joining.field_report_pb_joining_sign_page__id
 msgid "ID"
 msgstr "ID"
 
@@ -1400,6 +1430,7 @@ msgstr "Jabatan"
 #: model:ir.model,name:pb_joining.model_pb_joining
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__joining_id
 #: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__need__joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__joining_id
 msgid "Joining"
 msgstr "Bergabung"
 
@@ -1455,12 +1486,16 @@ msgstr "Terakhir dilihat"
 #. module: pb_joining
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining__write_uid
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__write_uid
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__write_uid
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__write_uid
 msgid "Last Updated by"
 msgstr "Terakhir diperbarui oleh"
 
 #. module: pb_joining
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining__write_date
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__write_date
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__write_date
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__write_date
 msgid "Last Updated on"
 msgstr "Terakhir diperbarui pada"
 
@@ -1562,6 +1597,7 @@ msgstr "Tenggat aktivitas saya"
 
 #. module: pb_joining
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining__name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__name
 msgid "Name"
 msgstr "Nama"
 
@@ -1689,6 +1725,7 @@ msgstr "Dibuka"
 
 #. module: pb_joining
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining__opened_at
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__opened_at
 msgid "Opened At"
 msgstr "Waktu dibuka"
 
@@ -1717,6 +1754,7 @@ msgstr "Teruskan"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/models/papers.py:0
 msgid "Pass on the request to fix details to %(name)s"
 msgstr "Teruskan permintaan perbaikan data kepada %(name)s"
 
@@ -1837,6 +1875,7 @@ msgstr "Penanggung jawab"
 
 #. module: pb_joining
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__return_note
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__return_note
 msgid "Return Note"
 msgstr "Catatan perbaikan"
 
@@ -2200,12 +2239,14 @@ msgstr "Asal"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/models/papers.py:0
 msgid "Write what needs fixing in 200 characters or fewer."
 msgstr "Tuliskan yang perlu diperbaiki dalam maksimal 200 karakter."
 
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/models/papers.py:0
 msgid "You cannot open this file."
 msgstr "Anda tidak dapat membuka berkas ini."
 
@@ -2431,3 +2472,449 @@ msgstr "· mulai"
 #: code:addons/pb_joining/static/src/xml/joining_board.xml:0
 msgid "· works for 48 hours, once"
 msgstr "· berlaku sekali selama 48 jam"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid ""
+"%s's details, papers and signed papers came across from the Joining board."
+msgstr ""
+"Data, dokumen, dan berkas yang telah ditandatangani %s sudah disalin dari "
+"papan Persiapan bergabung."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "A signed copy is missing."
+msgstr "Satu salinan bertanda tangan belum tersedia."
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__active
+msgid "Active"
+msgstr "Aktif"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "Checklist is ready"
+msgstr "Daftar tugas sudah siap"
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+#: code:addons/pb_joining/static/src/js/papers.js:0
+msgid "Choose a PDF up to 5 MB."
+msgstr "Pilih PDF berukuran paling besar 5 MB."
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+#: code:addons/pb_joining/static/src/js/papers.js:0
+msgid "Choose a readable PDF up to 5 MB."
+msgstr "Pilih PDF yang dapat dibuka, paling besar 5 MB."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+msgid "Clear"
+msgstr "Hapus pilihan"
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_joining_paper
+msgid "Company paper to sign"
+msgstr "Dokumen perusahaan untuk ditandatangani"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__country_code
+msgid "Country Code"
+msgstr "Kode negara"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Details %(percent)s%% in"
+msgstr "%(percent)s%% data sudah diterima"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Details %(percent)s%% in · checked"
+msgstr "%(percent)s%% data sudah diterima · sudah diperiksa"
+
+#. module: pb_joining
+#: model_terms:ir.ui.view,arch_db:pb_joining.sign_page
+msgid "Document SHA-256"
+msgstr "SHA-256 dokumen"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Every country"
+msgstr "Semua negara"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Finish checking the joining before adding the employee."
+msgstr ""
+"Selesaikan pemeriksaan data calon karyawan sebelum menambahkannya sebagai "
+"karyawan."
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "From %s"
+msgstr "Dari %s"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "From %s, checked by you"
+msgstr "Dari %s, sudah Anda periksa"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "From the signed offer"
+msgstr "Dari surat penawaran yang sudah ditandatangani"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "Give the paper a name and choose a country of work."
+msgstr "Beri nama dokumen dan pilih negara tempat bekerja."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+msgid "I have read %(paper)s and I agree to it."
+msgstr "Saya telah membaca %(paper)s dan menyetujui isinya."
+
+#. module: pb_joining
+#: model:pb.employee.document.category,name:pb_joining.cat_permanent_id
+msgid "Identity card — no end date"
+msgstr "Kartu identitas — berlaku seumur hidup"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__ip
+msgid "Ip"
+msgstr "Alamat IP"
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_joining_sign
+msgid "Joining paper signature"
+msgstr "Tanda tangan pada dokumen persiapan bergabung"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "Keep unsent hire"
+msgstr "Simpan draf perekrutan"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "Keep your unsent hire?"
+msgstr "Simpan draf perekrutan yang belum dikirim?"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Link not opened"
+msgstr "Tautan belum dibuka"
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_new_hire
+msgid "New hire studio"
+msgstr "Studio karyawan baru"
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_new_hire_legs
+msgid "New hire studio: the welcome after approval"
+msgstr "Studio karyawan baru: sambutan setelah persetujuan"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "On"
+msgstr "Nyala"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Only accepted items can come across from Joining."
+msgstr ""
+"Hanya bagian yang sudah diterima yang bisa disalin dari papan Persiapan "
+"bergabung."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "Open joining"
+msgstr "Buka data calon karyawan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+msgid "Open the paper"
+msgstr "Buka dokumen"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "Open the paper, agree to it and enter your name."
+msgstr "Buka dokumen, nyatakan persetujuan, lalu masukkan nama Anda."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "Open this joining in Add employee or carry on with your unsent hire."
+msgstr "Buka data ini di Tambah karyawan atau lanjutkan draf perekrutan Anda."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+msgid "Open this page in your phone's browser to sign."
+msgstr "Buka halaman ini di peramban ponsel Anda untuk menandatangani."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Order"
+msgstr "Urutan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__original_id
+msgid "Original"
+msgstr "Berkas asli"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "PDF"
+msgstr "PDF"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__paper_name
+msgid "Paper Name"
+msgstr "Nama dokumen"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__paper_sha256
+msgid "Paper Sha256"
+msgstr "SHA-256 dokumen"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Paper name"
+msgstr "Nama dokumen"
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_newhire_proposal
+msgid "Proposed new hire"
+msgstr "Usulan karyawan baru"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Ready: %s."
+msgstr "Siap: %s."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "Save up to 100 papers at once."
+msgstr "Anda dapat menyimpan hingga 100 dokumen sekaligus."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Sent by %(first)s on %(day)s · accepted by %(hr)s"
+msgstr "Dikirim oleh %(first)s pada %(day)s · diterima oleh %(hr)s"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__sequence
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__sequence
+msgid "Sequence"
+msgstr "Urutan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__sign_ids
+msgid "Sign"
+msgstr "Tanda"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+msgid "Sign here with your finger"
+msgstr "Tanda tangan di sini dengan jari Anda"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "Sign here with your finger."
+msgstr "Tanda tangan di sini dengan jari Anda."
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__signature
+#: model_terms:ir.ui.view,arch_db:pb_joining.sign_page
+msgid "Signature"
+msgstr "Tanda tangan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+#: code:addons/pb_joining/models/papers.py:0
+msgid "Signed"
+msgstr "Sudah ditandatangani"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "Signed %s"
+msgstr "Ditandatangani %s"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__signed_attachment_id
+msgid "Signed Attachment"
+msgstr "Lampiran bertanda tangan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__signed_on
+msgid "Signed On"
+msgstr "Waktu penandatanganan"
+
+#. module: pb_joining
+#: model_terms:ir.ui.view,arch_db:pb_joining.sign_page
+msgid "Signed by"
+msgstr "Ditandatangani oleh"
+
+#. module: pb_joining
+#: model_terms:ir.ui.view,arch_db:pb_joining.sign_page
+msgid "Signed on a phone through the joining link sent to"
+msgstr ""
+"Ditandatangani di ponsel melalui tautan persiapan bergabung yang dikirim ke"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__signer_name
+msgid "Signer Name"
+msgstr "Nama penanda tangan"
+
+#. module: pb_joining
+#: model:ir.actions.report,name:pb_joining.report_sign
+#: model:ir.model,name:pb_joining.model_report_pb_joining_sign_page
+#: model_terms:ir.ui.view,arch_db:pb_joining.sign_page
+msgid "Signing confirmation"
+msgstr "Konfirmasi penandatanganan"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "Team defaults"
+msgstr "Pengaturan bawaan tim"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "The checked details could not be saved. Review the hire and try again."
+msgstr ""
+"Data yang sudah diperiksa belum bisa disimpan. Tinjau perekrutan ini lalu "
+"coba lagi."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "The joining does not belong to this approved hire."
+msgstr ""
+"Data calon karyawan ini tidak terkait dengan perekrutan yang disetujui."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "The offer and country of work must match the checked joining."
+msgstr ""
+"Penawaran dan negara tempat bekerja harus sesuai dengan data calon karyawan "
+"yang telah diperiksa."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "The papers could not be filed. Review the hire and try again."
+msgstr "Dokumen belum bisa diarsipkan. Tinjau perekrutan ini lalu coba lagi."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "The papers still need to be filed."
+msgstr "Masih ada dokumen yang perlu diarsipkan."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "The signed copy could not be made. Please try again."
+msgstr "Salinan bertanda tangan belum bisa dibuat. Silakan coba lagi."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "The signed copy is too large to file. Ask HR for a smaller paper."
+msgstr ""
+"Salinan bertanda tangan terlalu besar untuk diarsipkan. Minta dokumen yang "
+"lebih kecil dari HR."
+
+#. module: pb_joining
+#: model:ir.model.constraint,message:pb_joining.constraint_pb_joining_sign_unique_paper
+msgid "This paper is already on the list."
+msgstr "Dokumen ini sudah ada dalam daftar."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "This paper is no longer waiting for a signature."
+msgstr "Dokumen ini sudah tidak menunggu tanda tangan."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "This paper is not waiting for your check."
+msgstr "Dokumen ini tidak sedang menunggu pemeriksaan Anda."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Use Add as employee on the Joining board."
+msgstr "Gunakan Tambahkan sebagai karyawan di papan Persiapan bergabung."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+msgid "Use the signature I just drew"
+msgstr "Gunakan tanda tangan yang baru saya buat"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__user_agent
+msgid "User Agent"
+msgstr "Informasi peramban"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+msgid "Your name as you sign it"
+msgstr "Nama yang Anda gunakan untuk menandatangani"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid ""
+"Ask an HR colleague who can open this signed offer in Hiring to add the "
+"employee."
+msgstr ""
+"Minta rekan HR yang dapat membuka penawaran bertanda tangan ini di "
+"Perekrutan untuk menambahkan karyawan."

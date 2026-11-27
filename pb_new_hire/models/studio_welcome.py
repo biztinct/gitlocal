@@ -37,7 +37,7 @@ from odoo.addons.pb_probation.models.probation_common import (
     P_AUTO_TRIGGER, P_LEAD_DAYS, flag, number,
 )
 
-from .studio import DRAFT_KEYS, MAX_CLOCK, MAX_EQUIPMENT, MAX_OWN, MAX_WEEKS, _int
+from .studio import MAX_CLOCK, MAX_EQUIPMENT, MAX_OWN, MAX_WEEKS, _int
 
 _logger = logging.getLogger(__name__)
 
@@ -307,7 +307,7 @@ class PbNewHireWelcome(models.AbstractModel):
     # ===================================================== step 6
     @api.model
     def _clean(self, draft):
-        return {k: v for k, v in (draft or {}).items() if k in DRAFT_KEYS} \
+        return {k: v for k, v in (draft or {}).items() if k in self._draft_keys()} \
             if isinstance(draft, dict) else {}
 
     @api.model

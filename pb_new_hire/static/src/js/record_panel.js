@@ -7,7 +7,7 @@
  */
 import { Component, useEffect, useRef, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
-import { icon, initials, fmtDay, money, weekNameOf, docItemsOf, docChoiceOf, docTallyOf } from "./studio_util";
+import { icon, initials, fmtDay, money, weekNameOf, docItemsOf, docSummaryChoiceOf, docTallyOf } from "./studio_util";
 
 export class RecordPanel extends Component {
     static template = "pb_new_hire.RecordPanel";
@@ -83,7 +83,7 @@ export class RecordPanel extends Component {
         if (!item) {
             return { cls: "is-w", icon: "shield", text: _t("Bank account: choose who gives it in step 5.") };
         }
-        const c = docChoiceOf(this.nh, item);
+        const c = docSummaryChoiceOf(this.nh, item);
         if (c === "have") {
             return { cls: "is-w", icon: "shield", text: _t("Bank account: waiting for a second approval after sending") };
         }

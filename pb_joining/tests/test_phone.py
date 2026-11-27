@@ -19,6 +19,30 @@ def person(env, country='VN'):
         'first_day': fields.Date.today() + timedelta(days=5)})
 
 
+
+def catalogue_example(spec, country, name):
+    tax = {'VN': '0123456789', 'ID': '012345678901234', 'IN': 'ABCDE1234F'}
+    key = spec['key']
+    values = {}
+    for box in spec['fields']:
+        if box['options'] and box['kind'] in ('select', 'bank'):
+            values[box['name']] = box['options'][0]['value']
+        elif box['kind'] == 'date':
+            values[box['name']] = '2000-01-02'
+        else:
+            values[box['name']] = '2025550119'
+    if key == 'tax_number':
+        values[spec['fields'][0]['name']] = tax[country]
+    if key == 'bank':
+        values.update(bank_format=country, bank_name='DEMO Bank', account_number='12345678901',
+                      account_holder=name, bank_code={'IN':'ABCD0123456','SG':'1234','ID':'123'}.get(country,''))
+        if country == 'IN':
+            values['branch_code'] = 'ABCD0123456'
+        else:
+            values.pop('branch_code', None)
+    return values
+
+
 @tagged(*TAG)
 class TestOffer(JoiningCase):
     def setUp(self):
@@ -186,7 +210,6 @@ class TestSections(TransactionCase):
         self.assertEqual(self.j._verify(code), 'expired')
 
     def test_t15_catalogue_round_trip(self):
-        tax = {'VN': '0123456789', 'ID': '012345678901234', 'IN': 'ABCDE1234F'}
         for country in ('VN', 'ID', 'IN', 'SG'):
             j = person(self.env, country)
             studio = self.env['pb.new.hire'].sudo().with_company(j.company_id)
@@ -195,23 +218,7 @@ class TestSections(TransactionCase):
             for spec in source:
                 key = spec['key']
                 row = j.item_ids.filtered(lambda r: r.key == key)
-                values = {}
-                for box in spec['fields']:
-                    if box['options'] and box['kind'] in ('select', 'bank'):
-                        values[box['name']] = box['options'][0]['value']
-                    elif box['kind'] == 'date':
-                        values[box['name']] = '2000-01-02'
-                    else:
-                        values[box['name']] = '2025550119'
-                if key == 'tax_number':
-                    values[spec['fields'][0]['name']] = tax[country]
-                if key == 'bank':
-                    values.update(bank_format=country, bank_name='DEMO Bank', account_number='12345678901',
-                                  account_holder=j.name, bank_code={'IN':'ABCD0123456','SG':'1234','ID':'123'}.get(country,''))
-                    if country == 'IN':
-                        values['branch_code'] = 'ABCD0123456'
-                    else:
-                        values.pop('branch_code', None)
+                values = catalogue_example(spec, country, j.name)
                 files = []
                 if spec['upload']:
                     row._upload(spec, 'demo.pdf', b'%PDF-1.4\n1 0 obj\n<< >>\nendobj\n%%EOF')

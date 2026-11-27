@@ -1,0 +1,19 @@
+<templates xml:space="preserve">
+  <t t-name="pb_joining.StudioRow" t-inherit="pb_new_hire.DocRow" t-inherit-mode="extension">
+    <xpath expr="//div[hasclass('pbnh-row-t')]" position="inside">
+      <div t-if="item.joining and choice(item) === 'joining'" class="pbnh-col">
+        <span class="pbnh-chip pbnh-chip--teal" t-esc="item.joining.label"/>
+        <small t-foreach="item.joining.fields" t-as="f" t-key="f.key"><t t-esc="f.label"/> · <t t-esc="f.value"/></small>
+        <small t-foreach="item.joining.files" t-as="file" t-key="file_index" t-esc="file"/>
+      </div>
+    </xpath>
+  </t>
+  <t t-name="pb_joining.OfferChip" t-inherit="pb_new_hire.StepWho" t-inherit-mode="extension">
+    <xpath expr="//div[hasclass('pbnh-cand-chips')]" position="inside"><span t-if="row.joining" t-attf-class="pbnh-chip {{row.joining.checked ? 'pbnh-chip--teal' : row.joining.opened ? 'pbnh-chip--warn' : ''}}" t-esc="row.joining.label"/></xpath>
+  </t>
+  <t t-name="pb_joining.JoiningDone" t-inherit="pb_new_hire.StepCheck" t-inherit-mode="extension">
+    <xpath expr="//p[@t-esc='doneLine']" position="after">
+      <p t-if="result.applied" t-foreach="legs.filter(leg => leg.key === 'joining_close' and leg.ok)" t-as="leg" t-key="leg.key" t-esc="leg.message"/>
+    </xpath>
+  </t>
+</templates>

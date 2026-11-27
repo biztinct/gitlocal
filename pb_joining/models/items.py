@@ -133,7 +133,7 @@ class JoiningItem(models.Model):
                 raise UserError(_('Add the date the paper is valid until.'))
             if dates['expiry_date'] and dates['expiry_date'] < fields.Date.today():
                 raise UserError(_('That date has passed. Add a paper that is still valid.'))
-        self.write(dict(dates, values=clean, draft=False, none_fields=none, state='later' if none and not clean else 'saved',
+        self.write(dict(dates, values=clean, draft=False, none_fields=none, state='later' if not clean and (none or self.key == 'insurance') else 'saved',
                         return_note=False, decided_on=False, decided_by_id=False))
 
     def _upload(self, spec, name, raw, replace=0):

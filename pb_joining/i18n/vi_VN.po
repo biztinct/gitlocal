@@ -51,7 +51,9 @@ msgstr "Về bạn"
 
 #. module: pb_joining
 #. odoo-python
+#. odoo-javascript
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
 msgid "Add a paper"
 msgstr "Thêm giấy tờ"
 
@@ -191,6 +193,7 @@ msgstr "%(name)s đã xem mã"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/controllers/papers.py:0
 msgid "Continue"
 msgstr "Tiếp tục"
 
@@ -403,6 +406,7 @@ msgstr "Đã mở bằng mã của bạn"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/models/items.py:0
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__paper_id
 msgid "Paper"
 msgstr "Giấy tờ"
 
@@ -433,6 +437,8 @@ msgstr "Vui lòng đợi trước khi yêu cầu mã mới."
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/controllers/papers.py:0
+#: code:addons/pb_joining/models/papers.py:0
 msgid "Read and sign"
 msgstr "Đọc và ký"
 
@@ -460,6 +466,7 @@ msgstr "Lưu và tiếp tục"
 #: code:addons/pb_joining/controllers/joining.py:0
 #: code:addons/pb_joining/static/src/js/joining_board.js:0
 #: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__state__saved
+#: code:addons/pb_joining/static/src/js/papers.js:0
 msgid "Saved"
 msgstr "Đã lưu"
 
@@ -525,6 +532,7 @@ msgstr "Hiện các mục cho quốc gia này"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/controllers/papers.py:0
 msgid "Sign your papers"
 msgstr "Ký giấy tờ của bạn"
 
@@ -715,6 +723,7 @@ msgstr "Bạn có thể dừng bất cứ lúc nào và quay lại bằng liên 
 #. odoo-python
 #: code:addons/pb_joining/models/board.py:0
 #: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/models/studio.py:0
 msgid "You cannot open this joining."
 msgstr "Bạn không thể mở hồ sơ nhận việc này."
 
@@ -900,6 +909,7 @@ msgstr "Có nguy cơ: %(missing)s, còn %(days)s ngày"
 
 #. module: pb_joining
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__attachment_ids
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__attachment_id
 msgid "Attachment"
 msgstr "Tệp đính kèm"
 
@@ -1052,6 +1062,8 @@ msgstr "Các công ty"
 #. module: pb_joining
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining__company_id
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__company_id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__company_id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__company_id
 msgid "Company"
 msgstr "Công ty"
 
@@ -1084,12 +1096,16 @@ msgstr "Quốc gia làm việc"
 #. module: pb_joining
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining__create_uid
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__create_uid
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__create_uid
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__create_uid
 msgid "Created by"
 msgstr "Người tạo"
 
 #. module: pb_joining
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining__create_date
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__create_date
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__create_date
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__create_date
 msgid "Created on"
 msgstr "Ngày tạo"
 
@@ -1147,6 +1163,12 @@ msgstr "Thông tin trước khi nhận việc"
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_board__display_name
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__display_name
 #: model:ir.model.fields,field_description:pb_joining.field_res_company__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_new_hire__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_new_hire_legs__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_newhire_proposal__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_report_pb_joining_sign_page__display_name
 msgid "Display Name"
 msgstr "Tên hiển thị"
 
@@ -1251,8 +1273,10 @@ msgstr "Biểu tượng Font Awesome, ví dụ fa-tasks"
 
 #. module: pb_joining
 #. odoo-python
+#. odoo-javascript
 #: code:addons/pb_joining/models/board_review.py:0
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__from_hiring
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
 msgid "From Hiring"
 msgstr "Từ Tuyển dụng"
 
@@ -1311,6 +1335,12 @@ msgstr "Thời điểm nhắc nhân sự"
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_board__id
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__id
 #: model:ir.model.fields,field_description:pb_joining.field_res_company__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_new_hire__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_new_hire_legs__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_newhire_proposal__id
+#: model:ir.model.fields,field_description:pb_joining.field_report_pb_joining_sign_page__id
 msgid "ID"
 msgstr "ID"
 
@@ -1402,6 +1432,7 @@ msgstr "Chức danh"
 #: model:ir.model,name:pb_joining.model_pb_joining
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__joining_id
 #: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__need__joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__joining_id
 msgid "Joining"
 msgstr "Gia nhập"
 
@@ -1457,12 +1488,16 @@ msgstr "Lần xem gần nhất"
 #. module: pb_joining
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining__write_uid
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__write_uid
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__write_uid
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__write_uid
 msgid "Last Updated by"
 msgstr "Người cập nhật cuối"
 
 #. module: pb_joining
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining__write_date
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__write_date
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__write_date
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__write_date
 msgid "Last Updated on"
 msgstr "Cập nhật lần cuối"
 
@@ -1564,6 +1599,7 @@ msgstr "Hạn hoạt động của tôi"
 
 #. module: pb_joining
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining__name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__name
 msgid "Name"
 msgstr "Tên"
 
@@ -1691,6 +1727,7 @@ msgstr "Ngày mở"
 
 #. module: pb_joining
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining__opened_at
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__opened_at
 msgid "Opened At"
 msgstr "Thời điểm mở"
 
@@ -1719,6 +1756,7 @@ msgstr "Chuyển tiếp"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/models/papers.py:0
 msgid "Pass on the request to fix details to %(name)s"
 msgstr "Chuyển yêu cầu sửa thông tin cho %(name)s"
 
@@ -1839,6 +1877,7 @@ msgstr "Người phụ trách"
 
 #. module: pb_joining
 #: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__return_note
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__return_note
 msgid "Return Note"
 msgstr "Ghi chú cần sửa"
 
@@ -2201,12 +2240,14 @@ msgstr "Nguồn"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/models/papers.py:0
 msgid "Write what needs fixing in 200 characters or fewer."
 msgstr "Nhập nội dung cần sửa trong tối đa 200 ký tự."
 
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/models/papers.py:0
 msgid "You cannot open this file."
 msgstr "Bạn không thể mở tệp này."
 
@@ -2432,3 +2473,444 @@ msgstr "· bắt đầu"
 #: code:addons/pb_joining/static/src/xml/joining_board.xml:0
 msgid "· works for 48 hours, once"
 msgstr "· dùng một lần trong 48 giờ"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid ""
+"%s's details, papers and signed papers came across from the Joining board."
+msgstr ""
+"Thông tin, giấy tờ và tài liệu đã ký của %s đã được chuyển từ bảng Tiếp "
+"nhận."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "A signed copy is missing."
+msgstr "Thiếu một bản đã ký."
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__active
+msgid "Active"
+msgstr "Đang hoạt động"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "Checklist is ready"
+msgstr "Danh sách việc đã sẵn sàng"
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+#: code:addons/pb_joining/static/src/js/papers.js:0
+msgid "Choose a PDF up to 5 MB."
+msgstr "Chọn tệp PDF tối đa 5 MB."
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+#: code:addons/pb_joining/static/src/js/papers.js:0
+msgid "Choose a readable PDF up to 5 MB."
+msgstr "Chọn tệp PDF có thể mở được, tối đa 5 MB."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+msgid "Clear"
+msgstr "Bỏ chọn"
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_joining_paper
+msgid "Company paper to sign"
+msgstr "Tài liệu của công ty cần ký"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__country_code
+msgid "Country Code"
+msgstr "Mã quốc gia"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Details %(percent)s%% in"
+msgstr "Đã gửi %(percent)s%% thông tin"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Details %(percent)s%% in · checked"
+msgstr "Đã gửi %(percent)s%% thông tin · đã kiểm tra"
+
+#. module: pb_joining
+#: model_terms:ir.ui.view,arch_db:pb_joining.sign_page
+msgid "Document SHA-256"
+msgstr "Mã SHA-256 của tài liệu"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Every country"
+msgstr "Tất cả quốc gia"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Finish checking the joining before adding the employee."
+msgstr "Kiểm tra xong hồ sơ tiếp nhận trước khi thêm nhân viên."
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "From %s"
+msgstr "Từ %s"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "From %s, checked by you"
+msgstr "Do %s gửi, bạn đã kiểm tra"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "From the signed offer"
+msgstr "Từ thư mời làm việc đã ký"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "Give the paper a name and choose a country of work."
+msgstr "Đặt tên tài liệu và chọn quốc gia làm việc."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+msgid "I have read %(paper)s and I agree to it."
+msgstr "Tôi đã đọc và đồng ý với nội dung của %(paper)s."
+
+#. module: pb_joining
+#: model:pb.employee.document.category,name:pb_joining.cat_permanent_id
+msgid "Identity card — no end date"
+msgstr "Giấy tờ tùy thân — không thời hạn"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__ip
+msgid "Ip"
+msgstr "Địa chỉ IP"
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_joining_sign
+msgid "Joining paper signature"
+msgstr "Chữ ký trên tài liệu tiếp nhận"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "Keep unsent hire"
+msgstr "Giữ hồ sơ chưa gửi"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "Keep your unsent hire?"
+msgstr "Giữ hồ sơ tuyển dụng chưa gửi?"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Link not opened"
+msgstr "Liên kết chưa được mở"
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_new_hire
+msgid "New hire studio"
+msgstr "Studio thêm nhân viên mới"
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_new_hire_legs
+msgid "New hire studio: the welcome after approval"
+msgstr "Studio thêm nhân viên mới: chào đón sau khi duyệt"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "On"
+msgstr "Vào ngày"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Only accepted items can come across from Joining."
+msgstr "Chỉ những mục đã được chấp nhận mới có thể chuyển từ bảng Tiếp nhận."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "Open joining"
+msgstr "Mở hồ sơ tiếp nhận"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+msgid "Open the paper"
+msgstr "Mở tài liệu"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "Open the paper, agree to it and enter your name."
+msgstr "Mở tài liệu, xác nhận đồng ý rồi nhập tên của bạn."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "Open this joining in Add employee or carry on with your unsent hire."
+msgstr ""
+"Mở hồ sơ tiếp nhận này trong màn hình Thêm nhân viên hoặc tiếp tục với hồ sơ"
+" chưa gửi."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+msgid "Open this page in your phone's browser to sign."
+msgstr "Mở trang này trong trình duyệt trên điện thoại để ký."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Order"
+msgstr "Đơn hàng"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__original_id
+msgid "Original"
+msgstr "Bản gốc"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "PDF"
+msgstr "PDF"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__paper_name
+msgid "Paper Name"
+msgstr "Tên tài liệu"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__paper_sha256
+msgid "Paper Sha256"
+msgstr "Mã SHA-256 của tài liệu"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Paper name"
+msgstr "Tên tài liệu"
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_newhire_proposal
+msgid "Proposed new hire"
+msgstr "Nhân viên mới đề xuất"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Ready: %s."
+msgstr "Đã sẵn sàng: %s."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "Save up to 100 papers at once."
+msgstr "Mỗi lần có thể lưu tối đa 100 tài liệu."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Sent by %(first)s on %(day)s · accepted by %(hr)s"
+msgstr "%(first)s gửi ngày %(day)s · %(hr)s đã chấp nhận"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_paper__sequence
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__sign_ids
+msgid "Sign"
+msgstr "Dấu"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+msgid "Sign here with your finger"
+msgstr "Dùng ngón tay ký vào đây"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "Sign here with your finger."
+msgstr "Dùng ngón tay ký vào đây."
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__signature
+#: model_terms:ir.ui.view,arch_db:pb_joining.sign_page
+msgid "Signature"
+msgstr "Chữ ký"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+#: code:addons/pb_joining/models/papers.py:0
+msgid "Signed"
+msgstr "Đã ký"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "Signed %s"
+msgstr "Đã ký %s"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__signed_attachment_id
+msgid "Signed Attachment"
+msgstr "Tệp đính kèm đã ký"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__signed_on
+msgid "Signed On"
+msgstr "Thời điểm ký"
+
+#. module: pb_joining
+#: model_terms:ir.ui.view,arch_db:pb_joining.sign_page
+msgid "Signed by"
+msgstr "Người ký"
+
+#. module: pb_joining
+#: model_terms:ir.ui.view,arch_db:pb_joining.sign_page
+msgid "Signed on a phone through the joining link sent to"
+msgstr "Đã ký trên điện thoại qua liên kết tiếp nhận gửi đến"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__signer_name
+msgid "Signer Name"
+msgstr "Tên người ký"
+
+#. module: pb_joining
+#: model:ir.actions.report,name:pb_joining.report_sign
+#: model:ir.model,name:pb_joining.model_report_pb_joining_sign_page
+#: model_terms:ir.ui.view,arch_db:pb_joining.sign_page
+msgid "Signing confirmation"
+msgstr "Xác nhận chữ ký"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/studio_joining.js:0
+msgid "Team defaults"
+msgstr "Thiết lập mặc định của bộ phận"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "The checked details could not be saved. Review the hire and try again."
+msgstr ""
+"Không thể lưu thông tin đã kiểm tra. Xem lại hồ sơ tuyển dụng rồi thử lại."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "The joining does not belong to this approved hire."
+msgstr "Hồ sơ tiếp nhận này không thuộc hồ sơ tuyển dụng đã được duyệt."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "The offer and country of work must match the checked joining."
+msgstr ""
+"Thư mời làm việc và quốc gia làm việc phải khớp với hồ sơ tiếp nhận đã kiểm "
+"tra."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "The papers could not be filed. Review the hire and try again."
+msgstr ""
+"Không thể lưu giấy tờ vào hồ sơ. Xem lại hồ sơ tuyển dụng rồi thử lại."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "The papers still need to be filed."
+msgstr "Vẫn còn giấy tờ cần lưu vào hồ sơ."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "The signed copy could not be made. Please try again."
+msgstr "Không thể tạo bản đã ký. Vui lòng thử lại."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "The signed copy is too large to file. Ask HR for a smaller paper."
+msgstr ""
+"Bản đã ký quá lớn để lưu vào hồ sơ. Hãy nhờ nhân sự gửi tài liệu nhỏ hơn."
+
+#. module: pb_joining
+#: model:ir.model.constraint,message:pb_joining.constraint_pb_joining_sign_unique_paper
+msgid "This paper is already on the list."
+msgstr "Tài liệu này đã có trong danh sách."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "This paper is no longer waiting for a signature."
+msgstr "Tài liệu này không còn chờ ký."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/papers.py:0
+msgid "This paper is not waiting for your check."
+msgstr "Tài liệu này hiện không chờ bạn kiểm tra."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid "Use Add as employee on the Joining board."
+msgstr "Chọn Thêm làm nhân viên trên bảng Tiếp nhận."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+msgid "Use the signature I just drew"
+msgstr "Dùng lại chữ ký tôi vừa viết"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_sign__user_agent
+msgid "User Agent"
+msgstr "Thông tin trình duyệt"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/papers.py:0
+msgid "Your name as you sign it"
+msgstr "Tên của bạn khi ký"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/studio.py:0
+msgid ""
+"Ask an HR colleague who can open this signed offer in Hiring to add the "
+"employee."
+msgstr ""
+"Hãy nhờ một đồng nghiệp nhân sự có quyền mở thư mời làm việc đã ký này trong"
+" mục Tuyển dụng thêm nhân viên."

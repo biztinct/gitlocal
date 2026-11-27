@@ -63,3 +63,6 @@
   .pbjp-digits input { text-align: center; padding: 6px 0; font-size: 22px; }
   @media (prefers-reduced-motion: no-preference) { button, a { transition: background-color .15s, color .15s; } }
 }
+
+.pbjp .pbjp-sign canvas { background:white; width:100%; height:180px; touch-action:none; border:1px dashed #b4b0cf; border-radius:12px; }
+.pbjp .pbjp-sign { display:grid; gap:12px; }

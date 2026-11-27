@@ -148,7 +148,7 @@ class JoiningReviewBoard(models.AbstractModel):
             chip('amber','send',_('Link to pass on'))
         if not j.opened_at:
             chip('amber','clock',_('Not opened yet'))
-        if j.proposal_id:
+        if j.proposal_id and j.state != 'added':
             chip('amber','clock',_('Waiting for approval of the hire'))
         elif j.state == 'to_check':
             chip('indigo','eye',_('Waiting for your check'))

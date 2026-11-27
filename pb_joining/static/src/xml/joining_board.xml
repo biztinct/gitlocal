@@ -98,6 +98,12 @@
       </div>
     </section>
   </t>
-  <t t-name="pb_joining.SignedRows"><div t-foreach="d.signs" t-as="s" t-key="s.id" class="jnb-item"><strong t-esc="s.name"/><small t-esc="s.status"/><a t-if="s.url" t-att-href="s.url" target="_blank" rel="noopener noreferrer">Open signed copy</a></div></t>
-  <t t-name="pb_joining.PaperSettings"><div class="jnb-papers"/></t>
+  <t t-name="pb_joining.SignedRows"><div t-foreach="d.signs" t-as="s" t-key="s.id" class="jnb-item"><strong t-esc="s.name"/><small t-esc="s.status"/><a t-if="s.url" t-att-href="s.url" target="_blank" rel="noopener noreferrer">Open signed copy</a><small t-if="s.note" t-esc="s.note"/>
+    <button t-if="d.can_manage and s.signed and d.state === 'to_check' and !d.foot.approval_waiting" class="pbim-btn ghost" t-on-click="() => this.askBack('sign-'+s.id)">Send back</button>
+    <form t-if="state.noteKey === 'sign-'+s.id" class="jnb-form" t-on-submit.prevent="() => this.returnSigned(s)"><label>What should <t t-esc="d.name.split(' ')[0]"/> fix?<textarea t-model="state.note" required="required" maxlength="200"/></label><button type="submit" class="pbim-btn outline">Send back</button></form></div></t>
+  <t t-name="pb_joining.PaperSettings"><div class="jnb-papers"><section t-foreach="state.form.papers" t-as="p" t-key="p.id || ('new'+p_index)" class="jnb-strip">
+    <label>Paper name<input t-model="p.name" required="required"/></label><label>Country of work<select t-model="p.country"><option value="">Every country</option><option t-foreach="state.options.countries" t-as="c" t-key="c[0]" t-att-value="c[0]" t-esc="c[1]"/></select></label>
+    <label>PDF<input type="file" accept="application/pdf" t-on-change="(ev) => this.uploadPaper(p,ev)"/><small t-esc="p.file"/></label>
+    <label>Order<input type="number" t-model.number="p.sequence"/></label><label class="jnb-check"><input type="checkbox" t-model="p.on"/> On</label>
+    </section><button type="button" class="pbim-btn outline" t-on-click="newPaper">Add a paper</button></div></t>
 </templates>

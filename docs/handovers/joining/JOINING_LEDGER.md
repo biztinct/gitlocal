@@ -96,3 +96,8 @@ Every JOINING handover and report references this file. Append new entries; neve
 - J-11. Joining uses the shared filter kit's deferred load so its initial “Ready for you to check” filter is applied before the first page. Loading the kit and setting the filter concurrently can restore an older filter over it.
 - J-12. Close and review actions must account for a pending save. In Chrome, closing before a first-day edit finished could reopen the drawer when the reply arrived.
 - J-13. The shared candidate sender can render the same company template for an invited person with no applicant. Pass the date as a language-aware token so the weekday follows the actual email language.
+- J-14. Add employee can create and approve the proposal in one call. Claim the checked joining on the proposal before approval runs. A returned or withdrawn proposal releases the claim so HR can send the hire again.
+- J-15. The welcome runner isolates each document-filing step. A Joining hire must complete both filing steps before it can become Ready for day one. Otherwise a temporary filing failure could allow the original to be erased with the staging details.
+- J-16. A card Hiring already holds needs its accepted end date passed through the existing Hiring date field. A permanent card needs a separate copy in the permanent ID category.
+- J-17. Load the existing Welcome options before selecting the first studio step. A company-required field such as a shuttle route only becomes known when those options arrive.
+- J-18. A signed PDF can have the right number of pages and still miss its headings. The signing page uses its own print styling. Verify the person's name, paper title, original fingerprint and signature image in the rendered file.

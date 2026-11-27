@@ -91,13 +91,17 @@ class PbNewHireLegs(models.AbstractModel):
 
     # ================================================================ runner
     @api.model
+    def _leg_order(self):
+        return LEG_ORDER
+
+    @api.model
     def run(self, employee, contract, values):
         """Run every leg the values ask for, in order. Never raises (except
         under the test flag). → `(legs, summary)`."""
         employee = employee.sudo()
         state = {'case': self.env['pb.journey.case'], 'contract': contract}
         legs = []
-        for key in LEG_ORDER:
+        for key in self._leg_order():
             leg = getattr(self, '_leg_%s' % key)
             try:
                 with self.env.cr.savepoint():
