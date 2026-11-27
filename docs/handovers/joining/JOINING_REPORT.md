@@ -9,7 +9,7 @@ The isolated branch is `joining`. It starts from `c4564f127`. The release utilit
 | P1 | `f00196647` | A signed offer creates a private phone link. The joiner opens it with a code, saves details and papers, and sends them to HR. |
 | P2 | `6ad7905f3` | Hiring and People share the Joining board. HR can invite, check, accept, send back or cancel. Eligible recruiters can pass on a link and code. |
 | P3 | `b06b9f112` | Joiners sign company papers. Add employee opens with checked answers and files the documents through its existing hire and approval process. |
-| P4 | This phase commit | A daily job sends reminders, nudges HR and erases private staging data after 30 days. The phone, board, messages and signing screens have English, Vietnamese and Indonesian wording. The release utility protects Joining links and preserves scheduled jobs. |
+| P4 | `3e220ee95` | A daily job sends reminders, nudges HR and erases private staging data after 30 days. The phone, board, messages and signing screens have English, Vietnamese and Indonesian wording. The release utility protects Joining links and preserves scheduled jobs. |
 
 ## 2. Tests before and after
 
@@ -79,7 +79,17 @@ The local walks used Chrome with the console monitored. Each listed walk finishe
 
 ## 5. Release and live proof
 
-The full local regression is complete. Production deployment is pending. The pre-release check found four public logins returned 200. The template is private by design, with public 404 and internal 200. The operations log records a failed Rize pay-scheme attempt followed by a successful retry of the same operation. The owner has been asked to confirm the two release checks. All five databases already have English, Vietnamese and Indonesian enabled. The candidate web-server configuration passed a syntax check against the actual active sites without changing them. A separate loopback web server verified redaction of private request paths and referrers while retaining ordinary request paths. Four isolated release checks passed. A PostgreSQL rehearsal verified restoration of previously active and inactive jobs, preservation of new job defaults and a repeat restore.
+All four phases reached `origin/19.1` at `3e220ee95`. The live release script has not run. No Joining release NOTE was written and the deployed Chrome walks are pending. No demonstration records were created on any live database.
+
+| Target | Active jobs before release | Login result before release |
+|---|---:|---|
+| payobook | 60 | Public 200 |
+| payobook_template | 41 | Public 404 and database-specific internal 200 |
+| p0clone | 50 | Public 200 |
+| rize | 93 | Public 200 |
+| sudima | 92 | Public 200 |
+
+All five databases still have Add employee `19.0.1.8.1`. Joining is awaiting installation. The server deliberately excludes the template from its public workspace list. Its configured login URL returns 404. The release log also shows a Rize pay-scheme update at 20:38 UTC on November 26 that failed before committing anything. The same operation was retried and recorded DONE at 20:39 UTC. The owner has been asked to confirm how to handle these two checks. All five databases already have English, Vietnamese and Indonesian enabled. The candidate web-server configuration passed a syntax check against the actual active sites without changing them. A separate loopback web server verified redaction of private request paths and referrers while retaining ordinary request paths. Four isolated release checks passed. A PostgreSQL rehearsal verified restoration of previously active and inactive jobs, preservation of new job defaults and a repeat restore.
 
 ## 6. New ledger entries
 
