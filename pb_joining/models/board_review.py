@@ -27,8 +27,9 @@ class JoiningReview(models.Model):
                 and self._paper_signing_done())
 
     def _remaining_labels(self):
-        names = {r.key for r in self.item_ids if r.available and r.state in ('empty', 'returned', 'later')}
-        return [s['label'] for s in self._catalogue() if s['key'] in names]
+        states = self._section_states()
+        return [title for key, title, icon, hint in self._section_info()
+                if states.get(key) in ('empty', 'returned')]
 
     def _reminder(self):
         names = ', '.join(self._remaining_labels()) or _('Your first day')

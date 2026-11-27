@@ -1,21 +1,31 @@
 # Joining portal build report
 
-## 1. Work by phase
+## 1. What was built
 
-The approved design pack is on branch `joining` at `7e9a6a726`. The base is `c4564f127`. The release utility was brought across in `e7c38a944`.
+The isolated branch is `joining`. It starts from `c4564f127`. The release utility was brought across in `e7c38a944` and the approved design pack was committed first in `7e9a6a726`.
 
-## 2. Test baseline
+| Phase | Commit | Outcome |
+|---|---|---|
+| P1 | `f00196647` | A signed offer creates a private phone link. The joiner opens it with a code, saves details and papers, and sends them to HR. |
+| P2 | `6ad7905f3` | Hiring and People share the Joining board. HR can invite, check, accept, send back or cancel. Eligible recruiters can pass on a link and code. |
+| P3 | `b06b9f112` | Joiners sign company papers. Add employee opens with checked answers and files the documents through its existing hire and approval process. |
+| P4 | This phase commit | A daily job sends reminders, nudges HR and erases private staging data after 30 days. The phone, board, messages and signing screens have English, Vietnamese and Indonesian wording. The release utility protects Joining links and preserves scheduled jobs. |
 
-Measured before adding the new module, using local copies of the test database with custom modules upgraded to the fetched code.
+## 2. Tests before and after
 
-| Suite | Tests before | Passed before | Failed before | After |
-|---|---:|---:|---:|---|
-| Hiring | 532 | 521 | 11 | Pending |
-| Add employee | 178 | 178 | 0 | Pending |
-| Onboarding | 20 | 20 | 0 | Pending |
-| People hub | 27 | 25 | 2 | Pending |
+The baseline was recorded before changing the modules, on local database copies aligned with the fetched code. Six Hiring public-page checks initially returned HTTP 404 when the local database filter matched two copies. All six passed on the same code with the exact database name. The baseline below includes that rerun.
 
-Six additional Hiring application-page tests initially returned HTTP 404 with an ambiguous local database filter. All six passed on the same code when rerun on the isolated database with its exact name. The table includes that rerun.
+| Module | Before, passed / run | After, passed / run |
+|---|---:|---:|
+| Joining | New module | 72 / 72 |
+| Hiring | 521 / 532 | 521 / 532 |
+| Add employee | 178 / 178 | 178 / 178 |
+| Onboarding | 20 / 20 | 20 / 20 |
+| People hub | 25 / 27 | 25 / 27 |
+
+Joining passed 29 tests at P1, 51 at P2 and 63 at P3. P4 includes all numbered checks T1–T70. Some test methods cover more than one numbered check, and additional methods cover recovery after failures. The four-country comparison created pairs of employees in Vietnam, Indonesia, India and Singapore and checked the employee fields against the equivalent manually typed hire. The final Hiring and People hub failure names matched their baselines exactly. A separate test verified the HR sender as bank proposer. A temporary vault failure left the employee uncreated, preserved the approved request and allowed that same request to succeed on retry.
+
+The signed-PDF test merged a real original and signing confirmation. A separate inspection found the paper title, signer, original fingerprint and embedded signature on the rendered confirmation. All 486 exported terms have Vietnamese and Indonesian translations.
 
 ### Existing failures
 
@@ -33,25 +43,17 @@ Six additional Hiring application-page tests initially returned HTTP 404 with an
 - `pb_hiring.test_registers_p9.TestRegistersP9.test_08_the_hub_names_the_two_registers_between_overview_and_interviews`
 - `pb_hiring.test_stages_p1.TestRecruitStages.test_13_set_up_has_six_cards_and_none_is_a_dead_end`
 
-### Phase 1 local proof
+## 3. Design decisions and changes to Add employee
 
-All 29 Joining tests passed, including T1–T22 and checks for device confirmation, rate limits, private drafts and file limits. The signed-offer trigger and message delivery were implemented in P1 because T1–T4 and the code flow exercise them. Existing module files have no P1 edits.
+- **HR and recruiters.** The person handling a particular offer and HR can both show a code, as the owner decided. Either can open the joiner's phone page with the link and code. Recruiters see item names and states only in the board drawer.
+- **Returning phones.** All five sites use seven-day inactive staff sessions. A successful code also issues a signed, host-only Joining cookie, limited to that link. It restores access until 14 days from verification. The owner approved this separate cookie.
+- **Signing.** The production server has the PDF writer but no PDF page renderer. The phone uses the approved **Open the paper** option. Opening the original, agreeing, entering a name and drawing a signature are required. Signed policies are filed in **Labor Contract**. The owner approved **Identity card — no end date** for permanent cards, with the same access as the ID folder.
+- **Offer automation.** The switch is under **Papers to sign** on Joining. Hiring declares its built-in switches in a fixed list. The signed-offer trigger and message delivery were built during P1 so T1–T4 could exercise the real path.
+- **Company-required fields.** A checked hire opens on **Check and add** when ready. If the company requires another answer, such as a shuttle route, Add employee opens on that step.
+- **Existing access.** Bringing the signed wage across uses Hiring's existing offer access. An HR user who can add an employee but cannot read that offer sees a message identifying who can finish. The existing employee workspace separately requires contract-reading rights to show the completed record.
+- **Release tooling.** The owner approved a correction that restores every previous scheduled job's own setting while keeping the new Joining job active. The wrapper now stages the named custom module from its actual directory at the committed revision, reads the standard-addon list as the checkout owner and preserves the release author's name across SSH. The owner also approved redacting Joining links on the active websites.
 
-At 360 × 740, Chrome completed the English journey from the code to “Sent to HR”, including uploading papers, leaving the bank account until later, and leaving and returning to a draft. Chrome opened the code, welcome and section-list screens in Vietnamese and Indonesian. All three walks finished with zero console errors. The application access log showed 44 redacted Joining requests and zero unredacted Joining URLs. The comparison image was `shots/prototype-phone.png`. Walk captures used `shots/w1-en_US-{code,welcome,hub,personal,id_number,bank,tax,emergency,papers,day,sent}.png` and `shots/w1-{vi_VN,id_ID}-{code,welcome,hub}.png`.
-
-### Phase 2 local proof
-
-Phase 1 was pushed in `f00196647`. The board now opens immediately after Offers in Hiring and immediately before Joiners in People. The five figures, step and search filters, invitation, first-day editor, private file viewer, review actions, and the command palette use the existing hub and filter components. The offer automation setting is in Joining settings because Hiring defines its built-ins as a fixed list. The same message template and sender handle direct invites and signed offers, including emails with Vietnamese and Indonesian wording.
-
-All 51 tests in the complete Joining suite passed (29 from phase 1 and the 22 numbered board checks, T23–T44). No existing module was edited in this phase. Chrome at 1440px completed W2 in both hubs and opened Add employee's existing country paper editor. W3 confirmed the recruiter received names and item states only and an ordinary colleague had no Joining tab. W5 returned a tax number to the phone, changed the masked value, resubmitted it, and accepted it on the board. The console was clean in all three walks. Captures used `shots/w2-{hiring-board,people-board,hr-drawer,invite,what-is-asked}.png`, `shots/w3-{recruiter,plain}.png` and `shots/w5-hr-return.png`. Company paper setup and the Add as employee action are scheduled for phase 3.
-
-### Phase 3 local proof
-
-Phase 2 was pushed in `6ad7905f3`. HR can choose an accepted item in Add employee, switch to typing it, or ask the person for it later. The server reads accepted values from the joining when HR sends the hire. The existing approval route and bank proposer are preserved. A withdrawn or rejected hire becomes available to HR again.
-
-Company papers can be switched on for everyone or for one country. The phone uses **Open the paper** because the server has no PDF page renderer. After the person opens it, they can agree, draw their signature and sign. The filed PDF contains the original pages and a signing confirmation with the document fingerprint. Signed copies go to the existing **Labor Contract** category. Permanent cards go to **Identity card — no end date**, with the same document access as other ID cards.
-
-The changes inside Add employee were confined to the draft, approval and document-summary extension points and their callers, plus the version increase from `19.0.1.8.1` to `19.0.1.8.2`.
+Add employee changed from `19.0.1.8.1` to `19.0.1.8.2`. The following are its only source edits.
 
 | File | Change |
 |---|---|
@@ -62,20 +64,33 @@ The changes inside Add employee were confined to the draft, approval and documen
 | `pb_new_hire/static/src/js/step_check.js` | Read the extended document choice when listing received information and explaining the bank approval. |
 | `pb_new_hire/static/src/js/record_panel.js` | Used the same choice when describing whether the account is ready for a second person to approve. |
 
-The four-country comparison runs two real hires per country and checks the employee fields supplied by each catalogue. A separate test verifies that a bank account waits for a second person and names the HR sender as proposer.
+## 4. Chrome walks
 
-Chrome found a company-required shuttle-route field. Joining loads the company's Welcome options before choosing the first step, so HR sees the missing answer immediately. The studio's summary and bank panel use the same classification as the progress tally.
+The local walks used Chrome with the console monitored. Each listed walk finished with zero console errors. All five approved prototype tabs were opened before implementation. Capture paths below are relative to this report. The 40 local test screenshots were removed after review as required by the repository’s cleanup instructions.
 
-The Joining suite passed all 63 tests, including a simulated temporary filing failure followed by a successful retry of the same approval. Add employee passed 178 of 178 in its first full P3 regression. The PDF check inspected the rendered page text and embedded images and found the paper title, signer, signing confirmation, original fingerprint and signature image.
+| Walk | Observed result | Captures under `shots/` |
+|---|---|---|
+| W1 | At 360 × 740 the joiner saved all sections, uploaded papers, signed two policies, reused a signature and sent. Vietnamese and Indonesian both showed the code, welcome and sections screens. | `prototype-phone.png`, `w1-en_US-{code,welcome,hub,personal,id_number,bank,tax,emergency,papers,day,sent}.png`, `w1-{vi_VN,id_ID}-{code,welcome,hub}.png`, `w1-sign-paper.png`, `w1-signed-list.png` |
+| W2 | HR opened Joining in both hubs, searched, filtered, checked items, showed a code, invited someone, edited first-day details and saved company papers. | `w2-{hiring-board,people-board,hr-drawer,invite,what-is-asked,paper-settings}.png` |
+| W3 | The recruiter saw progress without private values or files. An ordinary colleague had no Joining tab. | `w3-{recruiter,plain}.png` |
+| W4 | A recorded signed offer became an employee through Add employee. Seven documents were filed, including two signed policies. The employee appeared in Ready for day one and the bank request waited for a second person. An HR colleague with existing contract access opened the employee document list and saw both policies. | `w4-{check-and-add,studio-details,added,employee-documents,employee-workspace,day-one}.png` |
+| W5 | HR sent a tax number back. The phone reopened that section, the joiner changed the masked number and resubmitted, and HR accepted it. | `w5-hr-return.png` |
+| W6 | The board and drawer fitted 1180, 820 and 600 pixels. The phone fitted 320 and 480 pixels. | `w6-board-{1180,820,600}.png`, `w6-phone-{320,480}.png` |
 
-### Learn lessons for a later edit
+## 5. Release and live proof
+
+The full local regression is complete. Production deployment is pending. The pre-release check found four public logins returned 200. The template is private by design, with public 404 and internal 200. The operations log records a failed Rize pay-scheme attempt followed by a successful retry of the same operation. The owner has been asked to confirm the two release checks. All five databases already have English, Vietnamese and Indonesian enabled. The candidate web-server configuration passed a syntax check against the actual active sites without changing them. A separate loopback web server verified redaction of private request paths and referrers while retaining ordinary request paths. Four isolated release checks passed. A PostgreSQL rehearsal verified restoration of previously active and inactive jobs, preservation of new job defaults and a repeat restore.
+
+## 6. New ledger entries
+
+J-1 through J-5 cover the isolated test database, recruiter access, scheduled jobs, module staging and access logs. J-6 through J-10 cover permanent cards, PDF display, mobile layout, remembered devices and private page rendering. J-11 through J-13 cover the board's initial filters, drawer updates and language-specific messages. J-14 through J-18 cover approval timing, filing recovery, ID document dates, company-required fields and PDF verification. J-19 records how to verify the server's standard-addon list. J-20 records the template database's public and internal login behavior.
+
+## 7. Open owner question
+
+Should HR who can review someone in Joining also be allowed to bring across the signed wage when Hiring has not given them access to that offer? The implementation preserves the existing access rule.
+
+## 8. Learn lessons for a later edit
 
 - L39, “Work a role's board, from applied to joined”, should point from recording a signed offer to Hiring › Joining.
 - L17, “Get ready for someone starting”, should explain when to use Joining before day one and when the employee first appears in Joiners.
 - L29, “Employees and their contracts”, should mention that a checked Joining record opens Add employee with the information HR has accepted.
-
-Chrome completed the full W4 journey from a signed offer to a ready-for-day-one employee. The demo employee received seven documents, including two policies signed on the phone. The bank request was waiting for HR review. An HR colleague with existing contract-reading rights opened both signed policies in the employee document list. The narrower HR test account could add the employee but the existing employee workspace required contract-reading rights to display the record.
-
-W1 covered two policy signatures, including reusing the first signature. W2 covered company paper setup. W6 checked the board and drawer at 1180, 820 and 600 pixels and the phone at 320 and 480 pixels. All walks finished with zero Chrome console errors. Captures used `shots/w1-sign-paper.png`, `shots/w1-signed-list.png`, `shots/w2-paper-settings.png`, `shots/w4-{check-and-add,studio-details,added,employee-documents,day-one}.png`, `shots/w6-board-{1180,820,600}.png` and `shots/w6-phone-{320,480}.png`.
-
-After the document-summary change, the complete Add employee suite passed again, 178 of 178.

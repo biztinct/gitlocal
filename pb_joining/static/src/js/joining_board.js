@@ -4,14 +4,11 @@ import { registry } from "@web/core/registry";
 import { patch } from "@web/core/utils/patch";
 import { useService } from "@web/core/utils/hooks";
 import { _t } from "@web/core/l10n/translation";
-import { IC, ic } from "@pb_import_kit/js/import_icons";
+import { ic } from "./joining_icons";
 import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
 import { useFilterKit } from "@pb_filter_kit/js/filter_kit";
 import { PbHiringHub } from "@pb_hiring/js/hiring_hub";
 
-IC.alertTriangle ??= '<path d="m10.3 3.9-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3.1l-8-14a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4m0 4h.01"/>';
-IC.arrowLeft ??= '<path d="m12 19-7-7 7-7M5 12h14"/>';
-IC.keyRound ??= '<path d="M2 18v3h3l2-2h2v-2l4-4a6.5 6.5 0 1 0-3-3l-8 8Z"/><circle cx="16.5" cy="7.5" r=".5"/>';
 const MODEL = "pb.joining.board";
 const PEOPLE = "pb_people_hub.action_pb_people_hub";
 const STUDIO = "pb_new_hire.action_new_hire_studio";

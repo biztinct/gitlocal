@@ -142,6 +142,16 @@ class Joining(models.Model):
     def _paper_signing_done(self):
         return True
 
+    def _section_info(self):
+        return [('personal', _('About you'), 'user', _('1 minute')),
+                ('id_number', _('Your identity card'), 'idCard', _('Take a photo and type the number')),
+                ('bank', _('Bank account'), 'landmark', _('Where your pay goes')),
+                ('tax', _('Tax and social insurance'), 'receipt', _('Numbers you already have')),
+                ('emergency', _('Emergency contact'), 'heart', _('Who to call')),
+                ('papers', _('Your papers'), 'layers', _('Papers needed before you start')),
+                ('sign', _('Sign your papers'), 'pen', _('Read and sign')),
+                ('day', _('Your first day'), 'sun', _('When, where, what to bring'))]
+
     def _section_states(self):
         states = {}
         for row in self.item_ids.filtered('available'):

@@ -1,21 +1,7 @@
 <odoo>
   <template id="csrf"><input type="hidden" name="csrf_token" t-att-value="csrf"/></template>
   <template id="icon">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <g t-if="icon == 'lock'"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></g>
-      <g t-elif="icon == 'user'"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a7 7 0 0 1 7-7h2a7 7 0 0 1 7 7v2"/></g>
-      <g t-elif="icon == 'idCard'"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M5 16q3-4 6 0m3-6h5m-5 4h4"/></g>
-      <g t-elif="icon == 'landmark'"><path d="m3 8 9-5 9 5M3 21h18M3 9h18M5 12v6m5-6v6m4-6v6m5-6v6"/></g>
-      <g t-elif="icon == 'receipt'"><path d="M4 3l2 1 2-1 2 1 2-1 2 1 2-1 2 1 2-1v18l-2-1-2 1-2-1-2 1-2-1-2 1-2-1-2 1zM8 9h8m-8 4h5"/></g>
-      <path t-elif="icon == 'heart'" d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0l-1 1-1-1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8z"/>
-      <path t-elif="icon == 'layers'" d="m12 2 10 5-10 5L2 7zm-10 10 10 5 10-5M2 17l10 5 10-5"/>
-      <path t-elif="icon == 'pen'" d="m16 3 5 5L8 21l-6 1 1-6zM14 5l5 5"/>
-      <path t-elif="icon == 'back'" d="m12 5-7 7 7 7M5 12h15"/>
-      <path t-elif="icon == 'right'" d="m9 18 6-6-6-6"/>
-      <path t-elif="icon == 'check'" d="m4 12 5 5L20 6"/>
-      <g t-elif="icon == 'clock'"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></g>
-      <g t-elif="icon == 'sun'"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2"/></g>
-    </svg>
+    <span t-att-data-joining-icon="icon" aria-hidden="true"/>
   </template>
   <template id="day_card">
     <article class="pbjp-card"><span class="pbjp-tile"><t t-call="pb_joining.icon"><t t-set="icon" t-value="'sun'"/></t></span>

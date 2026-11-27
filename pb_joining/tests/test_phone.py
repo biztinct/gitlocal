@@ -102,6 +102,14 @@ class TestPhone(HttpCase):
         self.assertEqual(response.status_code, 303)
         self.assertIn('Opened with your code', self.url_open(self.path).text)
 
+    def test_t69_two_public_languages(self):
+        for lang, title in [('vi_VN', 'Nhập mã của bạn'), ('id_ID', 'Masukkan kode Anda')]:
+            self.env['res.lang']._activate_lang(lang)
+            self.j.lang = lang
+            doc = html.fromstring(self.url_open(self.path).content.decode('utf-8'))
+            self.assertIn(title, doc.text_content())
+            self.assertEqual(doc.xpath('//*[@data-state]/@lang')[0].replace('-', '_'), lang)
+
     def test_t05_inactive(self):
         invalid = ['/join/short', '/join/' + 'x' * 32]
         for state in ('cancelled', 'past'):

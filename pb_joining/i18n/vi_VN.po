@@ -34,6 +34,7 @@ msgstr "Đã xong %(n)s / %(m)s phần"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "1 minute"
 msgstr "1 phút"
 
@@ -46,6 +47,7 @@ msgstr "Khoảng 10 phút."
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "About you"
 msgstr "Về bạn"
 
@@ -224,6 +226,7 @@ msgstr "Đã xong"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Emergency contact"
 msgstr "Liên hệ khẩn cấp"
 
@@ -370,6 +373,7 @@ msgstr "Chưa có mã? Hãy nhờ %(name)s cấp mã mới."
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Numbers you already have"
 msgstr "Các mã số bạn đã có"
 
@@ -413,6 +417,7 @@ msgstr "Giấy tờ"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Papers needed before you start"
 msgstr "Giấy tờ cần trước khi bắt đầu"
 
@@ -439,6 +444,7 @@ msgstr "Vui lòng đợi trước khi yêu cầu mã mới."
 #: code:addons/pb_joining/controllers/joining.py:0
 #: code:addons/pb_joining/controllers/papers.py:0
 #: code:addons/pb_joining/models/papers.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Read and sign"
 msgstr "Đọc và ký"
 
@@ -533,6 +539,7 @@ msgstr "Hiện các mục cho quốc gia này"
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 #: code:addons/pb_joining/controllers/papers.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Sign your papers"
 msgstr "Ký giấy tờ của bạn"
 
@@ -551,6 +558,7 @@ msgstr "Còn thiếu"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Take a photo and type the number"
 msgstr "Chụp ảnh và nhập số thẻ"
 
@@ -563,6 +571,7 @@ msgstr "Chụp ảnh thẻ của bạn"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Tax and social insurance"
 msgstr "Thuế và bảo hiểm xã hội"
 
@@ -686,12 +695,14 @@ msgstr "Chào mừng %(name)s đến với %(company)s"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "When, where, what to bring"
 msgstr "Thời gian, địa điểm và những gì cần mang theo"
 
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Where your pay goes"
 msgstr "Nơi nhận lương của bạn"
 
@@ -704,6 +715,7 @@ msgstr "Chúng tôi nên gọi cho ai nếu xảy ra sự cố tại nơi làm v
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Who to call"
 msgstr "Người cần liên hệ"
 
@@ -755,12 +767,14 @@ msgstr "Mã của bạn cho {{brand}} là {{code}}. Mã có hiệu lực trong 1
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 #: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Your first day"
 msgstr "Ngày đầu đi làm"
 
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Your identity card"
 msgstr "Thẻ căn cước của bạn"
 
@@ -779,6 +793,7 @@ msgstr "Quản lý sẽ báo cho bạn thời gian và địa điểm trước k
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Your papers"
 msgstr "Giấy tờ của bạn"
 
@@ -2267,6 +2282,7 @@ msgstr "có nguy cơ"
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 #: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "bank"
 msgstr "ngân hàng"
 
@@ -2279,6 +2295,7 @@ msgstr "bổ sung ngân hàng sau"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "day"
 msgstr "ngày"
 
@@ -2291,6 +2308,7 @@ msgstr "ngày"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "emergency"
 msgstr "liên hệ khẩn cấp"
 
@@ -2315,6 +2333,7 @@ msgstr "tuyển dụng"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "id_number"
 msgstr "số giấy tờ tùy thân"
 
@@ -2387,6 +2406,7 @@ msgstr "nguồn"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "papers"
 msgstr "giấy tờ"
 
@@ -2411,6 +2431,7 @@ msgstr "số mục cần sửa"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "sign"
 msgstr "ký"
 
@@ -2423,6 +2444,7 @@ msgstr "bắt đầu điền trong tuần này"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "tax"
 msgstr "thuế"
 
@@ -2914,3 +2936,25 @@ msgid ""
 msgstr ""
 "Hãy nhờ một đồng nghiệp nhân sự có quyền mở thư mời làm việc đã ký này trong"
 " mục Tuyển dụng thêm nhân viên."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/jobs.py:0
+msgid "Check what %(name)s still needs before their first day"
+msgstr "Kiểm tra những gì %(name)s còn thiếu trước ngày đầu đi làm"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__erased_at
+msgid "Erased At"
+msgstr "Thời điểm xóa dữ liệu riêng tư"
+
+#. module: pb_joining
+#: model:ir.actions.server,name:pb_joining.cron_joining_daily_ir_actions_server
+msgid "Joining reminders and private data cleanup"
+msgstr "Nhắc hoàn tất hồ sơ tiếp nhận và xóa dữ liệu riêng tư"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/jobs.py:0
+msgid "Remind %(name)s — copy the message from the Joining board"
+msgstr "Nhắc %(name)s — sao chép lời nhắn từ bảng Tiếp nhận"

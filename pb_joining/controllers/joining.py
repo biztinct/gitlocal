@@ -94,14 +94,7 @@ class JoiningPages(http.Controller):
     def _sections(self, j):
         _ = request.env._
         states = j._section_states()
-        rows = [('personal', _('About you'), 'user', _('1 minute')),
-                ('id_number', _('Your identity card'), 'idCard', _('Take a photo and type the number')),
-                ('bank', _('Bank account'), 'landmark', _('Where your pay goes')),
-                ('tax', _('Tax and social insurance'), 'receipt', _('Numbers you already have')),
-                ('emergency', _('Emergency contact'), 'heart', _('Who to call')),
-                ('papers', _('Your papers'), 'layers', _('Papers needed before you start')),
-                ('sign', _('Sign your papers'), 'pen', _('Read and sign')),
-                ('day', _('Your first day'), 'sun', _('When, where, what to bring'))]
+        rows = j._section_info()
         labels = {'done': _('Done'), 'returned': _('Sent back to fix'), 'later': _('To finish later')}
         out = []
         for key, title, icon, hint in rows:

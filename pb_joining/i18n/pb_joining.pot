@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-27 07:42+0000\n"
-"PO-Revision-Date: 2026-11-27 07:42+0000\n"
+"POT-Creation-Date: 2026-11-27 07:55+0000\n"
+"PO-Revision-Date: 2026-11-27 07:55+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -42,7 +42,7 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "1 minute"
 msgstr ""
 
@@ -72,7 +72,7 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "About you"
 msgstr ""
 
@@ -277,7 +277,6 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
 #: code:addons/pb_joining/models/joining.py:0
 msgid "Bank account"
 msgstr ""
@@ -364,6 +363,12 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "Check the date and try again."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/jobs.py:0
+msgid "Check what %(name)s still needs before their first day"
 msgstr ""
 
 #. module: pb_joining
@@ -687,7 +692,7 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Emergency contact"
 msgstr ""
 
@@ -718,6 +723,11 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "Enter your code"
+msgstr ""
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__erased_at
+msgid "Erased At"
 msgstr ""
 
 #. module: pb_joining
@@ -1142,6 +1152,11 @@ msgid "Joining reminder"
 msgstr ""
 
 #. module: pb_joining
+#: model:ir.actions.server,name:pb_joining.cron_joining_daily_ir_actions_server
+msgid "Joining reminders and private data cleanup"
+msgstr ""
+
+#. module: pb_joining
 #. odoo-javascript
 #: code:addons/pb_joining/static/src/js/studio_joining.js:0
 msgid "Keep unsent hire"
@@ -1435,7 +1450,7 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Numbers you already have"
 msgstr ""
 
@@ -1599,7 +1614,7 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Papers needed before you start"
 msgstr ""
 
@@ -1708,8 +1723,8 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
 #: code:addons/pb_joining/controllers/papers.py:0
+#: code:addons/pb_joining/models/joining.py:0
 #: code:addons/pb_joining/models/papers.py:0
 msgid "Read and sign"
 msgstr ""
@@ -1744,6 +1759,12 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_joining/static/src/xml/joining_board.xml:0
 msgid "Reason"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/jobs.py:0
+msgid "Remind %(name)s — copy the message from the Joining board"
 msgstr ""
 
 #. module: pb_joining
@@ -1996,8 +2017,8 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
 #: code:addons/pb_joining/controllers/papers.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Sign your papers"
 msgstr ""
 
@@ -2104,7 +2125,7 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Take a photo and type the number"
 msgstr ""
 
@@ -2116,7 +2137,7 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Tax and social insurance"
 msgstr ""
 
@@ -2535,7 +2556,7 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "When, where, what to bring"
 msgstr ""
 
@@ -2553,7 +2574,7 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Where your pay goes"
 msgstr ""
 
@@ -2565,7 +2586,7 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Who to call"
 msgstr ""
 
@@ -2635,12 +2656,13 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 #: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Your first day"
 msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Your identity card"
 msgstr ""
 
@@ -2664,7 +2686,7 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Your papers"
 msgstr ""
 
@@ -2690,8 +2712,8 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
 #: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "bank"
 msgstr ""
 
@@ -2703,7 +2725,7 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "day"
 msgstr ""
 
@@ -2721,7 +2743,7 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "emergency"
 msgstr ""
 
@@ -2745,7 +2767,7 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "id_number"
 msgstr ""
 
@@ -2817,7 +2839,7 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "papers"
 msgstr ""
 
@@ -2841,7 +2863,7 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "sign"
 msgstr ""
 
@@ -2853,7 +2875,7 @@ msgstr ""
 
 #. module: pb_joining
 #. odoo-python
-#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "tax"
 msgstr ""
 

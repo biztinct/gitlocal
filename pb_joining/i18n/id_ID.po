@@ -34,6 +34,7 @@ msgstr "%(n)s dari %(m)s selesai"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "1 minute"
 msgstr "1 menit"
 
@@ -46,6 +47,7 @@ msgstr "Sekitar 10 menit."
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "About you"
 msgstr "Tentang Anda"
 
@@ -224,6 +226,7 @@ msgstr "Selesai"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Emergency contact"
 msgstr "Kontak darurat"
 
@@ -370,6 +373,7 @@ msgstr "Belum punya kode? Minta kode baru kepada %(name)s."
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Numbers you already have"
 msgstr "Nomor yang sudah Anda miliki"
 
@@ -413,6 +417,7 @@ msgstr "Dokumen"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Papers needed before you start"
 msgstr "Dokumen yang diperlukan sebelum mulai bekerja"
 
@@ -439,6 +444,7 @@ msgstr "Harap tunggu sebelum meminta kode baru."
 #: code:addons/pb_joining/controllers/joining.py:0
 #: code:addons/pb_joining/controllers/papers.py:0
 #: code:addons/pb_joining/models/papers.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Read and sign"
 msgstr "Baca dan tanda tangani"
 
@@ -533,6 +539,7 @@ msgstr "Tampilkan kolom untuk negara ini"
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 #: code:addons/pb_joining/controllers/papers.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Sign your papers"
 msgstr "Tandatangani dokumen Anda"
 
@@ -551,6 +558,7 @@ msgstr "Masih diperlukan"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Take a photo and type the number"
 msgstr "Ambil foto dan masukkan nomornya"
 
@@ -563,6 +571,7 @@ msgstr "Ambil foto kartu Anda"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Tax and social insurance"
 msgstr "Pajak dan jaminan sosial"
 
@@ -686,12 +695,14 @@ msgstr "Selamat datang di %(company)s, %(name)s"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "When, where, what to bring"
 msgstr "Waktu, tempat, dan barang yang perlu dibawa"
 
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Where your pay goes"
 msgstr "Tempat Anda menerima gaji"
 
@@ -704,6 +715,7 @@ msgstr "Siapa yang dapat kami hubungi jika terjadi sesuatu di tempat kerja?"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Who to call"
 msgstr "Orang yang dapat dihubungi"
 
@@ -755,12 +767,14 @@ msgstr "Kode Anda untuk {{brand}} adalah {{code}}. Kode berlaku 10 menit. Jika A
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 #: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Your first day"
 msgstr "Hari pertama Anda"
 
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Your identity card"
 msgstr "Kartu identitas Anda"
 
@@ -779,6 +793,7 @@ msgstr "Manajer Anda akan memberi tahu waktu dan tempat sebelum Anda mulai beker
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "Your papers"
 msgstr "Dokumen Anda"
 
@@ -2266,6 +2281,7 @@ msgstr "berisiko"
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
 #: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "bank"
 msgstr "bank"
 
@@ -2278,6 +2294,7 @@ msgstr "rekening menyusul"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "day"
 msgstr "hari"
 
@@ -2290,6 +2307,7 @@ msgstr "hari"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "emergency"
 msgstr "kontak darurat"
 
@@ -2314,6 +2332,7 @@ msgstr "perekrutan"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "id_number"
 msgstr "nomor identitas"
 
@@ -2386,6 +2405,7 @@ msgstr "asal"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "papers"
 msgstr "dokumen"
 
@@ -2410,6 +2430,7 @@ msgstr "jumlah yang dikembalikan"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "sign"
 msgstr "tanda tangan"
 
@@ -2422,6 +2443,7 @@ msgstr "mulai mengisi minggu ini"
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
 msgid "tax"
 msgstr "pajak"
 
@@ -2918,3 +2940,25 @@ msgid ""
 msgstr ""
 "Minta rekan HR yang dapat membuka penawaran bertanda tangan ini di "
 "Perekrutan untuk menambahkan karyawan."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/jobs.py:0
+msgid "Check what %(name)s still needs before their first day"
+msgstr "Periksa apa yang masih dibutuhkan %(name)s sebelum hari pertama"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__erased_at
+msgid "Erased At"
+msgstr "Waktu penghapusan data pribadi"
+
+#. module: pb_joining
+#: model:ir.actions.server,name:pb_joining.cron_joining_daily_ir_actions_server
+msgid "Joining reminders and private data cleanup"
+msgstr "Pengingat persiapan bergabung dan penghapusan data pribadi"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/jobs.py:0
+msgid "Remind %(name)s — copy the message from the Joining board"
+msgstr "Ingatkan %(name)s — salin pesan dari papan Persiapan bergabung"
