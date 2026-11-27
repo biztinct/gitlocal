@@ -18,6 +18,48 @@ log_spec.loader.exec_module(verify_logs)
 
 
 class JoiningRelease(unittest.TestCase):
+    def test_notes_require_completion_and_allow_the_same_failed_operation_to_retry(self):
+        runner = (REPO / 'ops/pb_release.sh').read_text()
+        function = runner[runner.index('notes_clear()'):runner.index('if ! notes_clear;')]
+        start = 'time | Ops | START | install on target | demo |'
+        failed = 'time | Ops | FAILED | install | demo |'
+        done = 'time | Ops | DONE | install finished | demo |'
+        for rows, clear in [
+            ([start], False), ([start, failed], False),
+            ([start, failed, start, done], True),
+            ([start, failed, start.replace('target', 'another job'), done], False),
+            ([start, failed, start.replace('demo', 'other'), done.replace('demo', 'other')], False),
+            ([start, start, done], False), ([start, done], True),
+            (['time | Ops | HOLD | maintenance'], False),
+        ]:
+            with self.subTest(rows=rows), tempfile.NamedTemporaryFile(mode='w') as notes:
+                notes.write('\n'.join(rows))
+                notes.flush()
+                result = subprocess.run(['bash', '-c', function + 'notes_clear', 'bash'],
+                                        env=dict(os.environ, NOTES=notes.name))
+                self.assertEqual(result.returncode == 0, clear)
+
+    def test_template_requires_public_404_and_internal_200(self):
+        runner = (REPO / 'ops/pb_release.sh').read_text()
+        function = runner[runner.index('warm_site()'):runner.index('for db in $DBS; do warm_site')]
+        # The internal request must use loopback, the template host and the exact database.
+        fixture = """log() { :; }
+host_of() { echo "$1.payobook.com"; }
+awk() { echo 8069; }
+curl() { case "$*" in
+    *"Host: payobook_template.payobook.com http://127.0.0.1:8069/web/login?db=payobook_template") echo "$INTERNAL";;
+    *"https://"*) echo "$PUBLIC";; *) return 1;; esac; }
+"""
+        for db, public, internal, clear in [
+            ('payobook_template', '404', '200', True), ('payobook_template', '200', '200', False),
+            ('payobook_template', '404', '404', False), ('payobook', '200', '', True),
+            ('payobook', '404', '', False),
+        ]:
+            with self.subTest(db=db, public=public, internal=internal):
+                result = subprocess.run(['bash', '-c', fixture + function + 'warm_site "$1"', 'bash', db],
+                                        env=dict(os.environ, PUBLIC=public, INTERNAL=internal))
+                self.assertEqual(result.returncode == 0, clear)
+
     def test_log_checks_cover_active_host_aliases(self):
         with patch.object(Path, 'read_text', return_value='portal.example.test demo\nformer.example.test retired\n'):
             self.assertEqual(verify_logs.hosts_for(['demo']), ['demo.payobook.com', 'portal.example.test'])
@@ -27,6 +69,17 @@ class JoiningRelease(unittest.TestCase):
             )
             with self.assertRaises(ValueError):
                 verify_logs.hosts_for(['abm'])
+
+    def test_redaction_checks_every_configured_listener(self):
+        sites = [
+            'server {\n listen 80;\n server_name *.example.test;\n}',
+            'server {\n listen 443 ssl;\n server_name *.example.test;\n}',
+            'server {\n listen 80;\n server_name edge.example.org;\n}',
+        ]
+        self.assertEqual(nginx.listeners(sites, ['one.example.test', 'edge.example.org']),
+                         {'one.example.test': {80, 443}, 'edge.example.org': {80}})
+        with self.assertRaises(ValueError):
+            nginx.listeners(sites, ['unknown.example.org'])
 
     def test_nginx_preserves_routes_and_is_idempotent(self):
         site = """server {

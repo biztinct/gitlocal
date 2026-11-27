@@ -1,5 +1,6 @@
 """Apply the Joining log format to the active Payobook sites and their redirects."""
 
+from fnmatch import fnmatchcase
 from pathlib import Path
 import os
 import re
@@ -32,6 +33,23 @@ def closing_brace(text, start):
             if depth == 0:
                 return start + token.end()
     raise ValueError('Unclosed nginx block')
+
+
+def listeners(configs, hosts):
+    """Find the HTTP and HTTPS ports actually served for each active hostname."""
+    ports = {host: set() for host in hosts}
+    for config in configs:
+        for server in re.finditer(r'(?m)^\s*server\s*\{', config):
+            block = config[server.start():closing_brace(config, server.end() - 1)]
+            names = re.findall(r'(?m)^\s*server_name\s+([^;]+);', block)
+            sockets = re.findall(r'(?m)^\s*listen\s+([^;\s]+)', block) or ['80']
+            enabled = {p for p in (80, 443) if any(s.split(':')[-1] == str(p) for s in sockets)}
+            for host in hosts:
+                if any(fnmatchcase(host, name) for group in names for name in group.split()):
+                    ports[host].update(enabled)
+    if any(not port for port in ports.values()):
+        raise ValueError('Missing active site listener')
+    return ports
 
 
 def rewrite(text, active_hosts):

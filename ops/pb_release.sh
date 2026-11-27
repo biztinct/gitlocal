@@ -55,8 +55,16 @@ notes_clear() {
   tail -40 "$NOTES" | awk -v own="${1:-}" -F'|' '{
     who=$2; action=$3; gsub(/^[[:space:]]+|[[:space:]]+$/, "", action);
     if (action=="HOLD") held=1;
-    if (action=="START") open[who]++;
-    if (action=="DONE" && open[who]>0 && --open[who]==0) delete open[who];
+    op=who SUBSEP $4 SUBSEP $5;
+    if (action=="START") {
+      if (retry[op]) delete retry[op]; else open[who]++;
+      last_op[who]=$4; last_target[who]=$5;
+    }
+    if (action=="FAILED" && open[who]>0 && last_target[who]==$5)
+      retry[who SUBSEP last_op[who] SUBSEP $5]=1;
+    if (action=="DONE" && open[who]>0 && --open[who]==0) {
+      delete open[who]; delete retry[who SUBSEP last_op[who] SUBSEP last_target[who]];
+    }
     } END { for (who in open) if (open[who]>0 && (who!=own || open[who]>1)) busy=1; exit (held || busy) }'
 }
 if ! notes_clear; then echo NOTES_BUSY > "$D/result"; touch "$D/done"; exit 1; fi
@@ -193,11 +201,20 @@ refresh_assets; lap "crons+assets"
 service odoo-server start; sleep 10
 DOWN=$(( $(date +%s) - TD ))
 log "started: $(systemctl is-active odoo-server), procs $(pgrep -fc '[o]doo-server/odoo-bin')"
-for db in $DBS; do
+warm_site() {
+  local db=$1 status port internal
   status=$(curl -Ls -o /dev/null -w '%{http_code}' --max-time 120 "https://$(host_of "$db")/web/login")
-  log "warm $db $status"
-  [ "$status" = 200 ] || FAIL="${FAIL:-warm_$db}"
-done
+  if [ "$db" = payobook_template ]; then
+    port=$(awk -F= '/^[[:space:]]*http_port[[:space:]]*=/ {gsub(/[[:space:]]/, "", $2); print $2}' /etc/odoo-server.conf)
+    internal=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 120 -H "Host: $(host_of "$db")" "http://127.0.0.1:${port:-8069}/web/login?db=$db")
+    log "warm $db public $status internal $internal"
+    [ "$status" = 404 ] && [ "$internal" = 200 ]
+  else
+    log "warm $db $status"
+    [ "$status" = 200 ]
+  fi
+}
+for db in $DBS; do warm_site "$db" || FAIL="${FAIL:-warm_$db}"; done
 lap warm
 if [ -z "$FAIL" ]; then
   verify

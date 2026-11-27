@@ -22,7 +22,11 @@ def hosts_for(databases):
 
 
 def check(databases):
+    from nginx import listeners
+
     hosts = hosts_for(databases)
+    configs = (p.read_text() for p in Path('/etc/nginx/sites-enabled').iterdir() if p.is_file())
+    ports = listeners(configs, hosts)
     streams = (
         'access.log',
         'error.log',
@@ -37,7 +41,8 @@ def check(databases):
     agent = 'Payobook-Joining-check-' + secrets.token_hex(6)
     expected = {}
     for index, host in enumerate(hosts):
-        for scheme, port in [('http', 80), ('https', 443)]:
+        for port in sorted(ports[host]):
+            scheme = 'https' if port == 443 else 'http'
             for path, label in [('/join/' + probe, 'request'), ('/web/login', 'referer')]:
                 marker = f'{agent}-{index}-{port}-{label}'
                 headers = ['--referer', 'https://' + host + '/join/' + probe] if label == 'referer' else []
