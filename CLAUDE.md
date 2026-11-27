@@ -19,6 +19,16 @@ ignored silently — no error, no log line. On 2026-08-26 that hid 31 versions o
 `pb_formula_studio` (the entire Mapping/Journey programme) from all four
 databases. The screens simply showed old behaviour.
 
+### Fast path (owner-approved 2026-11-27)
+
+Use `tools/release.sh <looks|normal|risky> <modules> [upgrade]` — it runs
+`ops/pb_release.sh` on the server and does every step below (lock, notes START/DONE,
+backup check, stop, per-module copy, upgrade all five DBs, cron restore, asset
+refresh, start, warm, hash + version check, per-step timings). Backups: last
+night's nightly (must be <30h old with an OK file) replaces the per-release dump;
+a fresh dump only for a truly dangerous change and only of the one DB changing
+(`FRESH_DBS="rize"`). The manual checklist below is the reference for what the script does.
+
 ### Deploying (the whole checklist — files on disk are only half of it)
 
 1. **Clean the staging directory first**: `sudo rm -rf /tmp/deployX && mkdir -p /tmp/deployX`.
