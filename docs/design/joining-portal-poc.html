@@ -1,0 +1,516 @@
+<meta charset="utf-8">
+<title>Joining Portal</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap">
+<style>
+/* Layout: one page, five views behind a tab bar. The plan (a timeline of who does what), the new person's phone,
+   the Joining board HR works from, Add employee after the change, and what was studied.
+   Single light look on purpose: it mirrors the product screens it proposes to extend. */
+:root{
+  --ink:#1E1B2E; --muted:#64748B; --faint:#94A0B4; --line:#E2E8F0; --line2:#EEF0F6;
+  --canvas:#F4F5FB; --card:#FFFFFF; --soft:#FAFAFD; --rail:#10122E;
+  --p:#5A4BB0; --p-h:#4A3D96; --p-soft:#EDEAF8; --p-light:#CBC2EE; --p-dark:#241F52;
+  --ok:#2E7D4F; --ok-soft:#E4F3EA; --warn:#B45309; --warn-soft:#FDF1DD; --err:#DC2668; --err-soft:#FCE7EF;
+  --teal:#0F8B8D; --teal-soft:#E0F2F2; --blue:#2563EB; --blue-soft:#E5EDFD;
+  --display:'Manrope','Inter',system-ui,sans-serif; --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --r:14px; --shadow:0 1px 2px rgba(30,27,46,.05),0 8px 24px rgba(30,27,46,.06);
+}
+*{box-sizing:border-box}
+body{background:var(--canvas);color:var(--ink);font:14px/1.5 var(--body);-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--p);outline-offset:2px;border-radius:6px}
+h1,h2,h3,h4{font-family:var(--display);margin:0;letter-spacing:-.02em;text-wrap:balance}
+p{margin:0}
+.ic{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+.top{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--card)}
+.top .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-block:10px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand i{width:32px;height:32px;border-radius:10px;background:var(--p);color:#fff;display:grid;place-items:center}
+.brand b{font:800 16px var(--display)}
+.demo{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--warn);background:var(--warn-soft);padding:3px 8px;border-radius:99px}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+.tab{border:0;background:transparent;border-radius:9px;padding:7px 12px;font-weight:600;font-size:13px;color:var(--muted);display:flex;gap:7px;align-items:center}
+.tab:hover{background:var(--line2);color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--p);color:#fff}
+.tab .ic{width:15px;height:15px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:10px;border:1px solid var(--line);background:var(--card);padding:8px 14px;font-weight:600;font-size:13.5px;transition:background .15s,border-color .15s}
+.btn:hover{border-color:var(--p-light);background:var(--p-soft)}
+.btn.pri{background:var(--p);border-color:var(--p);color:#fff}
+.btn.pri:hover{background:var(--p-h)}
+.btn.out{color:var(--p);border-color:var(--p-light)}
+.btn.sm{padding:5px 10px;font-size:12.5px;border-radius:8px}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn.ghost:hover{background:var(--line2);color:var(--ink)}
+.btn.wide{width:100%}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn .ic{width:16px;height:16px}
+
+main{padding-block:22px 48px;display:flex;flex-direction:column;gap:20px}
+.head{display:flex;flex-direction:column;gap:4px}
+.eyebrow{font-size:12px;font-weight:600;color:var(--p);letter-spacing:.06em;text-transform:uppercase}
+.head h1{font-size:28px;font-weight:800;line-height:1.15}
+.head p{color:var(--muted);max-width:70ch}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r)}
+.pad{padding:16px 18px}
+.card h3{font-size:15px;font-weight:700}
+.sub{color:var(--muted);font-size:13px}
+.lbl{font:600 11px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--line2);color:var(--muted);white-space:nowrap}
+.chip .ic{width:12px;height:12px;stroke-width:2.5}
+.chip.p{background:var(--p-soft);color:var(--p)} .chip.ok{background:var(--ok-soft);color:var(--ok)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)} .chip.err{background:var(--err-soft);color:var(--err)}
+.chip.teal{background:var(--teal-soft);color:var(--teal)} .chip.blue{background:var(--blue-soft);color:var(--blue)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.stack{display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.sp{flex:1}
+
+/* plan: timeline */
+.tl{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.stg{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.stg .when{font:700 12px var(--body);color:var(--p)}
+.stg h3{font-size:15px}
+.stg ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px;font-size:13px}
+.stg li{display:flex;gap:7px;align-items:flex-start}
+.who{width:8px;height:8px;border-radius:50%;margin-top:6px;flex:none}
+.w-hr{background:var(--p)} .w-new{background:var(--teal)} .w-mgr{background:#D9902F} .w-sys{background:var(--faint)}
+.stg.new{border-color:var(--p-light);box-shadow:var(--shadow)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.legend span{display:flex;gap:6px;align-items:center}
+.legend .who{margin:0}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{text-align:left;font:600 11px var(--body);letter-spacing:.07em;text-transform:uppercase;color:var(--faint);padding:8px 12px;border-bottom:1px solid var(--line)}
+td{padding:10px 12px;border-bottom:1px solid var(--line2);vertical-align:top}
+tr:last-child td{border-bottom:0}
+.tw{overflow-x:auto}
+.tw table{min-width:640px}
+.find{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line2)}
+.find:last-child{border-bottom:0;padding-bottom:0} .find:first-child{padding-top:0}
+.find .n{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:none;background:var(--p-soft);color:var(--p)}
+.find .n.no{background:var(--err-soft);color:var(--err)}
+.find b{display:block;font-weight:600}
+.dec{border-left:0;background:var(--p-soft);border:1px solid var(--p-light);border-radius:var(--r);padding:14px 16px}
+.dec h4{font-size:14px;margin-bottom:3px}
+
+/* phone */
+.phonewrap{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:28px;align-items:start}
+.phone{background:var(--rail);border-radius:40px;padding:10px;box-shadow:0 20px 50px rgba(30,27,46,.22);max-width:100%}
+.screen{background:var(--canvas);border-radius:31px;height:660px;overflow:hidden;display:flex;flex-direction:column}
+.pbar{background:var(--card);padding:12px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
+.pbar b{font:700 14px var(--display);flex:1;min-width:0}
+.pbody{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.pfoot{padding:12px 16px;background:var(--card);border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.hello{background:var(--p-soft);border:1px solid var(--p-light);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.hello h2{font-size:21px;font-weight:800;line-height:1.2}
+.msg{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;font-size:13px;display:flex;gap:10px}
+.av{width:34px;height:34px;border-radius:50%;background:var(--p-soft);color:var(--p);display:grid;place-items:center;font:700 12px var(--body);flex:none}
+.av.t{background:var(--teal-soft);color:var(--teal)}
+.sec{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;width:100%;text-align:left}
+.sec:hover{border-color:var(--p-light)}
+.sec .si{width:36px;height:36px;border-radius:10px;background:var(--p-soft);color:var(--p);display:grid;place-items:center;flex:none}
+.sec.done .si{background:var(--ok-soft);color:var(--ok)} .sec.later .si{background:var(--warn-soft);color:var(--warn)}
+.sec b{display:block;font-weight:600;font-size:13.5px} .sec small{color:var(--muted);font-size:12px;display:block}
+.ring{--v:0;width:56px;height:56px;border-radius:50%;background:conic-gradient(var(--ok) calc(var(--v)*1%),var(--line2) 0);display:grid;place-items:center;flex:none}
+.ring span{width:44px;height:44px;border-radius:50%;background:var(--card);display:grid;place-items:center;font:700 12.5px var(--body)}
+.fld{display:flex;flex-direction:column;gap:4px}
+.fld label{font-size:12px;font-weight:600;color:var(--muted)}
+.fld input,.fld select{border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:var(--card);width:100%;min-width:0}
+.fld input.read{border-color:var(--teal);background:var(--teal-soft)}
+.fld small{font-size:11.5px;color:var(--faint)}
+.have{background:var(--soft);border:1px dashed var(--line);border-radius:12px;padding:10px 12px;font-size:12.5px;color:var(--muted)}
+.have b{color:var(--ink)}
+.shot{border:2px dashed var(--p-light);background:var(--p-soft);border-radius:14px;padding:22px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--p);font-weight:600;width:100%}
+.doc{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 12px}
+.doc b{flex:1;font-weight:600;font-size:13px;min-width:0}
+.note{display:flex;gap:12px;align-items:flex-start}
+.note .n{width:28px;height:28px;border-radius:8px;background:var(--p-soft);color:var(--p);display:grid;place-items:center;flex:none}
+.note b{display:block}
+.seg{display:inline-flex;background:var(--line2);border-radius:10px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;border-radius:8px;padding:5px 11px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--p);box-shadow:0 1px 2px rgba(30,27,46,.1)}
+
+/* board */
+.board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:start}
+.col{background:#ECEDF6;border-radius:var(--r);padding:10px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.col h3{font-size:13.5px;display:flex;gap:8px;align-items:center;padding:2px 4px}
+.col h3 i{font:700 11px var(--body);font-style:normal;background:var(--card);border-radius:6px;padding:1px 7px;color:var(--muted)}
+.col p{font-size:12px;color:var(--muted);padding:0 4px}
+.pc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;text-align:left;width:100%}
+.pc:hover{border-color:var(--p-light);box-shadow:var(--shadow)}
+.pc.sel{border-color:var(--p);box-shadow:0 0 0 2px var(--p-soft)}
+.pc .who2{display:flex;gap:9px;align-items:center}
+.pc b{display:block;font-size:13.5px;font-weight:600} .pc small{color:var(--muted);font-size:12px;display:block}
+.bar{height:6px;border-radius:9px;background:var(--line2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ok);border-radius:9px;transition:width .4s}
+.empty{font-size:12px;color:var(--faint);text-align:center;padding:14px 6px;border:1px dashed var(--line);border-radius:12px;background:var(--soft)}
+.kpis{display:flex;gap:10px;flex-wrap:wrap}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;display:flex;gap:10px;align-items:center}
+.kpi b{font:800 20px var(--display)}
+.kpi span{font-size:12.5px;color:var(--muted)}
+.item{border-bottom:1px solid var(--line2);padding:12px 0;display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.item:last-child{border-bottom:0}
+.item .v{flex:1;min-width:200px}
+.item dl{margin:4px 0 0;display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:12.5px}
+.item dt{color:var(--muted)} .item dd{margin:0;font-weight:500;overflow-wrap:anywhere}
+
+/* studio after */
+.studio{display:grid;grid-template-columns:250px minmax(0,1fr);gap:20px;align-items:start}
+.step{display:flex;gap:11px;align-items:flex-start;border-radius:12px;padding:9px 10px}
+.step.cur{background:var(--card);box-shadow:var(--shadow)}
+.step .dot{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;flex:none;font:700 12px var(--body);background:var(--ok-soft);color:var(--ok)}
+.step.cur .dot{background:var(--p);color:#fff}
+.step .dot .ic{width:14px;height:14px;stroke-width:3}
+.step b{display:block;font-weight:600;font-size:13.5px}
+.step small{display:block;font-size:12px;color:var(--ok)}
+.step.cur small{color:var(--muted)}
+.sum{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line2)}
+.sum:last-child{border-bottom:0}
+.sum .v{flex:1;min-width:0}
+.cmp{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.cmp div{border-radius:12px;padding:14px;border:1px solid var(--line);background:var(--soft)}
+.cmp div.now{background:var(--ok-soft);border-color:#BFE3CC}
+.cmp b{font:800 24px var(--display);display:block}
+
+@media (max-width:1000px){
+  .tl{grid-template-columns:1fr} .board{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .phonewrap,.studio{grid-template-columns:1fr} .phone{margin:0 auto;width:380px}
+  .tabs{margin-left:0}
+}
+@media (max-width:560px){ .board{grid-template-columns:1fr} .head h1{font-size:23px} .tab span{display:none} .screen{height:600px} }
+@media (prefers-reduced-motion:reduce){ *{transition:none!important} }
+</style>
+
+<div class="top"><div class="wrap">
+  <div class="brand"><i id="logo"></i><b>Joining portal</b><span class="demo">Design proposal · example data</span></div>
+  <div class="tabs" role="tablist" id="tabs"></div>
+</div></div>
+<div class="wrap"><main id="main"></main></div>
+
+<script>
+/* ---------- icons (Lucide paths) ---------- */
+const I={
+ map:'<path d="M9 18l-6 3V6l6-3 6 3 6-3v15l-6 3-6-3z"/><path d="M9 3v15M15 6v15"/>',
+ phone:'<rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/>',
+ board:'<rect x="3" y="3" width="7" height="18" rx="1.5"/><rect x="14" y="3" width="7" height="11" rx="1.5"/>',
+ userplus:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/>',
+ book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/>',
+ check:'<path d="M20 6 9 17l-5-5"/>', x:'<path d="M18 6 6 18M6 6l12 12"/>',
+ user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+ id:'<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M5 16c.6-1.5 5.4-1.5 6 0M14 10h5M14 14h4"/>',
+ bank:'<path d="M3 21h18M5 10v8M10 10v8M14 10v8M19 10v8M12 3l9 5H3z"/>',
+ tax:'<path d="M4 2v20l3-2 3 2 2-2 2 2 3-2 3 2V2z"/><path d="M9 8h6M9 12h6"/>',
+ heart:'<path d="M19 14c1.5-1.5 3-3.3 3-5.5A5.5 5.5 0 0 0 12 5a5.5 5.5 0 0 0-10 3.5c0 2.200 1.500 4 3 5.500l7 7z"/>',
+ pen:'<path d="M12 20h9"/><path d="M16.5 3.5a2.100 2.100 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+ sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.900 4.900l1.400 1.400M17.700 17.700l1.400 1.400M2 12h2M20 12h2M4.900 19.100l1.400-1.400M17.700 6.300l1.400-1.400"/>',
+ cam:'<path d="M14.500 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/>',
+ back:'<path d="M19 12H5M12 19l-7-7 7-7"/>', arrow:'<path d="M5 12h14M12 5l7 7-7 7"/>',
+ clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', alert:'<path d="M12 9v4M12 17h.01"/><path d="M10.300 3.900 2 18a2 2 0 0 0 1.700 3h16.600A2 2 0 0 0 22 18L13.700 3.900a2 2 0 0 0-3.400 0z"/>',
+ send:'<path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>', lock:'<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+ brief:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>',
+ bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.300 21a1.900 1.900 0 0 0 3.400 0"/>',
+ eye:'<path d="M2 12s3.500-7 10-7 10 7 10 7-3.500 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
+ layers:'<path d="M12 2 2 7l10 5 10-5z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/>'
+};
+const ic=n=>`<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${I[n]||''}</svg>`;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- what each country asks for ---------- */
+const C={
+ ID:{n:'Indonesia',card:'Identity card (KTP)',
+  id:[['Identity number (NIK)','3174 0519 9402 0003'],['Name on the card','DEWI LESTARI'],['Date of birth','19 May 1994']],
+  tax:[['Tax number (NPWP)','09.254.294.3-407.000'],['Health cover number (BPJS Kesehatan)','0001 2345 67891'],['Work cover number (BPJS Ketenagakerjaan)','2101 2345 678'],['Tax status','TK/0: single, no dependants']],
+  bank:[['Bank','Bank Mandiri'],['Account number','142-00-1234567-8'],['Name on the account','DEWI LESTARI']]},
+ VN:{n:'Vietnam',card:'Citizen identity card (CCCD)',
+  id:[['Identity number','079 194 012 345'],['Name on the card','NGUYEN VAN AN'],['Date of birth','02 Mar 1996']],
+  tax:[['Personal tax code','8123456789'],['Social insurance book number','7912345678'],['Dependants to register','1 child']],
+  bank:[['Bank','Vietcombank'],['Account number','0071000123456'],['Name on the account','NGUYEN VAN AN']]},
+ IN:{n:'India',card:'PAN card',
+  id:[['PAN','ABCPN1234K'],['Aadhaar (last 4 shown)','•••• •••• 4321'],['Name on the card','PRIYA NAIR']],
+  tax:[['Provident fund number (UAN)','1012 3456 7890'],['Tax regime','New regime'],['Previous employer income this year','None']],
+  bank:[['Bank','HDFC Bank'],['Account number','5010 0123 456789'],['IFSC','HDFC0001234'],['Name on the account','PRIYA NAIR']]},
+ NZ:{n:'New Zealand',card:'Passport or driver licence',
+  id:[['Document number','LM123456'],['Name on the document','AROHA WILLIAMS'],['Right to work','New Zealand citizen']],
+  tax:[['IRD number','123-456-789'],['Tax code','M'],['KiwiSaver','Already a member, 3%'],['Student loan','No']],
+  bank:[['Bank','ANZ'],['Account number','01-0123-0456789-00'],['Name on the account','AROHA WILLIAMS']]}
+};
+const SEC=[
+ {k:'about',t:'About you',d:'1 minute',i:'user'},
+ {k:'id',t:'Your identity card',d:'Take a photo, we read it',i:'id'},
+ {k:'bank',t:'Bank account',d:'Where your pay goes',i:'bank'},
+ {k:'tax',t:'Tax and social insurance',d:'Numbers you already have',i:'tax'},
+ {k:'family',t:'Family and emergency contact',d:'1 minute',i:'heart'},
+ {k:'sign',t:'Sign your papers',d:'2 papers',i:'pen'},
+ {k:'day1',t:'Your first day',d:'When, where, what to bring',i:'sun'}
+];
+function fields(k,cc){
+ const c=C[cc];
+ if(k==='about')return [['Date of birth',c.id[2]&&/birth/.test(c.id[2][0])?c.id[2][1]:'14 Aug 1995'],['Home address','Jl. Pajajaran No. 27, Bogor 16143'],['Mobile','+62 812 5550 4471']];
+ if(k==='id')return c.id; if(k==='bank')return c.bank; if(k==='tax')return c.tax;
+ if(k==='family')return [['Marital status','Single'],['Emergency contact','Sri Lestari (mother)'],['Their phone','+62 813 5550 2210']];
+ if(k==='sign')return [['Employment agreement','Signed'],['Code of conduct','Signed']];
+ return [['Laptop','Light laptop, English keyboard'],['Uniform size','M']];
+}
+
+/* ---------- state ---------- */
+const S={view:'plan',cc:'ID',started:false,sec:null,done:{},shot:false,signed:{},sent:false,sel:'budi',acc:{},back:{},added:null};
+const PEOPLE=[
+ {id:'dewi',n:'Dewi Lestari',role:'Field Agronomist',cc:'ID',start:'Mon 14 Dec',days:17,live:true},
+ {id:'priya',n:'Priya Nair',role:'Finance Analyst',cc:'IN',start:'Mon 21 Dec',days:24,done:[],stage:0,flag:['clock','Not opened yet. Reminder sent 2 days ago']},
+ {id:'an',n:'Nguyen Van An',role:'Warehouse Lead',cc:'VN',start:'Wed 2 Dec',days:5,done:['about','id','family'],stage:1,risk:'Bank and tax code missing, 5 days left'},
+ {id:'budi',n:'Budi Santoso',role:'Sales Officer',cc:'ID',start:'Mon 30 Nov',days:3,done:['about','id','bank','tax','family','sign','day1'],stage:2},
+ {id:'mai',n:'Tran Thi Mai',role:'Quality Inspector',cc:'VN',start:'Sat 28 Nov',days:1,done:['about','id','bank','tax','family','sign','day1'],stage:3}
+];
+const COLS=[['Invited','Offer signed. The link has gone out.'],['Filling in','They have started. Reminders run by themselves.'],['Ready for you to check','Everything sent. Nothing is in the employee record yet.'],['Ready for day one','Checked and added as an employee.']];
+const person=id=>PEOPLE.find(p=>p.id===id);
+const initials=n=>n.split(' ').map(w=>w[0]).slice(0,2).join('');
+function doneOf(p){return p.live?SEC.filter(s=>S.done[s.k]).map(s=>s.k):p.done}
+function pct(p){return Math.round(doneOf(p).length/SEC.length*100)}
+function stageOf(p){
+ if(S.added===p.id)return 3;
+ if(!p.live)return p.stage;
+ if(S.sent)return 2; return doneOf(p).length?1:0;
+}
+
+/* ---------- tabs ---------- */
+const TABS=[['plan','The plan','map'],['phone','New person’s phone','phone'],['board','Joining board','board'],['studio','Add employee, after','userplus'],['study','What we studied','book']];
+function go(v){S.view=v;render();window.scrollTo(0,0)}
+function tabs(){$('#tabs').innerHTML=TABS.map(t=>`<button class="tab" role="tab" aria-selected="${S.view===t[0]}" data-go="${t[0]}">${ic(t[2])}<span>${t[1]}</span></button>`).join('')}
+
+/* ---------- view: plan ---------- */
+function vPlan(){
+ const stg=(when,t,cls,rows)=>`<div class="stg ${cls}"><div><div class="when">${when}</div><h3>${t}</h3></div><ul>${rows.map(r=>`<li><i class="who w-${r[0]}"></i><span>${r[1]}</span></li>`).join('')}</ul></div>`;
+ return `<div class="head"><div class="eyebrow">Recommendation</div><h1>Let the new person fill in their own record before day one</h1>
+ <p>Today HR types almost everything into Add employee, then chases the person afterwards. The proposal moves that work to the weeks between the signed offer and the first day, onto the new person's phone, with HR checking before anything is saved.</p></div>
+
+ <div class="grid2">
+  <div class="card pad stack"><h3>Where onboarding lives today</h3>
+   <div><div class="find"><div class="n">${ic('send')}</div><div><b>Hiring › Offers</b><span class="sub">Five steps from “In approval” to “Joined”. The row menu has Record the signed copy, Change the joining date, Confirm they joined.</span></div></div>
+   <div class="find"><div class="n">${ic('brief')}</div><div><b>Hiring › a candidate’s side panel</b><span class="sub">After signing: a countdown and a short “Before they join” list (buddy, laptop choice, meet the team, first-day details).</span></div></div>
+   <div class="find"><div class="n">${ic('layers')}</div><div><b>Hiring › Settings › What a joiner is asked for</b><span class="sub">The candidate’s own page. It collects photos of papers only, no typed details.</span></div></div>
+   <div class="find"><div class="n">${ic('board')}</div><div><b>People › Joiners</b><span class="sub">The welcome checklist and the items the person was asked for. This is the real onboarding board, and it sits outside Hiring.</span></div></div></div>
+  </div>
+  <div class="card pad stack"><h3>What is missing</h3>
+   <div><div class="find"><div class="n no">${ic('x')}</div><div><b>No onboarding screen inside Hiring</b><span class="sub">Hiring stops at “Joined” and hands over. That is why you could not find it there.</span></div></div>
+   <div class="find"><div class="n no">${ic('x')}</div><div><b>The person cannot type their details before they are an employee</b><span class="sub">The welcome link is only sent after HR has finished Add employee and the hire is approved.</span></div></div>
+   <div class="find"><div class="n no">${ic('x')}</div><div><b>The link needs a password</b><span class="sub">The person must create a sign-in first. People who have no email cannot use it at all.</span></div></div>
+   <div class="find"><div class="n no">${ic('x')}</div><div><b>Nothing after the first week</b><span class="sub">No 30, 60 or 90 day check-in, and no reminder before the trial period ends.</span></div></div></div>
+  </div>
+ </div>
+
+ <div class="stack"><div class="row"><h3 style="font-size:17px">The proposed journey</h3><span class="sp"></span>
+  <div class="legend"><span><i class="who w-new"></i>New person</span><span><i class="who w-hr"></i>HR</span><span><i class="who w-mgr"></i>Manager, IT, buddy</span><span><i class="who w-sys"></i>Happens by itself</span></div></div>
+ <div class="tl">
+  ${stg('Day of signing','Offer signed','',[['sys','Joining portal link goes to their phone or personal email'],['sys','They appear on the Joining board'],['mgr','Manager is asked to name a buddy']])}
+  ${stg('2 to 3 weeks before','They fill in','new',[['new','Opens the link with a one-time code. No password'],['new','Photo of identity card, bank, tax numbers, emergency contact'],['new','Signs the agreement and policies'],['sys','Reminders every 3 days; HR is told if it stalls']])}
+  ${stg('About a week before','HR checks','new',[['hr','Accepts each item or sends it back with a note'],['hr','One press: Add as employee. Six of seven steps are already filled'],['hr','Second person approves the bank account, as today']])}
+  ${stg('First day','Day one','',[['new','Same link now shows the first-day plan and their sign-in'],['mgr','Laptop, tool access, introductions'],['hr','Looks at the original papers']])}
+  ${stg('Day 7, 30, 60, 90','First 90 days','new',[['new','Two-question check-in on the phone'],['mgr','Short check-in note at 30 and 60 days'],['hr','Reminder 14 days before the trial period ends']])}
+ </div></div>
+
+ <div class="card"><div class="pad"><h3>What happens to the seven steps of Add employee</h3><p class="sub">The screen stays. It simply arrives filled in.</p></div>
+ <div class="tw"><table><thead><tr><th>Step</th><th>Today</th><th>Proposed</th></tr></thead><tbody>
+  <tr><td><b>1 Who is joining</b></td><td>HR types, or brings across from Hiring</td><td><span class="chip p">From Hiring</span> Name, first day, personal contact</td></tr>
+  <tr><td><b>2 Role and place</b></td><td>HR picks team, job, country of work</td><td><span class="chip p">From Hiring</span> Already on the role and the offer</td></tr>
+  <tr><td><b>3 Contract and pay</b></td><td>HR types the wage</td><td><span class="chip p">From Hiring</span> Wage, contract type and trial period from the signed offer</td></tr>
+  <tr><td><b>4 Schedule and time off</b></td><td>Team defaults</td><td><span class="chip">No change</span> Team defaults</td></tr>
+  <tr><td><b>5 Details and documents</b></td><td>8 items asked for <i>after</i> the record exists</td><td><span class="chip teal">From the new person</span> Sent before day one, checked by HR</td></tr>
+  <tr><td><b>6 Welcome and first day</b></td><td>Checklist starts when HR finishes</td><td><span class="chip">Starts earlier</span> Begins on signing, so the buddy and laptop are ready</td></tr>
+  <tr><td><b>7 Check and add</b></td><td>Last of seven steps</td><td><span class="chip ok">The only step left</span> One look, one press</td></tr>
+ </tbody></table></div></div>
+
+ <div class="stack"><h3 style="font-size:17px">Three choices for you</h3>
+ <div class="grid2">
+  <div class="dec"><h4>1. Open the portal with a one-time code instead of a password?</h4><p class="sub">Easier for field and hotel staff with no email. It reverses an earlier decision to keep bank and identity details behind a full sign-in. HR’s check and the second-person bank approval stay.</p></div>
+  <div class="dec"><h4>2. Show the Joining board inside Hiring as well as People?</h4><p class="sub">One board, two doors. Recruiters see it as the last tab in Hiring; HR sees the same thing under People › Joiners.</p></div>
+  <div class="dec"><h4>3. Build the 90-day check-ins now or later?</h4><p class="sub">The portal and the HR check give most of the benefit. Check-ins can follow as a second stage.</p></div>
+ </div>
+ <div class="row"><button class="btn pri" data-go="phone">${ic('phone')}See what the new person sees</button><button class="btn out" data-go="board">${ic('board')}See what HR sees</button></div></div>`;
+}
+
+/* ---------- view: phone ---------- */
+function phoneScreen(){
+ const done=SEC.filter(s=>S.done[s.k]).length, p=Math.round(done/SEC.length*100);
+ if(S.sent)return {title:'Demo Farms',body:`<div class="hello"><span class="chip ok">${ic('check')}Sent to HR</span><h2>All done, Dewi. See you on Monday 14 December.</h2><p class="sub">HR will check what you sent. If anything needs fixing you will get a message here.</p></div>
+  <div class="msg"><div class="av">${ic('sun')}</div><div><b>Your first day</b><br>8:00 am, Bogor office, Jl. Raya Pajajaran 88.<br>Ask for Rina Wijaya at the front desk.<br>Bring your original identity card and tax card.</div></div>
+  <div class="msg"><div class="av t">AP</div><div><b>Agus Pratama, your buddy</b><br>“Message me any time before you start. Lunch is on me on day one.”</div></div>
+  ${S.done.bank==='later'?`<button class="sec later" data-sec="bank"><div class="si">${ic('bank')}</div><div><b>Bank account still to add</b><small>Add it before 10 December to be in the first pay</small></div></button>`:''}`,foot:''};
+ if(!S.started)return {title:'Demo Farms',body:`<div class="hello"><span class="chip p">${ic('lock')}Opened with a code sent to +62 812 •••• 4471</span><h2>Welcome to Demo Farms, Dewi</h2><p>You start as <b>Field Agronomist</b> on <b>Monday 14 December</b>, in 17 days.</p></div>
+  <div class="msg"><div class="av">RW</div><div><b>Rina Wijaya, your manager</b><br>“We are glad you are joining the Bogor team. A few details now means your first pay arrives on time and your first morning is about the work, not paperwork.”</div></div>
+  <div class="have"><b>About 10 minutes.</b> You can stop at any point and come back with the same link. Have your identity card, tax card and bank details nearby.</div>
+  <div class="row"><span class="chip">Bahasa Indonesia</span><span class="chip p">English</span></div>`,
+  foot:`<button class="btn pri wide" data-act="start">Start ${ic('arrow')}</button>`};
+ if(S.sec){
+  const s=SEC.find(x=>x.k===S.sec), f=fields(s.k,S.cc), c=C[S.cc]; let body='';
+  if(s.k==='about')body=`<div class="have">${ic('check')} <b>We already have</b> your name, email and phone from your application. You will not be asked again.</div>`+f.slice(0,2).map(inp).join('');
+  else if(s.k==='id')body=!S.shot?`<p class="sub">${c.card}. Lay it flat in good light.</p><button class="shot" data-act="shot">${ic('cam')}Take a photo of your card</button><button class="btn ghost sm" data-act="shot">Type it in instead</button>`
+   :`<div class="have"><b>We read this from your card.</b> Please check each line and correct anything wrong.</div>`+f.map(x=>inp(x,0,'read')).join('');
+  else if(s.k==='bank')body=`<p class="sub">Your pay is sent here. The name must match your identity card.</p>`+f.map(inp).join('');
+  else if(s.k==='tax')body=`<p class="sub">These are the numbers ${c.n} asks for. Leave any you do not have yet; HR will help you get one.</p>`+f.map(inp).join('');
+  else if(s.k==='family')body=`<p class="sub">Marital status and dependants set how much tax is taken from your pay.</p>`+f.map(inp).join('');
+  else if(s.k==='sign')body=`<p class="sub">Read each paper, then sign with your finger.</p>`+['Employment agreement','Code of conduct'].map((d,i)=>`<div class="doc">${ic('tax')}<b>${d}</b>${S.signed[i]?`<span class="chip ok">${ic('check')}Signed</span>`:`<button class="btn sm out" data-sign="${i}">Read and sign</button>`}</div>`).join('');
+  else body=`<div class="msg"><div class="av">${ic('sun')}</div><div><b>Monday 14 December, 8:00 am</b><br>Bogor office, Jl. Raya Pajajaran 88. Ask for Rina Wijaya.<br>Bring your original identity card and tax card.</div></div><div class="msg"><div class="av t">AP</div><div><b>Agus Pratama is your buddy</b><br>Field Agronomist, 3 years here.</div></div><p class="sub">Two quick choices so things are ready:</p>`+f.map(inp).join('');
+  const ready=s.k==='id'?S.shot:s.k==='sign'?(S.signed[0]&&S.signed[1]):true;
+  return {title:s.t,back:true,body,foot:`<button class="btn pri wide" data-act="save" ${ready?'':'disabled'}>Save and continue</button>${s.k==='bank'?'<button class="btn ghost wide sm" data-act="later">I do not have it with me. Remind me later</button>':''}`};
+ }
+ return {title:'Before you join',body:`<div class="card pad row" style="flex-wrap:nowrap"><div class="ring" style="--v:${p}"><span class="num">${p}%</span></div><div><b>${done} of ${SEC.length} done</b><div class="sub">Saved as you go. Starts in 17 days.</div></div></div>`+
+  SEC.map(s=>{const d=S.done[s.k];return `<button class="sec ${d===true?'done':d?'later':''}" data-sec="${s.k}"><div class="si">${ic(d===true?'check':d?'clock':s.i)}</div><div><b>${s.t}</b><small>${d===true?'Done':d?'To finish later':s.d}</small></div></button>`}).join(''),
+  foot:`<button class="btn pri wide" data-act="send" ${done===SEC.length?'':'disabled'}>${ic('send')}Send to HR</button>${done<SEC.length?`<button class="btn ghost wide sm" data-act="fill">Fill the rest for me (demo shortcut)</button>`:''}`};
+}
+function inp(x,i,cls){return `<div class="fld"><label>${esc(x[0])}</label><input class="${cls||''}" value="${esc(x[1])}" aria-label="${esc(x[0])}"></div>`}
+function vPhone(){
+ const s=phoneScreen();
+ const notes=[['lock','No password, no app','A link by text message or personal email, opened with a one-time code. Works on any phone.'],
+  ['layers','Never asked twice','Name, contact, role, wage and start date come from Hiring and the signed offer.'],
+  ['cam','A photo instead of typing','The card is read for them; they only check it. They can still type it in.'],
+  ['map','The form follows the country of work','Indonesia, Vietnam, India and New Zealand each ask for their own numbers.'],
+  ['clock','Stop and come back','Every section saves by itself. A missing bank account does not block the rest.'],
+  ['eye','HR sees it first','Nothing reaches the employee record until HR has checked it.']];
+ return `<div class="head"><div class="eyebrow">What the new person sees</div><h1>Ten minutes on a phone, any time before day one</h1><p>This is Dewi, who signed her offer this morning. Tap through it as she would. What you do here shows up on the Joining board.</p></div>
+ <div class="phonewrap">
+  <div class="phone"><div class="screen">
+   <div class="pbar">${s.back?`<button class="btn ghost sm" data-act="hub" aria-label="Back">${ic('back')}</button>`:`<i class="av" style="width:28px;height:28px">${ic('sun')}</i>`}<b>${s.title}</b>${S.started&&!S.sent?`<span class="chip ok">Saved</span>`:''}</div>
+   <div class="pbody">${s.body}</div>${s.foot?`<div class="pfoot">${s.foot}</div>`:''}
+  </div></div>
+  <div class="stack">
+   <div class="card pad stack"><div class="row"><div><h3>The form changes with the country of work</h3><p class="sub">Open “Your identity card”, “Bank account” or “Tax and social insurance” and switch country.</p></div></div>
+    <div class="seg" role="group" aria-label="Country of work">${Object.keys(C).map(k=>`<button aria-pressed="${S.cc===k}" data-cc="${k}">${C[k].n}</button>`).join('')}</div>
+    <div class="tw"><table><thead><tr><th>${C[S.cc].n} asks for</th><th>Example</th></tr></thead><tbody>${[...C[S.cc].id.slice(0,1),...C[S.cc].tax,...C[S.cc].bank.slice(0,2)].map(r=>`<tr><td>${esc(r[0])}</td><td class="num">${esc(r[1])}</td></tr>`).join('')}</tbody></table></div></div>
+   <div class="card pad stack"><h3>What is different from today</h3>${notes.map(n=>`<div class="note"><div class="n">${ic(n[0])}</div><div><b>${n[1]}</b><span class="sub">${n[2]}</span></div></div>`).join('')}</div>
+   <div class="row"><button class="btn out" data-act="reset">Start Dewi again</button><button class="btn pri" data-go="board">${ic('board')}See her on the Joining board</button></div>
+  </div>
+ </div>`;
+}
+
+/* ---------- view: board ---------- */
+function card(p){
+ const st=stageOf(p), v=st===3?100:pct(p), later=p.live&&S.done.bank==='later';
+ let flag='';
+ if(p.risk&&st<2)flag=`<span class="chip err">${ic('alert')}${p.risk}</span>`;
+ else if(p.flag&&st===0)flag=`<span class="chip warn">${ic(p.flag[0])}${p.flag[1]}</span>`;
+ else if(st===2)flag=`<span class="chip p">${ic('eye')}Waiting for your check</span>`;
+ else if(st===3)flag=`<span class="chip ok">${ic('check')}Employee record made</span>`;
+ if(later&&st>=1)flag+=`<span class="chip warn">${ic('bank')}Bank account still to come</span>`;
+ return `<button class="pc ${S.sel===p.id?'sel':''}" data-sel="${p.id}"><div class="who2"><i class="av ${p.live?'t':''}">${initials(p.n)}</i><div><b>${p.n}</b><small>${p.role} · ${C[p.cc].n}</small></div></div>
+  <div class="row" style="gap:6px"><small class="num">Starts ${p.start} · ${p.days} day${p.days>1?'s':''}</small><span class="sp"></span><small class="num"><b style="display:inline">${v}%</b></small></div>
+  <div class="bar"><i style="width:${v}%"></i></div><div class="row" style="gap:5px">${flag}</div></button>`;
+}
+function review(p){
+ const st=stageOf(p), d=doneOf(p), items=SEC.filter(s=>s.k!=='day1');
+ const allAcc=items.every(s=>S.acc[p.id+s.k]);
+ const rows=items.map(s=>{
+  const has=d.includes(s.k), later=p.live&&S.done[s.k]==='later', a=S.acc[p.id+s.k], b=S.back[p.id+s.k];
+  const f=has&&!later?fields(s.k,p.cc).map(x=>[x[0],/Name on/.test(x[0])?p.n.toUpperCase():x[1]]):[];
+  let act='';
+  if(st===3)act=`<span class="chip ok">${ic('check')}In the record</span>`;
+  else if(!has)act=`<span class="chip">Not sent yet</span>`;
+  else if(later)act=`<span class="chip warn">${ic('clock')}They will add it later</span>`;
+  else if(a)act=`<span class="chip ok">${ic('check')}Accepted</span>`;
+  else if(b)act=`<span class="chip warn">${ic('back')}Sent back to fix</span>`;
+  else if(st===2)act=`<button class="btn sm out" data-acc="${s.k}">${ic('check')}Accept</button><button class="btn sm ghost" data-back="${s.k}">Send back</button>`;
+  else act=`<span class="chip teal">Sent</span>`;
+  const src=s.k==='about'?'<span class="chip p">Partly from Hiring</span>':s.k==='id'&&has?'<span class="chip teal">Read from the photo</span>':'';
+  return `<div class="item"><div class="si" style="width:32px;height:32px;border-radius:9px;background:var(--p-soft);color:var(--p);display:grid;place-items:center;flex:none">${ic(s.i)}</div><div class="v"><b>${s.t}</b> ${src}${f.length?`<dl>${f.map(x=>`<dt>${esc(x[0])}</dt><dd class="num">${esc(x[1])}</dd>`).join('')}</dl>`:''}</div><div class="row" style="gap:6px">${act}</div></div>`}).join('');
+ let foot='';
+ if(st===3)foot=`<div class="have"><b>${p.n} is an employee.</b> From here they follow the welcome checklist and the 7, 30, 60 and 90 day check-ins.</div>`;
+ else if(st===2)foot=`<div class="row"><button class="btn out" data-act="accall">Accept everything</button><span class="sp"></span><button class="btn pri" data-act="toadd" ${allAcc||items.every(s=>S.acc[p.id+s.k]||(p.live&&S.done[s.k]==='later'))?'':'disabled'}>${ic('userplus')}Add as employee</button></div><p class="sub">Accepting saves nothing yet. The details go into the employee record only when you press Add as employee.</p>`;
+ else foot=`<div class="row"><button class="btn out" data-act="remind">${ic('bell')}Send a reminder now</button><button class="btn ghost" data-act="remind">Copy their link</button><span class="sp"></span><span class="sub" id="rem"></span></div>`;
+ return `<div class="card"><div class="pad row" style="border-bottom:1px solid var(--line)"><i class="av ${p.live?'t':''}">${initials(p.n)}</i><div><h3>${p.n}</h3><p class="sub">${p.role} · ${C[p.cc].n} · starts ${p.start}</p></div><span class="sp"></span><span class="chip">${COLS[st][0]}</span></div>
+  <div class="pad" style="padding-block:4px">${rows}</div><div class="pad stack" style="border-top:1px solid var(--line)">${foot}</div></div>`;
+}
+function vBoard(){
+ const cols=COLS.map((c,i)=>{const ps=PEOPLE.filter(p=>stageOf(p)===i);return `<div class="col"><h3>${c[0]}<i class="num">${ps.length}</i></h3><p>${c[1]}</p>${ps.map(card).join('')||'<div class="empty">Nobody here</div>'}</div>`}).join('');
+ const risk=PEOPLE.filter(p=>p.risk&&stageOf(p)<2).length, chk=PEOPLE.filter(p=>stageOf(p)===2).length;
+ return `<div class="head"><div class="eyebrow">What HR sees · Hiring › Joining, and People › Joiners</div><h1>Everyone who has signed and not yet started</h1><p>A person lands here the moment their offer is signed. HR never types their details; HR checks them. Click a card to open it.</p></div>
+ <div class="kpis"><div class="kpi"><b class="num">${PEOPLE.length}</b><span>joining in the<br>next 30 days</span></div><div class="kpi"><b class="num" style="color:var(--p)">${chk}</b><span>waiting for<br>your check</span></div><div class="kpi"><b class="num" style="color:var(--err)">${risk}</b><span>at risk of missing<br>the first pay</span></div></div>
+ <div class="board">${cols}</div>${review(person(S.sel))}`;
+}
+
+/* ---------- view: studio after ---------- */
+function vStudio(){
+ const p=person(S.added||S.sel)||PEOPLE[3], f=n=>p.n.split(' ')[0];
+ const steps=[['Who is joining','From Hiring'],['Role and place','From Hiring'],['Contract and pay','From the signed offer'],['Schedule and time off','Team defaults'],['Details and documents','From '+f()+', checked by you'],['Welcome and first day','Started on signing']];
+ const sums=[['user','Who is joining',`${p.n} · first day ${p.start}`,'From Hiring','p'],['brief','Role and place',`${p.role} · ${C[p.cc].n}`,'From Hiring','p'],['tax','Contract and pay','Wage, contract type and trial period as signed','From the signed offer','p'],
+  ['id','Identity, tax and social insurance',[...C[p.cc].id.slice(0,1),...C[p.cc].tax.slice(0,2)].map(x=>x[0]).join(' · '),'From '+f(),'teal'],['bank','Bank account',C[p.cc].bank[0][1]+' · a second person will approve it','From '+f(),'teal'],['pen','Signed papers','Employment agreement · Code of conduct','From '+f(),'teal'],['sun','Welcome checklist','Buddy named, laptop chosen, 3 steps already done','Started on signing','']];
+ const done=S.added===p.id;
+ return `<div class="head"><div class="eyebrow">People › Employees › Add employee</div><h1>The same screen, already filled in</h1><p>Add employee stays exactly where it is. When HR opens it from the Joining board, six of the seven steps arrive done, each showing where its answer came from.</p></div>
+ <div class="cmp"><div><span class="lbl">Today</span><b class="num">7 steps</b><span class="sub">typed by HR, then 8 items chased from the new person after they are added</span></div><div class="now"><span class="lbl">Proposed</span><b class="num">1 step</b><span class="sub">HR checks and presses Add. Nothing is chased after day one</span></div></div>
+ <div class="studio">
+  <div class="stack" style="gap:2px"><div class="lbl" style="padding:0 10px 6px">Already done</div>
+   ${steps.map(s=>`<div class="step"><div class="dot">${ic('check')}</div><div><b>${s[0]}</b><small>${s[1]}</small></div></div>`).join('')}
+   <div class="lbl" style="padding:10px 10px 6px">Finish</div><div class="step cur"><div class="dot">${done?ic('check'):'7'}</div><div><b>Check and add</b><small>${done?'Done':'The only step left'}</small></div></div></div>
+  <div class="stack">
+   <div class="card"><div class="pad" style="border-bottom:1px solid var(--line)"><div class="eyebrow">Step 7 of 7</div><h3 style="font-size:20px">${done?p.n+' is now an employee':'Check and add '+p.n}</h3></div>
+    <div class="pad" style="padding-block:4px">${sums.map(s=>`<div class="sum"><div class="si" style="width:32px;height:32px;border-radius:9px;background:var(--p-soft);color:var(--p);display:grid;place-items:center;flex:none">${ic(s[0])}</div><div class="v"><b>${s[1]}</b><div class="sub">${esc(s[2])}</div></div><span class="chip ${s[4]}">${s[3]}</span></div>`).join('')}</div>
+    <div class="pad stack" style="border-top:1px solid var(--line)">${done?`<div class="have"><b>Done.</b> The employee record, contract and sign-in exist. The bank account is waiting for a second person to approve. ${f()} keeps the same link, which now shows the first-day plan.</div><div class="row"><button class="btn out" data-go="board">Back to the Joining board</button></div>`
+     :`<div class="row"><button class="btn ghost" data-go="board">${ic('back')}Back</button><span class="sp"></span><button class="btn out">Change something</button><button class="btn pri" data-act="add" data-id="${p.id}">${ic('userplus')}Add ${f()} as an employee</button></div>`}</div></div>
+  </div>
+ </div>`;
+}
+
+/* ---------- view: study ---------- */
+function vStudy(){
+ const P=[['One action carries hiring data across','Nothing typed twice. The new person only confirms and fills gaps.','Workday, SAP SuccessFactors, Zoho, Greenhouse','part','Works for name, role, wage. Papers come across as photos only'],
+  ['A “joining” state before the employee record','The person is neither candidate nor employee until HR accepts.','Zoho, Greenhouse, SAP SuccessFactors','no','The record must exist before they can type anything'],
+  ['A link that needs no password','Sent to the personal phone or email, opened on mobile.','Enboarder, Workday (for candidates)','no','The welcome link needs a new password'],
+  ['The country decides what is asked','Papers and numbers change with where the person works.','Deel, Rippling, HiBob','have','Bank and tax forms already follow the country'],
+  ['Photo of the card, read automatically','The person checks rather than types.','SAP SuccessFactors, Darwinbox','no','No card reading yet'],
+  ['Save and come back; skip what is missing','A missing bank account does not block the rest.','SAP SuccessFactors, Employment Hero','part','Each page saves, but there is no single progress view'],
+  ['HR checks before payroll sees it','A review step between the person and the record.','Employment Hero, Mekari Talenta, SAP SuccessFactors','have','Bank and tax changes are already checked'],
+  ['Tasks timed from the first day','“10 days before”, “day one”, “day 30”, for manager, IT and buddy.','HiBob, Personio, Workday','part','Before-they-join list and welcome checklist exist; nothing after week one'],
+  ['Reminders that run by themselves','Chasing is automatic; HR is told only when someone stalls.','Greenhouse, Personio, Gusto','part','“Send again” is a button HR presses'],
+  ['A first-day card','When, where, who to ask for, what to bring, who the buddy is.','Workday, BambooHR, Sapling','part','A to-do for the recruiter to send by hand'],
+  ['Check-ins at 30, 60 and 90 days','Short questions to the person and the manager; trial period reminder.','HiBob, Enboarder','no','Not built']];
+ const st={have:['ok','Have it'],part:['warn','Partly'],no:['err','Missing']};
+ return `<div class="head"><div class="eyebrow">What we studied</div><h1>How the leading systems bring a new person in</h1><p>Sixteen products were read from their own help pages: Workday, SAP SuccessFactors, BambooHR, Rippling, Gusto, Deel, HiBob, Personio, Greenhouse, Ashby, Lever, Employment Hero, Mekari Talenta, Darwinbox, Zoho and Enboarder. They agree on eleven habits.</p></div>
+ <div class="card"><div class="tw"><table><thead><tr><th>What the best ones do</th><th>Seen in</th><th>Payobook today</th></tr></thead><tbody>
+ ${P.map(r=>`<tr><td><b>${r[0]}</b><div class="sub">${r[1]}</div></td><td class="sub">${r[2]}</td><td><span class="chip ${st[r[3]][0]}">${st[r[3]][1]}</span><div class="sub">${r[4]}</div></td></tr>`).join('')}
+ </tbody></table></div></div>
+ <div class="grid2">
+  <div class="card pad stack"><h3>Where even the leaders fall short</h3>
+   <div class="note"><div class="n">${ic('lock')}</div><div><b>Most still need an account</b><span class="sub">Invitations go missing and people get stuck signing in on a phone. A code-only link avoids this.</span></div></div>
+   <div class="note"><div class="n">${ic('layers')}</div><div><b>Everything shown at once</b><span class="sub">Long lists on day one put people off. Show only what is due now.</span></div></div>
+   <div class="note"><div class="n">${ic('board')}</div><div><b>No clear board of everyone joining</b><span class="sub">None documents a single view with progress and “at risk of missing first pay”. This is a chance to be ahead.</span></div></div>
+   <div class="note"><div class="n">${ic('clock')}</div><div><b>Silence between signing and day one</b><span class="sub">The most reported complaint from new starters. The manager’s note and buddy message fill it.</span></div></div></div>
+  <div class="card pad stack"><h3>Suggested order of building</h3>
+   <div class="note"><div class="n num">1</div><div><b>The joining portal and HR’s check</b><span class="sub">Code-only link, typed details by country, sign papers, HR accepts, Add employee arrives filled.</span></div></div>
+   <div class="note"><div class="n num">2</div><div><b>The Joining board in Hiring and People</b><span class="sub">Progress, automatic reminders, at-risk flags, first-day card.</span></div></div>
+   <div class="note"><div class="n num">3</div><div><b>Card reading</b><span class="sub">Photo of the identity card filled in for them. Needs a reading service to be chosen.</span></div></div>
+   <div class="note"><div class="n num">4</div><div><b>First 90 days</b><span class="sub">Check-ins at 7, 30, 60, 90 days and the trial period reminder.</span></div></div></div>
+ </div>`;
+}
+
+/* ---------- render + events ---------- */
+function render(){tabs();$('#main').innerHTML={plan:vPlan,phone:vPhone,board:vBoard,studio:vStudio,study:vStudy}[S.view]()}
+document.addEventListener('click',e=>{
+ const t=e.target.closest('[data-go],[data-act],[data-sec],[data-cc],[data-sign],[data-sel],[data-acc],[data-back]'); if(!t)return;
+ const d=t.dataset, p=person(S.sel);
+ if(d.go){go(d.go);return}
+ if(d.cc)S.cc=d.cc;
+ if(d.sec)S.sec=d.sec;
+ if(d.sign!==undefined)S.signed[d.sign]=true;
+ if(d.sel)S.sel=d.sel;
+ if(d.acc){S.acc[p.id+d.acc]=true;delete S.back[p.id+d.acc]}
+ if(d.back)S.back[p.id+d.back]=true;
+ switch(d.act){
+  case 'start':S.started=true;break; case 'hub':S.sec=null;break; case 'shot':S.shot=true;break;
+  case 'save':S.done[S.sec]=true;S.sec=null;break; case 'later':S.done.bank='later';S.sec=null;break;
+  case 'fill':SEC.forEach(s=>{if(!S.done[s.k])S.done[s.k]=true});S.shot=true;S.signed={0:true,1:true};break;
+  case 'send':S.sent=true;S.sel='dewi';break;
+  case 'reset':Object.assign(S,{started:false,sec:null,done:{},shot:false,signed:{},sent:false});if(S.added==='dewi')S.added=null;Object.keys(S.acc).forEach(k=>{if(k.startsWith('dewi'))delete S.acc[k]});break;
+  case 'accall':SEC.forEach(s=>{if(!(p.live&&S.done[s.k]==='later')){S.acc[p.id+s.k]=true;delete S.back[p.id+s.k]}});break;
+  case 'toadd':go('studio');return;
+  case 'add':S.added=d.id;S.sel=d.id;break;
+  case 'remind':{const r=$('#rem');if(r)r.textContent='Reminder sent just now.';return}
+ }
+ render();
+});
+$('#logo').innerHTML=ic('userplus');
+render();
+</script>
