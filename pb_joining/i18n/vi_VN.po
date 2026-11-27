@@ -328,7 +328,9 @@ msgstr "Ngày cấp"
 
 #. module: pb_joining
 #. odoo-python
+#. odoo-javascript
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
 msgid "Language"
 msgstr "Ngôn ngữ"
 
@@ -454,7 +456,10 @@ msgstr "Lưu và tiếp tục"
 
 #. module: pb_joining
 #. odoo-python
+#. odoo-javascript
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__state__saved
 msgid "Saved"
 msgstr "Đã lưu"
 
@@ -472,7 +477,9 @@ msgstr "Thông tin được lưu theo từng phần. Bạn sẽ bắt đầu sau
 
 #. module: pb_joining
 #. odoo-python
+#. odoo-javascript
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
 msgid "Send again"
 msgstr "Gửi lại"
 
@@ -490,7 +497,10 @@ msgstr "Gửi cho nhân sự"
 
 #. module: pb_joining
 #. odoo-python
+#. odoo-javascript
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__state__returned
 msgid "Sent back to fix"
 msgstr "Đã gửi lại để sửa"
 
@@ -593,6 +603,7 @@ msgstr "Đây là các mã số được yêu cầu ở %(country)s. Bạn có t
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/board_review.py:0
 msgid "This link is not active"
 msgstr "Liên kết này không còn hoạt động"
 
@@ -605,12 +616,14 @@ msgstr "Trang này chỉ dành cho %(name)s. Nếu đó không phải là bạn,
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__state__later
 msgid "To finish later"
 msgstr "Để hoàn thành sau"
 
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/board_review.py:0
 msgid "Too many tries. Wait 15 minutes, then ask for a new code."
 msgstr "Bạn đã thử quá nhiều lần. Hãy đợi 15 phút rồi yêu cầu mã mới."
 
@@ -701,6 +714,7 @@ msgstr "Bạn có thể dừng bất cứ lúc nào và quay lại bằng liên 
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/models/board.py:0
+#: code:addons/pb_joining/models/board_review.py:0
 msgid "You cannot open this joining."
 msgstr "Bạn không thể mở hồ sơ nhận việc này."
 
@@ -731,6 +745,7 @@ msgstr "Mã của bạn cho {{brand}} là {{code}}. Mã có hiệu lực trong 1
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/board_review.py:0
 msgid "Your first day"
 msgstr "Ngày đầu đi làm"
 
@@ -763,3 +778,1657 @@ msgstr "Giấy tờ của bạn"
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "Your pay is sent here. The name on the account must match your identity card."
 msgstr "Lương sẽ được chuyển vào tài khoản này. Tên chủ tài khoản phải khớp với thẻ căn cước của bạn."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "%(who)s viewed a number in %(item)s."
+msgstr "%(who)s đã xem một số trong mục %(item)s."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "8:00 am"
+msgstr "8:00 sáng"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "A note from the manager"
+msgstr "Lời nhắn của quản lý"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Accept"
+msgstr "Chấp nhận"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Accept everything"
+msgstr "Chấp nhận tất cả"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__state__accepted
+msgid "Accepted"
+msgstr "Đã được chấp nhận"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid ""
+"Accepting saves nothing yet. The details go into the employee record only "
+"when you press Add in the next screen."
+msgstr ""
+"Việc chấp nhận chưa lưu thông tin vào hồ sơ nhân viên. Thông tin chỉ được "
+"lưu khi bạn nhấn Thêm ở màn hình tiếp theo."
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_needaction
+msgid "Action Needed"
+msgstr "Cần xử lý"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__actions_at
+msgid "Actions At"
+msgstr "Thời điểm thao tác"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_ids
+msgid "Activities"
+msgstr "Hoạt động"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Biểu tượng ngoại lệ hoạt động"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_state
+msgid "Activity State"
+msgstr "Trạng thái hoạt động"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Biểu tượng loại hoạt động"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Add as employee"
+msgstr "Thêm làm nhân viên"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__added_at
+msgid "Added At"
+msgstr "Thời điểm thêm"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Ask for"
+msgstr "Người cần gặp"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Ask the recruiter handling this offer or HR to pass on the link."
+msgstr ""
+"Hãy nhờ người tuyển dụng phụ trách đề nghị này hoặc bộ phận nhân sự chuyển "
+"liên kết."
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__at_risk
+msgid "At Risk"
+msgstr "Có nguy cơ"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "At risk"
+msgstr "Có nguy cơ"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "At risk: %(missing)s, %(days)s days left"
+msgstr "Có nguy cơ: %(missing)s, còn %(days)s ngày"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__attachment_ids
+msgid "Attachment"
+msgstr "Tệp đính kèm"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_attachment_count
+msgid "Attachment Count"
+msgstr "Số tệp đính kèm"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__available
+msgid "Available"
+msgstr "Khả dụng"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__bank_later
+msgid "Bank Later"
+msgstr "Bổ sung ngân hàng sau"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Bank account still to come"
+msgstr "Chờ bổ sung tài khoản ngân hàng"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Bank still to come"
+msgstr "Chờ tài khoản ngân hàng"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Before they join"
+msgstr "Trước khi nhận việc"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__cancel_reason
+msgid "Cancel Reason"
+msgstr "Lý do hủy"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__cancelled_at
+msgid "Cancelled At"
+msgstr "Thời điểm hủy"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__applicant_id
+msgid "Candidate"
+msgstr "Ứng viên"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Change the first day"
+msgstr "Đổi ngày đầu đi làm"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Checked and added as an employee."
+msgstr "Đã kiểm tra và thêm làm nhân viên."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Choose an item the person sent."
+msgstr "Chọn một mục người này đã gửi."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Close the link"
+msgstr "Đóng liên kết"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_by_hr
+msgid "Code By Hr"
+msgstr "Mã do nhân sự cấp"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_delivery_failed
+msgid "Code Delivery Failed"
+msgstr "Không gửi được mã"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_hash
+msgid "Code Hash"
+msgstr "Mã băm của mã xác minh"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_issue_count
+msgid "Code Issue Count"
+msgstr "Số lần cấp mã"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_issued_at
+msgid "Code Issued At"
+msgstr "Thời điểm cấp mã"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_issues
+msgid "Code Issues"
+msgstr "Các lần cấp mã"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_locked_until
+msgid "Code Locked Until"
+msgstr "Khóa mã đến"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_tries
+msgid "Code Tries"
+msgstr "Số lần thử mã"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_until
+msgid "Code Until"
+msgstr "Mã có hiệu lực đến"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_window_start
+msgid "Code Window Start"
+msgstr "Bắt đầu khoảng thời gian cấp mã"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Code copied."
+msgstr "Đã sao chép mã."
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_res_company
+msgid "Companies"
+msgstr "Các công ty"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__company_id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Copy"
+msgstr "Bản sao"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Copy link"
+msgstr "Sao chép liên kết"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Copy the link and show a code to pass on."
+msgstr "Sao chép liên kết và hiển thị mã để chuyển cho người nhận."
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Country of work"
+msgstr "Quốc gia làm việc"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__create_uid
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__create_uid
+msgid "Created by"
+msgstr "Người tạo"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__create_date
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__day_ask_for
+msgid "Day Ask For"
+msgstr "Người cần gặp ngày đầu"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__day_bring
+msgid "Day Bring"
+msgstr "Vật dụng cần mang"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__day_opened
+msgid "Day Opened"
+msgstr "Đã xem thông tin ngày đầu"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__day_place
+msgid "Day Place"
+msgstr "Địa điểm ngày đầu"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__day_time
+msgid "Day Time"
+msgstr "Giờ đến ngày đầu"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__decided_by_id
+msgid "Decided By"
+msgstr "Người quyết định"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__decided_on
+msgid "Decided On"
+msgstr "Ngày quyết định"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__department_id
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_joining_item
+msgid "Details before joining"
+msgstr "Thông tin trước khi nhận việc"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_ir_http__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_hiring__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_hiring_message_template__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_hiring_offer__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_board__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_res_company__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__draft
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__email
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__link_mode__email
+msgid "Email"
+msgstr "Email"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Employee record made"
+msgstr "Đã tạo hồ sơ nhân viên"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Everything sent. Nothing is in the employee record yet."
+msgstr "Đã gửi tất cả. Thông tin chưa được lưu vào hồ sơ nhân viên."
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__expiry_date
+msgid "Expiry Date"
+msgstr "Ngày hết hạn"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__state__filling
+msgid "Filling in"
+msgstr "Đang điền"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__first_day
+msgid "First Day"
+msgstr "Ngày đầu đi làm"
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "First day"
+msgstr "Ngày đầu"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "First day soonest"
+msgstr "Ngày nhận việc gần nhất"
+
+#. module: pb_joining
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__need__first_pay
+msgid "First pay"
+msgstr "Kỳ lương đầu tiên"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "First-day details"
+msgstr "Thông tin ngày đầu"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+#: model:ir.model.fields,field_description:pb_joining.field_res_company__pb_joining_day_place
+msgid "First-day place"
+msgstr "Địa điểm ngày đầu"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Flags"
+msgstr "Dấu hiệu"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_follower_ids
+msgid "Followers"
+msgstr "Người theo dõi"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Người theo dõi (Đối tác)"
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Biểu tượng Font Awesome, ví dụ fa-tasks"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__from_hiring
+msgid "From Hiring"
+msgstr "Từ Tuyển dụng"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Full name"
+msgstr "Tên đầy đủ"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Give a reason for closing the joining link."
+msgstr "Hãy cho biết lý do đóng liên kết nhận việc."
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_ir_http
+msgid "HTTP Routing"
+msgstr "Định tuyến HTTP"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__has_message
+msgid "Has Message"
+msgstr "Có tin nhắn"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Hello %(name)s, please finish %(sections)s before %(date)s. %(url)s"
+msgstr ""
+"Chào %(name)s, vui lòng hoàn tất %(sections)s trước ngày %(date)s. %(url)s"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__origin__hiring
+msgid "Hiring"
+msgstr "Tuyển dụng"
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_hiring_message_template
+msgid "Hiring communication template"
+msgstr "Mẫu thông báo tuyển dụng"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__hr_nudged_at
+msgid "Hr Nudged At"
+msgstr "Thời điểm nhắc nhân sự"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_ir_http__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_hiring__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_hiring_message_template__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_hiring_offer__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_board__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__id
+#: model:ir.model.fields,field_description:pb_joining.field_res_company__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_exception_icon
+msgid "Icon"
+msgstr "Biểu tượng"
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Biểu tượng cho biết hoạt động ngoại lệ."
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Nếu được chọn, tin nhắn mới cần bạn chú ý."
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__message_has_error
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Nếu được chọn, một số tin nhắn bị lỗi gửi."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "In the record"
+msgstr "Đã vào hồ sơ"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Invite"
+msgstr "Mời"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Invite someone"
+msgstr "Mời một người"
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__origin__invited
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__state__invited
+msgid "Invited"
+msgstr "Đã mời"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_is_follower
+msgid "Is Follower"
+msgstr "Đang theo dõi"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__issue_date
+msgid "Issue Date"
+msgstr "Ngày cấp"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__item_ids
+msgid "Item"
+msgstr "Tài sản"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__job_id
+msgid "Job"
+msgstr "Công việc"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__job_title
+msgid "Job Title"
+msgstr "Chức danh"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Job title"
+msgstr "Chức danh"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+#: model:ir.model,name:pb_joining.model_pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__joining_id
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__need__joining
+msgid "Joining"
+msgstr "Gia nhập"
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_joining_board
+msgid "Joining board"
+msgstr "Bảng nhận việc"
+
+#. module: pb_joining
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_hiring_message_template__key__joining_code
+msgid "Joining code"
+msgstr "Mã nhận việc"
+
+#. module: pb_joining
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_hiring_message_template__key__joining_back
+msgid "Joining details to fix"
+msgstr "Thông tin nhận việc cần sửa"
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Joining is looked after by the hiring team"
+msgstr "Nhóm tuyển dụng phụ trách phần nhận việc"
+
+#. module: pb_joining
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_hiring_message_template__key__joining_link
+msgid "Joining link"
+msgstr "Liên kết nhận việc"
+
+#. module: pb_joining
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_hiring_message_template__key__joining_reminder
+msgid "Joining reminder"
+msgstr "Lời nhắc nhận việc"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_hiring_message_template__key
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__key
+msgid "Key"
+msgstr "Khoá"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__lang
+msgid "Lang"
+msgstr "Ngôn ngữ"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__last_seen_at
+msgid "Last Seen At"
+msgstr "Lần xem gần nhất"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__write_uid
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__write_uid
+msgid "Last Updated by"
+msgstr "Người cập nhật cuối"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__write_date
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Least complete"
+msgstr "Ít hoàn chỉnh nhất"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__link_copied_at
+msgid "Link Copied At"
+msgstr "Thời điểm sao chép liên kết"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__link_mode
+msgid "Link Mode"
+msgstr "Cách chuyển liên kết"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__link_sent_at
+msgid "Link Sent At"
+msgstr "Thời điểm gửi liên kết"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Link copied."
+msgstr "Đã sao chép liên kết."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Link emailed to %s on %s."
+msgstr "Đã gửi liên kết qua email đến %s vào %s."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Link to pass on"
+msgstr "Liên kết cần chuyển"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__manager_id
+msgid "Manager"
+msgstr "Quản lý"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__manager_note
+msgid "Manager Note"
+msgstr "Lời nhắn của quản lý"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_has_error
+msgid "Message Delivery error"
+msgstr "Lỗi gửi tin nhắn"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Message copied. Paste it into WhatsApp or a text."
+msgstr "Đã sao chép lời nhắn. Dán vào WhatsApp hoặc tin nhắn."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Message sent."
+msgstr "Đã gửi lời nhắn."
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_ids
+msgid "Messages"
+msgstr "Tin nhắn"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Mobile"
+msgstr "Số di động"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "More actions"
+msgstr "Thao tác khác"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Most complete"
+msgstr "Hoàn chỉnh nhất"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Hạn hoạt động của tôi"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__name
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__need
+msgid "Need"
+msgstr "Yêu cầu"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Newest"
+msgstr "Mới nhất"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Next 2 weeks"
+msgstr "Hai tuần tới"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Sự kiện lịch của hoạt động tiếp theo"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Hạn hoạt động tiếp theo"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_summary
+msgid "Next Activity Summary"
+msgstr "Tóm tắt hoạt động tiếp theo"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_type_id
+msgid "Next Activity Type"
+msgstr "Loại hoạt động tiếp theo"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__no_expiry
+msgid "No Expiry"
+msgstr "Không có ngày hết hạn"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Nobody here"
+msgstr "Không có ai"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Nobody is joining yet"
+msgstr "Chưa có ai chuẩn bị nhận việc"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__none_fields
+msgid "None Fields"
+msgstr "Các trường chưa có thông tin"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Not opened yet"
+msgstr "Chưa mở liên kết"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__state__empty
+msgid "Not sent yet"
+msgstr "Chưa gửi"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Số hành động"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_has_error_counter
+msgid "Number of errors"
+msgstr "Số lỗi"
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Số tin nhắn cần xử lý"
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Số tin nhắn bị lỗi gửi"
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_hiring_offer
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__offer_id
+msgid "Offer"
+msgstr "Lời mời làm việc"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Offer signed. The link has gone out."
+msgstr "Đã ký đề nghị. Liên kết đã được gửi."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Open in Joiners"
+msgstr "Mở trong Nhân viên mới"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Open signed copy"
+msgstr "Mở bản đã ký"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Opened"
+msgstr "Ngày mở"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__opened_at
+msgid "Opened At"
+msgstr "Thời điểm mở"
+
+#. module: pb_joining
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__need__optional
+msgid "Optional"
+msgstr "Không bắt buộc"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__origin
+msgid "Origin"
+msgstr "Nguồn"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Papers to sign"
+msgstr "Giấy tờ cần ký"
+
+#. module: pb_joining
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__link_mode__pass_on
+msgid "Pass on"
+msgstr "Chuyển tiếp"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Pass on the request to fix details to %(name)s"
+msgstr "Chuyển yêu cầu sửa thông tin cho %(name)s"
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_hiring
+msgid "Payobook Hiring cockpit data"
+msgstr "Dữ liệu bảng Tuyển dụng của Payobook"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__payroll_country
+msgid "Payroll Country"
+msgstr "Quốc gia tính lương"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid ""
+"People appear here the moment their offer is signed in Hiring. You can also "
+"invite someone hired another way."
+msgstr ""
+"Người nhận việc sẽ xuất hiện tại đây ngay khi đề nghị được ký trong Tuyển "
+"dụng. Bạn cũng có thể mời người được tuyển theo cách khác."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "People who have signed and not yet started"
+msgstr "Người đã ký nhưng chưa đi làm"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Personal email"
+msgstr "Email cá nhân"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__phone
+msgid "Phone"
+msgstr "Điện thoại"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Place"
+msgstr "Địa điểm"
+
+#. module: pb_joining
+#: model:ir.model.constraint,message:pb_joining.constraint_pb_joining_token_unique
+msgid "Please make a new joining link."
+msgstr "Hãy tạo một liên kết nhận việc mới."
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__progress
+msgid "Progress"
+msgstr "Tiến độ"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__proposal_id
+msgid "Proposal"
+msgstr "Đề xuất"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__rating_ids
+msgid "Ratings"
+msgstr "Đánh giá"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Read from Hiring's paper"
+msgstr "Đọc từ giấy tờ tuyển dụng"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__state__added
+msgid "Ready for day one"
+msgstr "Sẵn sàng cho ngày đầu"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__state__to_check
+msgid "Ready for you to check"
+msgstr "Chờ bạn kiểm tra"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__remind_count
+msgid "Remind Count"
+msgstr "Số lần nhắc"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Reminded"
+msgstr "Đã nhắc"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__reminded_at
+msgid "Reminded At"
+msgstr "Thời điểm nhắc"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__reopened
+msgid "Reopened"
+msgstr "Đã mở lại"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_user_id
+msgid "Responsible User"
+msgstr "Người phụ trách"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__return_note
+msgid "Return Note"
+msgstr "Ghi chú cần sửa"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__review_revision
+msgid "Review Revision"
+msgstr "Phiên bản kiểm tra"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__risk_reason
+msgid "Risk Reason"
+msgstr "Lý do có nguy cơ"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Lỗi gửi SMS"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Search by name, job or team"
+msgstr "Tìm theo tên, công việc hoặc nhóm"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Send a link when an offer is signed"
+msgstr "Gửi liên kết khi đề nghị được ký"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Send a reminder now"
+msgstr "Gửi lời nhắc ngay"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Send back"
+msgstr "Trả về"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Send the link and the code separately."
+msgstr "Gửi riêng liên kết và mã."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Sent"
+msgstr "Đã gửi"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__sent_back_count
+msgid "Sent Back Count"
+msgstr "Số mục cần sửa"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Sent back"
+msgstr "Đã trả lại"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Sent back · %s"
+msgstr "Đã trả lại · %s"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Show a code"
+msgstr "Hiển thị mã"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Show for 30 seconds"
+msgstr "Hiện trong 30 giây"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Show more"
+msgstr "Xem thêm"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "So the link can reach them."
+msgstr "Để họ nhận được liên kết."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Starts"
+msgstr "Bắt đầu"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__state
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__state
+msgid "State"
+msgstr "Trạng thái"
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Trạng thái theo hoạt động\n"
+"Quá hạn: Đã qua ngày hạn\n"
+"Hôm nay: Hoạt động diễn ra hôm nay\n"
+"Đã lên kế hoạch: Hoạt động trong tương lai."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Step"
+msgstr "Bước"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__submitted_at
+msgid "Submitted At"
+msgstr "Thời điểm gửi"
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Team"
+msgstr "Nhóm"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "That did not save. Try again."
+msgstr "Chưa lưu được. Hãy thử lại."
+
+#. module: pb_joining
+#: model:ir.model.constraint,message:pb_joining.constraint_pb_joining_offer_unique
+msgid "There is already a joining link for this offer."
+msgstr "Đề nghị này đã có liên kết nhận việc."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__state__cancelled
+msgid "They are not joining"
+msgstr "Người này không nhận việc"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "They do not have one yet"
+msgstr "Họ chưa có"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "They have started. Reminders run by themselves."
+msgstr "Họ đã bắt đầu. Hệ thống tự động nhắc."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "They will add it later"
+msgstr "Họ sẽ bổ sung sau"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "This hire has already gone to Add employee."
+msgstr "Hồ sơ nhận việc này đã được chuyển sang Thêm nhân viên."
+
+#. module: pb_joining
+#: model:ir.model.constraint,message:pb_joining.constraint_pb_joining_item_key_unique
+msgid "This item already belongs to the joining."
+msgstr "Mục này đã thuộc hồ sơ nhận việc."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "This item is no longer available."
+msgstr "Mục này không còn khả dụng."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "This month"
+msgstr "Tháng này"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "This number is not available."
+msgstr "Không thể xem số này."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "This person has already sent their details."
+msgstr "Người này đã gửi thông tin."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "This person is not waiting for your check."
+msgstr "Người này chưa ở bước chờ bạn kiểm tra."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "This site cannot send email. Pass the link and a code to %s yourself."
+msgstr ""
+"Trang này không thể gửi email. Vui lòng tự chuyển liên kết và mã cho %s."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "This week"
+msgstr "Tuần này"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Time"
+msgstr "Thời gian"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "To pass on"
+msgstr "Cần chuyển tiếp"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__token
+msgid "Token"
+msgstr "Mã liên kết"
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Loại hoạt động ngoại lệ trên bản ghi."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Undo"
+msgstr "Hoàn tác"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Updated by %(name)s just now."
+msgstr "%(name)s vừa cập nhật."
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__values
+msgid "Values"
+msgstr "Giá trị"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Wait a minute before trying again."
+msgstr "Vui lòng đợi một phút rồi thử lại."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Waiting for"
+msgstr "Đang chờ"
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Waiting for approval of the hire"
+msgstr "Chờ duyệt tuyển dụng"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Waiting for your check"
+msgstr "Chờ bạn kiểm tra"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__website_message_ids
+msgid "Website Messages"
+msgstr "Tin nhắn trên trang"
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__website_message_ids
+msgid "Website communication history"
+msgstr "Lịch sử trao đổi trên trang"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__welcome_started
+msgid "Welcome Started"
+msgstr "Đã bắt đầu phần chào mừng"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "What a joiner is asked"
+msgstr "Thông tin người nhận việc cần cung cấp"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "What should"
+msgstr "Nội dung cần"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "What they sent"
+msgstr "Thông tin đã gửi"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "What to bring"
+msgstr "Vật dụng cần mang"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+#: model:ir.model.fields,field_description:pb_joining.field_res_company__pb_joining_day_bring
+msgid "What to bring on the first day"
+msgstr "Vật dụng cần mang ngày đầu"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Where everyone is before day one"
+msgstr "Tiến độ của mọi người trước ngày đầu"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Where from"
+msgstr "Nguồn"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Write what needs fixing in 200 characters or fewer."
+msgstr "Nhập nội dung cần sửa trong tối đa 200 ký tự."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "You cannot open this file."
+msgstr "Bạn không thể mở tệp này."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "at risk of missing first pay"
+msgstr "có nguy cơ trễ kỳ lương đầu"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "at_risk"
+msgstr "có nguy cơ"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "bank"
+msgstr "ngân hàng"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "bank_later"
+msgstr "bổ sung ngân hàng sau"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "day"
+msgstr "ngày"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "days"
+msgstr "ngày"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "emergency"
+msgstr "liên hệ khẩn cấp"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "first_day"
+msgstr "ngày đầu"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "fix?"
+msgstr "sửa?"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "hiring"
+msgstr "tuyển dụng"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "id_number"
+msgstr "số giấy tờ tùy thân"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "invited"
+msgstr "đã mời"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "is an employee."
+msgstr "đã là nhân viên."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "joining in the next 30 days"
+msgstr "nhận việc trong 30 ngày tới"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "least"
+msgstr "ít nhất"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "link to pass on"
+msgstr "liên kết cần chuyển"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "link_copied_at"
+msgstr "thời điểm sao chép liên kết"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "link_mode"
+msgstr "cách chuyển liên kết"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "most"
+msgstr "nhiều nhất"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "new"
+msgstr "mới"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "of"
+msgstr "trên"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "origin"
+msgstr "nguồn"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "papers"
+msgstr "giấy tờ"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "people joining"
+msgstr "người nhận việc"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "risk"
+msgstr "nguy cơ"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "sent_back_count"
+msgstr "số mục cần sửa"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "sign"
+msgstr "ký"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "started filling in this week"
+msgstr "bắt đầu điền trong tuần này"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "tax"
+msgstr "thuế"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "thing(s)."
+msgstr "mục."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "times"
+msgstr "lần"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "to fix"
+msgstr "sửa"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "waiting for your check"
+msgstr "chờ bạn kiểm tra"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "week"
+msgstr "tuần"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "· last seen"
+msgstr "· xem gần nhất"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "· starts"
+msgstr "· bắt đầu"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "· works for 48 hours, once"
+msgstr "· dùng một lần trong 48 giờ"

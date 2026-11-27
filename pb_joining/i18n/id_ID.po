@@ -328,7 +328,9 @@ msgstr "Tanggal terbit"
 
 #. module: pb_joining
 #. odoo-python
+#. odoo-javascript
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
 msgid "Language"
 msgstr "Bahasa"
 
@@ -454,7 +456,10 @@ msgstr "Simpan dan lanjutkan"
 
 #. module: pb_joining
 #. odoo-python
+#. odoo-javascript
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__state__saved
 msgid "Saved"
 msgstr "Tersimpan"
 
@@ -472,7 +477,9 @@ msgstr "Rincian Anda tersimpan. Anda mulai bekerja dalam %(n)s hari."
 
 #. module: pb_joining
 #. odoo-python
+#. odoo-javascript
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
 msgid "Send again"
 msgstr "Kirim lagi"
 
@@ -490,7 +497,10 @@ msgstr "Kirim ke HR"
 
 #. module: pb_joining
 #. odoo-python
+#. odoo-javascript
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__state__returned
 msgid "Sent back to fix"
 msgstr "Dikembalikan untuk diperbaiki"
 
@@ -593,6 +603,7 @@ msgstr "Nomor berikut diperlukan di %(country)s. Jika belum punya, kosongkan dul
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/board_review.py:0
 msgid "This link is not active"
 msgstr "Tautan ini tidak aktif"
 
@@ -605,12 +616,14 @@ msgstr "Halaman ini hanya untuk %(name)s. Jika itu bukan Anda, tutup halaman ini
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__state__later
 msgid "To finish later"
 msgstr "Selesaikan nanti"
 
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/board_review.py:0
 msgid "Too many tries. Wait 15 minutes, then ask for a new code."
 msgstr "Terlalu banyak percobaan. Tunggu 15 menit, lalu minta kode baru."
 
@@ -701,6 +714,7 @@ msgstr "Anda dapat berhenti kapan saja dan kembali melalui tautan yang sama. Sia
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/models/board.py:0
+#: code:addons/pb_joining/models/board_review.py:0
 msgid "You cannot open this joining."
 msgstr "Anda tidak dapat membuka rincian orang ini."
 
@@ -731,6 +745,7 @@ msgstr "Kode Anda untuk {{brand}} adalah {{code}}. Kode berlaku 10 menit. Jika A
 #. module: pb_joining
 #. odoo-python
 #: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/board_review.py:0
 msgid "Your first day"
 msgstr "Hari pertama Anda"
 
@@ -763,3 +778,1656 @@ msgstr "Dokumen Anda"
 #: code:addons/pb_joining/controllers/joining.py:0
 msgid "Your pay is sent here. The name on the account must match your identity card."
 msgstr "Gaji Anda akan dikirim ke rekening ini. Nama pemilik rekening harus sama dengan nama pada kartu identitas Anda."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "%(who)s viewed a number in %(item)s."
+msgstr "%(who)s melihat nomor di bagian %(item)s."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "8:00 am"
+msgstr "08.00"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "A note from the manager"
+msgstr "Pesan dari manajer"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Accept"
+msgstr "Terima"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Accept everything"
+msgstr "Terima semua"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__state__accepted
+msgid "Accepted"
+msgstr "Diterima"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid ""
+"Accepting saves nothing yet. The details go into the employee record only "
+"when you press Add in the next screen."
+msgstr ""
+"Menerima data belum menyimpannya ke arsip karyawan. Data akan disimpan saat "
+"Anda menekan Tambah di layar berikutnya."
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_needaction
+msgid "Action Needed"
+msgstr "Perlu tindakan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__actions_at
+msgid "Actions At"
+msgstr "Waktu tindakan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_ids
+msgid "Activities"
+msgstr "Aktivitas"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Dekorasi pengecualian aktivitas"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_state
+msgid "Activity State"
+msgstr "Status aktivitas"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Ikon jenis aktivitas"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Add as employee"
+msgstr "Tambahkan sebagai karyawan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__added_at
+msgid "Added At"
+msgstr "Waktu ditambahkan"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Ask for"
+msgstr "Temui"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Ask the recruiter handling this offer or HR to pass on the link."
+msgstr ""
+"Minta perekrut yang menangani penawaran ini atau HR meneruskan tautannya."
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__at_risk
+msgid "At Risk"
+msgstr "Berisiko"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "At risk"
+msgstr "Berisiko"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "At risk: %(missing)s, %(days)s days left"
+msgstr "Berisiko: %(missing)s, tersisa %(days)s hari"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__attachment_ids
+msgid "Attachment"
+msgstr "Lampiran"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_attachment_count
+msgid "Attachment Count"
+msgstr "Jumlah lampiran"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__available
+msgid "Available"
+msgstr "Tersedia"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__bank_later
+msgid "Bank Later"
+msgstr "Rekening bank menyusul"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Bank account still to come"
+msgstr "Rekening bank masih menyusul"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Bank still to come"
+msgstr "Rekening bank menyusul"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Before they join"
+msgstr "Sebelum mulai bekerja"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Cancel"
+msgstr "Batal"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__cancel_reason
+msgid "Cancel Reason"
+msgstr "Alasan pembatalan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__cancelled_at
+msgid "Cancelled At"
+msgstr "Waktu dibatalkan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__applicant_id
+msgid "Candidate"
+msgstr "Kandidat"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Change the first day"
+msgstr "Ubah hari pertama"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Checked and added as an employee."
+msgstr "Sudah diperiksa dan ditambahkan sebagai karyawan."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Choose an item the person sent."
+msgstr "Pilih bagian yang sudah dikirim orang ini."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Close"
+msgstr "Tutup"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Close the link"
+msgstr "Tutup tautan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_by_hr
+msgid "Code By Hr"
+msgstr "Kode dari HR"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_delivery_failed
+msgid "Code Delivery Failed"
+msgstr "Pengiriman kode gagal"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_hash
+msgid "Code Hash"
+msgstr "Hash kode"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_issue_count
+msgid "Code Issue Count"
+msgstr "Jumlah kode yang diterbitkan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_issued_at
+msgid "Code Issued At"
+msgstr "Waktu penerbitan kode"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_issues
+msgid "Code Issues"
+msgstr "Riwayat penerbitan kode"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_locked_until
+msgid "Code Locked Until"
+msgstr "Kode terkunci hingga"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_tries
+msgid "Code Tries"
+msgstr "Jumlah percobaan kode"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_until
+msgid "Code Until"
+msgstr "Kode berlaku hingga"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__code_window_start
+msgid "Code Window Start"
+msgstr "Awal periode penerbitan kode"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Code copied."
+msgstr "Kode disalin."
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_res_company
+msgid "Companies"
+msgstr "Perusahaan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__company_id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Copy"
+msgstr "Salinan"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Copy link"
+msgstr "Salin tautan"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Copy the link and show a code to pass on."
+msgstr "Salin tautan dan tampilkan kode untuk diteruskan."
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Country of work"
+msgstr "Negara kerja"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__create_uid
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__create_uid
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__create_date
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__create_date
+msgid "Created on"
+msgstr "Dibuat pada"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__day_ask_for
+msgid "Day Ask For"
+msgstr "Orang yang perlu ditemui"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__day_bring
+msgid "Day Bring"
+msgstr "Yang perlu dibawa"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__day_opened
+msgid "Day Opened"
+msgstr "Informasi hari pertama sudah dibuka"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__day_place
+msgid "Day Place"
+msgstr "Lokasi hari pertama"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__day_time
+msgid "Day Time"
+msgstr "Waktu hari pertama"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__decided_by_id
+msgid "Decided By"
+msgstr "Diputuskan oleh"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__decided_on
+msgid "Decided On"
+msgstr "Tanggal keputusan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__department_id
+msgid "Department"
+msgstr "Departemen"
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_joining_item
+msgid "Details before joining"
+msgstr "Data sebelum mulai bekerja"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_ir_http__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_hiring__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_hiring_message_template__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_hiring_offer__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_board__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__display_name
+#: model:ir.model.fields,field_description:pb_joining.field_res_company__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__draft
+msgid "Draft"
+msgstr "Draf"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__email
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__link_mode__email
+msgid "Email"
+msgstr "Email"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__employee_id
+msgid "Employee"
+msgstr "Karyawan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Employee record made"
+msgstr "Arsip karyawan dibuat"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Everything sent. Nothing is in the employee record yet."
+msgstr "Semua sudah dikirim. Data belum masuk ke arsip karyawan."
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__expiry_date
+msgid "Expiry Date"
+msgstr "Tanggal kedaluwarsa"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__state__filling
+msgid "Filling in"
+msgstr "Sedang mengisi"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__first_day
+msgid "First Day"
+msgstr "Hari pertama"
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "First day"
+msgstr "Hari pertama"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "First day soonest"
+msgstr "Hari pertama terdekat"
+
+#. module: pb_joining
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__need__first_pay
+msgid "First pay"
+msgstr "Gaji pertama"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "First-day details"
+msgstr "Informasi hari pertama"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+#: model:ir.model.fields,field_description:pb_joining.field_res_company__pb_joining_day_place
+msgid "First-day place"
+msgstr "Lokasi hari pertama"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Flags"
+msgstr "Penanda"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_follower_ids
+msgid "Followers"
+msgstr "Pengikut"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Pengikut (mitra)"
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Ikon, misalnya fa-tasks"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__from_hiring
+msgid "From Hiring"
+msgstr "Dari Rekrutmen"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Full name"
+msgstr "Nama lengkap"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Give a reason for closing the joining link."
+msgstr "Berikan alasan menutup tautan persiapan kerja ini."
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_ir_http
+msgid "HTTP Routing"
+msgstr "Perutean HTTP"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__has_message
+msgid "Has Message"
+msgstr "Ada pesan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Hello %(name)s, please finish %(sections)s before %(date)s. %(url)s"
+msgstr "Halo %(name)s, mohon lengkapi %(sections)s sebelum %(date)s. %(url)s"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__origin__hiring
+msgid "Hiring"
+msgstr "Rekrutmen"
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_hiring_message_template
+msgid "Hiring communication template"
+msgstr "Templat komunikasi rekrutmen"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__hr_nudged_at
+msgid "Hr Nudged At"
+msgstr "Waktu pengingat untuk HR"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_ir_http__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_hiring__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_hiring_message_template__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_hiring_offer__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_board__id
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__id
+#: model:ir.model.fields,field_description:pb_joining.field_res_company__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_exception_icon
+msgid "Icon"
+msgstr "Ikon"
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Ikon untuk menandai aktivitas pengecualian."
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Jika dicentang, pesan baru memerlukan perhatian Anda."
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__message_has_error
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Jika dicentang, beberapa pesan gagal terkirim."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "In the record"
+msgstr "Di arsip karyawan"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Invite"
+msgstr "Undang"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Invite someone"
+msgstr "Undang seseorang"
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__origin__invited
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__state__invited
+msgid "Invited"
+msgstr "Diundang"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_is_follower
+msgid "Is Follower"
+msgstr "Pengikut"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__issue_date
+msgid "Issue Date"
+msgstr "Tanggal terbit"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__item_ids
+msgid "Item"
+msgstr "Butir"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__job_id
+msgid "Job"
+msgstr "Pekerjaan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__job_title
+msgid "Job Title"
+msgstr "Jabatan"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Job title"
+msgstr "Jabatan"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+#: model:ir.model,name:pb_joining.model_pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__joining_id
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__need__joining
+msgid "Joining"
+msgstr "Bergabung"
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_joining_board
+msgid "Joining board"
+msgstr "Papan persiapan kerja"
+
+#. module: pb_joining
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_hiring_message_template__key__joining_code
+msgid "Joining code"
+msgstr "Kode persiapan kerja"
+
+#. module: pb_joining
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_hiring_message_template__key__joining_back
+msgid "Joining details to fix"
+msgstr "Data persiapan kerja yang perlu diperbaiki"
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Joining is looked after by the hiring team"
+msgstr "Persiapan kerja dikelola oleh tim perekrutan"
+
+#. module: pb_joining
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_hiring_message_template__key__joining_link
+msgid "Joining link"
+msgstr "Tautan persiapan kerja"
+
+#. module: pb_joining
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_hiring_message_template__key__joining_reminder
+msgid "Joining reminder"
+msgstr "Pengingat persiapan kerja"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_hiring_message_template__key
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__key
+msgid "Key"
+msgstr "Kode"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__lang
+msgid "Lang"
+msgstr "Bahasa"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__last_seen_at
+msgid "Last Seen At"
+msgstr "Terakhir dilihat"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__write_uid
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__write_uid
+msgid "Last Updated by"
+msgstr "Terakhir diperbarui oleh"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__write_date
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__write_date
+msgid "Last Updated on"
+msgstr "Terakhir diperbarui pada"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Least complete"
+msgstr "Paling sedikit terisi"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__link_copied_at
+msgid "Link Copied At"
+msgstr "Waktu tautan disalin"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__link_mode
+msgid "Link Mode"
+msgstr "Cara mengirim tautan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__link_sent_at
+msgid "Link Sent At"
+msgstr "Waktu tautan dikirim"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Link copied."
+msgstr "Tautan disalin."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Link emailed to %s on %s."
+msgstr "Tautan dikirim melalui email ke %s pada %s."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Link to pass on"
+msgstr "Tautan untuk diteruskan"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__manager_id
+msgid "Manager"
+msgstr "Atasan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__manager_note
+msgid "Manager Note"
+msgstr "Pesan manajer"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_has_error
+msgid "Message Delivery error"
+msgstr "Kesalahan pengiriman pesan"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Message copied. Paste it into WhatsApp or a text."
+msgstr "Pesan disalin. Tempelkan di WhatsApp atau SMS."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Message sent."
+msgstr "Pesan terkirim."
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_ids
+msgid "Messages"
+msgstr "Pesan"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Mobile"
+msgstr "Nomor ponsel"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "More actions"
+msgstr "Tindakan lainnya"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Most complete"
+msgstr "Paling lengkap"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Tenggat aktivitas saya"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__name
+msgid "Name"
+msgstr "Nama"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__need
+msgid "Need"
+msgstr "Kebutuhan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Newest"
+msgstr "Terbaru"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Next 2 weeks"
+msgstr "Dua minggu ke depan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Acara kalender aktivitas berikutnya"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Tenggat aktivitas berikutnya"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_summary
+msgid "Next Activity Summary"
+msgstr "Ringkasan aktivitas berikutnya"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_type_id
+msgid "Next Activity Type"
+msgstr "Jenis aktivitas berikutnya"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__no_expiry
+msgid "No Expiry"
+msgstr "Tanpa tanggal kedaluwarsa"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Nobody here"
+msgstr "Tidak ada siapa pun"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Nobody is joining yet"
+msgstr "Belum ada yang akan bergabung"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__none_fields
+msgid "None Fields"
+msgstr "Kolom yang belum dimiliki"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Not opened yet"
+msgstr "Belum dibuka"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__state__empty
+msgid "Not sent yet"
+msgstr "Belum dikirim"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Jumlah tindakan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_has_error_counter
+msgid "Number of errors"
+msgstr "Jumlah kesalahan"
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Jumlah pesan yang perlu tindakan"
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Jumlah pesan gagal terkirim"
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_hiring_offer
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__offer_id
+msgid "Offer"
+msgstr "Penawaran"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Offer signed. The link has gone out."
+msgstr "Penawaran ditandatangani. Tautan sudah dikirim."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Open in Joiners"
+msgstr "Buka di Karyawan baru"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Open signed copy"
+msgstr "Buka salinan bertanda tangan"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Opened"
+msgstr "Dibuka"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__opened_at
+msgid "Opened At"
+msgstr "Waktu dibuka"
+
+#. module: pb_joining
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining_item__need__optional
+msgid "Optional"
+msgstr "Opsional"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__origin
+msgid "Origin"
+msgstr "Asal"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Papers to sign"
+msgstr "Dokumen untuk ditandatangani"
+
+#. module: pb_joining
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__link_mode__pass_on
+msgid "Pass on"
+msgstr "Teruskan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Pass on the request to fix details to %(name)s"
+msgstr "Teruskan permintaan perbaikan data kepada %(name)s"
+
+#. module: pb_joining
+#: model:ir.model,name:pb_joining.model_pb_hiring
+msgid "Payobook Hiring cockpit data"
+msgstr "Data kokpit Rekrutmen Payobook"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__payroll_country
+msgid "Payroll Country"
+msgstr "Negara penggajian"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid ""
+"People appear here the moment their offer is signed in Hiring. You can also "
+"invite someone hired another way."
+msgstr ""
+"Orang akan muncul di sini segera setelah penawaran mereka ditandatangani di "
+"Perekrutan. Anda juga bisa mengundang orang yang direkrut melalui cara lain."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "People who have signed and not yet started"
+msgstr "Orang yang sudah menandatangani penawaran dan belum mulai bekerja"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Personal email"
+msgstr "Email pribadi"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__phone
+msgid "Phone"
+msgstr "Telepon"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Place"
+msgstr "Lokasi"
+
+#. module: pb_joining
+#: model:ir.model.constraint,message:pb_joining.constraint_pb_joining_token_unique
+msgid "Please make a new joining link."
+msgstr "Buat tautan persiapan kerja yang baru."
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__progress
+msgid "Progress"
+msgstr "Kemajuan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__proposal_id
+msgid "Proposal"
+msgstr "Usulan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__rating_ids
+msgid "Ratings"
+msgstr "Penilaian"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Read from Hiring's paper"
+msgstr "Dibaca dari dokumen Perekrutan"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__state__added
+msgid "Ready for day one"
+msgstr "Siap untuk hari pertama"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__state__to_check
+msgid "Ready for you to check"
+msgstr "Siap Anda periksa"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Reason"
+msgstr "Alasan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__remind_count
+msgid "Remind Count"
+msgstr "Jumlah pengingat"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Reminded"
+msgstr "Sudah diingatkan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__reminded_at
+msgid "Reminded At"
+msgstr "Waktu pengingat"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__reopened
+msgid "Reopened"
+msgstr "Dibuka kembali"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__activity_user_id
+msgid "Responsible User"
+msgstr "Penanggung jawab"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__return_note
+msgid "Return Note"
+msgstr "Catatan perbaikan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__review_revision
+msgid "Review Revision"
+msgstr "Versi pemeriksaan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__risk_reason
+msgid "Risk Reason"
+msgstr "Alasan risiko"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Kesalahan pengiriman SMS"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Save"
+msgstr "Simpan"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Search by name, job or team"
+msgstr "Cari berdasarkan nama, pekerjaan, atau tim"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Send a link when an offer is signed"
+msgstr "Kirim tautan saat penawaran ditandatangani"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Send a reminder now"
+msgstr "Kirim pengingat sekarang"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Send back"
+msgstr "Kembalikan"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Send the link and the code separately."
+msgstr "Kirim tautan dan kode secara terpisah."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Sent"
+msgstr "Terkirim"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__sent_back_count
+msgid "Sent Back Count"
+msgstr "Jumlah yang dikembalikan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Sent back"
+msgstr "Dikembalikan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Sent back · %s"
+msgstr "Dikembalikan · %s"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Show a code"
+msgstr "Tampilkan kode"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Show for 30 seconds"
+msgstr "Tampilkan selama 30 detik"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Show more"
+msgstr "Tampilkan lagi"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "So the link can reach them."
+msgstr "Agar mereka dapat menerima tautannya."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Starts"
+msgstr "Mulai"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__state
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__state
+msgid "State"
+msgstr "Status"
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Status berdasarkan aktivitas\n"
+"Terlambat: Tenggat sudah lewat\n"
+"Hari ini: Aktivitas hari ini\n"
+"Direncanakan: Aktivitas mendatang."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Step"
+msgstr "Tahap"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__submitted_at
+msgid "Submitted At"
+msgstr "Waktu pengiriman"
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Team"
+msgstr "Tim"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "That did not save. Try again."
+msgstr "Belum tersimpan. Coba lagi."
+
+#. module: pb_joining
+#: model:ir.model.constraint,message:pb_joining.constraint_pb_joining_offer_unique
+msgid "There is already a joining link for this offer."
+msgstr "Penawaran ini sudah memiliki tautan persiapan kerja."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+#: model:ir.model.fields.selection,name:pb_joining.selection__pb_joining__state__cancelled
+msgid "They are not joining"
+msgstr "Orang ini batal bergabung"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "They do not have one yet"
+msgstr "Mereka belum memilikinya"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "They have started. Reminders run by themselves."
+msgstr "Mereka sudah mulai. Pengingat berjalan otomatis."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "They will add it later"
+msgstr "Akan mereka lengkapi nanti"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "This hire has already gone to Add employee."
+msgstr "Data ini sudah diteruskan ke Tambah karyawan."
+
+#. module: pb_joining
+#: model:ir.model.constraint,message:pb_joining.constraint_pb_joining_item_key_unique
+msgid "This item already belongs to the joining."
+msgstr "Bagian ini sudah ada di data persiapan kerja."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "This item is no longer available."
+msgstr "Bagian ini sudah tidak tersedia."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "This month"
+msgstr "Bulan ini"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "This number is not available."
+msgstr "Nomor ini tidak tersedia."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "This person has already sent their details."
+msgstr "Orang ini sudah mengirimkan datanya."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "This person is not waiting for your check."
+msgstr "Orang ini tidak sedang menunggu pemeriksaan Anda."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "This site cannot send email. Pass the link and a code to %s yourself."
+msgstr ""
+"Situs ini tidak dapat mengirim email. Teruskan sendiri tautan dan kode "
+"kepada %s."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "This week"
+msgstr "Minggu ini"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Time"
+msgstr "Waktu"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "To pass on"
+msgstr "Untuk diteruskan"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__token
+msgid "Token"
+msgstr "Token"
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Jenis aktivitas pengecualian pada catatan."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Undo"
+msgstr "Batalkan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Updated by %(name)s just now."
+msgstr "Baru saja diperbarui oleh %(name)s."
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining_item__values
+msgid "Values"
+msgstr "Nilai"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Wait a minute before trying again."
+msgstr "Tunggu satu menit sebelum mencoba lagi."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Waiting for"
+msgstr "Menunggu"
+
+#. module: pb_joining
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "Waiting for approval of the hire"
+msgstr "Menunggu persetujuan perekrutan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Waiting for your check"
+msgstr "Menunggu pemeriksaan Anda"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__website_message_ids
+msgid "Website Messages"
+msgstr "Pesan situs web"
+
+#. module: pb_joining
+#: model:ir.model.fields,help:pb_joining.field_pb_joining__website_message_ids
+msgid "Website communication history"
+msgstr "Riwayat komunikasi situs web"
+
+#. module: pb_joining
+#: model:ir.model.fields,field_description:pb_joining.field_pb_joining__welcome_started
+msgid "Welcome Started"
+msgstr "Sambutan sudah dimulai"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "What a joiner is asked"
+msgstr "Data yang diminta dari calon karyawan"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "What should"
+msgstr "Apa yang perlu"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "What they sent"
+msgstr "Yang mereka kirim"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "What to bring"
+msgstr "Yang perlu dibawa"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+#: model:ir.model.fields,field_description:pb_joining.field_res_company__pb_joining_day_bring
+msgid "What to bring on the first day"
+msgstr "Yang perlu dibawa pada hari pertama"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "Where everyone is before day one"
+msgstr "Kemajuan semua orang menjelang hari pertama"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Where from"
+msgstr "Asal"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "Write what needs fixing in 200 characters or fewer."
+msgstr "Tuliskan yang perlu diperbaiki dalam maksimal 200 karakter."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "You cannot open this file."
+msgstr "Anda tidak dapat membuka berkas ini."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "at risk of missing first pay"
+msgstr "berisiko melewatkan gaji pertama"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "at_risk"
+msgstr "berisiko"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "bank"
+msgstr "bank"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "bank_later"
+msgstr "rekening menyusul"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "day"
+msgstr "hari"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "days"
+msgstr "hari"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "emergency"
+msgstr "kontak darurat"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "first_day"
+msgstr "hari pertama"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "fix?"
+msgstr "perbaiki?"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "hiring"
+msgstr "perekrutan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "id_number"
+msgstr "nomor identitas"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "invited"
+msgstr "diundang"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "is an employee."
+msgstr "sudah menjadi karyawan."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "joining in the next 30 days"
+msgstr "bergabung dalam 30 hari ke depan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "least"
+msgstr "paling sedikit"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "link to pass on"
+msgstr "tautan untuk diteruskan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "link_copied_at"
+msgstr "waktu tautan disalin"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "link_mode"
+msgstr "cara mengirim tautan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "most"
+msgstr "paling banyak"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "new"
+msgstr "baru"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "of"
+msgstr "dari"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "origin"
+msgstr "asal"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "papers"
+msgstr "dokumen"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "people joining"
+msgstr "orang yang akan bergabung"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "risk"
+msgstr "risiko"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "sent_back_count"
+msgstr "jumlah yang dikembalikan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "sign"
+msgstr "tanda tangan"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "started filling in this week"
+msgstr "mulai mengisi minggu ini"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "tax"
+msgstr "pajak"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "thing(s)."
+msgstr "bagian."
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "times"
+msgstr "kali"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "to fix"
+msgstr "memperbaiki"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/js/joining_board.js:0
+msgid "waiting for your check"
+msgstr "menunggu pemeriksaan Anda"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board_review.py:0
+msgid "week"
+msgstr "minggu"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "· last seen"
+msgstr "· terakhir dilihat"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "· starts"
+msgstr "· mulai"
+
+#. module: pb_joining
+#. odoo-javascript
+#: code:addons/pb_joining/static/src/xml/joining_board.xml:0
+msgid "· works for 48 hours, once"
+msgstr "· berlaku sekali selama 48 jam"

@@ -45,6 +45,12 @@ class Template(models.Model):
 class HiringMail(models.AbstractModel):
     _inherit = 'pb.hiring'
 
+    def _pb_email_html(self, body, button='', link='', lang='en_US'):
+        html = super()._pb_email_html(body, button, link, lang)
+        if self.env.context.get('pb_joining_message'):
+            html = html.replace('#4F46E5', '#5A4BB0')
+        return html
+
     def _mail_candidate(self, key, applicant, values=None, attachments=None, record=None, email_to=None,
                         reply_to=None, gate=True, dry=False, lang=None):
         if key != 'joining_code' or dry:
@@ -81,9 +87,9 @@ class JoiningMail(models.Model):
         if not self._can_email():
             return False
         values = {'name': self.name, 'first_name': self._first(), 'brand': self.company_id.name,
-                  'first_day': self._day_label(), 'link': self._url()}
+                  'first_day': lambda lang: self.with_context(lang=lang)._day_label(), 'link': self._url()}
         values.update(extra or {})
-        hiring = self.env['pb.hiring'].sudo().with_company(self.company_id)
+        hiring = self.env['pb.hiring'].sudo().with_company(self.company_id).with_context(pb_joining_message=True)
         if not hiring._pb_template(key, self.company_id):
             self.env['pb.hiring.message.template'].sudo()._joining_seed(self.company_id)
         result = hiring._mail_candidate(key, self.applicant_id, values=values, record=self,
