@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_joining_system,Joining administration,model_pb_joining,base.group_system,1,1,1,1
+access_joining_item_system,Joining item administration,model_pb_joining_item,base.group_system,1,1,1,1

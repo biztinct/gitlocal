@@ -1,0 +1,16 @@
+{
+    'name': 'Joining portal',
+    'summary': 'New people send their own details before day one',
+    'version': '19.0.1.0.0',
+    'license': 'LGPL-3',
+    'author': 'Payobook',
+    'category': 'Human Resources',
+    'depends': ['pb_new_hire', 'pb_hiring', 'pb_people_hub', 'pb_onboarding',
+                'pb_filter_kit', 'pb_import_kit', 'pb_hub'],
+    'data': ['security/ir.model.access.csv', 'security/company_rules.xml', 'data/messages.xml',
+             'views/joining_pages.xml'],
+    'assets': {'web.assets_frontend': ['pb_joining/static/src/scss/joining_page.scss',
+                                     'pb_joining/static/src/js/joining_page.js']},
+    'post_init_hook': 'post_init_hook',
+    'installable': True,
+}

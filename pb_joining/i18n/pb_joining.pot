@@ -1,0 +1,763 @@
+# Translation of Joining portal.
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "{{code}} is your code"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "{{first_name}}, your details for {{brand}}"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "%(manager)s, your manager"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "%(n)s of %(m)s done"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "1 minute"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "About 10 minutes."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "About you"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Add a paper"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board.py:0
+msgid "Add an email or a mobile number so the link can reach them."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Add it before your first pay."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Add the date the paper is valid until."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board.py:0
+msgid "Add the full name, first day, country of work and job title."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Add the paper before continuing."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Add your details before continuing."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "All done, %(name)s. See you on %(date)s."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Ask the person who sent it for a new one."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Back"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Back of the card"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
+msgid "Bank account"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Bank account still to add"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Before you join"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "Before you start on {{first_day}}, please finish these sections: {{sections}}."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Change"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "Check my details"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Check the date and try again."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Choose a file from this item."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Choose a file."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Choose a JPEG, PNG or PDF."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Choose a photo or PDF up to 10 MB."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/codes.py:0
+msgid "Code shown by %(name)s"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Continue"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/joining.py:0
+msgid "Country of work changed."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/joining.py:0
+msgid "Details still to send"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "done"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Done"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Emergency contact"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Enter %(field)s."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Enter the 6-digit code %(name)s gave you."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Enter your code"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "Fill in my details"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/joining.py:0
+msgid "Finish the sections first."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "From today you use My Payobook. %(hr)s will give you your sign-in."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Got it"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "Hello {{name}},\nBefore {{first_day}} we need a few details from you. It takes about 10 minutes on your phone. You will be asked for a 6-digit code. We send it when you open the link."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "HR"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "HR asked you to check these details:\n{{notes}}"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "HR asked you to fix these details."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "HR is checking this item."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "HR will check what you sent. If anything needs fixing you will get a message and it will show here."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "I do not have it with me. Remind me later"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "I do not have one yet"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "If you have it"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Issue date"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Language"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Lay your card flat in good light."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "My card has no end date"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Needed before your first pay"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Needed when you join"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "No code? Ask %(name)s to show you a new one."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Numbers you already have"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "One quick check"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "One thing to fix before you start"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Only if you already have one"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/http.py:0
+msgid "Open your joining link again and try once more."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Opened with your code"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Paper"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Papers needed before you start"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/hiring.py:0
+msgid "Pass on the joining link to %(name)s"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Please wait a few minutes before trying again."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Please wait before asking for a new code."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Read and sign"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Remove"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Replace"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Save and continue"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Saved"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Saved as you go."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Saved as you go. You start in %(n)s days."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Send again"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Send me a new code"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Send to HR"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Sent back to fix"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Sent to HR"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/codes.py:0
+msgid "Show a joining code to %(name)s"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Show fields for this country"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Sign your papers"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Start"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Still needed"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Take a photo and type the number"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Take a photo of your card"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Tax and social insurance"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "That code has run out. Ask for a new one."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "That code is not right. You have %(n)s tries left."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "That date has passed. Add a paper that is still valid."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "That did not save. Open the link and try again."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "That file did not upload. Try again, or use a smaller photo."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "There is no room for another file. Replace a file or use a smaller photo."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "These are the numbers %(country)s asks for. Leave any you do not have yet; HR will help you get one."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "This link is not active"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "This page is only for %(name)s. If that is not you, close it."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "To finish later"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Too many tries. Wait 15 minutes, then ask for a new code."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Uploading…"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Valid until"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "We already have this from your application."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "We already have your name, email and phone from your application. You will not be asked again."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "We sent a 6-digit code to %(email)s. It works for 10 minutes."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Welcome aboard, %(name)s"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "Welcome to {{brand}}. A few details before you start"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Welcome to %(company)s, %(name)s"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "When, where, what to bring"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Where your pay goes"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Who should we call if something happens at work?"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Who to call"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "You can ask again in {time}"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "You can stop at any point and come back with the same link. Have your identity card, tax card and bank details nearby."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board.py:0
+msgid "You cannot open this joining."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "You start as %(job)s on %(date)s, in %(days)s days."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "You start as %(job)s on %(date)s."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "You start as %(job)s today."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "Your code for {{brand}} is {{code}}. It works for 10 minutes. If you did not ask for it, ignore this message."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Your first day"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Your identity card"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Your manager"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Your manager will send you the time and place before you start."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Your papers"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Your pay is sent here. The name on the account must match your identity card."
+msgstr ""

@@ -1,0 +1,765 @@
+# Translation of Joining portal.
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: id_ID\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "{{code}} is your code"
+msgstr "Kode Anda adalah {{code}}"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "{{first_name}}, your details for {{brand}}"
+msgstr "{{first_name}}, rincian Anda untuk {{brand}}"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "%(manager)s, your manager"
+msgstr "%(manager)s, manajer Anda"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "%(n)s of %(m)s done"
+msgstr "%(n)s dari %(m)s selesai"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "1 minute"
+msgstr "1 menit"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "About 10 minutes."
+msgstr "Sekitar 10 menit."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "About you"
+msgstr "Tentang Anda"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Add a paper"
+msgstr "Tambah dokumen"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board.py:0
+msgid "Add an email or a mobile number so the link can reach them."
+msgstr "Tambahkan email atau nomor ponsel agar tautan dapat diteruskan."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Add it before your first pay."
+msgstr "Tambahkan sebelum gaji pertama Anda."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Add the date the paper is valid until."
+msgstr "Masukkan tanggal berakhirnya dokumen."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board.py:0
+msgid "Add the full name, first day, country of work and job title."
+msgstr "Masukkan nama lengkap, hari pertama, negara tempat bekerja, dan jabatan."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Add the paper before continuing."
+msgstr "Tambahkan dokumen sebelum melanjutkan."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Add your details before continuing."
+msgstr "Lengkapi rincian Anda sebelum melanjutkan."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "All done, %(name)s. See you on %(date)s."
+msgstr "Selesai, %(name)s. Sampai jumpa pada %(date)s."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Ask the person who sent it for a new one."
+msgstr "Minta tautan baru kepada orang yang mengirimkannya."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Back"
+msgstr "Kembali"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Back of the card"
+msgstr "Bagian belakang kartu"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
+msgid "Bank account"
+msgstr "Rekening bank"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Bank account still to add"
+msgstr "Rekening bank masih perlu ditambahkan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Before you join"
+msgstr "Sebelum mulai bekerja"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "Before you start on {{first_day}}, please finish these sections: {{sections}}."
+msgstr "Sebelum Anda mulai bekerja pada {{first_day}}, lengkapi bagian berikut: {{sections}}."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Change"
+msgstr "Ubah"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "Check my details"
+msgstr "Periksa rincian saya"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Check the date and try again."
+msgstr "Periksa tanggal dan coba lagi."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Choose a file from this item."
+msgstr "Pilih berkas dari bagian ini."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Choose a file."
+msgstr "Pilih berkas."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Choose a JPEG, PNG or PDF."
+msgstr "Pilih JPEG, PNG, atau PDF."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Choose a photo or PDF up to 10 MB."
+msgstr "Pilih foto atau PDF berukuran maksimal 10 MB."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/codes.py:0
+msgid "Code shown by %(name)s"
+msgstr "Kode ditampilkan oleh %(name)s"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Continue"
+msgstr "Lanjutkan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/joining.py:0
+msgid "Country of work changed."
+msgstr "Negara tempat bekerja berubah."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/joining.py:0
+msgid "Details still to send"
+msgstr "Rincian yang masih perlu dikirim"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "done"
+msgstr "selesai"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Done"
+msgstr "Selesai"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Emergency contact"
+msgstr "Kontak darurat"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Enter %(field)s."
+msgstr "Masukkan %(field)s."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Enter the 6-digit code %(name)s gave you."
+msgstr "Masukkan kode 6 digit yang diberikan oleh %(name)s."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Enter your code"
+msgstr "Masukkan kode Anda"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "Fill in my details"
+msgstr "Isi rincian saya"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/joining.py:0
+msgid "Finish the sections first."
+msgstr "Selesaikan bagian yang diperlukan terlebih dahulu."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "From today you use My Payobook. %(hr)s will give you your sign-in."
+msgstr "Mulai hari ini Anda menggunakan My Payobook. %(hr)s akan memberikan informasi masuk Anda."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Got it"
+msgstr "Saya mengerti"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "Hello {{name}},\nBefore {{first_day}} we need a few details from you. It takes about 10 minutes on your phone. You will be asked for a 6-digit code. We send it when you open the link."
+msgstr "Halo {{name}},\nSebelum {{first_day}}, kami memerlukan beberapa rincian Anda. Pengisian memakan waktu sekitar 10 menit di ponsel. Anda akan diminta memasukkan kode 6 digit. Kami mengirimnya saat Anda membuka tautan."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "HR"
+msgstr "HR"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "HR asked you to check these details:\n{{notes}}"
+msgstr "HR meminta Anda memeriksa rincian ini:\n{{notes}}"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "HR asked you to fix these details."
+msgstr "HR meminta Anda memperbaiki rincian berikut."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "HR is checking this item."
+msgstr "HR sedang memeriksa bagian ini."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "HR will check what you sent. If anything needs fixing you will get a message and it will show here."
+msgstr "HR akan memeriksa rincian yang Anda kirim. Jika ada yang perlu diperbaiki, Anda akan mendapat pesan dan permintaannya akan muncul di sini."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "I do not have it with me. Remind me later"
+msgstr "Saya belum membawanya. Ingatkan saya nanti"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "I do not have one yet"
+msgstr "Saya belum punya"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "If you have it"
+msgstr "Jika ada"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Issue date"
+msgstr "Tanggal terbit"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Language"
+msgstr "Bahasa"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Lay your card flat in good light."
+msgstr "Letakkan kartu Anda di permukaan datar dengan pencahayaan yang baik."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "My card has no end date"
+msgstr "Kartu saya berlaku seumur hidup"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Needed before your first pay"
+msgstr "Diperlukan sebelum gaji pertama"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Needed when you join"
+msgstr "Diperlukan saat Anda mulai bekerja"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "No code? Ask %(name)s to show you a new one."
+msgstr "Belum punya kode? Minta kode baru kepada %(name)s."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Numbers you already have"
+msgstr "Nomor yang sudah Anda miliki"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "One quick check"
+msgstr "Verifikasi singkat"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "One thing to fix before you start"
+msgstr "Ada yang perlu diperbaiki sebelum mulai bekerja"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Only if you already have one"
+msgstr "Isi jika sudah punya"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/http.py:0
+msgid "Open your joining link again and try once more."
+msgstr "Buka kembali tautan bergabung Anda dan coba sekali lagi."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Opened with your code"
+msgstr "Dibuka dengan kode Anda"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Paper"
+msgstr "Dokumen"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Papers needed before you start"
+msgstr "Dokumen yang diperlukan sebelum mulai bekerja"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/hiring.py:0
+msgid "Pass on the joining link to %(name)s"
+msgstr "Teruskan tautan bergabung kepada %(name)s"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Please wait a few minutes before trying again."
+msgstr "Tunggu beberapa menit sebelum mencoba lagi."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Please wait before asking for a new code."
+msgstr "Harap tunggu sebelum meminta kode baru."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Read and sign"
+msgstr "Baca dan tanda tangani"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Remove"
+msgstr "Hapus"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Replace"
+msgstr "Ganti"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Save and continue"
+msgstr "Simpan dan lanjutkan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Saved"
+msgstr "Tersimpan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Saved as you go."
+msgstr "Tersimpan setiap kali Anda menyelesaikan bagian."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Saved as you go. You start in %(n)s days."
+msgstr "Rincian Anda tersimpan. Anda mulai bekerja dalam %(n)s hari."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Send again"
+msgstr "Kirim lagi"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Send me a new code"
+msgstr "Kirim kode baru"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Send to HR"
+msgstr "Kirim ke HR"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Sent back to fix"
+msgstr "Dikembalikan untuk diperbaiki"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Sent to HR"
+msgstr "Terkirim ke HR"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/codes.py:0
+msgid "Show a joining code to %(name)s"
+msgstr "Tunjukkan kode bergabung kepada %(name)s"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Show fields for this country"
+msgstr "Tampilkan kolom untuk negara ini"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Sign your papers"
+msgstr "Tandatangani dokumen Anda"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Start"
+msgstr "Mulai"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Still needed"
+msgstr "Masih diperlukan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Take a photo and type the number"
+msgstr "Ambil foto dan masukkan nomornya"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Take a photo of your card"
+msgstr "Ambil foto kartu Anda"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Tax and social insurance"
+msgstr "Pajak dan jaminan sosial"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "That code has run out. Ask for a new one."
+msgstr "Kode tersebut sudah kedaluwarsa. Minta kode baru."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "That code is not right. You have %(n)s tries left."
+msgstr "Kode itu salah. Anda masih dapat mencoba %(n)s kali."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "That date has passed. Add a paper that is still valid."
+msgstr "Tanggal itu sudah lewat. Tambahkan dokumen yang masih berlaku."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "That did not save. Open the link and try again."
+msgstr "Perubahan belum tersimpan. Buka tautan dan coba lagi."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "That file did not upload. Try again, or use a smaller photo."
+msgstr "Berkas gagal diunggah. Coba lagi atau gunakan foto yang lebih kecil."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "There is no room for another file. Replace a file or use a smaller photo."
+msgstr "Tidak ada ruang untuk berkas lain. Ganti berkas atau gunakan foto yang lebih kecil."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "These are the numbers %(country)s asks for. Leave any you do not have yet; HR will help you get one."
+msgstr "Nomor berikut diperlukan di %(country)s. Jika belum punya, kosongkan dulu. HR akan membantu Anda mengurusnya."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "This link is not active"
+msgstr "Tautan ini tidak aktif"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "This page is only for %(name)s. If that is not you, close it."
+msgstr "Halaman ini hanya untuk %(name)s. Jika itu bukan Anda, tutup halaman ini."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "To finish later"
+msgstr "Selesaikan nanti"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Too many tries. Wait 15 minutes, then ask for a new code."
+msgstr "Terlalu banyak percobaan. Tunggu 15 menit, lalu minta kode baru."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Uploading…"
+msgstr "Sedang mengunggah…"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Valid until"
+msgstr "Berlaku sampai"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "We already have this from your application."
+msgstr "Kami sudah menerimanya dari lamaran Anda."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "We already have your name, email and phone from your application. You will not be asked again."
+msgstr "Kami sudah memiliki nama, email, dan nomor telepon dari lamaran Anda. Anda tidak perlu mengisinya lagi."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "We sent a 6-digit code to %(email)s. It works for 10 minutes."
+msgstr "Kami mengirim kode 6 digit ke %(email)s. Kode berlaku selama 10 menit."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Welcome aboard, %(name)s"
+msgstr "Selamat bergabung, %(name)s"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "Welcome to {{brand}}. A few details before you start"
+msgstr "Selamat datang di {{brand}}. Beberapa rincian sebelum Anda mulai"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Welcome to %(company)s, %(name)s"
+msgstr "Selamat datang di %(company)s, %(name)s"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "When, where, what to bring"
+msgstr "Waktu, tempat, dan barang yang perlu dibawa"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Where your pay goes"
+msgstr "Tempat Anda menerima gaji"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Who should we call if something happens at work?"
+msgstr "Siapa yang dapat kami hubungi jika terjadi sesuatu di tempat kerja?"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Who to call"
+msgstr "Orang yang dapat dihubungi"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "You can ask again in {time}"
+msgstr "Anda dapat meminta lagi dalam {time}"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "You can stop at any point and come back with the same link. Have your identity card, tax card and bank details nearby."
+msgstr "Anda dapat berhenti kapan saja dan kembali melalui tautan yang sama. Siapkan kartu identitas, kartu pajak, dan informasi rekening bank Anda."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board.py:0
+msgid "You cannot open this joining."
+msgstr "Anda tidak dapat membuka rincian orang ini."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "You start as %(job)s on %(date)s, in %(days)s days."
+msgstr "Anda mulai bekerja sebagai %(job)s pada %(date)s, %(days)s hari lagi."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "You start as %(job)s on %(date)s."
+msgstr "Anda mulai bekerja sebagai %(job)s pada %(date)s."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "You start as %(job)s today."
+msgstr "Hari ini Anda mulai bekerja sebagai %(job)s."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "Your code for {{brand}} is {{code}}. It works for 10 minutes. If you did not ask for it, ignore this message."
+msgstr "Kode Anda untuk {{brand}} adalah {{code}}. Kode berlaku 10 menit. Jika Anda tidak memintanya, abaikan pesan ini."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Your first day"
+msgstr "Hari pertama Anda"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Your identity card"
+msgstr "Kartu identitas Anda"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Your manager"
+msgstr "Manajer Anda"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Your manager will send you the time and place before you start."
+msgstr "Manajer Anda akan memberi tahu waktu dan tempat sebelum Anda mulai bekerja."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Your papers"
+msgstr "Dokumen Anda"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Your pay is sent here. The name on the account must match your identity card."
+msgstr "Gaji Anda akan dikirim ke rekening ini. Nama pemilik rekening harus sama dengan nama pada kartu identitas Anda."

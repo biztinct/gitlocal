@@ -1,0 +1,10 @@
+<odoo>
+    <record id="joining_company_rule" model="ir.rule">
+        <field name="name">Joining companies</field><field name="model_id" ref="model_pb_joining"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="item_company_rule" model="ir.rule">
+        <field name="name">Joining item companies</field><field name="model_id" ref="model_pb_joining_item"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

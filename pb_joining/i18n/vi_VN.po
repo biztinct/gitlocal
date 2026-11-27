@@ -1,0 +1,765 @@
+# Translation of Joining portal.
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: vi_VN\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "{{code}} is your code"
+msgstr "Mã của bạn là {{code}}"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "{{first_name}}, your details for {{brand}}"
+msgstr "{{first_name}}, thông tin của bạn cho {{brand}}"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "%(manager)s, your manager"
+msgstr "%(manager)s, quản lý của bạn"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "%(n)s of %(m)s done"
+msgstr "Đã xong %(n)s / %(m)s phần"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "1 minute"
+msgstr "1 phút"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "About 10 minutes."
+msgstr "Khoảng 10 phút."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "About you"
+msgstr "Về bạn"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Add a paper"
+msgstr "Thêm giấy tờ"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board.py:0
+msgid "Add an email or a mobile number so the link can reach them."
+msgstr "Thêm email hoặc số điện thoại di động để người nhận nhận được liên kết."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Add it before your first pay."
+msgstr "Hãy bổ sung trước kỳ lương đầu tiên."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Add the date the paper is valid until."
+msgstr "Nhập ngày giấy tờ hết hiệu lực."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board.py:0
+msgid "Add the full name, first day, country of work and job title."
+msgstr "Nhập họ tên, ngày đầu đi làm, quốc gia làm việc và chức danh."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Add the paper before continuing."
+msgstr "Hãy thêm giấy tờ trước khi tiếp tục."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Add your details before continuing."
+msgstr "Hãy bổ sung thông tin trước khi tiếp tục."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "All done, %(name)s. See you on %(date)s."
+msgstr "Đã xong, %(name)s. Hẹn gặp bạn vào %(date)s."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Ask the person who sent it for a new one."
+msgstr "Hãy nhờ người đã gửi cấp cho bạn một liên kết mới."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Back"
+msgstr "Quay lại"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Back of the card"
+msgstr "Mặt sau của thẻ"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+#: code:addons/pb_joining/models/joining.py:0
+msgid "Bank account"
+msgstr "Tài khoản ngân hàng"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Bank account still to add"
+msgstr "Cần bổ sung tài khoản ngân hàng"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Before you join"
+msgstr "Trước ngày đi làm"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "Before you start on {{first_day}}, please finish these sections: {{sections}}."
+msgstr "Trước ngày đi làm {{first_day}}, vui lòng hoàn tất các phần sau: {{sections}}."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Change"
+msgstr "Thay đổi"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "Check my details"
+msgstr "Kiểm tra thông tin của tôi"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Check the date and try again."
+msgstr "Kiểm tra ngày rồi thử lại."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Choose a file from this item."
+msgstr "Chọn tệp thuộc mục này."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Choose a file."
+msgstr "Chọn một tệp."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Choose a JPEG, PNG or PDF."
+msgstr "Chọn tệp JPEG, PNG hoặc PDF."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Choose a photo or PDF up to 10 MB."
+msgstr "Chọn ảnh hoặc tệp PDF tối đa 10 MB."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/codes.py:0
+msgid "Code shown by %(name)s"
+msgstr "%(name)s đã xem mã"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Continue"
+msgstr "Tiếp tục"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/joining.py:0
+msgid "Country of work changed."
+msgstr "Quốc gia làm việc đã thay đổi."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/joining.py:0
+msgid "Details still to send"
+msgstr "Thông tin còn cần gửi"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "done"
+msgstr "đã xong"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Done"
+msgstr "Đã xong"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Emergency contact"
+msgstr "Liên hệ khẩn cấp"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Enter %(field)s."
+msgstr "Nhập %(field)s."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Enter the 6-digit code %(name)s gave you."
+msgstr "Nhập mã gồm 6 chữ số mà %(name)s đã đưa cho bạn."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Enter your code"
+msgstr "Nhập mã của bạn"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "Fill in my details"
+msgstr "Điền thông tin của tôi"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/joining.py:0
+msgid "Finish the sections first."
+msgstr "Hoàn thành các phần trước khi gửi."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "From today you use My Payobook. %(hr)s will give you your sign-in."
+msgstr "Từ hôm nay, bạn sẽ dùng My Payobook. %(hr)s sẽ cung cấp thông tin đăng nhập cho bạn."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Got it"
+msgstr "Tôi đã hiểu"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "Hello {{name}},\nBefore {{first_day}} we need a few details from you. It takes about 10 minutes on your phone. You will be asked for a 6-digit code. We send it when you open the link."
+msgstr "Xin chào {{name}},\nTrước {{first_day}}, chúng tôi cần bạn bổ sung một vài thông tin. Bạn có thể hoàn tất trong khoảng 10 phút trên điện thoại. Chúng tôi sẽ gửi mã gồm 6 chữ số khi bạn mở liên kết."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "HR"
+msgstr "Nhân sự"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "HR asked you to check these details:\n{{notes}}"
+msgstr "Nhân sự yêu cầu bạn kiểm tra những thông tin sau:\n{{notes}}"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "HR asked you to fix these details."
+msgstr "Nhân sự yêu cầu bạn sửa các thông tin sau."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "HR is checking this item."
+msgstr "Nhân sự đang kiểm tra mục này."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "HR will check what you sent. If anything needs fixing you will get a message and it will show here."
+msgstr "Nhân sự sẽ kiểm tra thông tin bạn đã gửi. Nếu cần sửa, bạn sẽ nhận được tin nhắn và thấy yêu cầu ở đây."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "I do not have it with me. Remind me later"
+msgstr "Tôi chưa mang theo. Nhắc tôi sau"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "I do not have one yet"
+msgstr "Tôi chưa có"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "If you have it"
+msgstr "Nếu bạn có"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Issue date"
+msgstr "Ngày cấp"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Language"
+msgstr "Ngôn ngữ"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Lay your card flat in good light."
+msgstr "Đặt thẻ trên mặt phẳng ở nơi đủ sáng."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "My card has no end date"
+msgstr "Thẻ của tôi không có ngày hết hạn"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Needed before your first pay"
+msgstr "Cần trước kỳ lương đầu tiên"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Needed when you join"
+msgstr "Cần khi bạn vào làm"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "No code? Ask %(name)s to show you a new one."
+msgstr "Chưa có mã? Hãy nhờ %(name)s cấp mã mới."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Numbers you already have"
+msgstr "Các mã số bạn đã có"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "One quick check"
+msgstr "Xác nhận nhanh"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "One thing to fix before you start"
+msgstr "Một mục cần sửa trước ngày đi làm"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Only if you already have one"
+msgstr "Chỉ điền nếu bạn đã có"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/http.py:0
+msgid "Open your joining link again and try once more."
+msgstr "Hãy mở lại liên kết nhận việc và thử lại."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Opened with your code"
+msgstr "Đã mở bằng mã của bạn"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "Paper"
+msgstr "Giấy tờ"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Papers needed before you start"
+msgstr "Giấy tờ cần trước khi bắt đầu"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/hiring.py:0
+msgid "Pass on the joining link to %(name)s"
+msgstr "Gửi liên kết nhận việc cho %(name)s"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Please wait a few minutes before trying again."
+msgstr "Hãy đợi vài phút rồi thử lại."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Please wait before asking for a new code."
+msgstr "Vui lòng đợi trước khi yêu cầu mã mới."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Read and sign"
+msgstr "Đọc và ký"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Remove"
+msgstr "Xóa"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Replace"
+msgstr "Thay thế"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Save and continue"
+msgstr "Lưu và tiếp tục"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Saved"
+msgstr "Đã lưu"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Saved as you go."
+msgstr "Thông tin được lưu theo từng phần."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Saved as you go. You start in %(n)s days."
+msgstr "Thông tin được lưu theo từng phần. Bạn sẽ bắt đầu sau %(n)s ngày."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Send again"
+msgstr "Gửi lại"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Send me a new code"
+msgstr "Gửi cho tôi mã mới"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Send to HR"
+msgstr "Gửi cho nhân sự"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Sent back to fix"
+msgstr "Đã gửi lại để sửa"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Sent to HR"
+msgstr "Đã gửi cho nhân sự"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/codes.py:0
+msgid "Show a joining code to %(name)s"
+msgstr "Cấp mã nhận việc cho %(name)s"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Show fields for this country"
+msgstr "Hiện các mục cho quốc gia này"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Sign your papers"
+msgstr "Ký giấy tờ của bạn"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Start"
+msgstr "Bắt đầu"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Still needed"
+msgstr "Còn thiếu"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Take a photo and type the number"
+msgstr "Chụp ảnh và nhập số thẻ"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Take a photo of your card"
+msgstr "Chụp ảnh thẻ của bạn"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Tax and social insurance"
+msgstr "Thuế và bảo hiểm xã hội"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "That code has run out. Ask for a new one."
+msgstr "Mã đã hết hạn. Hãy yêu cầu mã mới."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "That code is not right. You have %(n)s tries left."
+msgstr "Mã chưa đúng. Bạn còn %(n)s lần thử."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "That date has passed. Add a paper that is still valid."
+msgstr "Ngày đó đã qua. Hãy thêm giấy tờ còn hiệu lực."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "That did not save. Open the link and try again."
+msgstr "Thông tin chưa được lưu. Hãy mở lại liên kết và thử lại."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "That file did not upload. Try again, or use a smaller photo."
+msgstr "Chưa tải được tệp. Hãy thử lại hoặc dùng ảnh nhỏ hơn."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/items.py:0
+msgid "There is no room for another file. Replace a file or use a smaller photo."
+msgstr "Không còn chỗ cho tệp mới. Hãy thay thế một tệp hoặc dùng ảnh nhỏ hơn."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "These are the numbers %(country)s asks for. Leave any you do not have yet; HR will help you get one."
+msgstr "Đây là các mã số được yêu cầu ở %(country)s. Bạn có thể bỏ qua mã số chưa có. Nhân sự sẽ giúp bạn đăng ký."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "This link is not active"
+msgstr "Liên kết này không còn hoạt động"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "This page is only for %(name)s. If that is not you, close it."
+msgstr "Trang này chỉ dành cho %(name)s. Nếu đó không phải là bạn, hãy đóng trang."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "To finish later"
+msgstr "Để hoàn thành sau"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Too many tries. Wait 15 minutes, then ask for a new code."
+msgstr "Bạn đã thử quá nhiều lần. Hãy đợi 15 phút rồi yêu cầu mã mới."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Uploading…"
+msgstr "Đang tải lên…"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Valid until"
+msgstr "Có hiệu lực đến"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "We already have this from your application."
+msgstr "Chúng tôi đã có giấy tờ này trong hồ sơ ứng tuyển của bạn."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "We already have your name, email and phone from your application. You will not be asked again."
+msgstr "Chúng tôi đã có họ tên, email và số điện thoại từ hồ sơ ứng tuyển của bạn. Bạn không cần nhập lại."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "We sent a 6-digit code to %(email)s. It works for 10 minutes."
+msgstr "Chúng tôi đã gửi mã gồm 6 chữ số đến %(email)s. Mã có hiệu lực trong 10 phút."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Welcome aboard, %(name)s"
+msgstr "Chào mừng %(name)s gia nhập công ty"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "Welcome to {{brand}}. A few details before you start"
+msgstr "Chào mừng bạn đến với {{brand}}. Một vài thông tin trước ngày đi làm"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Welcome to %(company)s, %(name)s"
+msgstr "Chào mừng %(name)s đến với %(company)s"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "When, where, what to bring"
+msgstr "Thời gian, địa điểm và những gì cần mang theo"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Where your pay goes"
+msgstr "Nơi nhận lương của bạn"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Who should we call if something happens at work?"
+msgstr "Chúng tôi nên gọi cho ai nếu xảy ra sự cố tại nơi làm việc?"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Who to call"
+msgstr "Người cần liên hệ"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "You can ask again in {time}"
+msgstr "Bạn có thể yêu cầu lại sau {time}"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "You can stop at any point and come back with the same link. Have your identity card, tax card and bank details nearby."
+msgstr "Bạn có thể dừng bất cứ lúc nào và quay lại bằng liên kết này. Hãy chuẩn bị thẻ căn cước, thẻ thuế và thông tin ngân hàng."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/board.py:0
+msgid "You cannot open this joining."
+msgstr "Bạn không thể mở hồ sơ nhận việc này."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "You start as %(job)s on %(date)s, in %(days)s days."
+msgstr "Bạn sẽ bắt đầu làm %(job)s vào %(date)s, sau %(days)s ngày nữa."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "You start as %(job)s on %(date)s."
+msgstr "Bạn sẽ bắt đầu công việc %(job)s vào %(date)s."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "You start as %(job)s today."
+msgstr "Hôm nay bạn bắt đầu công việc %(job)s."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/messages.py:0
+msgid "Your code for {{brand}} is {{code}}. It works for 10 minutes. If you did not ask for it, ignore this message."
+msgstr "Mã của bạn cho {{brand}} là {{code}}. Mã có hiệu lực trong 10 phút. Nếu bạn không yêu cầu mã, hãy bỏ qua tin nhắn này."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Your first day"
+msgstr "Ngày đầu đi làm"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Your identity card"
+msgstr "Thẻ căn cước của bạn"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Your manager"
+msgstr "Quản lý của bạn"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Your manager will send you the time and place before you start."
+msgstr "Quản lý sẽ báo cho bạn thời gian và địa điểm trước khi bạn bắt đầu."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Your papers"
+msgstr "Giấy tờ của bạn"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/controllers/joining.py:0
+msgid "Your pay is sent here. The name on the account must match your identity card."
+msgstr "Lương sẽ được chuyển vào tài khoản này. Tên chủ tài khoản phải khớp với thẻ căn cước của bạn."

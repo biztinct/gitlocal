@@ -83,3 +83,13 @@ Every JOINING handover and report references this file. Append new entries; neve
 
 ## 4. New gotchas found while building (append below as J-1, J-2, …)
 
+- J-1. A local test server must match exactly one database. Six Hiring public-page checks returned HTTP 404 when two copies matched the filter. All six passed on the same code with an exact database filter.
+- J-2. Owner ruling. HR and the recruiter handling the particular offer may show a one-use code. With the link and the code, either can act on the person's phone page. The recruiter drawer itself shows item names and states only.
+- J-3. Owner ruling. The release script must restore the on/off setting of each previously existing scheduled job while preserving the new Joining job. Restoring just the old list of active IDs switches off every new job.
+- J-4. This checkout has an addon literally named `addons`. Selecting it as the source directory for every module misses the root-level custom modules. The release wrapper also has to preserve the space in `WHO="Codex JOINING"` across SSH.
+- J-5. The active web-server access logs include the request URI. Owner approved scoped redaction of joining secrets on the active sites. Framework access logs and CSRF rejection messages also include the path.
+- J-6. Owner ruling. File a permanent identity card under “Identity card — no end date” with the same access as ID documents. The existing ID category requires an expiry date, and the Hiring fallback holds the file at its source. A Joining-only copy would be erased after the retention period.
+- J-7. The live server has neither PyMuPDF nor Poppler's PDF page renderer. Use “Open the paper” and require the paper to have been opened before signing.
+- J-8. The local asset compiler evaluates CSS `max()` as a Sass numeric function. Use `calc(12px + env(safe-area-inset-bottom, 0px))` for the phone footer.
+- J-9. All five sites use the framework's seven-day idle session default. Owner approved a separate, signed, host-only Joining device cookie. It expires 14 days from the original code check, is restricted to that joining link and only restores that joining's session entry on its landing page.
+- J-10. Eager public rendering returns markup. Materialise the normal response with `flatten()` before setting the privacy headers. The website also owns the QWeb name `editable`. Using it for section permission silently hides Save from the person completing the form.
