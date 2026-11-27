@@ -210,8 +210,13 @@ holes — its only scheme is still a draft; **payobook_template**, **p0clone**: 
 ### Open items
 - A waiting `country_set` request is not yet shown on its country line (the chooser says "Sent for approval"; the
   line stays "Not set" until approved).
-- rize's Vietnam named-people rule is now redundant (the Vietnam line covers the same 70 people the same way) and can
-  be taken off on screen — the owner's call.
+- ~~rize's Vietnam named-people rule is now redundant~~ — **taken off 27 Nov 00:03 UTC (owner decision)** through
+  Mapping › Other rules › Remove (`other_rule_remove`, fast lane, request kind `country_set`): map line 309 (the 70-code
+  list) archived; answers identical for all 242 people with and without their own pay schemes (main + advance);
+  "Work it out again" 0 changed; the section reads 4 of 4 countries set, 0 uncaught, no other rules.
+  Left in place: line 313 (the August-2026-only code list) — outside its dates, so it reaches nobody and is not shown.
+  Dump + undo record (the line's full values; `browse(309).active = True` restores it) in
+  `/odoo/backups/pscheme-p4-rule-20261127/apply/`; START/DONE in the deploy notes; no restart.
 - payobook: Vietnam country line not chosen (company 5 has seven Vietnam schemes); company 1 has no active scheme.
 - Earlier open items (§4, §6) stand: sudima fill, rize's 4 without Country of work, payobook's 44 / 21 / 7, the owner's
   two-minute look, backup pruning, the three known analytics ERROR lines, partial Indonesian catalogues elsewhere.
