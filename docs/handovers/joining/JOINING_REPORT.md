@@ -79,17 +79,25 @@ The local walks used Chrome with the console monitored. Each listed walk finishe
 
 ## 5. Release and live proof
 
-All four phases reached `origin/19.1` at `3e220ee95`. The live release script has not run. No Joining release NOTE was written and the deployed Chrome walks are pending. No demonstration records were created on any live database.
+The risky release returned `OK` on November 27, 2026. Both branches contained release commit `d7db27c7a3ce21f58b5fe91a591cd871e83e374c`. The script used the verified nightly backups for all five databases. It recorded 109 seconds of downtime and 125 seconds overall. The server log is `/tmp/pbrel-20261127-090407-41182/run.log`.
 
-| Target | Active jobs before release | Login result before release |
-|---|---:|---|
-| payobook | 60 | Public 200 |
-| payobook_template | 41 | Public 404 and database-specific internal 200 |
-| p0clone | 50 | Public 200 |
-| rize | 93 | Public 200 |
-| sudima | 92 | Public 200 |
+| Target | Joining | Add employee | Active jobs before → after | Login after release |
+|---|---|---|---|---|
+| payobook | 19.0.1.0.0 | 19.0.1.8.2 | 60 → 61 | Public 200 |
+| payobook_template | 19.0.1.0.0 | 19.0.1.8.2 | 41 → 42 | Public 404, internal 200 |
+| p0clone | 19.0.1.0.0 | 19.0.1.8.2 | 50 → 51 | Public 200 |
+| rize | 19.0.1.0.0 | 19.0.1.8.2 | 93 → 94 | Public 200 |
+| sudima | 19.0.1.0.0 | 19.0.1.8.2 | 92 → 93 | Public 200 |
 
-All five databases still have Add employee `19.0.1.8.1`. Joining is awaiting installation. The server deliberately excludes the template from its public workspace list. Its configured login URL returns 404. The release log also shows a Rize pay-scheme update at 20:38 UTC on November 26 that failed before committing anything. The same operation was retried and recorded DONE at 20:39 UTC. The owner confirmed both the successful retry and the template’s private status. All five databases already have English, Vietnamese and Indonesian enabled. The candidate web-server configuration passed a syntax check against the actual active sites without changing them. A separate loopback web server verified redaction of private request paths and referrers while retaining ordinary request paths. Seven isolated release checks passed, including the private template, successful retries and the configured HTTP and HTTPS listeners. A PostgreSQL rehearsal verified restoration of previously active and inactive jobs, preservation of new job defaults and a repeat restore.
+An independent check matched both installed module trees to the committed files by SHA-256. The new daily job was active in every database. The server log and all five upgrade logs contained zero errors or tracebacks during verification. Two rounds of HTTP checks confirmed redaction of request paths and referrers across all 17 configured listeners. The owner confirmed the private template behavior and the successful retry of the previous Rize operation.
+
+Seven isolated release tests passed. A separate PostgreSQL rehearsal preserved all existing job settings and new job defaults. Immediately before deployment, Chrome repeated the three-language phone flow, both boards, send-back, signing, and Add employee. The employee had seven filed documents, two signed policies and a bank account awaiting independent review. These walks had zero console errors. The 37 screenshots from this repeat were reviewed and removed.
+
+The following NOTE was appended to `/opt/deploy-notes.md` and read back after independent verification.
+
+> 2026-11-27 09:07 UTC | Codex JOINING | NOTE | pb_joining,pb_new_hire | payobook,payobook_template,p0clone,rize,sudima | Verified d7db27c7a: both module trees match the commit by SHA-256. Versions 19.0.1.0.0 and 19.0.1.8.2 on all five. Active jobs 60→61, 41→42, 50→51, 93→94, 92→93. Joining daily job active on all five. Four public logins 200. Template public 404 and database-specific internal 200 as approved. Zero ERROR/CRITICAL/Traceback in the server and five upgrade logs since release start. Redaction confirmed in 34 request and referrer records across 17 configured listeners. Release OK, 109s down.
+
+**Live Chrome proof.** The Payobook phone page for an inactive link displayed “This link is not active” and “Ask the person who sent it for a new one.” Chrome reported zero console errors. The Payobook, Rize and Sudima sites showed their sign-in pages. The authenticated demo hire on Payobook and the read-only Joining board checks on Rize and Sudima are awaiting the owner’s sign-in. No demonstration records have been created on the live databases.
 
 ## 6. New ledger entries
 
