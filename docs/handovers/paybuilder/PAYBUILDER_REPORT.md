@@ -1,6 +1,6 @@
 # Pay Builder implementation and release report
 
-Local testing covers all four homes. The final eleven-module regression run is complete. Production verification follows the release.
+**Released to all five databases.** Commit `c9afd099e` passed the release script, and all five databases retained their scheme and scheduled-job counts. W1–W7 passed in local Chrome. Both live W8 sites currently present their sign-in screens.
 
 ## 1. What was built
 
@@ -11,7 +11,7 @@ Local testing covers all four homes. The final eleven-module regression run is c
 | P2 | `d7f2d9de2` | In Formula Studio, choose where an input comes from. A manager can see how many people a change affects before confirming it. |
 | P3 | `60cb015ca` | Use the same builder on an offer, choose how the letter shows pay and carry the signed amounts into the hire. |
 | P4 | `6681a6a56` | Date a change from a contract, compare before and after, and send it down the existing approval route. After hire approval, the employee can view their own pay on the joining page. |
-| P5 | See the release revision in section 6 | Practice entering a wage in Learn, with an example monthly breakdown. Updated the lesson text, checked translations and removed retired hire-card wording. |
+| P5 | `360ac6ebe`, merged as `c9afd099e` | Practice entering a wage in Learn, with an example monthly breakdown. Updated the lesson text, checked translations and removed retired hire-card wording. |
 
 The permanent release scope includes Sudima in `f8791a01b`. The engine, take-home search, pay-band totals and payroll input reader remain the existing payroll implementations. The hire approval now supplies the employee’s selected scheme when the existing fill prepares that new contract.
 
@@ -166,7 +166,7 @@ Chrome opened all four prototype homes with both schemes. The local product walk
 | W5, Contracts | A monthly change from ₫30,000,000 to ₫31,000,000 showed a ₫800,000 take-home gain. A second user approved it. Advancing the local scheduled job to the effective date applied it once and added it to History. The restricted role had no Change pay button. On a standalone Contracts install, both Terms and Components opened without that button or a console error. | `P4-{locale}-change.png` |
 | W6, layout and keyboard | Add employee fit 1440, 1180, 820, 600 and 400 px in all three languages with reduced motion. Normal motion was exercised on the annual case. Enter, Escape, refocus through a chip and navigating to a folded line worked. Slow responses retained the last result and current input. | `p1-{locale}-{width}.png` |
 | W7, employee joining | At 360 × 740 px the joiner entered their code and opened Your pay. Keyboard Enter disclosed Basic’s sum. This contract’s insurance answer was zero. Take-home was ₫27,850,000 in each of the three languages. Public output showed the employee’s earnings and deductions. | `P4-{locale}-joining.png` |
-| W8, live | Pending release. | Pending |
+| W8, live | After deployment, Chrome opened Add employee on Payobook and Rize. Both redirected to sign-in. The owner has been asked to sign in. The live DEMO walkthrough on Payobook and the unsent India preview on Rize are pending. | No authenticated live capture yet. |
 
 The Learn practice card showed ₫10,230,000 gross, ₫997,500 in deductions and ₫9,232,500 take-home after entering ₫9,500,000. A different wage hid that fixed example. Checked in English and Vietnamese with the keyboard and reduced motion. Captures were taken as `P5-practice-{en_US,vi_VN}.png`.
 
@@ -174,7 +174,33 @@ Side-by-side comparisons led to a 26 px headline, a 38 × 22 px offer-letter swi
 
 ## 6. Release and verification
 
-Local release checks passed apart from the stated timing target and the original suite exceptions. Production results will be recorded after the release script runs. The five targets are payobook, payobook_template, p0clone, rize and sudima.
+The risky release of `c9afd099e751d3dcd52a46f53cb76b0fb089e41a` returned **OK** on 28 November 2026. The runner used the 27 November nightly backup on every target. Payobook, Rize and Sudima had zero active users in the preceding 15 minutes. The deploy notes had no open operation or hold. Service downtime was 430 seconds and the full release took 451 seconds. The production PDF converter is installed.
+
+| Database | Rules before → after | Per-person flags before → after | Active jobs before → after | All jobs before → after | Upgrade and login check |
+|---|---:|---:|---:|---:|---|
+| payobook | 1,667 → 1,667 | 48 → 48 | 61 → 61 | 114 → 114 | Exit 0, zero errors, public 200 |
+| payobook_template | 0 → 0 | 0 → 0 | 42 → 42 | 102 → 102 | Exit 0, zero errors, template-specific internal 200 and the intended public 404 |
+| p0clone | 0 → 0 | 0 → 0 | 51 → 51 | 102 → 102 | Exit 0, zero errors, public 200 |
+| rize | 3,254 → 3,254 | 202 → 202 | 94 → 94 | 102 → 102 | Exit 0, zero errors, public 200 |
+| sudima | 62 → 62 | 7 → 7 | 93 → 93 | 102 → 102 | Exit 0, zero errors, public 200 |
+
+The nine shipped module trees matched the merged commit by SHA-256. The Hiring, Change job and scheme resolver trees matched as well. Installed versions matched the manifests across all five databases, including both new modules. An independent scan of all five upgrade logs and the service log from release start found zero ERROR, CRITICAL or Traceback entries. The live browser opened both requested sites after the release.
+
+The server release log is `/tmp/pbrel-20261128-085930-13406/run.log`. Its final checks are shown below.
+
+```text
+09:06:50 warm payobook 200
+09:06:52 warm payobook_template public 404 internal 200
+09:06:54 warm p0clone 200
+09:06:56 warm rize 200
+09:06:58 warm sudima 200
+09:07:03 STEP verify took 5s
+RESULT: OK
+```
+
+The following entry was appended to `/opt/deploy-notes.md` and verified by reading it back.
+
+> 2026-11-28 09:07 UTC | Codex PAYBUILDER | NOTE | pb_pay_builder,pb_pay_builder_change,pb_new_hire,pb_formula_studio,pb_pay_package,pb_contracts,pb_joining,pb_doc_studio_hiring,pb_learn | payobook,payobook_template,p0clone,rize,sudima | Verified c9afd099e. Release OK, 430s down. All nine module trees and installed versions match on all five. Hiring, Change job and scheme resolver trees also match. N8 rules/per-person unchanged 1667/48, 0/0, 0/0, 3254/202, 62/7. Active jobs unchanged 61/42/51/94/93. Four public logins 200 and template internal 200 with its approved public 404. All five upgrade logs and the service log have zero ERROR, CRITICAL or Traceback since start. Nightly backups used. | /tmp/pbrel-20261128-085930-13406/run.log
 
 ## 7. Ledger additions
 
