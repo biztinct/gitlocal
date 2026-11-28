@@ -1,6 +1,6 @@
 # Pay Builder implementation and release report
 
-**Released to all five databases.** The initial feature release was `c9afd099e`. The live walkthrough added the authorised DEMO hire on Payobook and exposed two preview issues. Corrective release `9686d2ed2` passed the release script and the independent checks on all five databases. W1–W7 passed in local Chrome.
+**Released and verified on all five databases.** The initial release was `c9afd099e`. The live walkthrough added the authorised DEMO hire on Payobook and exposed two preview issues. Corrective release `9686d2ed2` passed the release script and the independent checks on all five databases. W1–W7 passed in local Chrome. On 29 November 2026 the final signed-in Chrome checks confirmed ₹79,500 take-home on Rize and ₫30,594,000 on Payobook. Both matched their example payslips.
 
 ## 1. What was built
 
@@ -169,7 +169,10 @@ Chrome opened all four prototype homes with both schemes. The local product walk
 | W7, employee joining | At 360 × 740 px the joiner entered their code and opened Your pay. Keyboard Enter disclosed Basic’s sum. This contract’s insurance answer was zero. Take-home was ₫27,850,000 in each of the three languages. Public output showed the employee’s earnings and deductions. | `P4-{locale}-joining.png` |
 | W8, live Payobook | Added **DEMO Pay Builder Live November** through the signed-in Add employee screen. A ₫30,000,000 wage produced ₫36,580,000 gross, ₫5,986,000 deductions and ₫30,594,000 take-home in both panels. A temporary ₫1,000,000 advance reduced take-home to ₫29,594,000. Removing it restored the original result. Working back from that result returned ₫30,000,000. The screen confirmed the hire, and a read-only check found one employee and an open contract at the agreed wage. No welcome link was sent. | `W8-payobook-month.png`, inspected and removed |
 | Rize India, first live preview | **Annual fixed pay** accepted ₹12,00,000 and showed ₹1,00,000 a month before deductions. Basic earnings divided by zero. The builder withheld gross and take-home, while the right-hand example showed ₹0 gross and −₹3,000 take-home. The draft was never submitted. A read-only check found zero employees with the preview name. | Chrome inspection |
-| After the corrective release | A read-only call to the deployed builder returned ₹82,500 gross, ₹3,000 deductions, ₹79,500 take-home and ₹3,000 employer contributions on Rize. On Payobook, it returned ₫30,594,000 take-home and the allowance explanation “10% of Basic Salary.” A second count found one saved Payobook DEMO hire and zero Rize preview employees. The Mac locked during the release. Repeating the two browser previews requires the signed-in desktop to be unlocked. | Deployed calculation checked directly. Final Chrome recheck pending. |
+| Rize India, final live Chrome check | **Annual fixed pay** of ₹12,00,000 showed ₹1,00,000 a month before deductions. Opening Basic showed 21 working days and 21 paid days for November. The builder and example payslip agreed on ₹50,000 Basic, ₹32,500 house rent allowance, ₹82,500 gross, ₹3,000 employee PF, ₹79,500 take-home and ₹3,000 employer PF. The draft was left without sending. | `W8-rize-india.png`, inspected and removed |
+| Payobook, final live Chrome check | On ₫30,000,000 monthly wage, Responsibility Allowance opened to “10% of Basic Salary.” Its rate chip showed 10% and its result was ₫3,000,000. Both panels showed ₫36,580,000 gross, ₫5,986,000 deductions, ₫30,594,000 take-home and ₫7,050,000 employer costs. The second draft was closed without submitting. | `W8-payobook-rate.png`, inspected and removed |
+
+Read-only checks after the walkthrough found zero employees and zero hire proposals for either preview name. The original authorised Payobook DEMO hire had exactly one employee and one open contract at ₫30,000,000. The browser figures agreed with the separate read-only checks on the deployed builder. Neither console showed a Pay Builder exception. Payobook also logged the existing application-icon size warning.
 
 The Learn practice card showed ₫10,230,000 gross, ₫997,500 in deductions and ₫9,232,500 take-home after entering ₫9,500,000. A different wage hid that fixed example. Checked in English and Vietnamese with the keyboard and reduced motion. Captures were taken as `P5-practice-{en_US,vi_VN}.png`.
 
@@ -177,9 +180,9 @@ Side-by-side comparisons led to a 26 px headline, a 38 × 22 px offer-letter swi
 
 | Design criterion | Self-score | Basis |
 |---|---:|---|
-| Enter the agreed amount and see the month | 8/10 | On Payobook the reverse search returned the original wage, and the independently calculated payslip agreed to the đồng. The first India check exposed a real day-count omission. |
+| Enter the agreed amount and see the month | 8/10 | Payobook’s reverse search returned the original wage. After the India day-count correction, each live builder agreed with its independently calculated example payslip. |
 | A way forward in each state | 8/10 | The empty, missing-scheme, permissions, slow-response and retry paths were walked. In India, Basic identified the zero divisor and provided a route to the scheme editor. |
-| Plain language and clear units | 8/10 | The annual equivalent and take-home are explicitly labelled. The live allowance explanation exposed an imported percentage showing as money. |
+| Plain language and clear units | 8/10 | Rize showed the annual agreement, monthly equivalent and take-home separately. On Payobook both the allowance sentence and its calculation chip showed 10%. |
 | Motion with purpose | 8/10 | Normal and reduced-motion walks completed. The 400-line scheme exceeded the response-time target. |
 | Keyboard operation | 9/10 | Opening an explanation, following its input, returning to a folded row and closing a nested dialog retained focus. |
 | Best in class | Unrated | The prototype and product were compared side by side. No independent comparison with other payroll products was performed. |
