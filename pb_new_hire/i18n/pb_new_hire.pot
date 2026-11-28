@@ -1,0 +1,6546 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_new_hire
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-25 05:43+0000\n"
+"PO-Revision-Date: 2026-11-25 05:43+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "%(a)s to %(b)s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "%(ask)s for %(first)s, %(have)s with you"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "%(code)s · wages and payslips"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "%(count)s equipment request(s) raised for this joiner."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid "%(done)s of %(total)s details"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "%(done)s of %(total)s done"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "%(done)s of %(total)s steps done"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "%(done)s. %(rest)s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+msgid "%(first)s %(n)s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid ""
+"%(first)s gets the welcome link with %(things)s to finish, at %(address)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid ""
+"%(first)s has no email sign-in, so no welcome link is sent. The %(things)s "
+"to finish wait on My Payobook for when they sign in."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid ""
+"%(first)s is asked for the bank account on My Payobook, and a second person "
+"approves it."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid ""
+"%(first)s starts on %(day)s. Whether the first pay is reduced for the part "
+"month depends on how this pay scheme counts days."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "%(job)s, %(country)s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "%(job)s, %(team)s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "%(line)s. %(first)s is asked for the %(what)s only."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+msgid "%(month)s · %(scheme)s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
+msgid "%(n)s months, ends %(day)s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "%(n)s months, to %(day)s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/docs_legs.py:0
+msgid "%(n)s things to ask %(first)s for"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid ""
+"%(name)s is added straight away, with a running contract in %(code)s on "
+"%(scheme)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "%(name)s is added straight away, with a running contract in %(code)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_who.js:0
+msgid ""
+"%(name)s is already an employee (%(where)s). Carry on only if this is a "
+"different person."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_who.js:0
+msgid ""
+"%(name)s is already an employee. Carry on only if this is a different "
+"person."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "%(name)s is with %(who)s for approval"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid ""
+"%(name)s starts on %(day)s and %(n)s things needed for the first pay are "
+"still missing."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid ""
+"%(name)s starts on %(day)s and 1 thing needed for the first pay is still "
+"missing."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_welcome.js:0
+msgid ""
+"%(name)s, %(n)s steps. %(first)s appears on the New joiners board when the "
+"hire is added."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_sched.js:0
+msgid "%(name)s, %(when)s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "%(name)s, starts %(day)s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_sched.js:0
+msgid "%(name)s: %(n)s days a year"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "%(paper)s and number"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "%(req)s required, %(opt)s optional"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "%(role)s: %(name)s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "%(role)s: %(who)s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid "%(scheme)s could not work out an example: %(why)s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid ""
+"%(team)s is paid by %(scheme)s, a %(theirs)s scheme, but you chose %(mine)s "
+"as the country of work."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/my_welcome.py:0
+msgid "%(things)s to finish before %(day)s. Each one takes a minute or two."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "%(wage)s a month, %(kind)s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "%(wage)s, %(kind)s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "%(what)s for %(name)s, who joins on %(day)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid ""
+"%(what)s is needed before the first pay, so it cannot be left out. Ask "
+"%(first)s for it, or add it now."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "%(when)s: %(what)s (%(who)s)."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "%(who)s gets the hire to approve. Nothing is created until they agree."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "%(who)s, because %(boss)s has no sign-in yet"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "%(who)s, because %(first)s has no sign-in yet"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "%(why)s Ask an administrator to set this in Approvals."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "%s KB"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "%s MB"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
+#: code:addons/pb_new_hire/static/src/js/step_who.js:0
+msgid "%s a month"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "%s chooses a password the first time."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid "%s copied the welcome link."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/docs_legs.py:0
+msgid "%s details"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "%s equipment requests"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "%s fills in the phone and home address on My Payobook."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "%s gives it on My Payobook after the hire is approved."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid ""
+"%s has no sign-in yet (step 6), so no welcome link is sent. These wait on My"
+" Payobook until a sign-in is made."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid "%s has no sign-in yet. Make one in Access first."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_sched.js:0
+msgid "%s hours in the first week"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "%s is added"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "%s is already an employee"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "%s is needed"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "%s is needed before the first pay"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "%s is not finished"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_welcome.js:0
+msgid "%s is told when the hire is added, and catch-ups are planned."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "%s is waiting for approval"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "%s left before approval."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_who.js:0
+msgid "%s more employees have the same name."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid ""
+"%s needs a valid-until date, so it was not filed. Add it from the employee's"
+" side panel, Documents; the file is still on the offer in Hiring."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_who.js:0
+msgid "%s not sent yet"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "%s of your own fields"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "%s of your own fields are needed"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/docs_legs.py:0
+msgid "%s papers"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid "%s papers from Hiring"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "%s rows to finish"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_who.js:0
+msgid "%s signed offers are waiting. The papers they sent come across"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid ""
+"%s signs in with the employee number, so no welcome link is sent. These are "
+"waiting on My Payobook after they sign in."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid ""
+"%s signs in with the employee number, so there is no welcome link to send."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid ""
+"%s signs in with the employee number, so there is no welcome link. Give them"
+" the employee number and the first password from Access."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "%s starts."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/my_welcome.py:0
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "%s things"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/my_welcome.py:0
+msgid "%s things to finish"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "%s things to finish, no welcome link"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/my_welcome.py:0
+msgid "%s to finish. Each one takes a minute or two."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "%s was brought across from Hiring. Check each step, then send."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid ""
+"%s's bank paper will be on their record. The account details are asked for "
+"in the welcome link."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "%s, because there is no manager yet"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "%s, by a link"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "%s-day check-in"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "%s. It is filed in their documents."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "%s. It is read, then a second person approves the account."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "%s. Not filed."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/docs_legs.py:0
+msgid "1 detail"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "1 equipment request"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "1 of your own fields"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "1 of your own fields is needed"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/docs_legs.py:0
+msgid "1 paper"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid "1 paper from Hiring"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_who.js:0
+msgid "1 signed offer is waiting. The papers they sent come across"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/my_welcome.py:0
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "1 thing"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/docs_legs.py:0
+msgid "1 thing to ask %s for"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/my_welcome.py:0
+msgid "1 thing to finish"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "1 thing to finish, no welcome link"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "6 to 19 digits."
+msgstr ""
+
+#. module: pb_new_hire
+#: model:mail.template,body_html:pb_new_hire.mail_template_welcome
+msgid ""
+"<div style=\"margin:0;padding:0;font-family:Inter,Arial,sans-serif;color:#1f2430;font-size:15px;line-height:1.5;max-width:560px\">\n"
+"    <p style=\"margin:0 0 12px\">Hello <t t-out=\"ctx.get('pb_nh_first') or object.name or ''\"/>,</p>\n"
+"    <p t-if=\"ctx.get('pb_nh_kind') == 'reminder'\" style=\"margin:0 0 12px\">A quick reminder: a few things are still open before your first day at <t t-out=\"object.company_id.name or ''\"/>.</p>\n"
+"    <p t-else=\"\" style=\"margin:0 0 12px\">Welcome to <t t-out=\"object.company_id.name or ''\"/>. We look forward to seeing you on <b t-out=\"ctx.get('pb_nh_day') and format_date(ctx.get('pb_nh_day'), date_format='EEEE d MMMM') or ''\"/>.</p>\n"
+"    <p style=\"margin:0 0 8px\">Please finish these before your first day:</p>\n"
+"    <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%;border-collapse:collapse;margin:0 0 18px\">\n"
+"        <t t-foreach=\"ctx.get('pb_nh_items') or []\" t-as=\"item\">\n"
+"            <tr>\n"
+"                <td style=\"padding:9px 12px;border:1px solid #e5e7f0;border-radius:8px;background:#fafafd\">\n"
+"                    <span style=\"font-weight:600\" t-out=\"item.get('label') or ''\"/>\n"
+"                    <span t-if=\"item.get('need')\" style=\"display:inline-block;margin-left:6px;font-size:12px;color:#b45309\" t-out=\"item.get('need')\"/>\n"
+"                </td>\n"
+"            </tr>\n"
+"        </t>\n"
+"    </table>\n"
+"    <p style=\"margin:0 0 18px\">\n"
+"        <a t-att-href=\"ctx.get('pb_nh_link')\" style=\"background:#5A4BB0;color:#ffffff;padding:12px 24px;border-radius:9px;text-decoration:none;display:inline-block;font-weight:600\">Get started</a>\n"
+"    </p>\n"
+"    <p t-if=\"ctx.get('pb_nh_signed_in')\" style=\"margin:0 0 12px;font-size:13px;color:#5b6478\">Sign in with <t t-out=\"ctx.get('pb_nh_login') or ''\"/> to finish them.</p>\n"
+"    <p t-elif=\"ctx.get('pb_nh_days')\" style=\"margin:0 0 12px;font-size:13px;color:#5b6478\">You will choose a password the first time. The link works for <t t-out=\"ctx.get('pb_nh_days')\"/> days; ask HR for a new one after that.</p>\n"
+"    <p t-else=\"\" style=\"margin:0 0 12px;font-size:13px;color:#5b6478\">You will choose a password the first time. The link works for <t t-out=\"ctx.get('pb_nh_hours')\"/> hours; ask HR for a new one after that.</p>\n"
+"    <p style=\"margin:0 0 12px;font-size:13px;color:#5b6478\">If the button does not work, copy this address into your browser:<br/><t t-out=\"ctx.get('pb_nh_link') or ''\"/></p>\n"
+"    <p style=\"margin:0\">See you soon,<br/>The <t t-out=\"object.company_id.name or ''\"/> HR team</p>\n"
+"</div>\n"
+"        "
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "A clock number has at most %s characters."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/my_welcome.py:0
+msgid "A few joining details are still open."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "A fixed-term contract needs an end date."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid ""
+"A message went to %s less than a minute ago. Wait a minute, then send it "
+"again."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+msgid ""
+"A month's payslip appears here once the name, team, country of work and wage"
+" are in."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "A month's payslip · example"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "A new job title…"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.constraint,message:pb_new_hire.constraint_pb_new_hire_paper_one_row
+msgid ""
+"A paper is listed once per country (and once more for a company that changes"
+" it)."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "A row you have is not finished. Finish it in step 5, then send."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "A scan or a photo, filed in the person's documents."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid ""
+"A second person gets the hire to approve. Nothing is created until they "
+"agree."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "A short form, by a link."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid ""
+"A sign-in with %s already exists for someone else. Create the sign-in from "
+"Access."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid "A signed offer"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"A work email is not needed. People without one can still be given a sign-in "
+"later from Access."
+msgstr ""
+
+#. module: pb_new_hire
+#: model:pb.new.hire.paper,label:pb_new_hire.paper_in_aadhaar
+msgid "Aadhaar card"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Aadhaar number"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
+msgid "Above the pay band for %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/docs_legs.py:0
+msgid "Account holder"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/docs_legs.py:0
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Account number"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_paper__active
+msgid "Active"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Add"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Add %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Add %s to the payroll"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Add a paper"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Add a team"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Add a team first"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Add a work or personal email in step 1, or use the employee number."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_welcome.js:0
+msgid "Add an email"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Add an email in step 1"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Add another person"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+#: model:ir.actions.client,name:pb_new_hire.action_new_hire_studio
+msgid "Add employee"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Add them in step 5 if you need any."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/my_welcome.py:0
+msgid ""
+"Add your account and a photo of a bank paper. A second person approves it."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Added"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Adding people is for HR"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Admin"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid ""
+"After sending you can still withdraw it and change it, until it is approved."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid ""
+"An email invitation needs an email address. Add one in step 1, or choose "
+"another sign-in."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid ""
+"An employee-number sign-in needs a clock number. Type one in step 4, or "
+"choose another sign-in."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid ""
+"An example cannot be shown because your plan has no free employee place."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid "An example cannot be shown right now."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid "An example cannot be shown: %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "An expiry date is required for every '%s' file."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Another employee already uses this work email"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"Another employee already uses this work email. Check it, or leave it empty."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Arrives next"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "As on their identity card"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Ask %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Ask %s for everything"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Ask for both"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Ask for the number"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+#: model:ir.model.fields.selection,name:pb_new_hire.selection__pb_new_hire_ask__need__joining
+#: model:ir.model.fields.selection,name:pb_new_hire.selection__pb_new_hire_paper__need__joining
+msgid "Asked at joining"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/joiners_board.js:0
+msgid "Asked from %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Asked: %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Attach the %s to finish this row."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Attach the %s, or choose another option."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "BPJS Kesehatan number"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "BPJS Ketenagakerjaan number"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "BPJS numbers"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Back to Employees"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Back to the usual list"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Back to the usual list for %s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Back to usual"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
+msgid "Band for %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/docs_legs.py:0
+#: code:addons/pb_new_hire/models/hiring.py:0
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Bank"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Bank account"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+msgid "Bank account: %s will be asked"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Bank account: add it from the employee's side panel later."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+msgid "Bank account: choose who gives it in step 5."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+msgid "Bank account: from the Hiring paper, then a second approval"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+msgid "Bank account: not asked yet"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+msgid "Bank account: waiting for a second approval after sending"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid "Bank paper"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Because %(team)s is paid by this scheme."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Because %(team)s's division is paid by this scheme."
+msgstr ""
+
+#. module: pb_new_hire
+#: model_terms:ir.ui.view,arch_db:pb_new_hire.portal_my_welcome
+msgid "Before"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Before the first pay: %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
+msgid "Below the pay band for %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Bring across"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Brought across"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Buddy"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Buddy: %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_welcome.js:0
+msgid ""
+"Built from the joining checklist. Change the first day, the manager, the "
+"sign-in or the equipment and it moves with them."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/paper.py:0
+msgid "CV"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Called here"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Came across"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Cancel"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Carry on only if this is a different person."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Carry on with %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Carry on with %s?"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Change"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Change any answer to try again."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Change the sign-in in step 6"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Change what is asked in %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
+msgid "Changed for %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "Changed to %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/paper.py:0
+msgid "Changing which papers are asked for is for HR managers."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Check and add"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Check it, or leave the work email empty."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Check, then add %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Checked by HR before it is saved."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Checked the way My Payobook checks it."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Checklist is ready"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Checklist ready"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Choose"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Choose %(theirs)s, or pick the team that %(mine)s people belong to."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Choose a category"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Choose a country"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Choose a country first"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Choose a job"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Choose a job, or type a new job title."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Choose a kind of paper"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Choose a non-empty file up to 10 MB."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Choose a reason"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Choose a team"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Choose a team first"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Choose one of the countries in the list."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Choose one of the options."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Choose the country of work first"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Choose the country of work first."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Choose the country of work in step 2 first."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid "Choose the country of work to see an example."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Choose the country of work."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid "Choose the first day to see an example."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Choose the first day."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Choose the team and the country of work first"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Choose the team this person joins."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid "Choose the team to see an example."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid "Choose when the contract ends to see an example."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Chosen now, so the manager is not asked."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "Chosen when the person was added"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:pb.new.hire.paper,label:pb_new_hire.paper_vn_cccd
+msgid "Citizen ID card"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Citizen ID number"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "City"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Clock number"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid ""
+"Clock number %(code)s already belongs to %(name)s. Each person needs their "
+"own number."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "Clock number %(code)s was taken by %(name)s meanwhile."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Clock number %s is free."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Clock number taken"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_sched.js:0
+msgid "Clocks in at %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Close"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Close (Esc)"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_ask__company_id
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_paper__company_id
+msgid "Company"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Company's usual hours"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/hiring_patch.xml:0
+msgid "Confirm without the form"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Contact name"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Contact phone"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Contract"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Contract and pay"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Contract category"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Contract letter"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Contract letters are not set up here."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+msgid "Contract needs a wage and a first day"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/joiners_board.xml:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Copy the welcome link"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/joiners_board.xml:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Copy this link and send it to"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_paper__country_code
+msgid "Country of work"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_ask__create_uid
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_paper__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_ask__create_date
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_paper__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Ctrl"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Currency"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Date of birth"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Date of birth, gender, home address and personal phone."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Decides how much income tax is taken."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Decides which late and overtime rules apply."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_sched.js:0
+msgid "Defaults from %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_sched.js:0
+msgid "Defaults from the team"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Details"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Details and documents"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_hr_contract__display_name
+#: model:ir.model.fields,field_description:pb_new_hire.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_contracts__display_name
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_hiring_offer__display_name
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_journey_case__display_name
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_me_home__display_name
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire__display_name
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_ask__display_name
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_invite__display_name
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_legs__display_name
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_paper__display_name
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_welcome__display_name
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_newhire_proposal__display_name
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_onboarding__display_name
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_people_contract_wizard__display_name
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_people_onboard_wizard__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Do not use this offer"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/docs_legs.py:0
+msgid "Document"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/joiners_board.js:0
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+#: model:ir.model.fields.selection,name:pb_new_hire.selection__pb_new_hire_ask__state__done
+#: model_terms:ir.ui.view,arch_db:pb_new_hire.pbnhw_card_body
+msgid "Done"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_ask__done_on
+msgid "Done On"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/joiners_board.js:0
+msgid "Done."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/my_welcome.py:0
+msgid "Done. Thank you."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Drop the %s here, or choose it"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "ESI number"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Each file must be 10 MB or smaller."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"Each one becomes a request to the person who hands it over, needed by the "
+"first day."
+msgstr ""
+
+#. module: pb_new_hire
+#: model_terms:ir.ui.view,arch_db:pb_new_hire.portal_my_welcome
+msgid ""
+"Each one opens the page where you give it. What you send is checked by HR "
+"before it is saved, and your bank account is approved by a second person."
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.constraint,message:pb_new_hire.constraint_pb_new_hire_ask_one_ask
+msgid "Each thing is asked for once."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Email invitation"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Email or phone number"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Email sign-ins are switched off here."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Emergency contact"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model,name:pb_new_hire.model_hr_employee
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_ask__employee_id
+msgid "Employee"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model,name:pb_new_hire.model_hr_contract
+msgid "Employee Contract"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model,name:pb_new_hire.model_pb_journey_case
+msgid "Employee Journey"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model,name:pb_new_hire.model_pb_me_home
+msgid "Employee home page facts"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Employee number"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Employees"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+msgid "Employer cost %s"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,help:pb_new_hire.field_pb_new_hire_paper__label
+msgid "Empty: the name of the paper is used."
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,help:pb_new_hire.field_pb_new_hire_paper__company_id
+msgid "Empty: the usual list every company starts from."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "End date needed"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Ends"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Enter"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Equipment"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Every new person joins a team. This company has no team yet."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid "Example payslip"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Expiry must be on or after the issue date."
+msgstr ""
+
+#. module: pb_new_hire
+#: model:pb.new.hire.paper,label:pb_new_hire.paper_id_kk
+msgid "Family card (Kartu Keluarga)"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_who.js:0
+msgid ""
+"Files the candidate sent come across to %s's record. The bank paper becomes "
+"a bank request for a second person to approve. Numbers are asked for in the "
+"welcome link."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Fill a sheet for a whole intake, in Updates"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Fill in %s. It is required on every employee record."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_welcome.js:0
+msgid "Fill this on %s's record after the hire is added."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
+msgid ""
+"Filled in for you from %(scheme)s. Change only what is different for "
+"%(first)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Finance"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Finish"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Finish the steps marked in amber on the left, then come back."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Finish the three required steps first"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/my_welcome.py:0
+msgid "Finish your joining details"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Finish: %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "First day"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "First day %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "First-week check"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Fix it"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/models/studio.py:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Fixed term"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid ""
+"For each item, choose whether you have it now or %s should give it. Anything"
+" you ask for goes into one welcome link that works on a phone."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "For example Field Supervisor"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "From Hiring"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
+msgid "From the %s trial period rule"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid "From the paper sent in Hiring"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "From the pay scale"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "From the pay scale:"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Full name"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Gender"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Go straight to Check and add"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Go to role and place"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+msgid "Go to step %(n)s, %(title)s"
+msgstr ""
+
+#. module: pb_new_hire
+#: model_terms:ir.ui.view,arch_db:pb_new_hire.portal_my_welcome
+msgid "Go to your home page"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+msgid "Gross %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "HR"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "HR opens the review from Trial periods."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "HR partner"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "HR partner or manager"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/paper.py:0
+#: model:pb.new.hire.paper,label:pb_new_hire.paper_vn_health
+msgid "Health check"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+#: code:addons/pb_new_hire/models/paper.py:0
+#: model:pb.new.hire.paper,label:pb_new_hire.paper_id_cert
+#: model:pb.new.hire.paper,label:pb_new_hire.paper_in_cert
+#: model:pb.new.hire.paper,label:pb_new_hire.paper_my_cert
+#: model:pb.new.hire.paper,label:pb_new_hire.paper_sg_cert
+#: model:pb.new.hire.paper,label:pb_new_hire.paper_vn_cert
+msgid "Highest certificate"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid ""
+"Hiring could not be told that they joined: %s Confirm it in Hiring with "
+"Confirm without the form."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid "Hiring did not mark the offer as joined."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid "Hiring shows %s as joined"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/hiring_patch.xml:0
+msgid ""
+"Hiring's one-press confirm: makes the record and contract without the Add "
+"employee form"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Home address"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_sched.js:0
+msgid "Hours come from the working week, with no clocking."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "How this person comes in"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_welcome.js:0
+msgid "How will %s be welcomed?"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "I have both"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "I have everything here"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "I have it"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "I have the number"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_hr_contract__id
+#: model:ir.model.fields,field_description:pb_new_hire.field_hr_employee__id
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_contracts__id
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_hiring_offer__id
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_journey_case__id
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_me_home__id
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire__id
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_ask__id
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_invite__id
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_legs__id
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_paper__id
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_welcome__id
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_newhire_proposal__id
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_onboarding__id
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_people_contract_wizard__id
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_people_onboard_wizard__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "IT"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+#: code:addons/pb_new_hire/models/paper.py:0
+msgid "Identity card"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Identity number"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_welcome.js:0
+msgid ""
+"In %(lang)s, filled from step 3 and saved to %(first)s's documents for "
+"signing on paper."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "In %(lang)s: %(name)s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "In %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
+msgid "Inside the pay band for %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Insurance numbers"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Issued on"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid "It came across from Hiring."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "It decides which details and papers are needed."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid ""
+"It is required on every employee record, so the hire cannot be sent without "
+"it."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "It is the only pay scheme in %(company)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid "It opens the welcome page. %s signs in as usual."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid "It works for %(n)s days, or until %(first)s signs in."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid "It works for %(n)s hours, or until %(first)s signs in."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid "It works for 1 day, or until %s signs in."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Job"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "Job title"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "Joining checklist"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid "Joining details missing"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_hr_employee__nh_hr_nudged
+msgid "Joining details: HR told"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_hr_employee__nh_details_ticked
+msgid "Joining details: checklist ticked"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_hr_employee__nh_sent_at
+msgid "Joining details: last message"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_hr_employee__nh_reminded_on
+msgid "Joining details: last reminder"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_hr_employee__nh_copied_at
+msgid "Joining details: link last copied"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:pb.new.hire.paper,label:pb_new_hire.paper_id_ktp
+msgid "KTP (identity card)"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_ask__key
+msgid "Key"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "Kind of contract"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_ask__label
+msgid "Label"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_ask__label_kind
+msgid "Label Kind"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_ask__write_uid
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_paper__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_ask__write_date
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_paper__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid "Last payslip"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Last step"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Late and overtime rule"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Later"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Later: %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Leads this team"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Leave"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
+msgid "Leave it empty to use %(amount)s from the pay scale."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Leave without adding %s?"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_welcome.js:0
+msgid "Left empty, %s is asked to choose one."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_welcome.js:0
+msgid "Left empty, the manager is asked to choose one."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Left empty, the person's own name is used."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/docs_legs.py:0
+msgid "Left for later"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Left for later. Add it on the record."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Let go to attach it"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/paper.py:0
+msgid "Licence"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+#: code:addons/pb_new_hire/static/src/js/joiners_board.js:0
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Link copied. %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Manager"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+msgid "Manager and IT %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_welcome.js:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Manager chooses"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Manager: %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Many at once"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "Monthly pay"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Monthly wage"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "More"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:pb.new.hire.paper,label:pb_new_hire.paper_my_mykad
+msgid "MyKad or passport"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "NIK (identity number)"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:pb.new.hire.paper,label:pb_new_hire.paper_id_npwp
+msgid "NPWP card"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "NRIC or FIN"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:pb.new.hire.paper,label:pb_new_hire.paper_sg_nric
+msgid "NRIC or work pass"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "Name"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Name and first day are missing"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Name and first day needed"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Name on the account"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Nationality"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_ask__need
+msgid "Need"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_paper__need
+msgid "Needed"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+#: model:ir.model.fields.selection,name:pb_new_hire.selection__pb_new_hire_ask__need__first_pay
+#: model:ir.model.fields.selection,name:pb_new_hire.selection__pb_new_hire_paper__need__first_pay
+msgid "Needed before first pay"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Needed before the first pay, so it cannot be left out."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/joiners_board.xml:0
+msgid "Needed for the first pay"
+msgstr ""
+
+#. module: pb_new_hire
+#: model_terms:ir.ui.view,arch_db:pb_new_hire.pbnhw_card_body
+msgid "Needed for your first pay"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Needs the country of work"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+msgid "New employee"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_ask__proposal_id
+msgid "New hire request"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model,name:pb_new_hire.model_pb_new_hire
+msgid "New hire studio"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model,name:pb_new_hire.model_pb_new_hire_legs
+msgid "New hire studio: the welcome after approval"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model,name:pb_new_hire.model_pb_new_hire_invite
+msgid "New hire studio: the welcome message and its link"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model,name:pb_new_hire.model_pb_new_hire_welcome
+msgid "New hire studio: the welcome page of the new person"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:mail.template,name:pb_new_hire.mail_template_welcome
+msgid "New hire: welcome message"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid ""
+"New hires cannot be sent yet: nobody is set to approve them. Ask an "
+"administrator to set this in Approvals."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "New job title"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_sched.js:0
+msgid "Next: %(name)s, %(day)s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Next: check and add"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Next: contract and pay"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Next: details and documents"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Next: role and place"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Next: schedule and time off"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Next: welcome and first day"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "No"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "No checklist"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "No clocking"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "No contract letter"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "No contract letter wording is switched on yet."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid ""
+"No email address yet, so no welcome link. Add one in step 1, or %s can "
+"finish these after signing in with the employee number."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_welcome.js:0
+msgid "No joining checklist is set up"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_welcome.js:0
+msgid "No letter is prepared. You can print one later from the contract."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "No letter wording for %s yet"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "No letter wording for %s yet, so the general one is used."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "No manager"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "No manager yet"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "No papers are listed for this country."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "No papers listed"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "No papers were asked for in Hiring"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "No pay scheme pays %(team)s yet."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "No pay scheme yet"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_sched.js:0
+msgid "No public holidays are loaded for your company yet."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "No reminders"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "No reminders. You can still send the link again from New joiners."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+msgid "No role yet"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "No sign-in yet"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "No sign-in yet. You can add one later from Access."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_who.js:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "No signed offers are waiting"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "No site yet"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+msgid "No trial"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "No trial period"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
+msgid "No trial period for %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "No trial period rule for %(country)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid ""
+"No welcome link: %s has no email sign-in. They can still finish these after "
+"signing in with the employee number."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/joiners_board.js:0
+msgid ""
+"No welcome link: %s has no email sign-in. They find these on My Payobook "
+"after signing in."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid ""
+"No welcome link: %s has no sign-in yet. Once one is made in Access, these "
+"are waiting for them on My Payobook."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid "No welcome message: %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "No working days set"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid ""
+"No working weeks are set up yet, so %s follows the company's usual working "
+"hours."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Nobody found. Try another name."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Nobody is asked for it. Add it on the record before the first pay run."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid ""
+"Nobody needs to approve new hires here, so the person is added when you "
+"press the button."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "None"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "None is set up"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "None matches this country and kind of contract, so choose one."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Not asked for."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Not needed"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "Not needed for %s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Not on the usual list"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "Not prepared"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+msgid "Not set"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "Not started for this person"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Not yet"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Nothing asked for"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid ""
+"Nothing has been sent yet. If you leave, what you typed here is cleared."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid ""
+"Nothing is created until the hire is approved. Then the record and the "
+"running contract are created by themselves."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_welcome.js:0
+msgid ""
+"Nothing is planned for %s's first weeks. You can add a checklist in "
+"Lifecycle, and the next hire gets it."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid "Nothing is waiting for %s, so no message was sent."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Nothing the candidate sent is typed twice"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Nothing to fill in."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Nothing to send"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Nothing to send: %(first)s signs in with employee number %(code)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Nothing to send: %s has no sign-in yet."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Nothing was created. Fix what it says, then send again."
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model,name:pb_new_hire.model_pb_hiring_offer
+msgid "Offer"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/paper.py:0
+msgid "Offer letter"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid ""
+"On approval, the employee record and a running contract are created, in "
+"%(code)s, on %(scheme)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid ""
+"On approval, the employee record and a running contract are created, in "
+"%(code)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid ""
+"One last look. A second person approves every new hire, so nothing is "
+"created until they agree."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "One last look. The person is added as soon as you press the button."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "One link, %s things to finish"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "One link, 1 thing to finish"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "One more thing in step 5"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "One more thing in step 6"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "One tap for %s: how is it going?"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Only HR can add this paper."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Only JPG, PNG or PDF documents are accepted."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid ""
+"Only an HR manager or someone who manages access can send or copy the "
+"welcome link."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid ""
+"Only someone who manages access can make this sign-in. Make it in Access, "
+"Logins for workers."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_welcome.js:0
+msgid "Only the first day is planned, because there is no joining checklist."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Only the person who sent this hire can withdraw it."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Open %s's record"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/takeover.js:0
+msgid "Opening Add employee…"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+#: model:ir.model.fields.selection,name:pb_new_hire.selection__pb_new_hire_ask__need__optional
+#: model:ir.model.fields.selection,name:pb_new_hire.selection__pb_new_hire_paper__need__optional
+msgid "Optional"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Optional, with defaults"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid ""
+"Optional. Without a date the card stays in Hiring until someone files it."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Other jobs"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+#: code:addons/pb_new_hire/models/paper.py:0
+msgid "Other paper"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:pb.new.hire.paper,label:pb_new_hire.paper_in_pan
+msgid "PAN card"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "PDF, JPG or PNG, up to 10 MB."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Paid by"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Paid by %s"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_ask__category_id
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_paper__category_id
+msgid "Paper"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/docs_legs.py:0
+msgid "Papers attached"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Papers for %s"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_newhire_proposal__pb_nh_files
+msgid "Papers held for a waiting hire"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Papers needed"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model,name:pb_new_hire.model_pb_new_hire_paper
+msgid "Papers needed by a new person, per country of work"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Pay from the pay scale"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Pay scheme"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model,name:pb_new_hire.model_pb_onboarding
+msgid "Payobook New Joiners cockpit data"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model,name:pb_new_hire.model_pb_contracts
+msgid "Payobook contracts cockpit data"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model,name:pb_new_hire.model_pb_people_contract_wizard
+msgid "Payobook guided contract creation"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model,name:pb_new_hire.model_pb_people_onboard_wizard
+msgid "Payobook guided employee onboarding"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Payroll-ready"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+msgid "Pays in %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "People"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/models/studio.py:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Permanent"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Personal details"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_soon.js:0
+msgid ""
+"Personal details, tax numbers, the bank account and papers are asked for "
+"here in a later release."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "Personal email"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Personal email or phone"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Personal phone"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid "Photo"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Pick one to bring across"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"Pick the team first. The manager, the site and the country of work are "
+"suggested from it, and they decide the pay scheme, the currency and the "
+"trial period."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Planned by itself, with a one-tap question for %s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Planned by itself."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Please finish these before %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Prepare the contract letter"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Preview of the welcome page on a phone"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model,name:pb_new_hire.model_pb_newhire_proposal
+msgid "Proposed new hire"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Raised by itself as a laptop request."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Ready to send"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/docs_legs.py:0
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "Ready: %s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid "Received in Hiring · %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Reference %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid ""
+"Remind %s every 2 days until it is done, and tell me if it is not done 3 "
+"days before the first day."
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_hr_employee__nh_remind
+msgid "Remind about joining details"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid "Reminder about the joining details sent to %s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Reminders every 2 days"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Remove %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Repeats every %s days. This is the first week."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Requests: %s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Required"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Role and place"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+msgid "Running contract from %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Same as the country of work"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Same as the country of work (%s)"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Same as the rest of the team"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Save the list"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Saved. New people in %s are asked for this list."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Schedule and time off"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "See new joiners"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "See you on %s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/joiners_board.xml:0
+msgid "Send again"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Send for approval"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Send the link again from New joiners when you want to chase these."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Sending…"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Sends itself."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Sends itself: asks the manager to choose a buddy."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Sends itself: the sign-in invitation to %s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Sent for approval"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid ""
+"Sent to %(address)s as soon as the hire is approved. Due before %(day)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/joiners_board.js:0
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+#: model:ir.model.fields.selection,name:pb_new_hire.selection__pb_new_hire_ask__state__waiting
+#: model_terms:ir.ui.view,arch_db:pb_new_hire.pbnhw_card_body
+msgid "Sent, waiting for HR"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/my_welcome.py:0
+msgid "Sent. HR checks them before they are saved."
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_ask__sequence
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_paper__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Set by the team"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,help:pb_new_hire.field_hr_employee__nh_remind
+msgid ""
+"Set from the Add employee studio: the person is reminded every 2 days until "
+"what they were asked for is done."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Set up working weeks"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Sign-in"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Sign-in by email invitation"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Sign-in by employee number"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Sign-in to My Payobook"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/paper.py:0
+msgid "Signed contract"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Signed offers"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid ""
+"Signs in with %(code)s. Set the first password in Access once %(first)s is "
+"added."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Signs in with %s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Signs in with %s. The sign-in details also go there on the first day."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Skip to the end"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Social insurance number"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Social insurance numbers, if the person already has them."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Some of your own fields are required. Fill them in step 6, then send."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid ""
+"Some values on this scheme come from the connected system; the example uses "
+"the usual ones."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid ""
+"Some values on this scheme come from the monthly pay data file; the example "
+"uses the usual ones."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid ""
+"Someone already signs in with %s. Choose another clock number in step 4."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Someone hired outside Hiring"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "Something went wrong while doing it."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/studio_util.js:0
+msgid "Something went wrong. Please try again."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Start %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Start again"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Start from Hiring"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_welcome.js:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Start the joining checklist"
+msgstr ""
+
+#. module: pb_new_hire
+#: model_terms:ir.ui.view,arch_db:pb_new_hire.portal_my_welcome
+msgid "Start · about"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Start · about %s minutes"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Starts"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_who.js:0
+msgid "Starts %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Starts after %s months of service."
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_ask__state
+msgid "State"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Stay here"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_soon.js:0
+msgid "Step %s of 7 · optional"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Step 1"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Step 1 of 7 · required"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Step 2"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Step 2 of 7 · required"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Step 3"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Step 3 of 7 · required"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Step 4 of 7 · optional"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Step 5 of 7 · optional"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Step 6 of 7 · optional"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Step 7 of 7"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Steps"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+#: code:addons/pb_new_hire/static/src/js/step_welcome.js:0
+msgid "Straight away"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
+msgid "Suggested for %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Suggested from the team"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Suggested. Check it"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_welcome.js:0
+msgid "Switched off for %s: no checklist, buddy or equipment requests."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
+msgid "Switched off for this person"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Take-home"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+msgid "Taken off %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+#: code:addons/pb_new_hire/models/paper.py:0
+msgid "Tax card"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Team"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Team defaults are ready"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Team, job and country needed"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Team and job needed"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Team and country needed"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Job and country needed"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Team needed"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Job needed"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Country needed"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Team, job or country is missing"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "That contract category is no longer here. Choose another one."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "That date does not look right."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid ""
+"That date has passed, so the card is no longer valid. Leave the date empty "
+"to file it later, or ask %s for a card that is still valid."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/joiners_board.js:0
+msgid "That did not work. Try again in a moment."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/my_welcome.py:0
+msgid "That is everything. See you on %s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/my_welcome.py:0
+msgid "That is everything. Thank you."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "That job is no longer here. Choose another one."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "That manager is no longer an employee here. Choose another one."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "That offer could not be brought across."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid ""
+"That offer is no longer waiting to join. It may have been confirmed or "
+"dropped in Hiring."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid "That person is no longer here."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "That team is no longer here. Choose another one."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "That work email does not look right."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "That work site is no longer here. Choose another one."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "That working week is no longer here. Choose another one."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid ""
+"The bank account goes to a second person for approval, as every bank change "
+"does."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"The bank account still goes to a second person for approval, whoever types "
+"it."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid ""
+"The bank paper came across but could not be read. Open it in Bank requests "
+"to finish."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid ""
+"The buddy could not be set: %s The manager is asked to choose one on the "
+"joining checklist."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "The buddy, once chosen"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "The card and the %(number)s on it, asked for together."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "The card is filed with %s's papers, valid until this date."
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields.selection,name:pb_new_hire.selection__pb_new_hire_ask__label_kind__card
+msgid "The card only"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid ""
+"The clock number could not be set: %s Type another one on the employee "
+"record."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "The company's usual hours"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+#: code:addons/pb_new_hire/static/src/js/step_sched.js:0
+msgid "The company's usual working hours"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "The contract could not be created."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "The contract letter could not be looked up."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid ""
+"The contract letter could not be prepared: %s Prepare it from the contract "
+"panel."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
+msgid "The contract must end after the first day."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "The date of birth cannot be in the future."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid ""
+"The details you typed could not be saved: %s Type them on the employee "
+"record."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "The employee could not be created."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "The employee record and a running contract are ready."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "The end of the trial period could not be set."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid ""
+"The equipment requests could not be raised: %s Raise them from Equipment."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "The example is busy for a moment."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"The fields your company added in Form builder, so nothing on the employee "
+"record is missed."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "The first day from step 1."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "The first week"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "The general one is used, in %s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "The hire could not be sent. Try again in a moment."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid "The hire is not affected."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid "The hire is not affected. Check the scheme in Mapping."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "The hire is not affected. Try again in a moment."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "The hire is still added; only the clock number would be left out."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "The hire was withdrawn. Change it and send it again."
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields.selection,name:pb_new_hire.selection__pb_new_hire_ask__label_kind__item
+msgid "The item"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "The job %s was removed before approval."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid "The joiners sheet is not available on this site."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid ""
+"The joining checklist could not be started: %s Start it from New joiners."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"The joining checklist starts by itself when the hire is added. Choose the "
+"sign-in, a buddy and the equipment, or leave the defaults."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "The link could not be copied."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "The list follows the country of work."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "The manager %s left before approval."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "The manager chooses"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid "The message could not be prepared. Try again in a moment."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid ""
+"The number is saved. %(first)s is asked for the %(card)s on My Payobook."
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields.selection,name:pb_new_hire.selection__pb_new_hire_ask__label_kind__number
+msgid "The number only"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "The number payroll and the insurance reports use."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid ""
+"The offer brought across from Hiring is no longer waiting to join. Start "
+"again, or carry on without it."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid ""
+"The offer you brought across is no longer waiting to join, so it was let go."
+" The rest is kept."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid "The offer's pay is in %(theirs)s. Type the monthly wage in %(mine)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid ""
+"The page was reloaded, so the file is no longer here. Add the file again."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid ""
+"The papers could not be filed: %s Add them from the employee's side panel, "
+"Documents."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid ""
+"The papers from Hiring could not be brought across: %s They are still on the"
+" offer in Hiring."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid ""
+"The pay band for this job is in %(theirs)s, so it is not shown against a "
+"wage in %(mine)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"The pay scheme and the currency come from step 2. Type the monthly wage, "
+"then check the scheme's usual answers."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid ""
+"The pay scheme chosen for the usual answers was removed before approval, so "
+"they were filled in as usual."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "The record so far"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "The scheme's usual answers"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "The screen could not be loaded."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "The selected file could not be read."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "The selected files must total 50 MB or less."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "The sign-in could not be made: %s Make it from Access."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "The team %s was removed before approval."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "The three required steps still need you"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "The trial period ends on %s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "The trial period is set to end on %(day)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "The wage is missing"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "The wage must be a number above zero."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid ""
+"The welcome link of %s was copied less than a minute ago. Wait a minute, "
+"then copy it again."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid ""
+"The welcome message is missing. Ask an administrator to update the Add "
+"employee studio."
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,help:pb_new_hire.field_pb_new_hire_ask__label
+msgid ""
+"The words when the row was made: shown only when the item is no longer on "
+"the list."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "The work site %s was removed before approval."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "The working week %s has no team to join."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "The working week %s was removed before approval."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "The working week could not be set: %s Set it from Workforce."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid ""
+"There is no email address for %s. Add one on the employee record, or copy "
+"the welcome link and send it yourself."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"These come from the team, so you can leave this step alone. Change it only "
+"if this person is different from their team."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "These need the joining checklist."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "These numbers are kept by HR. Add them now or later on the record."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "They decide the pay scheme and the money the wage is paid in."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "This hire cannot be sent yet"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid ""
+"This hire is no longer waiting for approval, so it cannot be withdrawn."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"This is not a step of the scale. The contract will be pinned at this pay. "
+"Why is it different?"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "This is not possible for this item."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid "This pay scheme has no take-home line, so take-home is not shown."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "This pay scheme has no usual answers to check."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_welcome.js:0
+msgid "This person cannot be a buddy."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid ""
+"This site does not send email. After approval, copy the welcome link from "
+"New joiners and send it yourself."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+#: code:addons/pb_new_hire/static/src/js/joiners_board.js:0
+msgid ""
+"This site does not send email. Copy the welcome link and send it to %s "
+"yourself."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid ""
+"This site does not send email: copy the welcome link from New joiners and "
+"send it to %(first)s yourself (%(things)s to finish)."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "This step never stops you from adding the person."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/ask.py:0
+msgid "Ticked when the joining details were finished."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Times change by day"
+msgstr ""
+
+#. module: pb_new_hire
+#: model_terms:ir.ui.view,arch_db:pb_new_hire.pbnhw_card_body
+msgid "To do"
+msgstr ""
+
+#. module: pb_new_hire
+#: model_terms:ir.ui.view,arch_db:pb_new_hire.portal_my_welcome
+msgid "To finish"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_soon.js:0
+msgid "Today you add them from the employee's side panel after approval."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+msgid "Trial ends"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Trial period"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Trial period ends"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Trial period review opens"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Try again"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_welcome.js:0
+msgid "Type a clock number"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid ""
+"Type a clock number in step 4. It becomes the employee number %s signs in "
+"with."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Type at least one of these, or choose another option."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/my_welcome.py:0
+msgid "Type it and add a photo of the paper that shows it."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/my_welcome.py:0
+msgid "Type it and add a photo of the paper."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Type it in"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/my_welcome.py:0
+msgid "Type it on your profile and send it to HR."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Type the %(what)s, or choose Ask %(first)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Type the %s, or choose Later."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Type the date the %s is valid until."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid "Type the monthly wage to see an example."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Type the monthly wage."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Type the new job title in the box below."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_sched.js:0
+msgid ""
+"Type the number %s has on the attendance machine. Leave it empty to add it "
+"later."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Type the person's full name."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid "Type the person's name to see an example."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "UAN (provident fund)"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "UAN and ESI numbers"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid ""
+"Updates is not open to you. Ask an administrator for the Updates permission "
+"in Access."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/my_welcome.py:0
+msgid "Upload a scan or a photo and choose “%s” as the kind of paper."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Use %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Use the Hiring paper"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Use the scale amount"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Used to send the welcome link before day one."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Usual answer"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+msgid "Usual hours"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Usually: %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Valid until"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Valid until (if it has a date)"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Wage needed"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
+msgid "Wages are in %(code)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/joiners_board.js:0
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "Waiting for %s"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields.selection,name:pb_new_hire.selection__pb_new_hire_ask__state__open
+msgid "Waiting for them"
+msgstr ""
+
+#. module: pb_new_hire
+#: model_terms:ir.ui.view,arch_db:pb_new_hire.portal_breadcrumbs_welcome
+msgid "Welcome"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Welcome and first day"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid "Welcome message sent to %s."
+msgstr ""
+
+#. module: pb_new_hire
+#: model:mail.template,subject:pb_new_hire.mail_template_welcome
+msgid ""
+"Welcome to {{ object.company_id.name }} — a few things before {{ "
+"ctx.get('pb_nh_day') and format_date(ctx.get('pb_nh_day'), date_format='EEEE"
+" d MMMM') or '' }}"
+msgstr ""
+
+#. module: pb_new_hire
+#: model_terms:ir.ui.view,arch_db:pb_new_hire.portal_my_welcome
+msgid "Welcome,"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "Welcome, %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "What"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "What %s gives is checked by HR before it is saved."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "What %s has been asked for"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model,name:pb_new_hire.model_pb_new_hire_ask
+msgid "What a new person was asked to give"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid ""
+"What every new person in %s is asked for. Your changes apply to the next "
+"people you add."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "What happens, and when"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "What is the contract, and what does it pay?"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_paper__label
+msgid "What this country calls it"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "What this decides"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid ""
+"What to ask the new person for could not be noted: %s Ask them yourself for "
+"now."
+msgstr ""
+
+#. module: pb_new_hire
+#: model_terms:ir.ui.view,arch_db:pb_new_hire.portal_my_welcome
+msgid "What you finished"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"When a candidate signs in Hiring, they appear here. Type this person in "
+"instead."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_sched.js:0
+msgid "When does %s work?"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "When you press the button"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Where most of the team works"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Where the pay goes. A second person approves it, whoever types it."
+msgstr ""
+
+#. module: pb_new_hire
+#: model:ir.model.fields,field_description:pb_new_hire.field_pb_new_hire_ask__url
+msgid "Where they give it"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Where will %s work, and as what?"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Who does what"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+#: code:addons/pb_new_hire/static/src/js/step_soon.js:0
+msgid "Who fills in the rest?"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Who is joining"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Who is joining?"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Who to call if something happens at work."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Whoever approves the hire"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Why the pay is different"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/docs_legs.py:0
+msgid "Will be asked"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "With you: %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Withdraw and change"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Withdrawn to change it."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Withdrawn. Change what you need, then send it again."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid ""
+"Without a welcome link only the note to you 3 days before the first day "
+"applies."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Work email"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/paper.py:0
+msgid "Work permit"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Work site"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid ""
+"Worked out by %(scheme)s for a full %(month)s, from the scheme's usual "
+"values."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Worker"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Working it out"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid "Working it out."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Working out the example"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Working week"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Write the tax number."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Written as %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "Yes"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "You"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/record_panel.js:0
+msgid "You %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid ""
+"You are told if anything needed for pay is still missing 3 days before %s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid ""
+"You can still send the hire: once it is approved, it waits in Approvals "
+"until a place is free."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid ""
+"You chose I have it, so type it or attach the file, or choose another "
+"answer."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"You follow this on the New joiners board. Each answer comes to HR to check "
+"before it is saved."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid ""
+"You have an unsent hire for %(name)s. Carry on with it, or start %(role)s "
+"from the org chart instead."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid ""
+"You have an unsent hire for %s. Carry on with it, or start the person from "
+"Hiring instead."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid ""
+"You have everything, so %s is not asked for anything before the first day."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"You never pick these by hand. Change the team or the country and they "
+"follow."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/my_welcome.py:0
+msgid "You sent everything. HR checks each one before it is saved."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/my_welcome.py:0
+msgid "You sent it. HR checks it before it is saved."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_sched.js:0
+msgid ""
+"Your company's holiday list applies: %s days off in the next 12 months."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/controllers/welcome.py:0
+#: code:addons/pb_new_hire/models/my_welcome.py:0
+msgid "Your joining details"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/my_welcome.py:0
+msgid "Your joining details are with HR."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Your own fields"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid ""
+"Your own fields could not be saved: %s Fill them in on the employee record."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Your unsent hire was kept, so you can carry on where you left off."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
+msgid "a month"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid "bank account from the Hiring paper, waiting for a second approval"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/docs_legs.py:0
+msgid "bank account waiting for a second approval"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "buddy %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "clock number %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "clocks in, number to add later"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "contract letter prepared"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "country_id"
+msgstr ""
+
+#. module: pb_new_hire
+#: model_terms:ir.ui.view,arch_db:pb_new_hire.portal_my_welcome
+msgid "done"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "email sign-ins are switched off here."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "employee sign-ins are not set up here."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "fixed term to %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "it could not be made."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "job_id"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "joining checklist (%s steps)"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "joining checklist (1 step)"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "laptop request"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "late rule: Manager"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "late rule: Worker"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "manager chooses the buddy"
+msgstr ""
+
+#. module: pb_new_hire
+#: model_terms:ir.ui.view,arch_db:pb_new_hire.portal_my_welcome
+msgid "minutes"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "name@company.com"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "no checklist was opened."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "no clocking"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "no joining checklist"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "no manager yet"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "no sign-in could be made for %s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "no site"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "no trial period"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid "nothing to ask %s for, so no welcome message"
+msgstr ""
+
+#. module: pb_new_hire
+#: model_terms:ir.ui.view,arch_db:pb_new_hire.portal_my_welcome
+msgid "of"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "off"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid ""
+"only someone who manages access can make a sign-in with an employee number. "
+"Make it in Access, Logins for workers, which prints the slip with the first "
+"password."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "optional"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "parent_id"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "pb_bpjs_health_number"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "pb_in_esi_number"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "pb_in_uan_number"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "permanent"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "receives"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "reports to %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "sign-in"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "sign-in for %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "sign-in with employee number %s (set the first password in Access)"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_who.js:0
+msgid "signed %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "the contract letter"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/docs_legs.py:0
+msgid "the file of %s was no longer there."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid "the formula for %s could not be worked out."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid "the formula for %s divides by zero."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "the letter could not be made."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+#: code:addons/pb_new_hire/static/src/js/step_who.js:0
+msgid "the new person"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "the new role"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid "the offer %(ref)s already belongs to %(name)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid ""
+"the offer %(ref)s is no longer signed (it is now “%(state)s”), so nothing "
+"was taken from it."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid "the offer belongs to another company."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid "the offer was removed from Hiring before approval."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid "the person could not be made."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid "the photo from Hiring"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_sched.js:0
+msgid "the site"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "there is no email address to sign in with."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
+msgid "this job"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "this team"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "trial to %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "type_id"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "vietnam_social_insurance_number"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/invite.py:0
+msgid "welcome message to %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "whoever approves the hire"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "work_location_id"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/welcome_legs.py:0
+msgid "working week %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_welcome.py:0
+msgid "you"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "%(hint)s This one has %(n)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/places.py:0
+msgid "%(team)s has no one in %(country)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/docs_legs.py:0
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Bank account in"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/docs_legs.py:0
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Branch"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Country and job needed"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Country and team needed"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Country, team and job needed"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "From the IFSC code"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_docs.js:0
+msgid "From the bank"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Held by people in %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Hide teams from other countries"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "No team has people working in %s yet."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "Optional."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Other countries"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Other teams"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Pick a team"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Show teams from other countries (%s)"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Team and job cleared: %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Team cleared: %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Teams in %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Teams in other countries"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio_docs.py:0
+msgid "The boxes below follow the country of the account."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "The team decides who pays."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Undo"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Where most of your people work"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Where this team works"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Where your company already works"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"You never pick these by hand. They follow the country of work, and the team "
+"names the pay scheme."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Your company's country"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Your last choice"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/hiring.py:0
+msgid ""
+"The bank paper was read, but one thing is missing: %s Open it in Bank "
+"requests to finish."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/checklist_p8.py:0
+msgid "%(step)s — done."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "A rule on the map pays people like them with this scheme."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/joiners_board_p8.py:0
+msgid "Filling in HR partners for everybody is for the lifecycle team."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/joiners_board_p8.py:0
+msgid "New joiners are looked after by the HR team."
+msgstr ""
+
+#. module: pb_new_hire
+#: model:res.groups,name:pb_new_hire.group_joiners_board
+msgid "New joiners board"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "No pay scheme for %s yet"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "One of %(count)s pay schemes for %(country)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Pays most people in %(team)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Pays most people working in %(country)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Pick the pay scheme for this person"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Picked in step 2"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Print the slip now"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Print their sign-in slip"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/checklist_p8.py:0
+msgid "Requested"
+msgstr ""
+
+#. module: pb_new_hire
+#: model:res.groups,comment:pb_new_hire.group_joiners_board
+msgid ""
+"See the New joiners board of your own companies, open a joiner and choose "
+"their buddy."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Suggest who pays each team"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Teams %s pays"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/joiners_board_p8.py:0
+msgid "The daily run is for the lifecycle team."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "The only pay scheme for %(country)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "The slip could not be made."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "The slip has a new first password, shown only this once."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "This differs from the team's usual scheme, %s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/checklist_p8.py:0
+msgid "Ticked when the laptop was handed over"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Use the usual one"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Usual"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+msgid "Who pays them"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "You chose this pay scheme."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "chooses their own at the first sign-in."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "pays %s people"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "pays 1 person"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "%(name)s will be paid by %(scheme)s from %(day)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_new_hire/models/create_ext.py:0
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "Mid-month advance"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_role.js:0
+msgid "Mid-month advance: %s"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "No pay scheme for %(country)s yet."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid "No pay scheme for this person yet."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+msgid ""
+"Pick a Country of work that has a pay scheme, or add one in Mapping, then "
+"the example appears here."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"Pick the country of work first. The teams and jobs there come first in their"
+" lists, and the pay scheme, currency, trial period, contract letter and "
+"papers follow it. You can change the pay scheme here."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"They follow the country of work. When the country has several pay schemes, "
+"you pick the one that pays this person."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "They will be paid by %(scheme)s from %(day)s."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid ""
+"You can still add the person, and give them a pay scheme from their record "
+"later."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid ""
+"You can still add the person, and give them a pay scheme from their record "
+"once %(country)s has one."
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "their first day"
+msgstr ""
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid ""
+"Four things are enough to begin. The Country of work you pick next works out"
+" the pay scheme, the currency and the trial period for you."
+msgstr ""

@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+  <!-- ===================================================== the button (C2)
+       Loop variables are short, non-operator names (C18.71). -->
+  <t t-name="pb_excel_layout.Button">
+    <span class="pbxl-anchor" t-ref="root">
+      <button type="button" class="pbxl-btn" data-coach="xl-button" t-att-class="{ open: state.open }"
+              t-att-disabled="disabled" t-att-aria-expanded="state.open ? 'true' : 'false'"
+              aria-haspopup="dialog" t-att-title="btnTitle"
+              t-on-click="() => this.toggle()">
+        <t t-out="xic('fileSpreadsheet', 15)"/>
+        <span class="lbl">My Excel layout</span>
+        <span t-if="state.layouts.length" class="pbxl-count" t-esc="state.layouts.length"/>
+        <t t-out="xic('chevronDown', 13)"/>
+      </button>
+      <span t-if="disabled and reason" class="pbxl-why" role="note" t-esc="reason"/>
+
+      <div t-if="state.open" class="pbxl-pop" data-coach="xl-pop" role="dialog" aria-label="My Excel layout">
+        <div class="pbxl-pop-head">
+          <span class="pbxl-badge"><t t-out="xic('fileSpreadsheet', 16)"/></span>
+          <div>
+            <b>Your own Excel file, filled with these figures</b>
+            <p>Upload it once. Every download brings it back with fresh figures, in your own headings, formulas and charts.</p>
+          </div>
+        </div>
+
+        <div t-if="state.loading" class="pbxl-pop-body">
+          <div class="pbxl-skel"/><div class="pbxl-skel short"/>
+        </div>
+        <div t-elif="state.error" class="pbxl-pop-body">
+          <div class="pbxl-alert bad"><t t-out="xic('alert', 15)"/><span t-esc="state.error"/></div>
+        </div>
+        <div t-elif="!state.layouts.length" class="pbxl-pop-body pbxl-empty">
+          <div class="pbxl-empty-art">
+            <span class="sheet"><t t-out="xic('table', 22)"/></span>
+            <span class="arrow"><t t-out="xic('arrowRight', 16)"/></span>
+            <span class="sheet on"><t t-out="xic('fileSpreadsheet', 22)"/></span>
+          </div>
+          <p>No layout yet. Bring the board pack you already use — headings, formulas, charts and macros stay exactly as they are.</p>
+          <button type="button" class="pbxl-b primary" t-on-click="() => this.openDialog('new')">
+            <t t-out="xic('upload', 14)"/> Use my Excel layout
+          </button>
+        </div>
+        <div t-else="" class="pbxl-pop-body">
+          <t t-foreach="state.layouts" t-as="lay" t-key="lay.id">
+            <div class="pbxl-item" t-att-class="{ warn: !lay.sheet_ok }">
+              <t t-if="state.renaming and state.renaming.id === lay.id">
+                <div class="pbxl-rename">
+                  <input type="text" maxlength="80" t-model="state.renaming.name"
+                         t-on-keydown="(ev) => this.onRenameKey(ev)" aria-label="Layout name"/>
+                  <button type="button" class="pbxl-b primary sm" t-on-click="() => this.saveRename()">Save</button>
+                  <button type="button" class="pbxl-b ghost sm" t-on-click="() => this.cancelRename()">Cancel</button>
+                </div>
+              </t>
+              <t t-else="">
+                <div class="pbxl-item-main">
+                  <span class="ico"><t t-out="xic('fileSpreadsheet', 16)"/></span>
+                  <div class="txt">
+                    <b t-esc="lay.name"/>
+                    <small t-if="lay.sheet_ok" t-esc="meta(lay)"/>
+                    <small t-else="" class="bad" t-esc="lay.problem"/>
+                    <span class="chips">
+                      <span t-if="lay.macros" class="pbxl-chip" title="This file contains macros. They are kept, never run.">Macros kept</span>
+                      <span t-if="lay.shared and lay.mine" class="pbxl-chip">Shared</span>
+                      <span t-if="!lay.mine" class="pbxl-chip" t-esc="fromWho(lay)"/>
+                    </span>
+                  </div>
+                  <button type="button" class="pbxl-b primary sm" t-att-disabled="state.busy"
+                          t-on-click="() => this.download(lay)" t-att-title="lay.file_name">
+                    <t t-if="state.busy === lay.id"><span class="pbxl-spin"/></t>
+                    <t t-else=""><t t-out="xic('download', 13)"/></t>
+                    Download in my layout
+                  </button>
+                  <button t-if="lay.mine" type="button" class="pbxl-more" title="More" aria-label="More"
+                          t-att-aria-expanded="state.menu === lay.id ? 'true' : 'false'"
+                          t-on-click="() => this.toggleMenu(lay)">
+                    <t t-out="xic('moreVertical', 16)"/>
+                  </button>
+                </div>
+                <div t-if="state.menu === lay.id" class="pbxl-menu" role="menu">
+                  <button type="button" role="menuitem" t-on-click="() => this.openDialog('edit', lay)">
+                    <t t-out="xic('crosshair', 14)"/> Change where the figures go
+                  </button>
+                  <button type="button" role="menuitem" t-on-click="() => this.openDialog('replace', lay)">
+                    <t t-out="xic('upload', 14)"/> Replace the file
+                  </button>
+                  <button type="button" role="menuitem" t-on-click="() => this.startRename(lay)">
+                    <t t-out="xic('pencil', 14)"/> Rename
+                  </button>
+                  <button type="button" role="menuitem" t-on-click="() => this.toggleShare(lay)">
+                    <t t-out="xic('users', 14)"/>
+                    <t t-if="lay.shared">Make it only mine</t>
+                    <t t-else="">Share with everyone who can open this view</t>
+                  </button>
+                  <button type="button" role="menuitem" class="danger" t-on-click="() => this.askDelete(lay)">
+                    <t t-out="xic('trash', 14)"/> Delete
+                  </button>
+                </div>
+                <div t-if="state.confirm === lay.id" class="pbxl-confirm">
+                  <span>Delete this layout? Your file on your computer is not touched.</span>
+                  <button type="button" class="pbxl-b danger sm" t-on-click="() => this.remove(lay)">Delete</button>
+                  <button type="button" class="pbxl-b ghost sm" t-on-click="() => this.keep()">Keep</button>
+                </div>
+              </t>
+            </div>
+          </t>
+        </div>
+
+        <div t-if="state.layouts.length" class="pbxl-pop-foot">
+          <button t-if="state.canAdd" type="button" class="pbxl-b ghost sm" t-on-click="() => this.openDialog('new')">
+            <t t-out="xic('plus', 13)"/> Add another layout
+          </button>
+          <span t-else="" class="pbxl-quiet">You have 20 layouts. Delete one to add another.</span>
+        </div>
+      </div>
+    </span>
+  </t>
+
+  <!-- ====================================================== the set-up dialog
+       The hero moment: THEIR sheet, the cell they click, the area lighting
+       up at the size of the current result, and their own file back. -->
+  <t t-name="pb_excel_layout.Dialog">
+    <Dialog title="title" size="'xl'" contentClass="'pbxl-dialog'" bodyClass="'pbxl-dbody'">
+      <div class="pbxl-root">
+        <input type="file" class="d-none" t-ref="file" accept=".xlsx,.xlsm"
+               t-on-change="(ev) => this.onFileInput(ev)"/>
+
+        <!-- the three steps, as one line the eye can follow -->
+        <ol class="pbxl-steps" data-coach="xl-steps" aria-label="Steps">
+          <li t-att-class="{ on: state.phase !== 'ready', done: state.phase === 'ready' }">
+            <span class="n"><t t-if="state.phase === 'ready'" t-out="xic('check', 12)"/><t t-else="">1</t></span>
+            Your file
+          </li>
+          <li t-att-class="{ on: state.phase === 'ready' and !state.tried, done: !!state.tried }">
+            <span class="n"><t t-if="state.tried" t-out="xic('check', 12)"/><t t-else="">2</t></span>
+            Where the figures go
+          </li>
+          <li t-att-class="{ on: !!state.tried }">
+            <span class="n">3</span>
+            Try it and save
+          </li>
+        </ol>
+
+        <!-- ============================== no file yet: the drop zone -->
+        <t t-if="state.phase === 'drop' or state.phase === 'error'">
+          <div class="pbxl-drop" t-att-class="{ over: state.dragging, bad: state.phase === 'error' }"
+               role="button" tabindex="0"
+               t-on-click="() => this.pickFile()"
+               t-on-keydown="(ev) => this.onDropKey(ev)"
+               t-on-dragover="(ev) => this.onDragOver(ev)" t-on-dragleave="() => this.onDragLeave()"
+               t-on-drop="(ev) => this.onDrop(ev)">
+            <span class="pbxl-drop-ico"><t t-out="xic(state.phase === 'error' ? 'alert' : 'upload', 28)"/></span>
+            <t t-if="state.phase === 'error'">
+              <b>This file cannot be used</b>
+              <p class="why" t-esc="state.error"/>
+              <span class="pbxl-b primary">Choose another file</span>
+            </t>
+            <t t-else="">
+              <b t-if="mode === 'replace'">Drop the new version of your Excel file here</b>
+              <b t-else="">Drop your Excel file here</b>
+              <p>or <u>choose a file</u> — .xlsx or .xlsm, up to 10 MB</p>
+              <p class="pbxl-quiet" t-if="mode === 'replace' and state.layout">
+                <t t-esc="keepLine"/>
+              </p>
+            </t>
+          </div>
+          <ul class="pbxl-promise">
+            <li><t t-out="xic('shieldCheck', 14)"/> Only the cells where the figures go change. Charts, pictures, pivot tables and macros stay exactly as they are.</li>
+            <li><t t-out="xic('lock', 14)"/> Macros are never run. Everyone gets only the figures they are allowed to see.</li>
+          </ul>
+        </t>
+
+        <!-- ============================== reading: skeleton grid -->
+        <t t-elif="state.phase === 'reading'">
+          <div class="pbxl-reading" aria-busy="true">
+            <div class="pbxl-filebar">
+              <span class="ico"><t t-out="xic('fileSpreadsheet', 18)"/></span>
+              <b t-esc="state.fileName"/>
+              <span class="pbxl-quiet">Reading your file…</span>
+            </div>
+            <div class="pbxl-skelgrid">
+              <t t-foreach="rows.slice(0, 12)" t-as="rw" t-key="rw"><div class="pbxl-skelrow"/></t>
+            </div>
+          </div>
+        </t>
+
+        <!-- ============================== ready: the sheet and the area -->
+        <t t-else="">
+          <div class="pbxl-work">
+            <div class="pbxl-left">
+              <div class="pbxl-filebar">
+                <span class="ico"><t t-out="xic('fileSpreadsheet', 18)"/></span>
+                <div class="txt">
+                  <b t-esc="state.fileName"/>
+                  <small t-esc="fileMeta"/>
+                </div>
+                <button t-if="mode !== 'edit'" type="button" class="pbxl-b ghost sm" t-on-click="() => this.pickFile()">
+                  <t t-out="xic('rotate', 13)"/> Use another file
+                </button>
+              </div>
+              <div t-if="state.file and state.file.macro_note" class="pbxl-alert quiet">
+                <t t-out="xic('info', 15)"/><span t-esc="state.file.macro_note"/>
+              </div>
+              <div t-if="sheetGone" class="pbxl-alert warn">
+                <t t-out="xic('alert', 15)"/>
+                <span t-esc="goneLine"/>
+              </div>
+
+              <div class="pbxl-sheetwrap" data-coach="xl-grid">
+                <div class="pbxl-gridscroll">
+                  <table class="pbxl-grid" t-ref="grid" tabindex="0" role="grid"
+                         aria-label="Click the cell where the figures start"
+                         t-on-keydown="(ev) => this.onGridKey(ev)" t-on-mouseleave="() => this.leaveGrid()">
+                    <thead>
+                      <tr>
+                        <th class="corner"/>
+                        <th t-foreach="cols" t-as="cl" t-key="cl"
+                            t-att-class="{ hot: area and cl >= area.c0 and cl &lt;= area.c1 }" t-esc="colLetter(cl)"/>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr t-foreach="rows" t-as="rw" t-key="rw">
+                        <th t-att-class="{ hot: area and rw >= area.r0 and rw &lt;= area.r1 }" t-esc="rw"/>
+                        <td t-foreach="cols" t-as="cl" t-key="cl" t-att-class="cellClass(rw, cl)"
+                            t-att-style="cellStyle(rw, cl)"
+                            t-on-click="() => this.clickCell(rw, cl)"
+                            t-on-mouseenter="() => this.hoverCell(rw, cl)">
+                          <span t-esc="cellText(rw, cl)"/>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div t-if="area" class="pbxl-outline" aria-live="polite">
+                  <t t-out="xic('crosshair', 14)"/>
+                  <b t-esc="outline"/>
+                  <span t-if="continues" class="more" t-esc="continues"/>
+                </div>
+                <nav class="pbxl-tabs" aria-label="Sheets">
+                  <button t-foreach="sheets" t-as="sh" t-key="sh.name" type="button"
+                          t-att-class="{ on: sh.name === state.sheet, off: !sh.usable, dim: sh.hidden }"
+                          t-att-disabled="!sh.usable" t-att-title="sheetTitle(sh)"
+                          t-on-click="() => this.pickSheet(sh)">
+                    <t t-if="sh.kind !== 'worksheet'" t-out="xic('barChart', 12)"/>
+                    <t t-esc="sh.name"/>
+                  </button>
+                </nav>
+              </div>
+              <p class="pbxl-coach"><t t-out="xic('sparkles', 14)"/> <span t-esc="state.file ? state.file.coach : ''"/></p>
+              <p t-if="state.file and state.file.recalc" class="pbxl-coach quiet"><t t-out="xic('refresh', 14)"/> <span t-esc="state.file.recalc"/></p>
+            </div>
+
+            <aside class="pbxl-right" data-coach="xl-side">
+              <label class="pbxl-field">
+                <span class="pbxl-label">Name</span>
+                <input type="text" maxlength="80" t-model="state.name" placeholder="Board pack"/>
+              </label>
+
+              <div class="pbxl-field">
+                <span class="pbxl-label">The figures start at</span>
+                <div class="pbxl-cellbox" t-att-class="{ bad: !startValid }">
+                  <t t-out="xic('crosshair', 15)"/>
+                  <input type="text" maxlength="10" t-att-value="state.startText" aria-label="Start cell"
+                         t-on-input="(ev) => this.onStartInput(ev)"/>
+                  <span class="pbxl-quiet" t-esc="onSheet"/>
+                </div>
+                <span class="pbxl-hint">Click a cell in the grid, use the arrow keys, or type a cell like B6.</span>
+              </div>
+
+              <div class="pbxl-field">
+                <button type="button" class="pbxl-switch" role="switch"
+                        t-att-aria-checked="state.headers ? 'true' : 'false'" t-on-click="() => this.toggleHeaders()">
+                  <span class="knob"/>
+                  <span>Write the column headings</span>
+                </button>
+                <div t-if="state.headers and state.table" class="pbxl-heads">
+                  <span t-foreach="state.table.labels.slice(0, 8)" t-as="hd" t-key="hd_index" class="pbxl-chip" t-esc="hd"/>
+                  <span t-if="state.table.labels.length > 8" class="pbxl-chip quiet">+<t t-esc="state.table.labels.length - 8"/></span>
+                </div>
+                <span t-elif="state.table" class="pbxl-hint">Your own headings stay; the figures start right at the cell.</span>
+              </div>
+
+              <div t-if="tableHere" class="pbxl-alert ok">
+                <t t-out="xic('table', 15)"/>
+                <span t-esc="tableLine"/>
+              </div>
+              <div t-if="mergedInWay" class="pbxl-alert bad">
+                <t t-out="xic('alert', 15)"/>
+                <span t-esc="mergedLine"/>
+              </div>
+              <div t-if="state.table and state.table.note" class="pbxl-alert quiet">
+                <t t-out="xic('info', 15)"/><span t-esc="state.table.note"/>
+              </div>
+              <div t-if="state.table and !state.table.rows" class="pbxl-alert quiet">
+                <t t-out="xic('info', 15)"/><span>This view has no figures right now; only the headings would be written. Try it again after the next pay run.</span>
+              </div>
+
+              <div class="pbxl-field">
+                <button type="button" class="pbxl-switch" role="switch"
+                        t-att-aria-checked="state.shared ? 'true' : 'false'" t-on-click="() => this.toggleShared()">
+                  <span class="knob"/>
+                  <span>Share with everyone who can open this view</span>
+                </button>
+                <span class="pbxl-hint">They get their own figures in it, never yours.</span>
+              </div>
+
+              <div t-if="state.tried" class="pbxl-alert ok tried">
+                <t t-out="xic('checkCircle', 15)"/>
+                <span>
+                  <t t-esc="triedLine"/>
+                  <t t-foreach="state.tried.notes" t-as="nt" t-key="nt_index"><br/><t t-esc="nt"/></t>
+                </span>
+              </div>
+              <div t-if="state.saveError" class="pbxl-alert bad" role="alert">
+                <t t-out="xic('alert', 15)"/><span t-esc="state.saveError"/>
+              </div>
+            </aside>
+          </div>
+        </t>
+      </div>
+      <t t-set-slot="footer">
+        <div class="pbxl-foot" data-coach="xl-foot">
+          <button type="button" class="pbxl-b ghost" t-on-click="() => this.props.close()">Cancel</button>
+          <span class="grow"/>
+          <button type="button" class="pbxl-b secondary" t-att-disabled="state.phase !== 'ready' or blocked or state.busy"
+                  t-on-click="() => this.tryIt()">
+            <t t-if="state.busy === 'try'"><span class="pbxl-spin"/></t>
+            <t t-else=""><t t-out="xic('download', 14)"/></t>
+            Try it
+          </button>
+          <button type="button" class="pbxl-b primary" t-att-disabled="state.phase !== 'ready' or blocked or state.busy"
+                  t-on-click="() => this.save()">
+            <t t-if="state.busy === 'save'"><span class="pbxl-spin"/></t>
+            <t t-else=""><t t-out="xic('save', 14)"/></t>
+            Save layout
+          </button>
+        </div>
+      </t>
+    </Dialog>
+  </t>
+
+  <!-- ============================================ the Send regularly drawer
+       X4 — "Send as" in the Explorer's own drawer, by template inheritance:
+       no line of the drawer itself changes. -->
+  <t t-inherit="pb_explorer.PbExplorer" t-inherit-mode="extension">
+    <xpath expr="//p[hasclass('pbex-preview')]" position="before">
+      <div class="pbex-field pbxl-sendas" data-coach="xl-sendas">
+        <span class="pbex-label">Send as</span>
+        <div class="pbex-seg wrap" role="radiogroup" aria-label="Send as">
+          <button role="radio" t-att-aria-checked="!state.sched.form.layout_id ? 'true' : 'false'"
+                  t-att-class="{ on: !state.sched.form.layout_id }"
+                  t-on-click="() => this.setSendAs(0)">Standard Excel</button>
+          <button t-foreach="sendAsLayouts" t-as="lay" t-key="lay.id" role="radio"
+                  t-att-aria-checked="state.sched.form.layout_id === lay.id ? 'true' : 'false'"
+                  t-att-class="{ on: state.sched.form.layout_id === lay.id }"
+                  t-on-click="() => this.setSendAs(lay.id)">
+            <t t-out="icx('fileSpreadsheet', 13)"/> <t t-esc="lay.name"/>
+          </button>
+        </div>
+        <span t-if="!sendAsLayouts.length" class="pbex-hint">To send your own Excel file filled with these figures, set it up first with “My Excel layout” at the top of the board.</span>
+        <span t-elif="sendAsChosen and !sendAsChosen.ok" class="pbex-hint pbxl-warnhint">The sheet of this layout is missing from its file, so the standard Excel is sent until a sheet is picked again.</span>
+        <span t-elif="sendAsChosen" class="pbex-hint">Each person gets your file filled with their own figures. If it ever cannot be used, the standard Excel goes instead and the history says why.</span>
+      </div>
+    </xpath>
+    <xpath expr="//div[hasclass('pbex-sched-who')]" position="before">
+      <div t-if="sc.layout_name" class="pbxl-sched-as" t-att-class="{ warn: !sc.layout_ok }">
+        <t t-out="icx('fileSpreadsheet', 13)"/>
+        <span t-esc="sendAsLine(sc)"/>
+      </div>
+    </xpath>
+  </t>
+</templates>

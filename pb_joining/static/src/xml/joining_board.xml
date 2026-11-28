@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <t t-name="pb_joining.Board">
+    <section class="pbim jnb" t-on-keydown="onKey">
+      <div t-if="!state.head?.allowed" class="jnb-empty"><t t-out="ic('lock',28)"/><h2>Joining is looked after by the hiring team</h2></div>
+      <t t-else="">
+        <header class="jnb-head">
+          <h1 t-if="!props.embedded" class="pbim-h1">Joining</h1>
+          <div t-if="state.head.can_manage" class="jnb-actions">
+            <button class="pbim-btn ghost" t-on-click="openStudioSettings">What a joiner is asked</button>
+            <button class="pbim-btn ghost" t-att-disabled="state.busy" t-on-click="() => this.startForm('settings')">Papers to sign</button>
+            <button class="pbim-btn outline" t-att-disabled="state.busy" t-on-click="() => this.startForm('invite')"><t t-out="ic('userPlus')"/> Invite someone</button>
+          </div>
+        </header>
+        <t t-call="pb_import_kit.QuietGlance"><t t-set="qGlance" t-value="glance"/><t t-set="qGlanceOn" t-value="''"/></t>
+        <t t-call="pb_import_kit.QuietSteps"><t t-set="qSteps" t-value="steps"/><t t-set="qStepsLabel" t-value="stepLabel"/><t t-set="qStepPick" t-value="(k) => this.kit.toggleFilters({step:[k]})"/></t>
+        <PbFilterLayout kit="kit" searchPlaceholder="searchLabel">
+          <div t-if="state.rows.length" class="jnb-grid">
+            <button t-foreach="state.rows" t-as="r" t-key="r.id" type="button" class="jnb-card" t-on-click="() => this.open(r.id)">
+              <div class="jnb-person"><span class="jnb-avatar" t-esc="r.initials"/><div><strong t-esc="r.name"/><small><t t-esc="r.job"/> · <t t-esc="r.country"/></small></div></div>
+              <div t-att-class="r.days &lt;= 3 and r.state !== 'added' ? 'jnb-soon' : ''">Starts <b t-esc="r.first_day_label"/> · <t t-esc="r.days"/> days</div>
+              <div class="jnb-progress"><progress max="100" t-att-value="r.progress"/><b><t t-esc="r.progress"/>%</b></div>
+              <div class="jnb-chips"><span t-foreach="r.chips" t-as="c" t-key="c.text" t-attf-class="jnb-chip is-{{c.tone}}"><t t-out="ic(c.icon,13)"/><t t-esc="c.text"/></span></div>
+              <small t-if="r.origin === 'hiring'">Before they join <t t-esc="r.prejoin.done"/> of <t t-esc="r.prejoin.total"/></small>
+            </button>
+          </div>
+          <div t-elif="state.loaded" class="jnb-empty"><t t-out="ic('userPlus',28)"/>
+            <t t-if="steps.every((step) => !step.count)"><h2>Nobody is joining yet</h2><p>People appear here the moment their offer is signed in Hiring. You can also invite someone hired another way.</p><button t-if="state.head.can_manage" class="pbim-btn outline" t-att-disabled="state.busy" t-on-click="() => this.startForm('invite')">Invite someone</button></t>
+            <h2 t-else="">Nobody here</h2>
+          </div>
+          <button t-if="state.total > state.rows.length" class="pbim-btn outline" t-att-disabled="state.busy" t-on-click="() => this.page(true)">Show more</button>
+        </PbFilterLayout>
+      </t>
+      <div t-if="state.mode" class="jnb-scrim" t-on-click.self="closeDrawer">
+        <aside class="jnb-drawer" role="dialog" aria-modal="true" aria-labelledby="jnb-title" t-att-aria-busy="state.busy ? 'true' : 'false'">
+          <t t-set="d" t-value="state.drawer"/>
+          <header class="jnb-drawer-head">
+            <span t-if="state.mode === 'one'" class="jnb-avatar" t-esc="d.initials"/>
+            <div><h2 id="jnb-title" t-esc="formTitle"/><t t-if="state.mode === 'one'"><small><t t-esc="d.job"/> · <t t-esc="d.country"/> · starts <t t-esc="d.first_day_label"/></small><span class="jnb-chip is-indigo" t-esc="d.step_label"/></t></div>
+            <button class="pbim-btn ghost" title="Close" aria-label="Close" t-att-disabled="state.busy" t-on-click="closeDrawer"><t t-out="ic('x')"/></button>
+          </header>
+          <div t-if="state.error" class="jnb-alert" role="alert" t-esc="state.error"/>
+          <div t-if="state.msg" class="jnb-notice" role="status" t-esc="state.msg"/>
+          <t t-if="state.mode === 'one'">
+            <div class="jnb-body">
+              <section t-if="d.state !== 'added'" class="jnb-strip"><p t-esc="linkText"/>
+                <div t-if="d.can_link" class="jnb-inline">
+                  <button t-if="d.link.mode === 'email'" class="pbim-btn outline" t-att-disabled="state.busy" t-on-click="() => this.link('send_again')">Send again</button>
+                  <button class="pbim-btn outline" t-att-disabled="state.busy" t-on-click="() => this.link('copy_link')"><t t-out="ic('link',14)"/> Copy link</button>
+                  <button class="pbim-btn ghost" t-on-click="() => this.link('show_code')"><t t-out="ic('keyRound',14)"/> Show a code</button>
+                </div>
+                <div t-if="state.code" class="jnb-code"><strong t-esc="codeLabel"/> · works for 48 hours, once <button class="pbim-btn ghost" t-on-click="copyCode">Copy</button><small>Send the link and the code separately.</small></div>
+                <small t-if="d.link.opened_at">Opened <t t-esc="d.link.opened_at"/> · last seen <t t-esc="d.link.last_seen_at"/></small>
+                <small t-if="d.link.remind_count">Reminded <t t-esc="d.link.remind_count"/> times</small>
+              </section>
+              <h3>What they sent</h3>
+              <section t-foreach="d.items" t-as="item" t-key="item.key" class="jnb-item">
+                <div class="jnb-item-head"><span class="jnb-icon"><t t-out="ic(item.icon || 'fileText')"/></span><b t-esc="item.label"/><span t-if="item.source" class="jnb-chip is-teal" t-esc="item.source"/><small t-attf-class="jnb-status is-{{item.state}}" t-esc="itemState(item)"/></div>
+                <t t-if="d.can_manage">
+                  <dl t-if="item.fields.length"><t t-foreach="item.fields" t-as="f" t-key="f.key"><dt t-esc="f.label"/><dd><t t-esc="state.clear[item.key + '/' + f.key] || f.value"/><button t-if="f.masked" class="pbim-btn ghost" title="Show for 30 seconds" aria-label="Show for 30 seconds" t-on-click="() => this.reveal(item,f)"><t t-out="ic('eye',14)"/></button></dd></t></dl>
+                  <a t-foreach="item.files" t-as="file" t-key="file.id" class="jnb-file" t-att-href="file.url" target="_blank" rel="noopener noreferrer"><t t-out="ic('fileText',14)"/><t t-esc="file.name"/></a>
+                  <p t-if="item.state === 'returned'" class="jnb-note" t-esc="item.note"/>
+                  <div t-if="!d.foot.approval_waiting and (d.state === 'to_check' or d.foot.waiting_for_person)" class="jnb-inline">
+                    <button t-if="d.state === 'to_check' and item.state === 'saved'" class="pbim-btn outline" t-att-disabled="state.busy" t-on-click="() => this.review('accept',item.key)"><t t-out="ic('check',14)"/> Accept</button>
+                    <button t-if="d.state === 'to_check' and item.state === 'accepted'" class="pbim-btn ghost" t-att-disabled="state.busy" t-on-click="() => this.review('undo',item.key)">Undo</button>
+                    <button t-if="['accepted','saved'].includes(item.state) and state.noteKey !== item.key" class="pbim-btn ghost" t-on-click="() => this.askBack(item.key)">Send back</button>
+                  </div>
+                  <form t-if="state.noteKey === item.key" class="jnb-form" t-on-submit.prevent="() => this.review('send_back',item.key)"><label>What should <t t-esc="d.name.split(' ')[0]"/> fix?<textarea t-model="state.note" maxlength="200" required="required"/></label><div class="jnb-inline"><button type="submit" class="pbim-btn outline" t-att-disabled="state.busy">Send back</button><button type="button" class="pbim-btn ghost" t-on-click="() => state.noteKey = ''">Cancel</button></div></form>
+                </t>
+              </section>
+              <t t-call="pb_joining.SignedRows"/>
+              <details t-if="d.can_manage and d.state !== 'added' and !d.foot.approval_waiting" class="jnb-more"><summary>More actions</summary><button class="pbim-btn ghost" t-att-disabled="state.busy" t-on-click="() => this.startForm('day')">First-day details</button><button class="pbim-btn ghost" t-att-disabled="state.busy" t-on-click="() => this.startForm('date')">Change the first day</button><button class="pbim-btn ghost" t-att-disabled="state.busy" t-on-click="() => this.startForm('cancel')">They are not joining</button></details>
+            </div>
+            <footer class="jnb-foot">
+              <t t-if="d.state === 'added'"><p><t t-esc="d.name"/> is an employee.</p><button class="pbim-btn outline" t-att-disabled="state.busy" t-on-click="openJoiners">Open in Joiners</button></t>
+              <p t-elif="d.foot.approval_waiting">Waiting for approval of the hire</p>
+              <t t-elif="d.state === 'to_check' and d.can_manage"><div class="jnb-inline"><button class="pbim-btn outline" t-att-disabled="state.busy" t-on-click="() => this.review('accept_all')">Accept everything</button><button class="pbim-btn primary" t-att-disabled="!d.foot.can_add || state.busy" t-on-click="addEmployee"><t t-out="ic('userPlus')"/> Add as employee</button></div><small>Accepting saves nothing yet. The details go into the employee record only when you press Add in the next screen.</small></t>
+              <t t-elif="['invited','filling'].includes(d.state)"><p t-if="d.foot.waiting_for_person">Waiting for <t t-esc="d.name.split(' ')[0]"/> to fix <t t-esc="d.foot.waiting_for_person"/> thing(s).</p><div t-if="d.can_link" class="jnb-inline"><button class="pbim-btn outline" t-att-disabled="state.busy" t-on-click="() => this.link('remind_now')">Send a reminder now</button><button class="pbim-btn ghost" t-on-click="() => this.link('copy_link')">Copy link</button></div></t>
+            </footer>
+          </t>
+          <form t-else="" class="jnb-form jnb-body" t-on-submit.prevent="submitForm">
+            <t t-if="state.mode === 'invite'">
+              <label>Full name<input t-model="state.form.name" required="required" autocomplete="off"/></label>
+              <label>First day<input type="date" t-model="state.form.first_day" required="required"/></label>
+              <label>Country of work<select t-model="state.form.payroll_country" required="required"><option value=""/><option t-foreach="state.options.countries" t-as="opt" t-key="opt[0]" t-att-value="opt[0]" t-esc="opt[1]"/></select></label>
+              <label>Job title<input t-model="state.form.job_title" required="required"/></label>
+              <label>Team<select t-model="state.form.department_id"><option value=""/><option t-foreach="state.options.teams" t-as="opt" t-key="opt.id" t-att-value="opt.id" t-esc="opt.name"/></select></label>
+              <label>Manager<select t-model="state.form.manager_id"><option value=""/><option t-foreach="state.options.managers" t-as="opt" t-key="opt.id" t-att-value="opt.id" t-esc="opt.name"/></select></label>
+              <label>Personal email<input type="email" t-model="state.form.email"/></label><label>Mobile<input type="tel" t-model="state.form.phone"/></label><small>So the link can reach them.</small>
+              <label>Language<select t-model="state.form.lang"><option t-foreach="state.options.langs" t-as="opt" t-key="opt[0]" t-att-value="opt[0]" t-esc="opt[1]"/></select></label>
+            </t>
+            <t t-elif="state.mode === 'day'"><label>Time<input t-model="state.form.day_time" placeholder="8:00 am"/></label><label>Place<input t-model="state.form.day_place"/></label><label>Ask for<input t-model="state.form.day_ask_for"/></label><label>What to bring<input t-model="state.form.day_bring"/></label><label>A note from the manager<textarea t-model="state.form.manager_note"/></label></t>
+            <t t-elif="state.mode === 'settings'"><t t-call="pb_joining.PaperSettings"/><label>First-day place<input t-model="state.form.pb_joining_day_place"/></label><label>What to bring on the first day<input t-model="state.form.pb_joining_day_bring"/></label><label class="jnb-check"><input type="checkbox" t-model="state.form.auto_invite"/> Send a link when an offer is signed</label></t>
+            <t t-else=""><label t-if="state.mode === 'date'">First day<input type="date" t-model="state.form.date" required="required"/></label><label>Reason<textarea t-model="state.form.reason" required="required"/></label></t>
+            <div class="jnb-inline"><button class="pbim-btn ghost" type="button" t-on-click="backForm">Cancel</button><button class="pbim-btn primary" type="submit" t-att-disabled="state.busy" t-esc="submitLabel"/></div>
+          </form>
+        </aside>
+      </div>
+    </section>
+  </t>
+  <t t-name="pb_joining.SignedRows"><div t-foreach="d.signs" t-as="s" t-key="s.id" class="jnb-item"><strong t-esc="s.name"/><small t-esc="s.status"/><a t-if="s.url" t-att-href="s.url" target="_blank" rel="noopener noreferrer">Open signed copy</a><small t-if="s.note" t-esc="s.note"/>
+    <button t-if="d.can_manage and s.signed and d.state === 'to_check' and !d.foot.approval_waiting" class="pbim-btn ghost" t-on-click="() => this.askBack('sign-'+s.id)">Send back</button>
+    <form t-if="state.noteKey === 'sign-'+s.id" class="jnb-form" t-on-submit.prevent="() => this.returnSigned(s)"><label>What should <t t-esc="d.name.split(' ')[0]"/> fix?<textarea t-model="state.note" required="required" maxlength="200"/></label><button type="submit" class="pbim-btn outline">Send back</button></form></div></t>
+  <t t-name="pb_joining.PaperSettings"><div class="jnb-papers"><section t-foreach="state.form.papers" t-as="p" t-key="p.id || ('new'+p_index)" class="jnb-strip">
+    <label>Paper name<input t-model="p.name" required="required"/></label><label>Country of work<select t-model="p.country"><option value="">Every country</option><option t-foreach="state.options.countries" t-as="c" t-key="c[0]" t-att-value="c[0]" t-esc="c[1]"/></select></label>
+    <label>PDF<input type="file" accept="application/pdf" t-on-change="(ev) => this.uploadPaper(p,ev)"/><small t-esc="p.file"/></label>
+    <label>Order<input type="number" t-model.number="p.sequence"/></label><label class="jnb-check"><input type="checkbox" t-model="p.on"/> On</label>
+    </section><button type="button" class="pbim-btn outline" t-on-click="newPaper">Add a paper</button></div></t>
+</templates>

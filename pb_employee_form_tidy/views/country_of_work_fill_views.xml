@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- TIDY-E 3b — "Fill empty Country of Work from pay set-up": preview, then
+         confirm. Opened from the People list (HR managers). -->
+    <record id="view_pb_cow_fill_wizard" model="ir.ui.view">
+        <field name="name">pb.cow.fill.wizard.form</field>
+        <field name="model">pb.cow.fill.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Fill empty Country of Work">
+                <field name="done" invisible="1"/>
+                <field name="fill_count" invisible="1"/>
+                <field name="company_count" invisible="1"/>
+                <p class="text-muted" invisible="done">
+                    Fills Country of Work only where it is empty: first from the pay set-up each
+                    person is paid under, otherwise from their company's country. A Country of
+                    Work that is already set is never changed.
+                </p>
+                <div class="alert alert-success" role="status" invisible="not done">
+                    <field name="result_text" readonly="1" nolabel="1" class="d-inline"/>
+                </div>
+                <div class="d-flex align-items-center gap-2 mb-3" invisible="done or not company_count">
+                    <field name="use_company" nolabel="1"/>
+                    <label for="use_company"/>
+                </div>
+                <field name="preview_html" readonly="1" nolabel="1"/>
+                <footer>
+                    <button name="action_fill_and_close" type="object" class="btn-primary"
+                            invisible="done or not fill_count" string="Fill Country of Work"/>
+                    <button special="cancel" string="Close" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_cow_fill_wizard" model="ir.actions.act_window">
+        <field name="name">Fill empty Country of Work</field>
+        <field name="res_model">pb.cow.fill.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_pb_cow_fill_wizard"/>
+        <field name="target">new</field>
+        <field name="group_ids" eval="[(4, ref('hr.group_hr_manager'))]"/>
+    </record>
+</odoo>

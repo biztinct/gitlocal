@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- WDGAP S2-A — Vietnam: personal income tax declaration of the payer
+         (Mẫu số 05/KK-TNCN), two layouts. Generated from the line tables in
+         docs/handovers/wdgap/WDGAP_S2A_REPORT.md; sources on each form.
+         See pb_form_lines/models/render_vn.py. -->
+
+    <record id="form_vn_05kk_tt89" model="pb.gov.form">
+        <field name="code">VN_05KK_TT89</field>
+        <field name="country_code">VN</field>
+        <field name="sequence">20</field>
+        <field name="name">Personal income tax declaration 05/KK-TNCN (from July 2026, by quarter)</field>
+        <field name="official_name">Tờ khai thuế thu nhập cá nhân — Mẫu số 05/KK-TNCN (Thông tư 89/2026/TT-BTC)</field>
+        <field name="authority">Tax office</field>
+        <field name="period_kind">quarter</field>
+        <field name="quarter_allowed" eval="False"/>
+        <field name="output_kinds">xlsx</field>
+        <field name="total_line_code">42</field>
+        <field name="valid_from">2026-07-01</field>
+        <field name="source_url">https://fast.com.vn/so-sanh-mau-05-kk-tncn-theo-thong-tu-89-2026-tt-btc-va-thong-tu-80-2026-tt-btc/</field>
+        <field name="source_note">Thông tư 89/2026/TT-BTC (in force 1 July 2026), Mẫu số 05/KK-TNCN for payers of salaries and wages; quarterly only; indicators [15]-[45] as listed in the comparison published by FAST (fast.com.vn), which cites Công văn 5746/CT-CS. Read on 18 November 2026.</field>
+        <field name="inferred" eval="True"/>
+        <field name="inferred_note">The official appendix of Thông tư 89/2026/TT-BTC could not be read; the line list comes from a published secondary comparison and some line wordings are reconstructed (marked on each line). No official XML is made: its schema is not confirmed.</field>
+    </record>
+    <record id="form_vn_05kk_tt89_l15" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">15</field>
+        <field name="sequence">10</field>
+        <field name="kind">count</field>
+        <field name="scope">employee</field>
+        <field name="label">Total employees</field>
+        <field name="official_label">Tổng số người lao động</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l16" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">16</field>
+        <field name="sequence">20</field>
+        <field name="kind">count</field>
+        <field name="scope">employee</field>
+        <field name="label">Of whom: tax residents with a labour contract</field>
+        <field name="official_label">Trong đó: Cá nhân cư trú có hợp đồng lao động</field>
+        <field name="population">resident</field>
+        <field name="mappable" eval="False"/>
+        <field name="note">Counts every tax resident in the filing; the length of the labour contract (3 months or more) is not checked.</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l20" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">20</field>
+        <field name="sequence">60</field>
+        <field name="kind">money</field>
+        <field name="label">Total taxable income paid</field>
+        <field name="official_label">Tổng thu nhập chịu thuế trả cho cá nhân</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">thu nhập chịu thuế,thu nhap chiu thue,tnct,taxable income</field>
+        <field name="suggest_roles">earning,info</field>
+    </record>
+    <record id="form_vn_05kk_tt89_l23" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">23</field>
+        <field name="sequence">90</field>
+        <field name="kind">money</field>
+        <field name="label">Taxable income from life and other voluntary insurance bought from insurers not set up in Vietnam</field>
+        <field name="official_label">Thu nhập chịu thuế từ phí mua bảo hiểm nhân thọ, bảo hiểm không bắt buộc khác của doanh nghiệp bảo hiểm không thành lập tại Việt Nam</field>
+    </record>
+    <record id="form_vn_05kk_tt89_l24" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">24</field>
+        <field name="sequence">100</field>
+        <field name="kind">computed</field>
+        <field name="label">Total tax-exempt income in the period</field>
+        <field name="official_label">Tổng thu nhập được miễn thuế trong kỳ</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">25,26,27,28</field>
+        <field name="factor">1</field>
+    </record>
+    <record id="form_vn_05kk_tt89_l25" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">25</field>
+        <field name="sequence">110</field>
+        <field name="kind">money</field>
+        <field name="label">Exempt under oil and gas contracts</field>
+        <field name="official_label">Thu nhập được miễn thuế theo Hợp đồng dầu khí</field>
+    </record>
+    <record id="form_vn_05kk_tt89_l26" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">26</field>
+        <field name="sequence">120</field>
+        <field name="kind">money</field>
+        <field name="label">Exempt: science, technology and innovation tasks</field>
+        <field name="official_label">Thu nhập được miễn thuế từ thực hiện nhiệm vụ khoa học, công nghệ và đổi mới sáng tạo</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l27" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">27</field>
+        <field name="sequence">130</field>
+        <field name="kind">money</field>
+        <field name="label">Exempt: experts supporting start-ups</field>
+        <field name="official_label">Thu nhập được miễn thuế của chuyên gia hỗ trợ khởi nghiệp sáng tạo</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l28" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">28</field>
+        <field name="sequence">140</field>
+        <field name="kind">money</field>
+        <field name="label">Other exempt income</field>
+        <field name="official_label">Thu nhập được miễn thuế khác</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l32" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">32</field>
+        <field name="sequence">180</field>
+        <field name="kind">money</field>
+        <field name="label">Total assessable income for working out the tax</field>
+        <field name="official_label">Tổng thu nhập tính thuế</field>
+        <field name="suggest_words">thu nhập tính thuế,thu nhap tinh thue,tntt,assessable income</field>
+        <field name="suggest_roles">info,earning</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l35" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">35</field>
+        <field name="sequence">210</field>
+        <field name="kind">money</field>
+        <field name="label">Income tax to be withheld in the period</field>
+        <field name="official_label">Số thuế thu nhập cá nhân phải khấu trừ trong kỳ</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l36" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">36</field>
+        <field name="sequence">220</field>
+        <field name="kind">money</field>
+        <field name="label">Total income tax exempted in the period</field>
+        <field name="official_label">Tổng số thuế thu nhập cá nhân được miễn trong kỳ</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l37" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">37</field>
+        <field name="sequence">230</field>
+        <field name="kind">money</field>
+        <field name="label">Exempt income of high-quality digital industry staff</field>
+        <field name="official_label">Thu nhập của nhân lực chất lượng cao trong lĩnh vực công nghiệp công nghệ số được miễn thuế</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l38" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">38</field>
+        <field name="sequence">240</field>
+        <field name="kind">money</field>
+        <field name="label">Tax exempted for high-quality digital industry staff</field>
+        <field name="official_label">Số thuế thu nhập cá nhân được miễn của nhân lực chất lượng cao trong lĩnh vực công nghiệp công nghệ số</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l39" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">39</field>
+        <field name="sequence">250</field>
+        <field name="kind">money</field>
+        <field name="label">Exempt income of high-technology staff</field>
+        <field name="official_label">Thu nhập của nhân lực công nghệ cao được miễn thuế</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l40" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">40</field>
+        <field name="sequence">260</field>
+        <field name="kind">money</field>
+        <field name="label">Tax exempted for high-technology research or strategic technology staff</field>
+        <field name="official_label">Số thuế thu nhập cá nhân được miễn của nhân lực công nghệ cao, nghiên cứu phát triển hoặc công nghệ chiến lược</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l41" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">41</field>
+        <field name="sequence">270</field>
+        <field name="kind">money</field>
+        <field name="label">Other tax exempted</field>
+        <field name="official_label">Số thuế thu nhập cá nhân được miễn khác</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l42" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">42</field>
+        <field name="sequence">280</field>
+        <field name="kind">money</field>
+        <field name="label">Total income tax withheld</field>
+        <field name="official_label">Tổng số thuế thu nhập cá nhân đã khấu trừ</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">thuế tncn,thue tncn,thuế thu nhập cá nhân,personal income tax,pit,income tax</field>
+        <field name="suggest_roles">deduction</field>
+    </record>
+    <record id="form_vn_05kk_tt89_l45" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">45</field>
+        <field name="sequence">310</field>
+        <field name="kind">computed</field>
+        <field name="label">Income tax withheld on the insurance premiums of line 23 (10%)</field>
+        <field name="official_label">Số thuế thu nhập cá nhân đã khấu trừ trên phí bảo hiểm nhân thọ, bảo hiểm không bắt buộc khác của doanh nghiệp bảo hiểm không thành lập tại Việt Nam</field>
+        <field name="compute_op">percent</field>
+        <field name="operand_codes">23</field>
+        <field name="factor">0.1</field>
+    </record>
+    <record id="form_vn_05kk_tt89_l17" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">17</field>
+        <field name="sequence">30</field>
+        <field name="kind">count</field>
+        <field name="scope">employee</field>
+        <field name="label">People whose tax was withheld</field>
+        <field name="official_label">Tổng số cá nhân đã khấu trừ thuế</field>
+        <field name="mappable" eval="False"/>
+        <field name="only_if_line_id" ref="form_vn_05kk_tt89_l42"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l18" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">18</field>
+        <field name="sequence">40</field>
+        <field name="kind">count</field>
+        <field name="scope">employee</field>
+        <field name="label">Of whom: tax residents</field>
+        <field name="official_label">Cá nhân cư trú</field>
+        <field name="population">resident</field>
+        <field name="mappable" eval="False"/>
+        <field name="only_if_line_id" ref="form_vn_05kk_tt89_l42"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l19" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">19</field>
+        <field name="sequence">50</field>
+        <field name="kind">count</field>
+        <field name="scope">employee</field>
+        <field name="label">Of whom: non-residents</field>
+        <field name="official_label">Cá nhân không cư trú</field>
+        <field name="population">non_resident</field>
+        <field name="mappable" eval="False"/>
+        <field name="only_if_line_id" ref="form_vn_05kk_tt89_l42"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l21" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">21</field>
+        <field name="sequence">70</field>
+        <field name="kind">money</field>
+        <field name="label">Of which: tax residents</field>
+        <field name="official_label">Cá nhân cư trú</field>
+        <field name="population">resident</field>
+        <field name="base_line_id" ref="form_vn_05kk_tt89_l20"/>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l22" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">22</field>
+        <field name="sequence">80</field>
+        <field name="kind">money</field>
+        <field name="label">Of which: non-residents</field>
+        <field name="official_label">Cá nhân không cư trú</field>
+        <field name="population">non_resident</field>
+        <field name="base_line_id" ref="form_vn_05kk_tt89_l20"/>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l29" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">29</field>
+        <field name="sequence">150</field>
+        <field name="kind">money</field>
+        <field name="label">Taxable income paid to people subject to withholding</field>
+        <field name="official_label">Tổng thu nhập chịu thuế trả cho cá nhân thuộc diện phải khấu trừ thuế</field>
+        <field name="base_line_id" ref="form_vn_05kk_tt89_l20"/>
+        <field name="mappable" eval="False"/>
+        <field name="only_if_line_id" ref="form_vn_05kk_tt89_l42"/>
+        <field name="note">People subject to withholding are taken to be the people whose tax was withheld (line 42 above zero).</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l30" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">30</field>
+        <field name="sequence">160</field>
+        <field name="kind">money</field>
+        <field name="label">Of which: tax residents</field>
+        <field name="official_label">Cá nhân cư trú</field>
+        <field name="population">resident</field>
+        <field name="base_line_id" ref="form_vn_05kk_tt89_l20"/>
+        <field name="mappable" eval="False"/>
+        <field name="only_if_line_id" ref="form_vn_05kk_tt89_l42"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l31" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">31</field>
+        <field name="sequence">170</field>
+        <field name="kind">money</field>
+        <field name="label">Of which: non-residents</field>
+        <field name="official_label">Cá nhân không cư trú</field>
+        <field name="population">non_resident</field>
+        <field name="base_line_id" ref="form_vn_05kk_tt89_l20"/>
+        <field name="mappable" eval="False"/>
+        <field name="only_if_line_id" ref="form_vn_05kk_tt89_l42"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l33" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">33</field>
+        <field name="sequence">190</field>
+        <field name="kind">money</field>
+        <field name="label">Of which: tax residents</field>
+        <field name="official_label">Cá nhân cư trú</field>
+        <field name="population">resident</field>
+        <field name="base_line_id" ref="form_vn_05kk_tt89_l32"/>
+        <field name="mappable" eval="False"/>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l34" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">34</field>
+        <field name="sequence">200</field>
+        <field name="kind">money</field>
+        <field name="label">Of which: non-residents</field>
+        <field name="official_label">Cá nhân không cư trú</field>
+        <field name="population">non_resident</field>
+        <field name="base_line_id" ref="form_vn_05kk_tt89_l32"/>
+        <field name="mappable" eval="False"/>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l43" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">43</field>
+        <field name="sequence">290</field>
+        <field name="kind">money</field>
+        <field name="label">Of which: tax residents</field>
+        <field name="official_label">Cá nhân cư trú</field>
+        <field name="population">resident</field>
+        <field name="base_line_id" ref="form_vn_05kk_tt89_l42"/>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_vn_05kk_tt89_l44" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt89"/>
+        <field name="code">44</field>
+        <field name="sequence">300</field>
+        <field name="kind">money</field>
+        <field name="label">Of which: non-residents</field>
+        <field name="official_label">Cá nhân không cư trú</field>
+        <field name="population">non_resident</field>
+        <field name="base_line_id" ref="form_vn_05kk_tt89_l42"/>
+        <field name="mappable" eval="False"/>
+    </record>
+
+    <record id="form_vn_05kk_tt80" model="pb.gov.form">
+        <field name="code">VN_05KK_TT80</field>
+        <field name="country_code">VN</field>
+        <field name="sequence">30</field>
+        <field name="name">Personal income tax declaration 05/KK-TNCN (up to June 2026)</field>
+        <field name="official_name">Tờ khai thuế thu nhập cá nhân — Mẫu số 05/KK-TNCN (Thông tư 80/2021/TT-BTC)</field>
+        <field name="authority">Tax office</field>
+        <field name="period_kind">month</field>
+        <field name="quarter_allowed" eval="True"/>
+        <field name="output_kinds">xlsx</field>
+        <field name="total_line_code">29</field>
+        <field name="valid_to">2026-06-30</field>
+        <field name="source_url">https://ecn.net.vn/tin-tuc/to-khai-thue-tncn-05-kk-tncn-huong-dan-chi-tiet</field>
+        <field name="source_note">Thông tư 80/2021/TT-BTC Phụ lục II, Mẫu số 05/KK-TNCN, monthly or quarterly; indicators [16]-[32] as listed in the indicator guide published by ECN (ecn.net.vn). For periods up to 30 June 2026 (Article 100 of Thông tư 89/2026 allows it until the tax office says otherwise). Read on 18 November 2026.</field>
+        <field name="inferred" eval="True"/>
+        <field name="inferred_note">The line list comes from a published secondary guide, not from the official gazette text. No official XML is made: its schema is not confirmed.</field>
+    </record>
+    <record id="form_vn_05kk_tt80_l16" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt80"/>
+        <field name="code">16</field>
+        <field name="sequence">10</field>
+        <field name="kind">count</field>
+        <field name="scope">employee</field>
+        <field name="label">Total employees</field>
+        <field name="official_label">Tổng số người lao động</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_vn_05kk_tt80_l17" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt80"/>
+        <field name="code">17</field>
+        <field name="sequence">20</field>
+        <field name="kind">count</field>
+        <field name="scope">employee</field>
+        <field name="label">Of whom: tax residents with a labour contract</field>
+        <field name="official_label">Trong đó: Cá nhân cư trú có hợp đồng lao động</field>
+        <field name="population">resident</field>
+        <field name="mappable" eval="False"/>
+        <field name="note">Counts every tax resident in the filing; the length of the labour contract (3 months or more) is not checked.</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_vn_05kk_tt80_l21" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt80"/>
+        <field name="code">21</field>
+        <field name="sequence">60</field>
+        <field name="kind">money</field>
+        <field name="label">Total taxable income paid</field>
+        <field name="official_label">Tổng thu nhập chịu thuế trả cho cá nhân</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">thu nhập chịu thuế,thu nhap chiu thue,tnct,taxable income</field>
+        <field name="suggest_roles">earning,info</field>
+    </record>
+    <record id="form_vn_05kk_tt80_l24" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt80"/>
+        <field name="code">24</field>
+        <field name="sequence">90</field>
+        <field name="kind">money</field>
+        <field name="label">Taxable income from life and other voluntary insurance bought from insurers not set up in Vietnam</field>
+        <field name="official_label">Thu nhập chịu thuế từ phí mua bảo hiểm nhân thọ, bảo hiểm không bắt buộc khác của doanh nghiệp bảo hiểm không thành lập tại Việt Nam</field>
+    </record>
+    <record id="form_vn_05kk_tt80_l25" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt80"/>
+        <field name="code">25</field>
+        <field name="sequence">100</field>
+        <field name="kind">money</field>
+        <field name="label">Taxable income exempt under oil and gas contracts</field>
+        <field name="official_label">Thu nhập chịu thuế được miễn theo Hợp đồng dầu khí</field>
+    </record>
+    <record id="form_vn_05kk_tt80_l29" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt80"/>
+        <field name="code">29</field>
+        <field name="sequence">140</field>
+        <field name="kind">money</field>
+        <field name="label">Total income tax withheld</field>
+        <field name="official_label">Tổng số thuế thu nhập cá nhân đã khấu trừ</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">thuế tncn,thue tncn,thuế thu nhập cá nhân,personal income tax,pit,income tax</field>
+        <field name="suggest_roles">deduction</field>
+    </record>
+    <record id="form_vn_05kk_tt80_l32" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt80"/>
+        <field name="code">32</field>
+        <field name="sequence">170</field>
+        <field name="kind">computed</field>
+        <field name="label">Income tax withheld on the insurance premiums of line 24 (10%)</field>
+        <field name="official_label">Số thuế thu nhập cá nhân đã khấu trừ trên phí bảo hiểm nhân thọ, bảo hiểm không bắt buộc khác của doanh nghiệp bảo hiểm không thành lập tại Việt Nam</field>
+        <field name="compute_op">percent</field>
+        <field name="operand_codes">24</field>
+        <field name="factor">0.1</field>
+    </record>
+    <record id="form_vn_05kk_tt80_l18" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt80"/>
+        <field name="code">18</field>
+        <field name="sequence">30</field>
+        <field name="kind">count</field>
+        <field name="scope">employee</field>
+        <field name="label">People whose tax was withheld</field>
+        <field name="official_label">Tổng số cá nhân đã khấu trừ thuế</field>
+        <field name="mappable" eval="False"/>
+        <field name="only_if_line_id" ref="form_vn_05kk_tt80_l29"/>
+    </record>
+    <record id="form_vn_05kk_tt80_l19" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt80"/>
+        <field name="code">19</field>
+        <field name="sequence">40</field>
+        <field name="kind">count</field>
+        <field name="scope">employee</field>
+        <field name="label">Of whom: tax residents</field>
+        <field name="official_label">Cá nhân cư trú</field>
+        <field name="population">resident</field>
+        <field name="mappable" eval="False"/>
+        <field name="only_if_line_id" ref="form_vn_05kk_tt80_l29"/>
+    </record>
+    <record id="form_vn_05kk_tt80_l20" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt80"/>
+        <field name="code">20</field>
+        <field name="sequence">50</field>
+        <field name="kind">count</field>
+        <field name="scope">employee</field>
+        <field name="label">Of whom: non-residents</field>
+        <field name="official_label">Cá nhân không cư trú</field>
+        <field name="population">non_resident</field>
+        <field name="mappable" eval="False"/>
+        <field name="only_if_line_id" ref="form_vn_05kk_tt80_l29"/>
+    </record>
+    <record id="form_vn_05kk_tt80_l22" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt80"/>
+        <field name="code">22</field>
+        <field name="sequence">70</field>
+        <field name="kind">money</field>
+        <field name="label">Of which: tax residents</field>
+        <field name="official_label">Cá nhân cư trú</field>
+        <field name="population">resident</field>
+        <field name="base_line_id" ref="form_vn_05kk_tt80_l21"/>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_vn_05kk_tt80_l23" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt80"/>
+        <field name="code">23</field>
+        <field name="sequence">80</field>
+        <field name="kind">money</field>
+        <field name="label">Of which: non-residents</field>
+        <field name="official_label">Cá nhân không cư trú</field>
+        <field name="population">non_resident</field>
+        <field name="base_line_id" ref="form_vn_05kk_tt80_l21"/>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_vn_05kk_tt80_l26" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt80"/>
+        <field name="code">26</field>
+        <field name="sequence">110</field>
+        <field name="kind">money</field>
+        <field name="label">Taxable income paid to people subject to withholding</field>
+        <field name="official_label">Tổng thu nhập chịu thuế trả cho cá nhân thuộc diện phải khấu trừ thuế</field>
+        <field name="base_line_id" ref="form_vn_05kk_tt80_l21"/>
+        <field name="mappable" eval="False"/>
+        <field name="only_if_line_id" ref="form_vn_05kk_tt80_l29"/>
+        <field name="note">People subject to withholding are taken to be the people whose tax was withheld (line 29 above zero).</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_vn_05kk_tt80_l27" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt80"/>
+        <field name="code">27</field>
+        <field name="sequence">120</field>
+        <field name="kind">money</field>
+        <field name="label">Of which: tax residents</field>
+        <field name="official_label">Cá nhân cư trú</field>
+        <field name="population">resident</field>
+        <field name="base_line_id" ref="form_vn_05kk_tt80_l21"/>
+        <field name="mappable" eval="False"/>
+        <field name="only_if_line_id" ref="form_vn_05kk_tt80_l29"/>
+    </record>
+    <record id="form_vn_05kk_tt80_l28" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt80"/>
+        <field name="code">28</field>
+        <field name="sequence">130</field>
+        <field name="kind">money</field>
+        <field name="label">Of which: non-residents</field>
+        <field name="official_label">Cá nhân không cư trú</field>
+        <field name="population">non_resident</field>
+        <field name="base_line_id" ref="form_vn_05kk_tt80_l21"/>
+        <field name="mappable" eval="False"/>
+        <field name="only_if_line_id" ref="form_vn_05kk_tt80_l29"/>
+    </record>
+    <record id="form_vn_05kk_tt80_l30" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt80"/>
+        <field name="code">30</field>
+        <field name="sequence">150</field>
+        <field name="kind">money</field>
+        <field name="label">Of which: tax residents</field>
+        <field name="official_label">Cá nhân cư trú</field>
+        <field name="population">resident</field>
+        <field name="base_line_id" ref="form_vn_05kk_tt80_l29"/>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_vn_05kk_tt80_l31" model="pb.gov.form.line">
+        <field name="form_id" ref="form_vn_05kk_tt80"/>
+        <field name="code">31</field>
+        <field name="sequence">160</field>
+        <field name="kind">money</field>
+        <field name="label">Of which: non-residents</field>
+        <field name="official_label">Cá nhân không cư trú</field>
+        <field name="population">non_resident</field>
+        <field name="base_line_id" ref="form_vn_05kk_tt80_l29"/>
+        <field name="mappable" eval="False"/>
+    </record>
+</odoo>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <t t-name="pb_pay_scales.ScaleChip">
+    <button t-if="state.data.found" type="button" t-att-class="toneClass"
+            t-att-title="state.data.title or ''" t-on-click="() => this.open()">
+      <t t-out="ic('layers', 13)"/> <span t-esc="state.data.label"/>
+    </button>
+  </t>
+</templates>

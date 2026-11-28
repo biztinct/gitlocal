@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_schedule_budget_officer,pb.schedule.budget.officer,model_pb_schedule_budget,hr_attendance.group_hr_attendance_officer,1,0,0,0
+access_pb_schedule_budget_att_manager,pb.schedule.budget.attendance.manager,model_pb_schedule_budget,hr_attendance.group_hr_attendance_manager,1,1,1,1
+access_pb_schedule_budget_pay_manager,pb.schedule.budget.payroll.manager,model_pb_schedule_budget,om_hr_payroll.group_hr_payroll_manager,1,1,1,1
+access_hr_shift_coverage_officer,hr.shift.coverage.requirement.officer,model_hr_shift_coverage_requirement,hr_attendance.group_hr_attendance_officer,1,0,0,0
+access_hr_shift_coverage_att_manager,hr.shift.coverage.requirement.attendance.manager,model_hr_shift_coverage_requirement,hr_attendance.group_hr_attendance_manager,1,1,1,1
+access_hr_shift_coverage_pay_manager,hr.shift.coverage.requirement.payroll.manager,model_hr_shift_coverage_requirement,om_hr_payroll.group_hr_payroll_manager,1,1,1,1

@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+    <!-- ==================================================================
+         FIVE TEMPLATES, ALL EDITABLE, ALL `noupdate="1"` — a business that
+         has reworded one of these must not have it reverted by the next
+         upgrade. Outgoing debranding rides automatically (biz_mail_debrand)
+         and the vendor's name appears in none of them anyway.
+
+         EVERY ONE IS SENT WITH AN EXPLICIT `email_to` IN `email_values` (R6).
+         A template's own rendered address can reach `mail.mail` EMPTY — the
+         message is created, queued and addressed to nobody, with no error
+         anywhere. The `email_to` field below is kept as documentation of who
+         each one is FOR; `_send()` in `goal_set.py` is what actually
+         addresses it, and it also sets `email_from` from
+         `pb_goals.hr_sender` so these come from the HR team rather than from
+         whoever happened to run the job.
+
+         THE SUBJECT CARRIES THE FACT. "Your goals" is an email people open
+         later; "Your goals for FY2026 are due on 30 April" is one they can
+         read on a phone and act on.
+         ================================================================== -->
+
+    <!-- ===================== the sheet has been opened ===================== -->
+    <record id="mail_goals_kickoff" model="mail.template">
+        <field name="name">Goals: write your goals for the year</field>
+        <field name="model_id" ref="model_pb_goal_set"/>
+        <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">Your goals for {{ object.cycle_id.name }} — due {{ object.deadline or 'soon' }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                <p>
+                    It is time to write your goals for
+                    <strong><t t-out="object.cycle_id.name or ''"/></strong>.
+                </p>
+                <p>
+                    Write two to four things you are going to do this year. For
+                    each one, add the key results — the numbers that say whether
+                    it went well — and say how you think it will go. Then send
+                    it to
+                    <t t-out="object.manager_employee_id.name or 'your manager'"/>,
+                    who will say which ones matter most.
+                </p>
+                <p t-if="object.deadline">
+                    <strong>They are due by <t t-out="object.deadline"/>.</strong>
+                </p>
+                <p>
+                    <a t-attf-href="/my/goals"
+                       style="display:inline-block; padding:10px 18px; background:#4F46E5; color:#ffffff; border-radius:8px; text-decoration:none;">
+                        Write my goals
+                    </a>
+                </p>
+                <br/>
+                The HR team
+            </div>
+        </field>
+    </record>
+
+    <!-- ========================= the nudge ========================= -->
+    <record id="mail_goals_reminder" model="mail.template">
+        <field name="name">Goals: a reminder that yours are not in yet</field>
+        <field name="model_id" ref="model_pb_goal_set"/>
+        <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">Your goals for {{ object.cycle_id.name }} are still to be sent in</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                <p>
+                    Your goals for
+                    <strong><t t-out="object.cycle_id.name or ''"/></strong>
+                    have not been sent in yet.
+                </p>
+                <p t-if="object.deadline">
+                    They were due by <strong><t t-out="object.deadline"/></strong>.
+                </p>
+                <p t-if="object.goal_count">
+                    You have <t t-out="object.goal_count"/> written already —
+                    have a last look and send them to
+                    <t t-out="object.manager_employee_id.name or 'your manager'"/>.
+                </p>
+                <p t-else="">
+                    Nothing is written yet. Two or three goals is plenty, and
+                    there are templates on the page if you would rather start
+                    from one.
+                </p>
+                <p>
+                    <a t-attf-href="/my/goals"
+                       style="display:inline-block; padding:10px 18px; background:#4F46E5; color:#ffffff; border-radius:8px; text-decoration:none;">
+                        Open my goals
+                    </a>
+                </p>
+                <br/>
+                The HR team
+            </div>
+        </field>
+    </record>
+
+    <!-- ======================= sent back =======================
+         THE NOTE IS THE WHOLE EMAIL. A sheet that comes back with no reason
+         is the same as nothing happening, which is how somebody sends the
+         identical sheet in twice. -->
+    <record id="mail_goals_returned" model="mail.template">
+        <field name="name">Goals: yours have come back with a note</field>
+        <field name="model_id" ref="model_pb_goal_set"/>
+        <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">Your goals for {{ object.cycle_id.name }} have come back</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                <p>
+                    Your goals for
+                    <strong><t t-out="object.cycle_id.name or ''"/></strong>
+                    have been sent back so you can have another look.
+                </p>
+                <div t-if="object.return_note"
+                     style="border-left:3px solid #4F46E5; padding:8px 14px; margin:14px 0; background:#F5F3FF;">
+                    <t t-out="object.return_note or ''"/>
+                </div>
+                <p>
+                    Change what you need to and send them in again. Nothing is
+                    lost — everything you wrote is still there.
+                </p>
+                <p>
+                    <a t-attf-href="/my/goals"
+                       style="display:inline-block; padding:10px 18px; background:#4F46E5; color:#ffffff; border-radius:8px; text-decoration:none;">
+                        Open my goals
+                    </a>
+                </p>
+                <br/>
+                The HR team
+            </div>
+        </field>
+    </record>
+
+    <!-- ========================= agreed and locked ========================= -->
+    <record id="mail_goals_locked" model="mail.template">
+        <field name="name">Goals: yours have been agreed</field>
+        <field name="model_id" ref="model_pb_goal_set"/>
+        <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+        <field name="email_to">{{ object.employee_id.work_email or '' }}</field>
+        <field name="subject">Your goals for {{ object.cycle_id.name }} have been agreed</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.employee_id.name or ''"/>,</p>
+                <p>
+                    Your goals for
+                    <strong><t t-out="object.cycle_id.name or ''"/></strong>
+                    have been agreed and are set for the year.
+                </p>
+                <table style="border-collapse:collapse; margin:14px 0;">
+                    <tr t-foreach="object.goal_ids" t-as="gl">
+                        <td style="padding:5px 14px 5px 0; vertical-align:top;">
+                            <strong><t t-out="int(round(gl.weight or 0))"/>%</strong>
+                        </td>
+                        <td style="padding:5px 0; vertical-align:top;">
+                            <t t-out="gl.title or ''"/>
+                        </td>
+                    </tr>
+                </table>
+                <p>
+                    The goals themselves cannot change now. What does keep
+                    moving is the figure on each key result — keep those up to
+                    date as the year goes on and there is nothing to reconstruct
+                    in December.
+                </p>
+                <p>
+                    <a t-attf-href="/my/goals"
+                       style="display:inline-block; padding:10px 18px; background:#4F46E5; color:#ffffff; border-radius:8px; text-decoration:none;">
+                        See my goals
+                    </a>
+                </p>
+                <br/>
+                The HR team
+            </div>
+        </field>
+    </record>
+
+    <!-- ================== the courtesy note to the manager ==================
+         A SECOND MESSAGE, AND IT SAYS SO. The sign-off system already puts
+         this in their inbox; this is for a manager who lives in their email.
+         Behind `pb_goals.manager_mail`, which a company that finds it noise
+         turns off. -->
+    <record id="mail_goals_manager_review" model="mail.template">
+        <field name="name">Goals: somebody's goals are waiting for you</field>
+        <field name="model_id" ref="model_pb_goal_set"/>
+        <field name="email_from">{{ (object.company_id.email or user.email_formatted) }}</field>
+        <field name="email_to">{{ object.manager_user_id.email or '' }}</field>
+        <field name="subject">{{ object.employee_id.name }} has sent you their goals for {{ object.cycle_id.name }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;">
+                <p>Hello <t t-out="object.manager_employee_id.name or ''"/>,</p>
+                <p>
+                    <strong><t t-out="object.employee_id.name or ''"/></strong>
+                    has sent you
+                    <t t-out="object.goal_count"/> goals for
+                    <t t-out="object.cycle_id.name or ''"/>.
+                </p>
+                <p>
+                    Have a read, then say which of them matters most by setting
+                    a weight on each — they have to add up to 100 before you can
+                    agree the sheet. If something is not right, send it back
+                    with a note and they can change it.
+                </p>
+                <ul>
+                    <li t-foreach="object.goal_ids" t-as="gl">
+                        <t t-out="gl.title or ''"/>
+                    </li>
+                </ul>
+                <p>
+                    It is also waiting in your approvals, where you can agree it
+                    or send it back.
+                </p>
+                <br/>
+                The HR team
+            </div>
+        </field>
+    </record>
+
+</data>
+</odoo>

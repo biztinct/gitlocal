@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+      FS-6 addendum (coordinator, 2026-11-20) — three oddities on the employee
+      Full details page that pre-date the clean-up. Screen only: no stored
+      value, no field definition and no right changes here.
+
+      1. Payroll tab, "Contract" ("Not Employed") and "Wage" (0): these boxes
+         are the platform's own contract fields on the employee's version
+         record (hr.version: contract_date_start / contract_date_end / wage,
+         core hr view_employee_form). Payobook keeps contracts in hr.contract
+         (FS_HOST_FACTS §F), so those boxes are always empty while the page
+         header ("In Contract Since", "Current contract salary") reads the real
+         contract. The two rows are hidden (with the version "new contract"
+         button that sits in the dates row) and one line says where the
+         contract's dates and wage are. The fields stay in the form, so
+         nothing that reads or writes them changes.
+      2. "Tham gia BHXH" — the field's own label is Vietnamese
+         (pb_hr_payroll_formula/models/hr_employee.py:34). On this page it gets
+         an English label; vi/id come from this module's .po.
+      3. "Employee Id" read "Nhân viên" in Vietnamese: om_hr_payroll
+         (models/hr_employee.py:13) re-declares hr's `employee_id` as a text
+         box, and the field keeps hr's translation of "Employee". On this page
+         it gets the label "Employee ID" (vi "Mã nhân viên").
+
+      Priority 210: after pb_employee_form_tidy (200).
+    -->
+    <record id="view_employee_form_screen_fixes" model="ir.ui.view">
+        <field name="name">hr.employee.form.pb.native.look.fixes</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="priority">210</field>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='payroll_information']//div[@name='contract_dates']" position="after">
+                <div colspan="2" class="text-muted small o_pb_nl_contract_note">The contract's dates and wage are kept on the contract itself: open it from Current Contract on the Work tab.</div>
+            </xpath>
+            <xpath expr="//page[@name='payroll_information']//label[@for='contract_date_start']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='payroll_information']//div[@name='contract_dates']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='payroll_information']//label[@for='wage']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='payroll_information']//div[@name='wage']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='tham_gia_bhxh']" position="attributes">
+                <attribute name="string">Social insurance (BHXH)</attribute>
+            </xpath>
+            <xpath expr="//field[@name='parent_id']/following-sibling::field[@name='employee_id']" position="attributes">
+                <attribute name="string">Employee ID</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

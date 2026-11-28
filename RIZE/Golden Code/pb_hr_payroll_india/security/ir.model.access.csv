@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_gratuity_payment_wizard_user,access_gratuity_payment_wizard_user,model_gratuity_payment_wizard,pb_hr_payroll_indonesia.group_india_payroll_user,1,1,1,1
+access_gratuity_payment_wizard_manager,access_gratuity_payment_wizard_manager,model_gratuity_payment_wizard,om_hr_payroll.group_hr_payroll_manager,1,1,1,1

@@ -1,0 +1,5 @@
+<odoo>
+ <record id="policy_company" model="ir.rule"><field name="name">Attendance policy companies</field><field name="model_id" ref="model_pb_attendance_policy"/><field name="domain_force">[('company_id','in',company_ids)]</field></record>
+ <record id="band_company" model="ir.rule"><field name="name">Attendance band companies</field><field name="model_id" ref="model_pb_attendance_policy_band"/><field name="domain_force">[('company_id','in',company_ids)]</field></record>
+ <record id="shift_company" model="ir.rule"><field name="name">Attendance shift rule companies</field><field name="model_id" ref="model_pb_attendance_policy_shift"/><field name="domain_force">[('company_id','in',company_ids)]</field></record>
+</odoo>

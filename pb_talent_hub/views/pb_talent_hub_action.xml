@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The Talent hub (NAV P2). Declared as a RECORD rather than reached by
+         bare tag, so anything returning through a breadcrumb sees a named
+         action instead of "Unnamed" (W98).
+
+         Test URL: /bizapp/action-pb_talent_hub -->
+    <record id="action_pb_talent_hub" model="ir.actions.client">
+        <field name="name">Talent</field>
+        <field name="tag">pb_talent_hub</field>
+    </record>
+</odoo>

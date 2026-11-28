@@ -1,0 +1,201 @@
+<div id="role-access-design">
+  <style>
+    #role-access-design { --ra-bg:light-dark(#f5f6fc,#17192c); --ra-panel:light-dark(#ffffff,#23263b); --ra-ink:light-dark(#201b3b,#eeeafa); --ra-muted:light-dark(#626d86,#b4bed2); --ra-line:light-dark(#dfe4f1,#40445d); --ra-brand:light-dark(#5b49b6,#9986ee); --ra-onbrand:light-dark(#fff,#19112e); --ra-soft:light-dark(#eeebfb,#34304e); --ra-good:light-dark(#146747,#8addbb); --ra-warn:light-dark(#875019,#efd09a); color:var(--ra-ink); font:14px/1.5 system-ui,sans-serif; }
+    #role-access-design * { box-sizing:border-box; }
+    #role-access-design p, #role-access-design summary { overflow-wrap:anywhere; }
+    #role-access-design [hidden] { display:none!important; }
+    #role-access-design .ra-top { background:#10152f; color:#fff; padding:12px 20px; display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between; }
+    #role-access-design .ra-shell { display:grid; grid-template-columns:150px minmax(0,1fr); background:var(--ra-bg); border:1px solid var(--ra-line); }
+    #role-access-design .ra-sidebar { background:#10152f; color:#e5e8f5; padding:22px 12px; }
+    #role-access-design .ra-sidebar div { padding:10px; }
+    #role-access-design .ra-sidebar .ra-active { background:#2b2862; border-radius:9px; }
+    #role-access-design main { padding:24px; min-width:0; }
+    #role-access-design h1 { margin:0; font-size:24px; font-weight:600; }
+    #role-access-design h2 { margin:0 0 12px; font-size:17px; font-weight:600; }
+    #role-access-design h3 { font-size:15px; margin:0 0 7px; }
+    #role-access-design p { margin:7px 0 12px; }
+    #role-access-design .ra-muted { color:var(--ra-muted); }
+    #role-access-design .ra-head, #role-access-design .ra-row { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; }
+    #role-access-design .ra-pill { display:inline-block; background:var(--ra-soft); color:var(--ra-ink); padding:4px 9px; border-radius:20px; font-size:12px; }
+    #role-access-design button { background:var(--ra-panel); color:var(--ra-ink); border:1px solid var(--ra-line); border-radius:8px; padding:9px 13px; font:inherit; }
+    #role-access-design button:disabled { opacity:.55; cursor:not-allowed; }
+    #role-access-design .ra-primary { background:var(--ra-brand); border-color:var(--ra-brand); color:var(--ra-onbrand); }
+    #role-access-design .ra-tabs { display:flex; gap:5px; flex-wrap:wrap; margin:22px 0 20px; }
+    #role-access-design .ra-tabs button[aria-selected=true] { background:var(--ra-soft); border-color:var(--ra-brand); }
+    #role-access-design .ra-panel { background:var(--ra-panel); padding:20px; border:1px solid var(--ra-line); border-radius:12px; margin-bottom:16px; min-width:0; }
+    #role-access-design .ra-grid { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(230px,1fr); gap:16px; }
+    #role-access-design .ra-note { padding:12px 14px; border-left:3px solid var(--ra-brand); background:var(--ra-soft); border-radius:0 8px 8px 0; margin:12px 0; }
+    #role-access-design label { display:block; }
+    #role-access-design select, #role-access-design input { font:inherit; color:var(--ra-ink); background:var(--ra-panel); border:1px solid var(--ra-line); border-radius:7px; padding:8px; max-width:100%; }
+    #role-access-design input[type=checkbox] { width:18px; height:18px; accent-color:var(--ra-brand); }
+    #role-access-design .ra-screen { display:grid; grid-template-columns:minmax(0,1fr) 115px; gap:12px; padding:14px 0; border-bottom:1px solid var(--ra-line); align-items:center; }
+    #role-access-design .ra-screen small { display:block; color:var(--ra-muted); }
+    #role-access-design .ra-menu { display:flex; flex-wrap:wrap; gap:7px; padding:12px 0; }
+    #role-access-design .ra-menu span { padding:7px 10px; background:var(--ra-soft); border-radius:8px; }
+    #role-access-design .ra-good { color:var(--ra-good); }
+    #role-access-design .ra-warn { color:var(--ra-warn); }
+    #role-access-design table { width:100%; border-collapse:collapse; }
+    #role-access-design th, #role-access-design td { text-align:left; padding:12px 7px; border-bottom:1px solid var(--ra-line); vertical-align:top; overflow-wrap:anywhere; }
+    #role-access-design th { color:var(--ra-muted); font-size:12px; font-weight:500; }
+    #role-access-design .ra-table { overflow-x:auto; }
+    #role-access-design details { border-bottom:1px solid var(--ra-line); padding:13px 0; }
+    #role-access-design summary { font-weight:500; }
+    #role-access-design details p { margin:8px 0; }
+    #role-access-design code { font-size:12px; overflow-wrap:anywhere; }
+    #role-access-design .ra-flow { display:grid; gap:10px; }
+    #role-access-design .ra-flow div { padding:12px; background:var(--ra-soft); border-radius:8px; }
+    #role-access-design .ra-small { font-size:12px; }
+    #role-access-design .ra-footer { padding:12px 0; }
+    #role-access-design .ra-review { border:2px solid var(--ra-brand); }
+    @media(max-width:850px) { #role-access-design .ra-grid { grid-template-columns:1fr; } }
+    @media(max-width:600px) { #role-access-design .ra-shell { grid-template-columns:1fr; } #role-access-design .ra-sidebar { display:none; } #role-access-design main { padding:16px 12px; } #role-access-design .ra-panel { padding:14px; } #role-access-design .ra-screen { grid-template-columns:minmax(0,1fr) 100px; } #role-access-design select { padding:8px 3px; } }
+  </style>
+  <div class="ra-top"><b>Payobook · Access</b><span>Design proposal · 12 October 2026 · Local simulation</span></div>
+  <div class="ra-shell">
+    <aside class="ra-sidebar" aria-label="Product context"><div><b>P &nbsp; Payobook</b></div><div>Home</div><div>Pay Run</div><div>People</div><div>Lifecycle</div><div>Workforce</div><div>Insights</div><div>Compliance</div><div>Learn</div><div class="ra-active">Settings</div></aside>
+    <main>
+      <div class="ra-head"><div><div class="ra-muted ra-small">Settings / Access / Roles</div><h1>Demo login</h1><p class="ra-muted">Edit the role once. Automatically update everyone assigned to it.</p></div><span class="ra-pill">Proposed experience</span></div>
+      <div class="ra-tabs" role="tablist" aria-label="Design views">
+        <button id="ra-tab-editor" role="tab" aria-selected="true" aria-controls="ra-editor" class="cursor-interaction">Role editor</button>
+        <button id="ra-tab-impact" role="tab" aria-selected="false" aria-controls="ra-impact" class="cursor-interaction">User impact</button>
+        <button id="ra-tab-gaps" role="tab" aria-selected="false" aria-controls="ra-gaps" class="cursor-interaction">Gaps &amp; fixes</button>
+        <button id="ra-tab-delivery" role="tab" aria-selected="false" aria-controls="ra-delivery" class="cursor-interaction">Implementation design</button>
+      </div>
+
+      <section id="ra-editor" role="tabpanel" aria-labelledby="ra-tab-editor">
+        <div class="ra-grid">
+          <div>
+            <div class="ra-panel">
+              <div class="ra-row"><h2>Screen access</h2><button id="ra-edit" class="ra-primary cursor-interaction">Edit role</button></div>
+              <div class="ra-note ra-small">Prototype: 3 fictional assigned users. The live form shows 185 permission matches; confirmed assignments must be established during migration.</div>
+              <h3>People</h3>
+              <div class="ra-screen"><div><b>Employees</b><small>Included in the existing Demo ability.</small></div><span class="ra-pill">View</span></div>
+              <div class="ra-screen"><div><b>Contracts</b><small>Inside Employees; included in the Demo ability.</small></div><span class="ra-pill">View</span></div>
+              <div class="ra-screen"><div><label for="ra-records"><b>Records</b><small>View: browse records. Edit: change permitted fields and submit bulk updates.</small></label></div><select id="ra-records" disabled><option value="none">No access</option><option value="view">View</option><option value="edit">Edit</option></select></div>
+              <div class="ra-screen"><div><label for="ra-pay"><b>Pay</b><small>View: pay bands and fairness totals. Manage: band maintenance and named comparisons.</small></label></div><select id="ra-pay" disabled><option value="none">No access</option><option value="view">View</option><option value="manage">Manage</option></select></div>
+              <div class="ra-screen"><div><label for="ra-plan"><b>Plan / Decision Room</b><small>Explore the year ahead and save your own plans.</small></label></div><select id="ra-plan" disabled><option value="none">No access</option><option value="use">Use</option></select></div>
+              <p class="ra-small ra-muted">Approval, export and delete permissions are separate choices when the screen supports them. A tab never silently adds them.</p>
+              <details><summary>Existing abilities &amp; broader access</summary><p>The existing Demo ability remains in place. The full editor must inventory its backend permissions, including payroll creation and workflow actions, rather than describe the entire role as read-only. A removal means “this role stops contributing access”; another source can still allow it.</p></details>
+              <div class="ra-footer ra-row"><span id="ra-draft" class="ra-muted" aria-live="polite">Saved role · version 1</span><div><button id="ra-cancel" hidden class="cursor-interaction">Discard draft</button> <button id="ra-review-button" disabled class="ra-primary cursor-interaction">Review changes</button></div></div>
+            </div>
+            <div id="ra-review" class="ra-panel ra-review" hidden>
+              <h2>Review role changes</h2><div id="ra-diff"></div>
+              <p>All <b>3 assigned users</b> in this example receive the updated role. Access from other roles or direct permissions stays in place.</p>
+              <label for="ra-reason">Reason for change</label><input id="ra-reason" placeholder="e.g. Expand the guided People demo" style="width:100%;margin:8px 0">
+              <div class="ra-row"><button id="ra-back-edit" class="cursor-interaction">Back to editing</button><button id="ra-apply" class="ra-primary cursor-interaction">Save &amp; update 3 users · simulate</button></div>
+              <p id="ra-validation" role="alert" class="ra-warn" hidden></p>
+            </div>
+          </div>
+          <div>
+            <div class="ra-panel">
+              <h2>Preview the People menu</h2><label for="ra-person" class="ra-small">Example user</label><select id="ra-person" style="width:100%;margin:8px 0"><option value="a">Demo A · assigned</option><option value="b">Demo B · assigned + Pay viewer</option><option value="legacy">Legacy equivalent · unassigned</option></select>
+              <div class="ra-small ra-muted" id="ra-preview-mode">Saved access</div><div class="ra-menu" id="ra-menu"></div><div id="ra-access-reasons" class="ra-small"></div>
+              <p class="ra-small ra-muted">Preview is read-only. Parent menus, backend access, company record rules and feature availability must all permit the screen.</p>
+            </div>
+            <div class="ra-panel"><h2>Availability</h2><label><input id="ra-feature" type="checkbox" checked> Company has People Plan enabled</label><p id="ra-feature-note" class="ra-small ra-muted">Feature settings remain separate from role permissions.</p><p class="ra-small ra-muted">Prototype switch only; it never changes company configuration.</p></div>
+            <div class="ra-panel"><h2>Save result</h2><p id="ra-status" aria-live="polite">No production access has been changed.</p><p class="ra-small ra-muted">Future implementation: access changes take effect on the next server request; open menus refresh after an access-version event.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="ra-impact" role="tabpanel" aria-labelledby="ra-tab-impact" hidden>
+        <div class="ra-panel"><h2>Every assigned user follows the role</h2><p class="ra-muted">Illustrative users, not a live user export. Edit the role to see additions and removals below.</p><div class="ra-table"><table><thead><tr><th>User</th><th>Role assignment</th><th>Saved People tabs</th><th>After draft is saved</th><th>Other access kept</th></tr></thead><tbody id="ra-impact-rows"></tbody></table></div></div>
+        <div class="ra-panel"><h2>Assigned access is different from equivalent access</h2><p>The current count of 185 comes from users who have every permission in the Demo bundle. It does not prove that all 185 were explicitly assigned Demo. Expanding the bundle can make people disappear from that count without changing their login permissions.</p><p>The new People view will show <b>Assigned permanently</b>, <b>Temporary grant</b> and <b>Equivalent permissions</b> separately. Only actual assignments follow role changes automatically.</p><p>Migration uses grant history where reliable. Existing group memberships with unknown provenance stay as legacy access, with a reconciliation list for the administrator. No bulk role assignment is inferred from the holder count alone.</p></div>
+        <div class="ra-panel"><h2>Removal example</h2><p>Enable Pay → View and save. Then edit again and choose Pay → No access. Demo A and Demo C lose the Pay contribution from Demo; Demo B keeps Pay through a separate Pay viewer assignment. Expiring a temporary grant follows the same rule.</p></div>
+      </section>
+
+      <section id="ra-gaps" role="tabpanel" aria-labelledby="ra-tab-gaps" hidden>
+        <div class="ra-panel"><h2>Verified gaps and proposed fixes</h2><p class="ra-muted">Live Chrome verified the read-only form and misleading edit entry point. The remaining findings come from repository code; failure scenarios still need implementation tests.</p>
+          <details open><summary>1 · “Edit roles” opens a read-only form</summary><p><b>Evidence:</b> the live QA Test session can see “Edit the list of roles”, but the Demo form has no editable abilities or Edit control. The board permits registered application managers; profile write ACLs cover only Access team.</p><p><b>Fix:</b> a dedicated editor behind one server-authorized management policy. Show “View role” and a clear reason to readers; show Edit, Save and Discard to authorized editors. Route raw form writes through the same guarded service without globally broadening ACLs.</p><p class="ra-small">Sources: biz_access/security/ir.model.access.csv; pb_access_facade.py::_require_manage; pb_vendor_access/models/vendor_common.py; access_board.xml.</p></details>
+          <details><summary>2 · Editing a role does not update existing users</summary><p><b>Evidence:</b> ability edits recompute the role’s group bundle. Grant adds groups to a user at that moment; no profile write synchronizes assignments.</p><p><b>Fix:</b> persist user–role assignments. Publishing a role version reconciles every active assignment automatically, including additions and removals. Never require regranting the role.</p><p class="ra-small">Sources: pb_role_profile.py::_compute_group_ids; pb_access_facade.py::grant / grant_many.</p></details>
+          <details><summary>3 · Holder counts confuse assignment with matching permissions</summary><p><b>Evidence:</b> _holder_users intersects permission-group members. A bundle change changes who “holds” the role even before any user permissions change.</p><p><b>Fix:</b> stable assigned-user counts, separate effective-access matches, and explicit assignment origin. Review the 185 legacy matches before migrating them.</p><p class="ra-small">Source: pb_role_profile.py::_holder_users.</p></details>
+          <details><summary>4 · Screens manages main entries, not all People tabs</summary><p><b>Evidence:</b> Screens lists parent sidebar items; child entries appear as non-editable labels. People’s Records, Pay and Plan tabs are declared by individual modules and have their own gates.</p><p><b>Fix:</b> one navigable screen catalogue: People → Employees → Contracts; People → Records; People → Pay; People → Plan. Expose supported actions per surface and preview the whole path.</p><p class="ra-small">Sources: access_board.xml; pb_access_facade.py::screens_board; pb_people_hub / pb_records / pb_pay palette registrations.</p></details>
+          <details><summary>5 · Showing a menu does not grant backend access</summary><p><b>Evidence:</b> adding Demo to People’s sidebar gate does not satisfy Records’ _may_read check. Giving HR or Payroll Officer just to show Records also grants broader access.</p><p><b>Fix:</b> dedicated Records viewing/editing capabilities, enforced in the facade and model ACLs. Existing HR and payroll roles retain their current entitlements. The catalogue reports any permission that also opens other screens.</p><p class="ra-small">Sources: pb_records/models/pb_records_desk.py::_may_read / _may_write; pb_records/security/ir.model.access.csv.</p></details>
+          <details><summary>6 · Overlapping grants can lose access when a loan ends</summary><p><b>Evidence:</b> delegation snapshots only newly added groups; _end removes those direct groups without testing all remaining grant sources. A second loan can add nothing because the first already supplied the group.</p><p><b>Fix:</b> record entitlement sources even when no membership was added. Recompute the union of active roles, direct grants and loans on expiry/revocation. Snapshot loans to their approved role version; an edit never silently expands a loan. Narrowing a role caps old loans immediately.</p><p class="ra-small">Source: pb_access_delegation.py::_activate_one / _end.</p></details>
+          <details><summary>7 · Other open sessions can show yesterday’s permissions</summary><p><b>Evidence:</b> hub gates and user group checks are cached for a page load. Sidebar writes refresh the editor’s rail, not every affected user’s open session.</p><p><b>Fix:</b> access revision per user, server cache invalidation and an after-commit event to affected sessions. Refetch tabs, palette and menus; close a revoked screen with an explanation. Backend checks always use current authorization.</p><p class="ra-small">Sources: pb_hub/static/src/js/hub_gates.js; access_board.js::afterScreenWrite.</p></details>
+          <details><summary>8 · Preview can overstate access when a gate cannot resolve</summary><p><b>Evidence:</b> resolveLensAccess marks failed group lookups true; a failed probe keeps the earlier allowed value. surface_access treats all-unresolved groups as open. These are UI/preview gaps; backend facades still enforce access.</p><p><b>Fix:</b> distinguish Allowed, Denied, Unavailable and Unknown. Unknown never presents an enabled door. Use server-owned surface definitions and backend checks rather than treating client-supplied group lists as authorization.</p><p class="ra-small">Sources: hub_gates.js::resolveLensAccess; pb_access_facade.py::surface_access.</p></details>
+          <details><summary>9 · Removing a role may leave older access paths in place</summary><p><b>Evidence:</b> sidebar permissions and role gates are combined with OR. Older groups can still open a door after its role gate is removed.</p><p><b>Fix:</b> show “Access also comes from…” and distinguish a role contribution from effective user access. Convert legacy gates only after an impact review; never clear unknown permissions automatically.</p><p class="ra-small">Source: biz_access/models/pb_sidebar_item_ext.py::_state_for.</p></details>
+          <details><summary>10 · Upgrades can reapply Demo wiring</summary><p><b>Evidence:</b> pb_demo rewires model access and adds Demo to gated sidebar items on upgrades. Some sidebar data also replaces group lists.</p><p><b>Fix:</b> separate shipped defaults from administrator overrides. Apply defaults only where no override exists; explicit migrations show a diff. Ensure an upgrade never silently broadens a customized role or restores a removed gate.</p><p class="ra-small">Sources: pb_demo/models/demo_sidebar_access.py; pb_demo/hooks.py::post_init_demo; pb_sidebar data.</p></details>
+          <details><summary>11 · Raw role writes bypass lifecycle checks</summary><p><b>Evidence:</b> the board’s archive method checks holders and loans, but the raw form exposes Active. The model has no equivalent lifecycle guard or role-version history.</p><p><b>Fix:</b> all edit, archive, ability-change and API paths go through the same validation. Archive blocks while assignments or grants remain; provide an explicit reviewed revoke-and-archive flow. Audit before/after versions and user outcomes.</p><p class="ra-small">Sources: pb_access_facade.py::archive_role; biz_access/views/access_views.xml; pb_role_profile.py.</p></details>
+          <details><summary>12 · Feature entitlement and data scope are separate blockers</summary><p><b>Evidence:</b> People Plan has a feature gate; models enforce record rules and company scope beyond menu membership.</p><p><b>Fix:</b> show the actual reason a screen is unavailable: module absent, company feature off, missing ability, parent inaccessible or data scope. Role editing cannot expand company access or enable a commercial feature implicitly.</p><p class="ra-small">Sources: pb_people_hub/static/src/js/people_hub.js; pb_hub/static/src/js/hub_gates.js.</p></details>
+          <details><summary>13 · No combined change review or conflict protection</summary><p><b>Evidence:</b> menu gate clicks save immediately; the role form has no all-user impact diff or revision check.</p><p><b>Fix:</b> draft → before/after review → one atomic publish. Require a reason; compare the role revision under a lock and reject stale edits. High-impact abilities show their actual actions. Reverting a version is a new audited change with a fresh impact calculation.</p><p class="ra-small">Sources: access_board.js::_writeGates; biz_access/views/access_views.xml.</p></details>
+        </div>
+      </section>
+
+      <section id="ra-delivery" role="tabpanel" aria-labelledby="ra-tab-delivery" hidden>
+        <div class="ra-panel"><h2>One publish operation</h2><div class="ra-flow"><div>1. Authorize the editor and verify the expected role revision.</div><div>2. Validate capabilities, forbidden administrator closure, affected surfaces, company scope and active grants.</div><div>3. Lock affected role/assignment records in a stable order; compute before/after access for every assigned user.</div><div>4. Write the role version, entitlement sources, group projection and audit entry in one database transaction.</div><div>5. Commit, invalidate authorization caches, then notify affected sessions to refresh. Report the actual users changed and access retained from other sources.</div></div><p class="ra-small ra-muted">If any permission write fails, roll back the entire change. Large cohorts need a staged version with an atomic activation boundary; never claim success while only part of the cohort is updated.</p></div>
+        <div class="ra-panel"><h2>Proposed data model</h2><div class="ra-table"><table><thead><tr><th>Record</th><th>Responsibility</th></tr></thead><tbody><tr><td>Role + immutable role version</td><td>Stable identity, named abilities, version, actor, timestamp, reason and before/after values.</td></tr><tr><td>User–role assignment</td><td>User, role, status, permanent/temporary source, effective dates and database/company scope. Survives role edits.</td></tr><tr><td>Entitlement source</td><td>Tracks each role, direct permission, baseline or delegation contribution independently, including duplicate contributions.</td></tr><tr><td>Surface / capability catalogue</td><td>Server-owned hierarchy of menus, tabs and actions; backend requirements and feature/module availability.</td></tr><tr><td>Access revision + change audit</td><td>Per-user refresh revision; resulting additions, removals, retained access, skipped inactive users and migration decisions.</td></tr></tbody></table></div><p><b>Effective permissions = baseline + explicit direct grants + all active role assignments + valid temporary grants</b>, followed by company and record-rule restrictions. Odoo groups remain the enforcement projection; inferred membership is never the assignment source of truth.</p><p>Observe writes to user/group membership from provisioning, imports and administration. Preserve unknown legacy sources and flag drift; do not delete them. The reconciler marks its own writes so they cannot be mistaken for new direct grants. Reconcile implied-group closure without dropping permissions needed by another source.</p><p>Odoo group membership is database-wide. Company-scoped assignments need corresponding server capability checks and record rules; a company field on an assignment cannot enforce that scope by itself. Preserve allowed companies and existing global restrictions.</p></div>
+        <div class="ra-panel"><h2>Rollout order</h2><ol><li>Fix editor authorization and expose clear edit/view modes; deliver the screen catalogue and draft preview.</li><li>Inventory current grants and group membership. Seed confirmed assignments from reliable active history; review ambiguous matches. Run reconciliation in shadow mode and compare with current access.</li><li>Implement source tracking, atomic role publishing, safe removals and delegation expiry. Route all writers through the same model/service guards.</li><li>Add narrow Records capabilities, shared gate definitions, feature explanations, live refresh, audit and upgrade-preserved overrides.</li><li>Exercise on a database clone, then deploy the latest combined repository state to every agreed environment/database after the deployment inventory is verified.</li></ol><p class="ra-small ra-muted">This is a design deliverable. Runtime implementation, data migration and application deployment are outside this turn’s requested scope.</p></div>
+        <div class="ra-panel"><h2>Acceptance checks before implementation is complete</h2><ul><li>An authorized application manager edits Demo; a reader sees a reason and cannot write through UI, RPC or the raw form.</li><li>Adding/removing an ability updates every active assigned user without regranting; inactive assignments follow the current version on reactivation.</li><li>Counts remain stable across bundle edits. A user with equivalent permissions is not silently assigned the role.</li><li>Shared roles, two overlapping loans, loan-to-permanent conversion, implied permissions and direct grants retain valid access when another source ends.</li><li>Menus, tabs, palette, preview and backend agree. Direct URLs and exports enforce current permissions and company scope.</li><li>Missing groups/probes show Unknown or Unavailable; a feature switch cannot widen data access.</li><li>Concurrent edits reject stale versions; injected failure rolls back role, all users and audit together. Version reversion gets a new audit entry.</li><li>Module upgrades preserve overrides; seeded defaults cannot silently restore removed access.</li><li>Chrome end-to-end checks cover editor, Demo login and a second already-open session. Clean up only screenshots/PNGs created by those tests.</li><li>Commit scoped changes, re-check concurrent branch work, deploy combined state and report all target databases and deployed test results.</li></ul></div>
+      </section>
+      <p class="ra-small ra-muted">Prototype controls use local example data. No production roles, users, permissions or feature settings are modified.</p>
+    </main>
+  </div>
+  <script>
+    (() => {
+      const root = document.getElementById('role-access-design');
+      const find = id => root.querySelector('#ra-' + id);
+      const keys = ['records','pay','plan'];
+      const labels = {records:'Records',pay:'Pay',plan:'Plan / Decision Room'};
+      const level = {none:'No access',view:'View',edit:'Edit',manage:'Manage',use:'Use'};
+      let saved = {records:'none',pay:'none',plan:'none'};
+      let draft = {...saved};
+      let editing = false;
+      let version = 1;
+      function dirty() { return keys.some(k=>saved[k]!==draft[k]); }
+      function effective(person, config) {
+        const assigned = person !== 'legacy';
+        const menu = ['Employees','Contracts'];
+        if (assigned && config.records !== 'none') menu.push('Records');
+        if ((assigned && config.pay !== 'none') || person === 'b') menu.push('Pay');
+        if (assigned && config.plan !== 'none' && find('feature').checked) menu.push('Plan');
+        return menu;
+      }
+      function render() {
+        keys.forEach(k=>{find(k).disabled=!editing;find(k).value=draft[k];});
+        find('edit').hidden=editing;
+        find('cancel').hidden=!editing;
+        find('review-button').disabled=!editing || !dirty();
+        find('draft').textContent=editing ? (dirty()?'Unsaved draft · assigned users update together':'Editing · no changes yet') : 'Saved role · version '+version;
+        const person=find('person').value;
+        const config=editing?draft:saved;
+        find('preview-mode').textContent=editing?'Preview after this draft is saved':'Saved access';
+        find('menu').replaceChildren(...effective(person,config).map(t=>{const n=document.createElement('span');n.textContent=t;return n;}));
+        const reasons=[];
+        if(person==='legacy') reasons.push('Demo-equivalent legacy permission only. No assignment: role edits do not add Records, Pay or Plan.');
+        else {
+          keys.forEach(k=>{if(config[k]!=='none')reasons.push(labels[k]+': '+level[config[k]]+' from Demo assignment.');});
+          if(person==='b')reasons.push('Pay also comes from a separate Pay viewer role; removing it from Demo keeps View access.');
+          if(!reasons.length) reasons.push('Employees and Contracts from the existing Demo ability.');
+        }
+        if(config.plan!=='none'&&!find('feature').checked&&person!=='legacy')reasons.push('Plan unavailable: company feature disabled. Role permission is retained.');
+        find('access-reasons').textContent=reasons.join(' ');
+        find('feature-note').textContent=find('feature').checked?'Feature settings remain separate from role permissions.':'Plan stays unavailable even when the role grants it.';
+        find('impact-rows').replaceChildren(...[
+          ['a','Demo A','Permanent','None'],['b','Demo B','Permanent','Pay viewer → View'],['c','Demo C','Permanent','None'],['legacy','Legacy equivalent','Unassigned','Existing legacy Demo permission']
+        ].map(([id,name,assignment,other])=>{const tr=document.createElement('tr');[name,assignment,effective(id,saved).join(', '),effective(id,draft).join(', '),other].forEach(t=>{const td=document.createElement('td');td.textContent=t;tr.append(td);});return tr;}));
+      }
+      root.querySelectorAll('[role=tab]').forEach(tab=>tab.addEventListener('click',()=>{
+        root.querySelectorAll('[role=tab]').forEach(t=>t.setAttribute('aria-selected',String(t===tab)));
+        root.querySelectorAll('[role=tabpanel]').forEach(p=>p.hidden=p.id!==tab.getAttribute('aria-controls'));
+      }));
+      find('edit').addEventListener('click',()=>{editing=true;draft={...saved};render();});
+      find('cancel').addEventListener('click',()=>{editing=false;draft={...saved};find('review').hidden=true;render();});
+      keys.forEach(k=>find(k).addEventListener('change',()=>{draft[k]=find(k).value;find('review').hidden=true;render();}));
+      ['person','feature'].forEach(k=>find(k).addEventListener('change',render));
+      find('review-button').addEventListener('click',()=>{
+        find('diff').replaceChildren(...keys.filter(k=>saved[k]!==draft[k]).map(k=>{const p=document.createElement('p');p.textContent=labels[k]+': '+level[saved[k]]+' → '+level[draft[k]];return p;}));
+        find('validation').hidden=true;find('review').hidden=false;
+        find('review').scrollIntoView({block:'nearest',behavior:'auto'});
+      });
+      find('back-edit').addEventListener('click',()=>find('review').hidden=true);
+      find('apply').addEventListener('click',()=>{
+        if(!find('reason').value.trim()) {find('validation').hidden=false;find('validation').textContent='Enter a reason before publishing this example.';return;}
+        saved={...draft};editing=false;version++;find('review').hidden=true;
+        find('status').textContent='Simulation saved version '+version+'. All 3 assigned users reconciled together. Menus refreshed; other access retained. Production is unchanged.';
+        find('reason').value='';render();
+      });
+      render();
+    })();
+  </script>
+</div>

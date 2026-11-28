@@ -1,0 +1,8 @@
+/var/log/payobook-nightly-backup.log {
+    weekly
+    rotate 8
+    missingok
+    notifempty
+    compress
+    create 0640 root adm
+}

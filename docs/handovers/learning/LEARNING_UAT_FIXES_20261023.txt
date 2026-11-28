@@ -1,0 +1,62 @@
+Learning UAT remediation — 23 October 2026
+
+Application commit: d21d75637fef192a0d041f391140877f89135fa0
+Module: pb_training 19.0.1.11.1
+
+Changes
+- Correct the internal/outside course skill-grant domains. Replacing one mapping
+  preserves unrelated skill mappings; completion never downgrades a skill.
+- Legacy certificate backfill resolves duplicate course names using the employee's
+  successful test. Ambiguous records without a unique match remain unlinked.
+- Individual assignments cannot reuse a job-wide path named Assigned training.
+- Add regression coverage for these fixes, the probation completion gate and
+  manager approval through the actual approval engine.
+
+Deployment
+- Payobook19v2, shared /odoo/odoo-server/addons, latest combined branch 19.1 state.
+- Only pb_training differed from live content. All 154 custom module trees were
+  checked before and after deployment, preserving standard Odoo addons.
+- Upgraded installed pb_training in p0clone, payobook, payobook_template and rize.
+  Installed custom-module versions verified across all four databases.
+- Verified pg_dump backups plus filestore snapshots before upgrade.
+- Nonproduction backups: /odoo/backups/learning-uat-20261023T035013Z
+  Seven-day retention metadata, preserving latest usable backup.
+- Permanent Rize backup: /odoo/archives/rize-learning-uat-20261023T035013Z
+- Active scheduler rows restored exactly to their prior states.
+- Service downtime: 157 seconds. Login pages returned HTTP 200 for payobook.com,
+  rize.payobook.com and p0clone.payobook.com. ABM untouched.
+- Machine deployment receipt:
+  /tmp/learning-uat-fixes-20261023/receipt.json on Payobook19v2.
+
+Validation
+- Broad payobook rollback suite before the final two fixes: 481 tests,
+  475 passed, 4 failed, 2 skipped. Two failures corrected by this release.
+  Other failures assert active daily/report scheduler rows; both are disabled
+  in live configuration and were deliberately preserved.
+- Skips: help-module adjacency check with temporary staged addons path, and
+  manifest HTTP case prevented by the test database filter.
+- Focused deployed regression: 17/17 passed on p0clone and 17/17 on payobook.
+  Classes: TestProbationLink, TestT3Backfill, TestT12Grants, TestT4Decisions.
+- Local portal_lesson JavaScript suite: 19 assertions passed.
+- External mail delivery suppressed and test fixture transactions rolled back.
+- Deployed Chrome: Komal login and all 11 Learning tabs verified. On existing
+  private UAT course 294, DEMO Field safety at DEMO Basic saved successfully
+  and remained visible after closing/reopening the drawer.
+- Existing linked employee demo wallet displayed certificate badges and an
+  on-time streak. No employee history changed.
+- Authenticated payobook PDF checks: own record 200 application/pdf 366755 bytes;
+  course 27 certificate 200 application/pdf 165016 bytes; another employee's
+  record request denied with record_denied. Chrome itself blocks PDF navigation
+  with ERR_BLOCKED_BY_CLIENT, so browser PDF visual acceptance remains partial.
+
+Workbook
+- Same requested output overwritten in outputs/komal-learning-2026-10-23/.
+- 38 requirements: 22 Pass, 15 Partial, 0 Fail, 0 Not run, 1 Not available.
+- Added retest evidence, fixed stale login guidance for employee-dependent tests,
+  and revised procedures/comments. Original source workbook preserved.
+- Workbook contains requested login credentials and is intentionally not tracked
+  in Git. Client result/comment columns preserved.
+- Partial means an explicitly documented remainder, not a full end-to-end pass.
+  Remaining areas include live scheduler/mail delivery, physical device/calendar
+  testing, browser PDF opening, bilingual toggle and selected HR/Talent UI flows.
+- All temporary PNG previews and screenshots from this test run removed.

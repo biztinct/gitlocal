@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- NEWHIRE P8 H (owner decision 2026-11-26): the My Payobook page
+         builder for the HR manager role. A page builder who is not the
+         administrator changes the page of the company they are working in:
+         fields, headings, order, columns, colour and banner. Field settings
+         that apply to every company, the page for every company, history
+         restore and reset stay the administrator's (models/page_builder.py). -->
+    <record id="group_page_builder" model="res.groups">
+        <field name="name">My Payobook page builder</field>
+        <field name="comment">Change the My Payobook page of your own company: add, hide and order fields, headings and the banner.</field>
+    </record>
+    <record id="hr.group_hr_manager" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('group_page_builder'))]"/>
+    </record>
+</odoo>

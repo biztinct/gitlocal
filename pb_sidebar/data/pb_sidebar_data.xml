@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+
+    <!-- ================================================================
+         IA REDESIGN — CYCLE 5. THE RAIL CUTOVER.
+         ================================================================
+
+         The rail is FIVE sections and EIGHT items:
+
+           (overview)   Home
+           OPERATE      Pay Run · People · Workforce
+           UNDERSTAND   Insights · Compliance
+           GROW         Learn
+           (system)     Settings
+
+         Everything else on this rail was absorbed by one of those eight and is
+         RETIRED here: `active` false takes an item off the rail, and the record
+         moves into the 900+ band because a deactivated item still OCCUPIES its
+         sequence for W8's uniqueness rule (W18) — the moment an admin re-enables
+         one, a duplicate would matter, and after this cutover almost every
+         retired item's old number belongs to something else.
+
+         NOTHING IS DELETED, and every retired item still points at a live
+         action. W76 qualified "retire, never delete": the rule is only worth
+         anything while re-enabling the item would still WORK. It does — this
+         cycle removed no cockpit and no client action, so every one of these
+         records is one `active` flag away from coming back, and
+         `pb_sidebar/tests/test_ia_c5.py` asserts each one still resolves.
+
+         WHERE THE EIGHT ITEMS LIVE. Not here. Each hub ships its own
+         `pb.sidebar.item` in its own module (`pb_home_hub/data/pb_sidebar.xml`
+         and friends), which is the convention `pb_mission`, `pb_audit`,
+         `pb_tenants`, `pb_bank_ocr` and `pb_young_worker` already follow. The
+         alternative — declaring all eight here — would put a rail entry on a
+         database whose hub module is not installed, pointing at an action that
+         does not resolve: an admin's click answered with nothing (W79). The
+         SECTIONS stay here, because a section belongs to the rail rather than
+         to any one surface.
+         ================================================================ -->
+
+    <!-- ============ Sections ============
+         Five live sections; the other five are retired with their items. The
+         `technical_key` moves with the name where the meaning moved, because a
+         section keyed `payrun` and labelled OPERATE is a rail that reads one way
+         and reports another — and `pb_demo.post_init_demo` is the one consumer
+         that reads these keys (its `_LOCK_SECTION_KEYS`), so the remap is
+         accounted for there in the same cycle.
+
+         Section sequences are unique too: two sections on one number order
+         themselves by id, i.e. by whichever module happened to install first,
+         which is W70's defect one level up. GROW is 40 and lives in `pb_learn`
+         (its data file is GENERATED — regenerate with
+         `docs/tutorial_poc/author/tools/gen_learn_data.py`, never hand-edit),
+         which is why nothing here claims 40. -->
+    <record id="sec_overview" model="pb.sidebar.section">
+        <field name="name">Overview</field><field name="technical_key">overview</field>
+        <field name="sequence">10</field><field name="show_label" eval="False"/>
+    </record>
+    <!-- WAS "Pay Run" / `payrun`. The section that used to hold ten pay-run
+         items now holds the three missions you spend a working day inside. -->
+    <record id="sec_payrun" model="pb.sidebar.section">
+        <field name="name">Operate</field><field name="technical_key">operate</field>
+        <field name="sequence">20</field><field name="show_label" eval="True"/>
+    </record>
+    <!-- WAS "Insights" / `insights`. Insights and Compliance are the two
+         missions you open to find something out rather than to change it. -->
+    <record id="sec_insights" model="pb.sidebar.section">
+        <field name="name">Understand</field><field name="technical_key">understand</field>
+        <field name="sequence">30</field><field name="show_label" eval="True"/>
+    </record>
+    <!-- WAS "Admin" / `admin`, six items. One now: the Settings cog's hub, which
+         is the one door to every configuration surface in the product (Cycle 3).
+         `show_label` is false, as OVERVIEW's is: a one-item block does not need
+         a heading, and the rail's top and bottom are the two places a heading
+         would be noise. -->
+    <record id="sec_admin" model="pb.sidebar.section">
+        <field name="name">System</field><field name="technical_key">system</field>
+        <field name="sequence">50</field><field name="show_label" eval="False"/>
+    </record>
+
+    <!-- ==== retired sections. Each is emptied by the retirements below, and a
+         section with no visible items is already skipped by `get_sidebar_data`;
+         deactivating them as well is what makes the rail's shape a fact in the
+         data rather than a side effect of a filter. Their sequences move into
+         the 900 band for the same reason their items' do. -->
+    <record id="sec_setup" model="pb.sidebar.section">
+        <field name="name">Setup</field><field name="technical_key">setup</field>
+        <field name="sequence">925</field><field name="active" eval="False"/>
+    </record>
+    <record id="sec_people" model="pb.sidebar.section">
+        <field name="name">People</field><field name="technical_key">people</field>
+        <field name="sequence">930</field><field name="active" eval="False"/>
+    </record>
+    <record id="sec_workforce" model="pb.sidebar.section">
+        <field name="name">Workforce</field><field name="technical_key">workforce</field>
+        <field name="sequence">935</field><field name="active" eval="False"/>
+    </record>
+    <record id="sec_compliance" model="pb.sidebar.section">
+        <field name="name">Compliance</field><field name="technical_key">compliance</field>
+        <field name="sequence">945</field><field name="active" eval="False"/>
+    </record>
+    <record id="sec_planning" model="pb.sidebar.section">
+        <field name="name">Planning</field><field name="technical_key">planning</field>
+        <field name="sequence">955</field><field name="active" eval="False"/>
+    </record>
+
+    <!-- ============ Overview · retired ============
+         Absorbed by the HOME hub (`pb_home_hub`), which mounts both cockpits as
+         lenses. Both client actions still work; both tags are claimed by the
+         Home rail item's match list, so a bookmark still lights the right entry.
+
+         `item_approvals` also loses its `match_models` claim on
+         `hr.payslip.run`. That was one of the two double-claims Cycle 1 found
+         and pinned rather than fixed (the rail's active-item index is FLAT and
+         last-writer-wins, W71): Pay Runs claimed the same model from a later
+         section and silently won. The model now belongs to the Pay Run hub
+         alone, which is the item a user opening a payslip run expects. -->
+    <record id="item_dashboard" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_overview"/><field name="name">Dashboard</field>
+        <field name="icon">home</field><field name="sequence">900</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid">pb_dashboard.action_pb_dashboard</field>
+        <field name="action_tag">pb_dashboard</field>
+    </record>
+    <record id="item_approvals" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_overview"/><field name="name">Approvals</field>
+        <field name="icon">clipboard-check</field><field name="sequence">901</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_approval</field>
+        <field name="match_models"></field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_officer'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_final_approver'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+
+    <!-- ============ Operate · retired pay-run items ============
+         Absorbed by the PAY RUN hub (`pb_payhub`, Cycle 2), which mounts all
+         eight cockpits as lenses. Every client action survives untouched. -->
+    <record id="item_run_payroll" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_payrun"/><field name="name">Run Payroll</field>
+        <field name="icon">zap</field><field name="sequence">910</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid">pb_payrun_wizard.action_pb_payrun_wizard</field>
+        <field name="action_tag">pb_payrun_wizard</field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_officer'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+    <record id="item_pay_runs" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_payrun"/><field name="name">Pay Runs</field>
+        <field name="icon">calendar</field><field name="sequence">911</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid">pb_payruns.action_pb_payruns_kanban</field>
+        <field name="action_tag"></field>
+        <field name="match_models">hr.payslip.run</field>
+        <field name="match_action_tags"></field>
+    </record>
+    <record id="item_payslips" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_payrun"/><field name="name">Payslips</field>
+        <field name="icon">receipt</field><field name="sequence">912</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid">pb_payslip_review.action_pb_payslip_review</field>
+        <field name="action_tag">pb_payslip_review</field>
+        <field name="match_models">hr.payslip</field>
+    </record>
+    <record id="item_import" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_payrun"/><field name="name">Import Data</field>
+        <field name="icon">download</field><field name="sequence">913</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_import</field>
+        <!-- IA audit A3 (Cycle 1): `hr.integration.connector` used to be claimed
+             HERE as well as by `item_integrations`, and the rail's active-item
+             index is FLAT and last-writer-wins, so opening a connector lit up
+             the wrong entry. Both items are retired now and the model belongs to
+             the Settings hub; the claim below is the one Import really owns. -->
+        <field name="match_models">hr.payroll.import.batch</field>
+        <field name="match_action_tags">pb_import</field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_officer'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_integration_user'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+    <!-- Payroll Report. RELOCATED to this section by Workforce P1b (it is a
+         payroll surface that happened to live under Workforce); absorbed by the
+         INSIGHTS hub in Cycle 4, which mounts the re-skinned cockpit as its
+         fourth lens. Its tag is claimed by the Insights rail item. -->
+    <record id="item_wf_payroll_report" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_payrun"/><field name="name">Payroll Report</field>
+        <field name="icon">file-text</field><field name="sequence">914</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid">pb_hr_workforce.action_payroll_report_dashboard</field>
+        <field name="groups_id" eval="[(6, 0, [ref('om_hr_payroll.group_hr_payroll_user')])]"/>
+    </record>
+    <record id="item_full_final" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_payrun"/><field name="name">Full &amp; Final</field>
+        <field name="icon">file</field><field name="sequence">915</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_fullfinal</field>
+        <field name="match_action_xmlids">pb_hr_fullandfinal.action_full_and_final_employees</field>
+    </record>
+    <record id="item_proration" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_payrun"/><field name="name">Proration Audit</field>
+        <field name="icon">calculator</field><field name="sequence">916</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_proration</field>
+        <field name="match_action_xmlids">pb_hr_payroll_formula.action_payroll_proration_line</field>
+    </record>
+    <record id="item_retro" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_payrun"/><field name="name">Retro Adjustments</field>
+        <field name="icon">percent</field><field name="sequence">917</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_retro</field>
+        <field name="match_action_xmlids">pb_hr_payroll_formula.action_payroll_retro_adjustment</field>
+    </record>
+
+    <!-- ============ Setup · retired ============
+         Absorbed by the SETTINGS hub (`pb_settings`, Cycle 3), which is the one
+         door to every configuration surface in the product. Its rail item is
+         UNGATED and the hub hides the categories a persona cannot open, which is
+         a narrower and more honest answer than these four gates were: three of
+         them were pb_hr_payroll_base tiers over models whose ACL grants read to
+         a different group family entirely (W95). -->
+    <record id="item_formula" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_setup"/><field name="name">Formula Engine</field>
+        <field name="icon">calculator</field><field name="sequence">920</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_formula_studio</field>
+        <field name="match_models"></field>
+        <field name="match_action_tags"></field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_officer'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+    <record id="item_structures" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_setup"/><field name="name">Salary Structures</field>
+        <field name="icon">layers</field><field name="sequence">921</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_structures</field>
+        <field name="match_models"></field>
+        <field name="match_action_tags"></field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+    <record id="item_statutory" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_setup"/><field name="name">Statutory (Insurance &amp; Tax)</field>
+        <field name="icon">shield</field><field name="sequence">922</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_statutory</field>
+        <field name="match_models"></field>
+        <field name="match_action_tags"></field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+    <!-- The two sub-items under Statutory. Retired long before this cycle and
+         left on their own sequences: they are the only children of their parent,
+         so nothing can collide with them (W18 leaves non-colliding retirements
+         where they are). -->
+    <record id="item_insurance" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_setup"/><field name="parent_id" ref="item_statutory"/>
+        <field name="active" eval="False"/>
+        <field name="name">Insurance Policies</field><field name="icon">shield</field><field name="sequence">10</field>
+        <field name="action_xmlid">pb_hr_payroll_vietnam.action_vietnam_insurance_policy</field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+    <record id="item_tax" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_setup"/><field name="parent_id" ref="item_statutory"/>
+        <field name="active" eval="False"/>
+        <field name="name">Tax Tables</field><field name="icon">percent</field><field name="sequence">20</field>
+        <field name="action_xmlid">pb_hr_payroll_vietnam.action_vietnam_tax_table</field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+    <record id="item_integrations" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_setup"/><field name="name">Integrations</field>
+        <field name="icon">database</field><field name="sequence">923</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_integrations</field>
+        <field name="match_models"></field>
+        <field name="match_action_tags"></field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_integration_user'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+    <!-- Employee/Contract Mapping: retired in Cycle 1 (audit fix A1 — the data
+         file said `active` "False", the STRING, which Odoo coerces to True, so
+         the item the comment claimed was retired had been on the rail for
+         months). It now lives as a tab of the Formula Engine's Mapping canvas. -->
+    <record id="item_emp_mapping" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_setup"/><field name="name">Employee/Contract Mapping</field>
+        <field name="icon">database</field><field name="sequence">924</field>
+        <field name="action_xmlid">pb_hr_payroll_formula.action_payslip_import_mapping_wizard</field>
+        <field name="active" eval="False"/>
+    </record>
+
+    <!-- ============ People · retired ============
+         Absorbed by the PEOPLE hub (`pb_people_hub`), which mounts both cockpits
+         as lenses and adds a launcher for the Planning screens.
+
+         `item_employees` loses its `match_models` claim on `hr.contract` — the
+         second of Cycle 1's two pinned double-claims. Employees and Contracts
+         both claimed it and Contracts silently won by index order; the People
+         hub claims both models once. -->
+    <record id="item_employees" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_people"/><field name="name">Employees</field>
+        <field name="icon">users</field><field name="sequence">930</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_people</field>
+        <field name="match_models"></field>
+        <field name="match_action_tags"></field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_officer'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+    <record id="item_contracts" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_people"/><field name="name">Contracts</field>
+        <field name="icon">file</field><field name="sequence">931</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_contracts</field>
+        <field name="match_models"></field>
+        <field name="match_action_tags"></field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_base_officer'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+
+    <!-- ============ Understand · retired analytics items ============
+         Absorbed by the INSIGHTS hub (`pb_insights_hub`, Cycle 4), which mounts
+         all three cockpits plus the re-skinned Payroll Report as four lenses.
+
+         `item_analytics` also drops its `match_models` claim on
+         `hr.analytics.dashboard` / `payroll.analytics`. The first is the legacy
+         native form the Dashboard's two Analytics doors used to open and now do
+         not (Cycle 5); nothing in the product opens either model any more, and a
+         match dimension is a claim on a surface somebody can actually reach
+         (W71). -->
+    <record id="item_analytics" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_insights"/><field name="name">Insights</field>
+        <field name="icon">trending-up</field><field name="sequence">940</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_insights</field>
+        <field name="match_models"></field>
+        <field name="match_action_tags"></field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_analytics_user'),ref('pb_hr_payroll_base.group_payroll_analytics_manager'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_final_approver'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+    <record id="item_explorer" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_insights"/><field name="name">Explorer</field>
+        <field name="icon">compass</field><field name="sequence">941</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_explorer_cockpit</field>
+        <field name="match_action_tags"></field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_analytics_user'),ref('pb_hr_payroll_base.group_payroll_analytics_manager'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_final_approver'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+    <record id="item_workforce_insights" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_insights"/><field name="name">Workforce Analytics</field>
+        <field name="icon">users</field><field name="sequence">942</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid"></field>
+        <field name="action_tag">pb_workforce_insights</field>
+        <field name="match_action_tags"></field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_analytics_user'),ref('pb_hr_payroll_base.group_payroll_analytics_manager'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_final_approver'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+    <record id="item_reports" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_insights"/><field name="name">Reports</field>
+        <field name="active" eval="False"/>
+        <field name="icon">file-text</field><field name="sequence">943</field>
+        <field name="action_xmlid">payroll_analytics_approval.action_payroll_analytics_reports</field>
+        <field name="groups_id" eval="[(6,0,[ref('pb_hr_payroll_base.group_payroll_analytics_user'),ref('pb_hr_payroll_base.group_payroll_analytics_manager'),ref('pb_hr_payroll_base.group_payroll_base_manager'),ref('pb_hr_payroll_base.group_payroll_final_approver'),ref('pb_hr_payroll_base.group_payroll_super_admin')])]"/>
+    </record>
+
+    <!-- ============ Compliance · retired ============
+         Absorbed by the COMPLIANCE hub (`pb_compliance_hub`, Cycle 4). Bank
+         Verification, Young Workers (both declared in their own modules) and
+         Audit go with it. -->
+    <record id="item_govt_reports" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_compliance"/><field name="name">Government Reports</field>
+        <field name="icon">file-text</field><field name="sequence">950</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid">pb_govt_reports.action_pb_govt_reports</field>
+        <field name="action_tag">pb_govt_reports</field>
+    </record>
+
+    <!-- ============ Workforce · pre-existing retirements ============
+         The Workforce section's own history, unchanged by this cycle. P3a folded
+         its seven cockpits into Mission Control and parked them in the 900 band;
+         P7 DELETED the four Gen-0 surfaces outright and dropped their rail rows
+         in `pb_hr_workforce/migrations/19.0.4.14.0/post-migrate.py`, because a
+         retired item pointing at a missing action is not a reversible decision
+         but a button an admin can re-enable into nothing (W76).
+
+         Cycle 5 moves the one LIVE item out of this section — `pb_mission`'s
+         Mission Control record, which becomes OPERATE > Workforce and is edited
+         in its own module's data file — and retires the section itself. The two
+         records below stay exactly where they were. -->
+    <record id="item_wf_roster" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_workforce"/><field name="name">Schedule</field>
+        <field name="icon">calendar</field><field name="sequence">907</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid">pb_schedule.action_pb_schedule</field>
+        <field name="action_tag">pb_schedule</field>
+        <field name="match_action_tags">pb_schedule</field>
+        <field name="groups_id" eval="[(6, 0, [ref('hr_attendance.group_hr_attendance_officer')])]"/>
+    </record>
+    <record id="item_wf_templates" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_workforce"/><field name="name">Shift Templates</field>
+        <field name="icon">layers</field><field name="sequence">905</field>
+        <field name="action_xmlid">pb_hr_workforce.action_shift_template</field>
+        <field name="active" eval="False"/>
+    </record>
+
+    <!-- ============ Planning · retired ============
+         Absorbed by the PEOPLE hub's PLAN lens, which is a LAUNCHER and nothing
+         more: the owner's ruling for this programme is that Workforce Planning
+         gets a minimal menu change and no product change. All seven actions open
+         exactly the screens they opened from this section, unmodified — the Plan
+         lens is a card grid over these same seven xmlids. -->
+    <record id="item_wfp_dashboard" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_planning"/><field name="name">Planning Dashboard</field>
+        <field name="icon">zap</field><field name="sequence">960</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid">pb_hr_workforce_planning.action_wfp_dashboard</field>
+        <field name="match_action_tags"></field>
+    </record>
+    <record id="item_wfp_scenarios" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_planning"/><field name="name">Planning Scenarios</field>
+        <field name="icon">compass</field><field name="sequence">961</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid">pb_hr_workforce_planning.action_wfp_scenario</field>
+    </record>
+    <record id="item_wfp_forecasts" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_planning"/><field name="name">Employee Forecasts</field>
+        <field name="icon">trending-up</field><field name="sequence">962</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid">pb_hr_workforce_planning.action_wfp_forecast</field>
+    </record>
+    <record id="item_wfp_grades" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_planning"/><field name="name">Pay Grades</field>
+        <field name="icon">layers</field><field name="sequence">963</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid">pb_hr_workforce_planning.action_wfp_grade</field>
+    </record>
+    <record id="item_wfp_merit" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_planning"/><field name="name">Merit Matrix</field>
+        <field name="icon">calculator</field><field name="sequence">964</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid">pb_hr_workforce_planning.action_wfp_merit_matrix</field>
+    </record>
+    <record id="item_wfp_cycles" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_planning"/><field name="name">Compensation Cycles</field>
+        <field name="icon">calendar</field><field name="sequence">965</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid">pb_hr_workforce_planning.action_wfp_cycle</field>
+    </record>
+    <record id="item_wfp_tags" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_planning"/><field name="name">Tag Components</field>
+        <field name="icon">database</field><field name="sequence">966</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid">pb_hr_workforce_planning.action_wfp_tagging_wizard</field>
+    </record>
+
+    <!-- ============ System · retired admin items ============
+         Absorbed by the SETTINGS hub, whose Roles, Companies & Tenants and
+         Navigation categories are `base.group_system` only — the same audience
+         these four items were gated to, asked once instead of four times.
+
+         Audit is the one that changes DOMAIN rather than just address: it moves
+         to the Compliance hub's fourth lens, because reading who changed what is
+         an officer's job and not a sysadmin's configuration screen. Its rail
+         record (declared in `pb_audit`) retires with the rest of this block. -->
+    <record id="item_roles" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_admin"/><field name="name">Roles &amp; Access</field>
+        <field name="icon">lock</field><field name="sequence">970</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid">base.action_res_users</field>
+        <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+    </record>
+    <record id="item_companies" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_admin"/><field name="name">Companies</field>
+        <field name="icon">building</field><field name="sequence">971</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid">base.action_res_company_form</field>
+        <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+    </record>
+    <record id="item_menu_cfg" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_admin"/><field name="name">Menu &amp; Sidebar</field>
+        <field name="icon">compass</field><field name="sequence">972</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid">pb_sidebar.action_pb_sidebar_item</field>
+        <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+    </record>
+    <record id="item_section_cfg" model="pb.sidebar.item">
+        <field name="section_id" ref="sec_admin"/><field name="name">Sidebar Sections</field>
+        <field name="icon">layers</field><field name="sequence">973</field>
+        <field name="active" eval="False"/>
+        <field name="action_xmlid">pb_sidebar.action_pb_sidebar_section</field>
+        <field name="groups_id" eval="[(4, ref('base.group_system'))]"/>
+    </record>
+
+</odoo>

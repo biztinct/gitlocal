@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- B4 — Legislation packs (Vietnam statutory reference).
+         noupdate: seeded once, then owned by the bureau (edits survive upgrades). -->
+    <data noupdate="1">
+
+        <!-- ============================================================
+             VN Statutory 2025 — the values currently baked into the
+             Payobook Vietnam configs. Published => the compliant baseline.
+             ============================================================ -->
+        <record id="legis_pack_vn_2025" model="hr.formula.legislation.pack">
+            <field name="name">Vietnam Statutory Parameters</field>
+            <field name="country_code">VN</field>
+            <field name="version">2025</field>
+            <field name="effective_date">2024-07-01</field>
+            <field name="authority">Decree 74/2024/ND-CP (base salary) · Resolution 954/2020/UBTVQH14 (PIT relief)</field>
+            <field name="state">published</field>
+            <field name="sequence">20</field>
+            <field name="description">Baseline social/health/unemployment insurance rates and caps, plus personal income-tax relief, in force through tax-year 2025.</field>
+        </record>
+
+        <record id="legis_2025_deductself" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_vn_2025"/>
+            <field name="code">DEDUCTSELF</field>
+            <field name="label">Personal Income-Tax Relief (self)</field>
+            <field name="value">11000000</field>
+            <field name="number_format">currency</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="legis_2025_deductdep" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_vn_2025"/>
+            <field name="code">DEDUCTDEP</field>
+            <field name="label">Dependent Tax Relief (each)</field>
+            <field name="value">4400000</field>
+            <field name="number_format">currency</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="legis_2025_eesi" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_vn_2025"/>
+            <field name="code">EESI</field>
+            <field name="label">Social Insurance — Employee</field>
+            <field name="value">0.08</field>
+            <field name="number_format">percentage</field>
+            <field name="sequence">30</field>
+        </record>
+        <record id="legis_2025_eehi" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_vn_2025"/>
+            <field name="code">EEHI</field>
+            <field name="label">Health Insurance — Employee</field>
+            <field name="value">0.015</field>
+            <field name="number_format">percentage</field>
+            <field name="sequence">40</field>
+        </record>
+        <record id="legis_2025_eeui" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_vn_2025"/>
+            <field name="code">EEUI</field>
+            <field name="label">Unemployment Insurance — Employee</field>
+            <field name="value">0.01</field>
+            <field name="number_format">percentage</field>
+            <field name="sequence">50</field>
+        </record>
+        <record id="legis_2025_ersi" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_vn_2025"/>
+            <field name="code">ERSI</field>
+            <field name="label">Social Insurance — Employer</field>
+            <field name="value">0.175</field>
+            <field name="number_format">percentage</field>
+            <field name="sequence">60</field>
+        </record>
+        <record id="legis_2025_erhi" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_vn_2025"/>
+            <field name="code">ERHI</field>
+            <field name="label">Health Insurance — Employer</field>
+            <field name="value">0.03</field>
+            <field name="number_format">percentage</field>
+            <field name="sequence">70</field>
+        </record>
+        <record id="legis_2025_erui" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_vn_2025"/>
+            <field name="code">ERUI</field>
+            <field name="label">Unemployment Insurance — Employer</field>
+            <field name="value">0.01</field>
+            <field name="number_format">percentage</field>
+            <field name="sequence">80</field>
+        </record>
+        <record id="legis_2025_caplo" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_vn_2025"/>
+            <field name="code">CAPLO</field>
+            <field name="label">Insurance Cap — SI/HI (20× base salary)</field>
+            <field name="value">46800000</field>
+            <field name="number_format">currency</field>
+            <field name="sequence">90</field>
+        </record>
+        <record id="legis_2025_caphi" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_vn_2025"/>
+            <field name="code">CAPHI</field>
+            <field name="label">Insurance Cap — UI (20× regional min wage)</field>
+            <field name="value">99200000</field>
+            <field name="number_format">currency</field>
+            <field name="sequence">100</field>
+        </record>
+
+        <!-- ============================================================
+             VN Personal Relief 2026 — the family-circumstance deduction
+             increase (self 11.0M -> 15.5M, dependent 4.4M -> 6.2M).
+             Draft => the pending rollout the bureau reviews then applies.
+             ============================================================ -->
+        <record id="legis_pack_vn_2026_relief" model="hr.formula.legislation.pack">
+            <field name="name">Vietnam Personal-Relief Increase</field>
+            <field name="country_code">VN</field>
+            <field name="version">2026</field>
+            <field name="effective_date">2026-01-01</field>
+            <field name="authority">Resolution on family-circumstance deductions (Standing Committee, 2025)</field>
+            <field name="state">draft</field>
+            <field name="sequence">10</field>
+            <field name="description">Raises the monthly personal income-tax relief for the taxpayer and each dependent, effective from tax-year 2026. Everything else is unchanged from the 2025 pack.</field>
+        </record>
+
+        <record id="legis_2026_deductself" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_vn_2026_relief"/>
+            <field name="code">DEDUCTSELF</field>
+            <field name="label">Personal Income-Tax Relief (self)</field>
+            <field name="value">15500000</field>
+            <field name="number_format">currency</field>
+            <field name="note">Up from ₫11,000,000</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="legis_2026_deductdep" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_vn_2026_relief"/>
+            <field name="code">DEDUCTDEP</field>
+            <field name="label">Dependent Tax Relief (each)</field>
+            <field name="value">6200000</field>
+            <field name="number_format">currency</field>
+            <field name="note">Up from ₫4,400,000</field>
+            <field name="sequence">20</field>
+        </record>
+
+    </data>
+</odoo>

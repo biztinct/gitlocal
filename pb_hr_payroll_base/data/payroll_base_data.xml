@@ -150,28 +150,10 @@
             <field name="appears_on_payslip">True</field>
         </record>
 
-        <!-- Demo Payroll Structures -->
-        <record id="payroll_structure_vietnam_demo" model="hr.payroll.structure">
-            <field name="name">Vietnam Standard Payroll</field>
-            <field name="code">VN_STD</field>
-            <field name="payroll_country_code">VN</field>
-            <field name="schedule_pay">monthly</field>
-            <field name="working_hours_per_day">8</field>
-            <field name="working_days_per_week">5</field>
-            <field name="working_days_per_month">22</field>
-            <field name="tax_calculation_method">standard</field>
-            <field name="social_security_enabled">True</field>
-            <field name="pension_enabled">True</field>
-            <field name="contract_type_ids" eval="[(4, ref('contract_type_vietnam_permanent_monthly'))]"/>
-            <field name="rule_ids" eval="[
-                (4, ref('salary_rule_basic_vietnam')),
-                (4, ref('salary_rule_housing_vietnam')),
-                (4, ref('salary_rule_transport_vietnam')),
-                (4, ref('salary_rule_social_security_vietnam')),
-                (4, ref('salary_rule_pit_vietnam')),
-                (4, ref('salary_rule_net_vietnam'))
-            ]"/>
-        </record>
+        <!-- Vietnam Standard Payroll Structure
+             NOTE: Not created here — already defined by om_hr_payroll.structure_vietnam (ID 2, 17 rules).
+             Use ref="om_hr_payroll.structure_vietnam" when referencing it from other modules.
+        -->
 
         <record id="payroll_structure_indonesia_demo" model="hr.payroll.structure">
             <field name="name">Indonesia Standard Payroll</field>

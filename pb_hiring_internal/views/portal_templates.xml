@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- WDGAP S6-B — Jobs inside the company, on the employee's own pages.
+       The pages reuse pb_me_portal's .pbme kit (tokens, buttons, empty state,
+       ess_hero, ess_icon); `.pbhi-*` is this module's thin layer
+       (static/src/scss/internal_jobs.scss). Every word a person sees is
+       here; the controller passes facts and keys only. Each sentence stays
+       on one line (one translation term). -->
+
+  <!-- ============================================================= -->
+  <!--  Breadcrumbs                                                   -->
+  <!-- ============================================================= -->
+  <template id="portal_breadcrumbs_pbhi" name="Jobs inside the company: breadcrumbs"
+            inherit_id="portal.portal_breadcrumbs" priority="38">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'pbhi_jobs'" class="breadcrumb-item active">Jobs inside the company</li>
+      <li t-if="page_name in ('pbhi_job', 'pbhi_moves')" class="breadcrumb-item"><a href="/my/jobs">Jobs inside the company</a></li>
+      <li t-if="page_name == 'pbhi_job' and role" class="breadcrumb-item active" t-out="role['title']"/>
+      <li t-if="page_name == 'pbhi_moves'" class="breadcrumb-item active">Moves in your team</li>
+    </xpath>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  The tile on the employee home                                 -->
+  <!-- ============================================================= -->
+  <!-- Shown only when the count is above zero: a role open to staff in
+       their company, or an application of their own. With nothing open
+       to staff (every role is "Outside candidates only" after install)
+       the home is exactly as it was. -->
+  <template id="portal_my_home_pbhi" name="Jobs inside the company: home tile"
+            inherit_id="portal.portal_my_home" customize_show="True" priority="48">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-if="pbme_home" t-call="portal.portal_docs_entry">
+        <t t-set="title">Jobs inside the company</t>
+        <t t-set="text">Open roles you can apply for</t>
+        <t t-set="url" t-value="'/my/jobs'"/>
+        <t t-set="placeholder_count" t-value="'pbhi_jobs_count'"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  Small parts                                                   -->
+  <!-- ============================================================= -->
+  <template id="pbhi_pill" name="Jobs inside the company: status pill">
+    <span t-att-class="'pbhi-pill pbhi-pill--' + (state or 'none')" role="status">
+      <i class="pbhi-pill-dot" aria-hidden="true"/>
+      <t t-if="state == 'received'">Received</t>
+      <t t-elif="state == 'considered'">Being considered</t>
+      <t t-elif="state == 'offer'">Offer being prepared</t>
+      <t t-elif="state == 'accepted'">Offer accepted</t>
+      <t t-elif="state == 'moved'">Moving to this role</t>
+      <t t-elif="state == 'closed'">Not this time</t>
+      <t t-elif="state == 'withdrawn'">Withdrawn</t>
+    </span>
+  </template>
+
+  <template id="pbhi_toast" name="Jobs inside the company: toast">
+    <div t-if="done" class="pbhi-toast" role="status" aria-live="polite">
+      <span class="pbhi-toast-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="16"/></t></span>
+      <span t-if="done == 'applied'">Applied. The hiring team for this role has it.</span>
+      <span t-else="">Withdrawn. Nobody else needs to be told.</span>
+    </div>
+  </template>
+
+  <template id="pbhi_alert" name="Jobs inside the company: error line">
+    <div t-if="error" class="pbhi-alert" role="alert">
+      <span class="pbhi-alert-ic" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="16"/></t></span>
+      <span t-if="error == 'closed'">This role is not open to staff any more.</span>
+      <span t-elif="error == 'twice'">You have already applied for this role.</span>
+      <span t-elif="error == 'size'">That file is bigger than 5 MB. Attach a smaller one, or leave it out.</span>
+      <span t-elif="error == 'type'">Attach a PDF or a Word document.</span>
+      <span t-elif="error == 'late'">This application can no longer be withdrawn here. Talk to the recruiter for this role.</span>
+      <span t-else="">That did not go through. Try again in a moment.</span>
+    </div>
+  </template>
+
+  <!-- The promise about the current manager (E4), said the same way on
+       every page that leads to applying. -->
+  <template id="pbhi_promise" name="Jobs inside the company: who is told">
+    <div class="pbhi-promise">
+      <span class="pbhi-promise-ic" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'shield'"/><t t-set="isz" t-value="16"/></t></span>
+      <span>Only the hiring team for the role sees your application. Your manager is told only when an offer is near.</span>
+    </div>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  /my/jobs                                                      -->
+  <!-- ============================================================= -->
+  <template id="portal_my_jobs" name="Jobs inside the company">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbhi">
+        <t t-call="pb_hiring_internal.pbhi_toast"/>
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Jobs inside the company</t>
+          <t t-set="hero_sub">Open roles you can apply for. Your record is your application, so there is nothing to type again.</t>
+        </t>
+
+        <t t-call="pb_hiring_internal.pbhi_promise"/>
+
+        <section class="pbhi-sec" aria-labelledby="pbhi-open-h">
+          <h2 class="pbhi-h2" id="pbhi-open-h">Open to staff<span class="pbhi-n" t-out="len(roles)"/></h2>
+          <div t-if="not roles" class="pbme-empty pbhi-empty">
+            <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'briefcase'"/><t t-set="isz" t-value="26"/></t></div>
+            <h3>No roles open to staff right now</h3>
+            <p>When the company opens a role to staff, it appears here.</p>
+          </div>
+          <ol t-else="" class="pbhi-roles">
+            <li t-foreach="roles" t-as="r" class="pbhi-role">
+              <a class="pbhi-role-in" t-att-href="r['url']">
+                <span class="pbhi-role-ic" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'briefcase'"/><t t-set="isz" t-value="18"/></t></span>
+                <span class="pbhi-role-body">
+                  <b class="pbhi-role-title" t-out="r['title']"/>
+                  <span class="pbhi-role-meta">
+                    <span t-if="r['department']" t-out="r['department']"/>
+                    <span t-if="r['location']" t-out="r['location']"/>
+                    <span t-if="r['opened_on']">Opened <t t-out="r['opened_on']" t-options="{'widget': 'date', 'format': 'd MMM'}"/></span>
+                  </span>
+                </span>
+                <span class="pbhi-role-side">
+                  <t t-if="r['state']" t-call="pb_hiring_internal.pbhi_pill"><t t-set="state" t-value="r['state']"/></t>
+                  <span t-else="" class="pbhi-go">See the role<t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'chevron-right'"/><t t-set="isz" t-value="16"/></t></span>
+                </span>
+              </a>
+            </li>
+          </ol>
+        </section>
+
+        <section t-if="mine" class="pbhi-sec" aria-labelledby="pbhi-mine-h">
+          <h2 class="pbhi-h2" id="pbhi-mine-h">Your applications<span class="pbhi-n" t-out="len(mine)"/></h2>
+          <ol class="pbhi-roles pbhi-roles--mine">
+            <li t-foreach="mine" t-as="a" class="pbhi-role">
+              <a class="pbhi-role-in" t-att-href="a['url']">
+                <span class="pbhi-role-body">
+                  <b class="pbhi-role-title" t-out="a['title']"/>
+                  <span class="pbhi-role-meta">
+                    <span t-if="a['department']" t-out="a['department']"/>
+                    <span>Applied <t t-out="a['applied_on']" t-options="{'widget': 'date', 'format': 'd MMM y'}"/></span>
+                  </span>
+                </span>
+                <span class="pbhi-role-side"><t t-call="pb_hiring_internal.pbhi_pill"><t t-set="state" t-value="a['state']"/></t></span>
+              </a>
+            </li>
+          </ol>
+        </section>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  /my/jobs/<id>                                                 -->
+  <!-- ============================================================= -->
+  <template id="portal_my_job" name="A role inside the company">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbhi">
+        <t t-call="pb_hiring_internal.pbhi_toast"/>
+        <div class="pbhi-job">
+          <article class="pbhi-card pbhi-advert">
+            <div class="pbhi-eyebrow">Open to staff</div>
+            <h1 class="pbhi-h1" t-out="role['title']"/>
+            <p class="pbhi-role-meta pbhi-role-meta--big">
+              <span t-if="role['department']" t-out="role['department']"/>
+              <span t-if="role['location']" t-out="role['location']"/>
+              <span t-if="role['opened_on']">Opened <t t-out="role['opened_on']" t-options="{'widget': 'date', 'format': 'd MMM y'}"/></span>
+            </p>
+            <div t-if="advert" class="pbhi-advert-body" t-out="advert"/>
+            <div t-elif="requirements" class="pbhi-advert-body"><p t-out="requirements"/></div>
+            <p t-else="" class="pbhi-muted">The hiring team has not written the advert yet. The recruiter for this role can tell you more.</p>
+          </article>
+
+          <aside class="pbhi-side">
+            <div t-if="application" class="pbhi-card pbhi-status">
+              <h2 class="pbhi-h2">Your application</h2>
+              <t t-call="pb_hiring_internal.pbhi_pill"><t t-set="state" t-value="application['state']"/></t>
+              <p class="pbhi-muted">Applied <t t-out="application['applied_on']" t-options="{'widget': 'date', 'format': 'd MMM y'}"/></p>
+              <p t-if="application['state'] == 'received'" class="pbhi-say">The hiring team has your application and will look at it soon.</p>
+              <p t-elif="application['state'] == 'considered'" class="pbhi-say">The hiring team is looking at your application. The recruiter will be in touch about next steps.</p>
+              <p t-elif="application['state'] == 'offer'" class="pbhi-say">An offer is being prepared. Your manager has now been told, as promised.</p>
+              <p t-elif="application['state'] == 'accepted'" class="pbhi-say">You accepted the offer. HR will arrange the move with you and your manager.</p>
+              <p t-elif="application['state'] == 'moved'" class="pbhi-say">You are moving to this role. HR changes your job on your record.</p>
+              <p t-elif="application['state'] == 'closed'" class="pbhi-say">Not this time. Thank you for applying. Other roles may suit you later.</p>
+              <p t-elif="application['state'] == 'withdrawn'" class="pbhi-say">You withdrew this application.</p>
+              <form t-if="can_withdraw" method="post" t-attf-action="/my/jobs/#{role['id']}/withdraw" class="pbhi-withdraw" data-pbhi-confirm="">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <span class="d-none" data-pbhi-ask="">Withdraw your application? The hiring team will see that you withdrew it.</span>
+                <button type="submit" class="pbme-btn pbme-btn--ghost">Withdraw my application</button>
+              </form>
+            </div>
+
+            <form t-if="can_apply" class="pbhi-card pbhi-apply" method="post"
+                  t-attf-action="/my/jobs/#{role['id']}/apply" enctype="multipart/form-data" data-pbhi-form="">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <h2 class="pbhi-h2">Apply for this role</h2>
+              <t t-call="pb_hiring_internal.pbhi_alert"/>
+              <p class="pbhi-say">Your record is your application: the hiring team sees your name, your current job and your department.</p>
+              <label class="pbhi-field">
+                <span class="pbhi-label">Why this role? <span class="pbhi-opt">optional</span></span>
+                <textarea name="note" class="pbhi-input pbhi-textarea" rows="5" t-att-maxlength="max_note" placeholder="A few lines for the hiring team: what you would bring, and what you want to learn."/>
+              </label>
+              <label class="pbhi-field">
+                <span class="pbhi-label">Your CV <span class="pbhi-opt">optional</span></span>
+                <input type="file" name="cv" class="pbhi-file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"/>
+                <span class="pbhi-hint">PDF or Word, up to 5 MB.</span>
+              </label>
+              <div t-if="role['manager_on_team']" class="pbhi-heads-up">
+                <span aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="16"/></t></span>
+                <span>Your manager is on the hiring team for this role, so they will see your application.</span>
+              </div>
+              <t t-else="" t-call="pb_hiring_internal.pbhi_promise"/>
+              <button type="submit" class="pbme-btn pbme-btn--primary pbhi-send" data-pbhi-submit="">
+                <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'send'"/><t t-set="isz" t-value="15"/></t>Apply
+              </button>
+            </form>
+            <t t-elif="not application" t-call="pb_hiring_internal.pbhi_alert"/>
+
+            <div class="pbhi-card pbhi-next">
+              <h2 class="pbhi-h2">What happens next</h2>
+              <ol class="pbhi-steps">
+                <li><span class="pbhi-step-n">1</span><span><b>The hiring team looks at it</b><span>The recruiter for this role gets your application straight away.</span></span></li>
+                <li><span class="pbhi-step-n">2</span><span><b>Conversations, if it fits</b><span>The recruiter arranges any interviews with you directly.</span></span></li>
+                <li><span class="pbhi-step-n">3</span><span><b>An offer, then a move</b><span>Your manager is told when an offer is near. Your job then changes on your record.</span></span></li>
+              </ol>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <template id="portal_my_job_missing" name="A role inside the company: not found">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbhi">
+        <div class="pbme-empty pbhi-empty">
+          <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'briefcase'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>This role is not open to staff</h3>
+          <p>It may have been filled or closed. Other roles open to staff are on the list.</p>
+          <a class="pbme-btn pbme-btn--primary" href="/my/jobs">See the open roles</a>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  /my/jobs/moves — a manager's page (E4)                        -->
+  <!-- ============================================================= -->
+  <template id="portal_my_team_moves" name="Moves in your team">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbhi">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Moves in your team</t>
+          <t t-set="hero_sub">People moving into your team from another role, and people in your team close to an offer elsewhere. HR will talk to you about the timing.</t>
+        </t>
+        <section t-if="joining" class="pbhi-sec" aria-labelledby="pbhi-join-h">
+          <h2 class="pbhi-h2" id="pbhi-join-h">Joining your team<span class="pbhi-n" t-out="len(joining)"/></h2>
+          <ol class="pbhi-roles">
+            <li t-foreach="joining" t-as="j" class="pbhi-role">
+              <div class="pbhi-role-in">
+                <span class="pbhi-role-ic" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'user-plus'"/><t t-set="isz" t-value="18"/></t></span>
+                <span class="pbhi-role-body">
+                  <b class="pbhi-role-title" t-out="j['name']"/>
+                  <span class="pbhi-role-meta"><span t-if="j['job']" t-out="j['job']"/><span t-if="j['when']">From <t t-out="j['when']" t-options="{'widget': 'date', 'format': 'd MMM y'}"/></span></span>
+                </span>
+              </div>
+            </li>
+          </ol>
+          <p class="pbhi-muted">They already work here, so there is no new-joiner list. HR changes their job on their record.</p>
+        </section>
+        <h2 t-if="joining and rows" class="pbhi-h2 pbhi-sec">Close to an offer elsewhere<span class="pbhi-n" t-out="len(rows)"/></h2>
+        <div t-if="not rows and not joining" class="pbme-empty pbhi-empty">
+          <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'users'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>No moves in your team</h3>
+          <p>When somebody in your team is close to an offer for another role, you are told here.</p>
+        </div>
+        <ol t-if="rows" class="pbhi-roles">
+          <li t-foreach="rows" t-as="m" class="pbhi-role">
+            <div class="pbhi-role-in">
+              <span class="pbhi-role-ic" aria-hidden="true"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'user'"/><t t-set="isz" t-value="18"/></t></span>
+              <span class="pbhi-role-body">
+                <b class="pbhi-role-title" t-out="m['name']"/>
+                <span class="pbhi-role-meta"><span t-out="m['role']"/><span>Told <t t-out="m['told_on']" t-options="{'widget': 'date', 'format': 'd MMM'}"/></span></span>
+              </span>
+              <span class="pbhi-role-side"><t t-call="pb_hiring_internal.pbhi_pill"><t t-set="state" t-value="m['state']"/></t></span>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </t>
+  </template>
+
+</odoo>

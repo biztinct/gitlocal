@@ -1,0 +1,1670 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 16:31+0000\n"
+"PO-Revision-Date: 2026-11-15 16:31+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0
+msgid "%(what)s · %(who)s"
+msgstr "%(what)s · %(who)s"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family.py:0
+msgid "%s is not waiting for a tax decision."
+msgstr "%s tidak sedang menunggu keputusan pajak."
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/js/family_lens.js:0
+msgid "%s: confirmed for tax. Pay uses it from the next pay run."
+msgstr "%s: dikonfirmasi untuk pajak. Gaji memakainya mulai penggajian berikutnya."
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/js/family_lens.js:0
+msgid "%s: pay is left as it is."
+msgstr "%s: gaji dibiarkan seperti semula."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<b>A photo or scan of the paper</b>"
+msgstr "<b>Foto atau pindaian dokumen</b>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank_new
+msgid "<b>A second person approves it</b><span>Somebody in your company who is not you checks it. Then your pay goes to the new account.</span>"
+msgstr "<b>Orang kedua menyetujuinya</b><span>Seseorang di perusahaan Anda yang bukan Anda memeriksanya. Setelah itu gaji Anda dikirim ke rekening baru.</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank_new
+msgid "<b>Check what we read</b><span>The document is read for you. Correct anything that is wrong.</span>"
+msgstr "<b>Periksa hasil bacaan</b><span>Dokumen dibacakan untuk Anda. Perbaiki yang salah.</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<b>Counts for tax</b>"
+msgstr "<b>Dihitung untuk pajak</b>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<b>HR sent this back.</b>"
+msgstr "<b>HR mengembalikan ini.</b>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "<b>Reason:</b>"
+msgstr "<b>Alasan:</b>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank_new
+msgid "<b>Upload a bank document</b><span>A bank letter, a statement, the first page of your passbook or a cancelled cheque showing your name and the account number.</span>"
+msgstr "<b>Unggah dokumen bank</b><span>Surat bank, rekening koran, halaman pertama buku tabungan, atau cek batal yang menunjukkan nama dan nomor rekening Anda.</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_request
+msgid "<b>Why:</b>"
+msgstr "<b>Alasan:</b>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<option value=\"\">Choose…</option>"
+msgstr "<option value=\"\">Pilih…</option>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_profile_details
+msgid "<span class=\"pbmd-door-tx\"><b>Family, ID papers, photo and bank account</b><span>See them all and ask for a change</span></span>"
+msgstr "<span class=\"pbmd-door-tx\"><b>Keluarga, dokumen identitas, foto, dan rekening bank</b><span>Lihat semuanya dan ajukan perubahan</span></span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "<span class=\"pbmd-dot\" aria-hidden=\"true\"/><span>Valid until</span>"
+msgstr "<span class=\"pbmd-dot\" aria-hidden=\"true\"/><span>Berlaku sampai</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "<span class=\"pbmd-dot\" aria-hidden=\"true\"/><span>born</span>"
+msgstr "<span class=\"pbmd-dot\" aria-hidden=\"true\"/><span>lahir</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<span class=\"pbmd-drop-t\"><b>Choose a photo</b><span>JPG or PNG, up to 10 MB</span></span>"
+msgstr "<span class=\"pbmd-drop-t\"><b>Pilih foto</b><span>JPG atau PNG, maksimal 10 MB</span></span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank_new
+msgid "<span class=\"pbmd-drop-t\"><b>Choose the document</b><span>PDF, JPG or PNG, up to 10 MB</span></span>"
+msgstr "<span class=\"pbmd-drop-t\"><b>Pilih dokumen</b><span>PDF, JPG, atau PNG, maksimal 10 MB</span></span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "<span class=\"pbmd-wait\">new photo waiting for HR</span>"
+msgstr "<span class=\"pbmd-wait\">foto baru menunggu HR</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_employee_family_form
+msgid ""
+"<span invisible=\"tax_action == 'end'\">Pay does not count this person for tax yet. Check their papers, then press Confirm for tax: the tax relief starts from the next pay run.</span>\n"
+"                        <span invisible=\"tax_action != 'end'\">Pay still counts this person for tax. Press Confirm for tax to stop counting them from the next pay run.</span>"
+msgstr ""
+"<span invisible=\"tax_action == 'end'\">Gaji belum menghitung orang ini untuk pajak. Periksa dokumennya, lalu tekan Konfirmasi untuk pajak: keringanan pajak mulai pada penggajian berikutnya.</span>\n"
+"                        <span invisible=\"tax_action != 'end'\">Gaji masih menghitung orang ini untuk pajak. Tekan Konfirmasi untuk pajak agar berhenti dihitung mulai penggajian berikutnya.</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<span><b>Covered by insurance</b><small>Included in your company's insurance cover.</small></span>"
+msgstr "<span><b>Ditanggung asuransi</b><small>Termasuk dalam tanggungan asuransi perusahaan.</small></span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "<span>Account number</span>"
+msgstr "<span>Nomor rekening</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank_new
+msgid "<span>Account on file now:</span>"
+msgstr "<span>Rekening yang tercatat sekarang:</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "<span>Bank</span>"
+msgstr "<span>Bank</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "<span>Branch</span>"
+msgstr "<span>Cabang</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<span>Date of birth</span>"
+msgstr "<span>Tanggal lahir</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<span>Full name</span>"
+msgstr "<span>Nama lengkap</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<span>ID or birth certificate number</span>"
+msgstr "<span>Nomor identitas atau akta lahir</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<span>Marital status</span>"
+msgstr "<span>Status pernikahan</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "<span>Name on the account</span>"
+msgstr "<span>Nama pemilik rekening</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "<span>New bank account</span>"
+msgstr "<span>Rekening bank baru</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<span>Note to HR (optional)</span>"
+msgstr "<span>Catatan untuk HR (opsional)</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<span>Number on the paper</span>"
+msgstr "<span>Nomor pada dokumen</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "<span>Reason:</span>"
+msgstr "<span>Alasan:</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<span>Relationship</span>"
+msgstr "<span>Hubungan</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<span>Valid until</span>"
+msgstr "<span>Berlaku sampai</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank_new
+msgid "<span>What kind of document</span>"
+msgstr "<span>Jenis dokumen</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "<span>Which paper</span>"
+msgstr "<span>Dokumen yang mana</span>"
+
+#. module: pb_me_details
+#: model:biz.approval.process,description:pb_me_details.process_me_details
+msgid "A change somebody asks for on My Payobook to their family, ID papers, photo or marital status."
+msgstr "Perubahan yang diajukan seseorang di My Payobook untuk keluarga, dokumen identitas, foto, atau status pernikahannya."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "A change to somebody's details is proposed on My Payobook."
+msgstr "Perubahan data seseorang diajukan di My Payobook."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "A clear photo of your face, looking at the camera. It is shown to your colleagues and on the clock-in screens."
+msgstr "Foto wajah yang jelas, menghadap kamera. Foto ini terlihat oleh rekan kerja dan di layar absensi."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0
+msgid "A family member who counts for tax"
+msgstr "Anggota keluarga yang dihitung untuk pajak"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "A family member who counts for tax changes your pay only after the pay team confirms it."
+msgstr "Anggota keluarga yang dihitung untuk pajak baru mengubah gaji Anda setelah tim penggajian mengonfirmasinya."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "A proposed change cannot be edited here. The employee changes it on My Payobook."
+msgstr "Usulan perubahan tidak dapat diubah di sini. Karyawan mengubahnya di My Payobook."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "A second person in your company is checking it. Your pay keeps going to the account on file until then."
+msgstr "Orang kedua di perusahaan Anda sedang memeriksanya. Sampai saat itu gaji tetap dikirim ke rekening yang tercatat."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "Account number"
+msgstr "Nomor rekening"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__message_needaction model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__message_needaction
+msgid "Action Needed"
+msgstr "Perlu tindakan"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__active
+msgid "Active"
+msgstr "Aktif"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__activity_ids
+msgid "Activities"
+msgstr "Aktivitas"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Dekorasi pengecualian aktivitas"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__activity_state
+msgid "Activity State"
+msgstr "Status aktivitas"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Ikon jenis aktivitas"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Add"
+msgstr "Tambah"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Add %s to my family"
+msgstr "Tambahkan %s ke keluarga"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__kind__family_add model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Add a family member"
+msgstr "Tambah anggota keluarga"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Add a photo or scan of the paper, so HR can check it."
+msgstr "Tambahkan foto atau pindaian dokumen agar HR dapat memeriksanya."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "Already added. Choose a file only to replace it."
+msgstr "Sudah ditambahkan. Pilih file hanya untuk menggantinya."
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__approval_request_id
+msgid "Approval"
+msgstr "Persetujuan"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__approval_state
+msgid "Approval status"
+msgstr "Status persetujuan"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Approvals"
+msgstr "Persetujuan"
+
+#. module: pb_me_details
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0 code:addons/pb_me_details/static/src/js/family_lens.js:0 model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__state__approved model_terms:ir.ui.view,arch_db:pb_me_details.pbmd_pill
+msgid "Approved"
+msgstr "Disetujui"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Approved and written to the employee record."
+msgstr "Disetujui dan dicatat di data karyawan."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Ask HR to remove"
+msgstr "Minta HR menghapus"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__seat_user_ids
+msgid "Asked to decide"
+msgstr "Diminta memutuskan"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__message_attachment_count model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__message_attachment_count
+msgid "Attachment Count"
+msgstr "Jumlah lampiran"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_request
+msgid "Back to my details"
+msgstr "Kembali ke data saya"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "Bank"
+msgstr "Bank"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0 model_terms:ir.ui.view,arch_db:pb_me_details.portal_breadcrumbs_details model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Bank account"
+msgstr "Rekening bank"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__before_json
+msgid "Before Json"
+msgstr "Data sebelumnya"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Born"
+msgstr "Lahir"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "Branch"
+msgstr "Cabang"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_employee_family__relationship__sibling model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__f_relationship__sibling
+msgid "Brother or sister"
+msgstr "Saudara kandung"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank_new model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "Cancel"
+msgstr "Batal"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0 model_terms:ir.ui.view,arch_db:pb_me_details.portal_breadcrumbs_details model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "Change"
+msgstr "Ubah"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Change %s"
+msgstr "Ubah %s"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__kind__family_change model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "Change a family member"
+msgstr "Ubah anggota keluarga"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank_new model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Change bank account"
+msgstr "Ganti rekening bank"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Change marital status"
+msgstr "Ubah status pernikahan"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Change photo"
+msgstr "Ganti foto"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_me_detail_request_form
+msgid "Change to details"
+msgstr "Perubahan data"
+
+#. module: pb_me_details
+#: model:ir.model,name:pb_me_details.model_pb_me_detail_request
+msgid "Change to my details"
+msgstr "Perubahan data saya"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Change waiting for HR"
+msgstr "Perubahan menunggu HR"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family_board.py:0 model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_me_detail_request_list
+msgid "Changes to details"
+msgstr "Perubahan data"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family.py:0
+msgid "Check this family member's papers, then press Confirm for tax. Pay changes only after that."
+msgstr "Periksa dokumen anggota keluarga ini, lalu tekan Konfirmasi untuk pajak. Gaji baru berubah setelah itu."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "Check what we read"
+msgstr "Periksa hasil bacaan"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_employee_family__relationship__child model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__f_relationship__child
+msgid "Child"
+msgstr "Anak"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Choose how they are related to you."
+msgstr "Pilih hubungannya dengan Anda."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/controllers/portal.py:0
+msgid "Choose the bank document to upload."
+msgstr "Pilih dokumen bank yang akan diunggah."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Choose the family member to change."
+msgstr "Pilih anggota keluarga yang akan diubah."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Choose the photo to use."
+msgstr "Pilih foto yang akan dipakai."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Choose which paper this is."
+msgstr "Pilih jenis dokumen ini."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Choose your marital status."
+msgstr "Pilih status pernikahan Anda."
+
+#. module: pb_me_details
+#: model:ir.model,name:pb_me_details.model_res_company
+msgid "Companies"
+msgstr "Perusahaan"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__company_id model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_me_details
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_me_details/models/family.py:0 code:addons/pb_me_details/static/src/xml/family_lens.xml:0 model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_employee_family_form
+msgid "Confirm for tax"
+msgstr "Konfirmasi untuk pajak"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__tax_confirmed_by
+msgid "Confirmed by"
+msgstr "Dikonfirmasi oleh"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_employee_family__tax_state__confirmed
+msgid "Confirmed for tax"
+msgstr "Dikonfirmasi untuk pajak"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family.py:0
+msgid "Confirmed for tax by %s."
+msgstr "Dikonfirmasi untuk pajak oleh %s."
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__tax_confirmed_on
+msgid "Confirmed on"
+msgstr "Dikonfirmasi pada"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__counts_for_tax model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__f_counts_for_tax model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_employee_family_search
+msgid "Counts for tax"
+msgstr "Dihitung untuk pajak"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Counts for tax · waiting for HR to confirm"
+msgstr "Dihitung untuk pajak · menunggu konfirmasi HR"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Counts for tax. Confirming starts the tax relief from the next pay run."
+msgstr "Dihitung untuk pajak. Konfirmasi memulai keringanan pajak mulai penggajian berikutnya."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__insured model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__f_insured model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Covered by insurance"
+msgstr "Ditanggung asuransi"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__create_uid model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__create_uid
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__create_date model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__create_date
+msgid "Created on"
+msgstr "Dibuat pada"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__birthdate model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__f_birthdate
+msgid "Date of birth"
+msgstr "Tanggal lahir"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_me_detail_request_form
+msgid "Decide this in Approvals."
+msgstr "Putuskan ini di Persetujuan."
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__decided_on
+msgid "Decided on"
+msgstr "Diputuskan pada"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_request
+msgid "Detail"
+msgstr "Data"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__display_name model:ir.model.fields,field_description:pb_me_details.field_pb_family_board__display_name model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__display_name model:ir.model.fields,field_description:pb_me_details.field_pb_me_home__display_name model:ir.model.fields,field_description:pb_me_details.field_res_company__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__marital__divorced
+msgid "Divorced"
+msgstr "Cerai"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__state__draft
+msgid "Draft"
+msgstr "Draf"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__employee_id model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__employee_id
+msgid "Employee"
+msgstr "Karyawan"
+
+#. module: pb_me_details
+#: model:ir.model,name:pb_me_details.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Data beranda karyawan"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0
+msgid "Empty"
+msgstr "Kosong"
+
+#. module: pb_me_details
+#: model:ir.model.fields,help:pb_me_details.field_pb_me_detail_request__seat_user_ids
+msgid "Everyone a published approval route has asked to decide this. Being here is not a permission to change anything."
+msgstr "Semua orang yang diminta memutuskan ini oleh alur persetujuan. Tercantum di sini bukan izin untuk mengubah apa pun."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Everything your company keeps about you, in one place. Ask for a change here: your record is updated once it is approved."
+msgstr "Semua yang disimpan perusahaan tentang Anda, di satu tempat. Ajukan perubahan di sini: data Anda diperbarui setelah disetujui."
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/js/family_lens.js:0 code:addons/pb_me_details/static/src/xml/family_lens.xml:0 model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Family"
+msgstr "Keluarga"
+
+#. module: pb_me_details
+#: model:ir.model,name:pb_me_details.model_pb_family_board
+msgid "Family and details board"
+msgstr "Papan keluarga dan data"
+
+#. module: pb_me_details
+#: model:ir.model,name:pb_me_details.model_pb_employee_family model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__member_id model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_employee_family_form model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_me_detail_request_form
+msgid "Family member"
+msgstr "Anggota keluarga"
+
+#. module: pb_me_details
+#: model:ir.actions.act_window,name:pb_me_details.action_pb_employee_family model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_employee_family_list
+msgid "Family members"
+msgstr "Anggota keluarga"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family.py:0
+msgid "Family members are changed through My Payobook or by HR."
+msgstr "Anggota keluarga diubah melalui My Payobook atau oleh HR."
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Family members employees added or changed on My Payobook. A family member who counts for tax reaches pay only when the pay team confirms it here."
+msgstr "Anggota keluarga yang ditambah atau diubah karyawan di My Payobook. Anggota keluarga yang dihitung untuk pajak baru masuk ke gaji setelah tim penggajian mengonfirmasinya di sini."
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Family of"
+msgstr "Keluarga dari"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/js/family_lens.js:0
+msgid "Family · confirm family members for tax"
+msgstr "Keluarga · konfirmasi anggota keluarga untuk pajak"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_home_details
+msgid "Family, ID papers, photo and bank account"
+msgstr "Keluarga, dokumen identitas, foto, dan rekening bank"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 code:addons/pb_me_details/models/detail_request.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__attachment_id
+msgid "File"
+msgstr "File"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__document_id
+msgid "Filed as"
+msgstr "Disimpan sebagai"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Find a person"
+msgstr "Cari seseorang"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Find a person…"
+msgstr "Cari seseorang…"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__message_follower_ids model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__message_follower_ids
+msgid "Followers"
+msgstr "Pengikut"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__message_partner_ids model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Pengikut (Mitra)"
+
+#. module: pb_me_details
+#: model:ir.model.fields,help:pb_me_details.field_pb_employee_family__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Ikon, misalnya fa-tasks"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "HR checks it first. Nothing changes on your record until it is approved."
+msgstr "HR memeriksanya dulu. Data Anda tidak berubah sampai disetujui."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_request
+msgid "HR has it. Nothing changes on your record until it is approved."
+msgstr "HR sedang menanganinya. Data Anda tidak berubah sampai disetujui."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0
+msgid "HR lead"
+msgstr "Pimpinan HR"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0
+msgid "HR sent %s changes back"
+msgstr "HR mengembalikan %s perubahan"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0
+msgid "HR sent a change back"
+msgstr "HR mengembalikan satu perubahan"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0
+msgid "HR sent a change to your details back."
+msgstr "HR mengembalikan perubahan data Anda."
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__has_message model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__has_message
+msgid "Has Message"
+msgstr "Ada pesan"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_employee_family__relationship__spouse model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__f_relationship__spouse
+msgid "Husband or wife"
+msgstr "Suami atau istri"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0 model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__id model:ir.model.fields,field_description:pb_me_details.field_pb_family_board__id model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__id model:ir.model.fields,field_description:pb_me_details.field_pb_me_home__id model:ir.model.fields,field_description:pb_me_details.field_res_company__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__id_number model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__f_id_number
+msgid "ID or birth certificate number"
+msgstr "Nomor identitas atau akta lahir"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0 model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__kind__id_paper model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_me_detail_request_form
+msgid "ID paper"
+msgstr "Dokumen identitas"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "ID papers"
+msgstr "Dokumen identitas"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__activity_exception_icon
+msgid "Icon"
+msgstr "Ikon"
+
+#. module: pb_me_details
+#: model:ir.model.fields,help:pb_me_details.field_pb_employee_family__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Ikon untuk menandai aktivitas pengecualian."
+
+#. module: pb_me_details
+#: model:ir.model.fields,help:pb_me_details.field_pb_employee_family__message_needaction model:ir.model.fields,help:pb_me_details.field_pb_me_detail_request__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Jika dicentang, pesan baru memerlukan perhatian Anda."
+
+#. module: pb_me_details
+#: model:ir.model.fields,help:pb_me_details.field_pb_employee_family__message_has_error model:ir.model.fields,help:pb_me_details.field_pb_employee_family__message_has_sms_error model:ir.model.fields,help:pb_me_details.field_pb_me_detail_request__message_has_error model:ir.model.fields,help:pb_me_details.field_pb_me_detail_request__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Jika dicentang, beberapa pesan gagal terkirim."
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__message_is_follower model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__message_is_follower
+msgid "Is Follower"
+msgstr "Adalah pengikut"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__write_uid model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__write_uid
+msgid "Last Updated by"
+msgstr "Terakhir diperbarui oleh"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__write_date model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__write_date
+msgid "Last Updated on"
+msgstr "Terakhir diperbarui pada"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0 model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_employee_family_form
+msgid "Leave pay as it is"
+msgstr "Biarkan gaji seperti semula"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__marital__cohabitant
+msgid "Living together"
+msgstr "Tinggal bersama"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 code:addons/pb_me_details/models/detail_request.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__marital model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__kind__marital model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Marital status"
+msgstr "Status pernikahan"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__marital__married
+msgid "Married"
+msgstr "Menikah"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__message_has_error model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__message_has_error
+msgid "Message Delivery error"
+msgstr "Kesalahan pengiriman pesan"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__message_ids model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__message_ids
+msgid "Messages"
+msgstr "Pesan"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Tenggat aktivitas saya"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0 model_terms:ir.ui.view,arch_db:pb_me_details.portal_breadcrumbs_details model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_home_details
+msgid "My details"
+msgstr "Data saya"
+
+#. module: pb_me_details
+#: model:biz.approval.process,name:pb_me_details.process_me_details
+msgid "My details changes"
+msgstr "Perubahan data saya"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__name model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__f_name
+msgid "Name"
+msgstr "Nama"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "Name on the account"
+msgstr "Nama pemilik rekening"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__paper_kind__national_id
+msgid "National ID card"
+msgstr "Kartu identitas"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "New"
+msgstr "Baru"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "New account"
+msgstr "Rekening baru"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "New bank account"
+msgstr "Rekening bank baru"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0
+msgid "New bank account %s"
+msgstr "Rekening bank baru %s"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "New photo"
+msgstr "Foto baru"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Acara kalender aktivitas berikutnya"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Tenggat aktivitas berikutnya"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__activity_summary
+msgid "Next Activity Summary"
+msgstr "Ringkasan aktivitas berikutnya"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__activity_type_id
+msgid "Next Activity Type"
+msgstr "Jenis aktivitas berikutnya"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0
+msgid "No"
+msgstr "Tidak"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "No bank account on file yet."
+msgstr "Belum ada rekening bank yang tercatat."
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "No change is waiting for approval. New ones arrive in Approvals."
+msgstr "Tidak ada perubahan yang menunggu persetujuan. Yang baru masuk ke Persetujuan."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "No family members on file."
+msgstr "Belum ada anggota keluarga yang tercatat."
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "No longer counts for tax. Confirming stops the tax relief from the next pay run."
+msgstr "Tidak lagi dihitung untuk pajak. Konfirmasi menghentikan keringanan pajak mulai penggajian berikutnya."
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_employee_family__tax_state__none
+msgid "Not counted for tax"
+msgstr "Tidak dihitung untuk pajak"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family.py:0
+msgid "Not counted for tax, decided by %s."
+msgstr "Tidak dihitung untuk pajak, diputuskan oleh %s."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "Not now"
+msgstr "Nanti saja"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Not on file"
+msgstr "Belum tercatat"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.pbmd_pill
+msgid "Not sent yet"
+msgstr "Belum dikirim"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__note
+msgid "Note from the employee"
+msgstr "Catatan dari karyawan"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Nothing here"
+msgstr "Tidak ada apa-apa"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Nothing waits for a tax decision"
+msgstr "Tidak ada yang menunggu keputusan pajak"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Nothing was decided in the last 30 days."
+msgstr "Tidak ada yang diputuskan dalam 30 hari terakhir."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_request
+msgid "Now"
+msgstr "Sekarang"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__paper_number
+msgid "Number"
+msgstr "Nomor"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__message_needaction_counter model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Jumlah tindakan"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__message_has_error_counter model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__message_has_error_counter
+msgid "Number of errors"
+msgstr "Jumlah kesalahan"
+
+#. module: pb_me_details
+#: model:ir.model.fields,help:pb_me_details.field_pb_employee_family__message_needaction_counter model:ir.model.fields,help:pb_me_details.field_pb_me_detail_request__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Jumlah pesan yang perlu tindakan"
+
+#. module: pb_me_details
+#: model:ir.model.fields,help:pb_me_details.field_pb_employee_family__message_has_error_counter model:ir.model.fields,help:pb_me_details.field_pb_me_detail_request__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Jumlah pesan yang gagal terkirim"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family_board.py:0
+msgid "Only HR and the pay team can see this."
+msgstr "Hanya HR dan tim penggajian yang dapat melihat ini."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Only a change that is waiting for HR can be taken back."
+msgstr "Hanya perubahan yang menunggu HR yang dapat ditarik kembali."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family.py:0
+msgid "Only the pay team can confirm a family member for tax."
+msgstr "Hanya tim penggajian yang dapat mengonfirmasi anggota keluarga untuk pajak."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family.py:0
+msgid "Only the pay team can decide this."
+msgstr "Hanya tim penggajian yang dapat memutuskan ini."
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Open"
+msgstr "Buka"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/js/family_lens.js:0
+msgid "Open Approvals from Home to decide these."
+msgstr "Buka Persetujuan dari Beranda untuk memutuskannya."
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_employee_family__relationship__other model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__f_relationship__other
+msgid "Other"
+msgstr "Lainnya"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "PDF, JPG or PNG, up to 10 MB"
+msgstr "PDF, JPG, atau PNG, maksimal 10 MB"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__paper_kind
+msgid "Paper"
+msgstr "Dokumen"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_employee_family__relationship__parent model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__f_relationship__parent
+msgid "Parent"
+msgstr "Orang tua"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__paper_kind__passport
+msgid "Passport"
+msgstr "Paspor"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Person"
+msgstr "Orang"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__kind__photo model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Photo"
+msgstr "Foto"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_request
+msgid "Proposed"
+msgstr "Diusulkan"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__rating_ids model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__rating_ids
+msgid "Ratings"
+msgstr "Penilaian"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank_new
+msgid "Read the document"
+msgstr "Baca dokumen"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Read the list again"
+msgstr "Baca ulang daftar"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0
+msgid "Read why, then change it and send it again"
+msgstr "Baca alasannya, lalu ubah dan kirim lagi"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Reading the family list…"
+msgstr "Membaca daftar keluarga…"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__decision_note
+msgid "Reason given"
+msgstr "Alasan"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__name
+msgid "Reference"
+msgstr "Referensi"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__relationship model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__f_relationship
+msgid "Relationship"
+msgstr "Hubungan"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Remove"
+msgstr "Hapus"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Remove %s"
+msgstr "Hapus %s"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__kind__family_remove
+msgid "Remove a family member"
+msgstr "Hapus anggota keluarga"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_employee_family_search
+msgid "Removed"
+msgstr "Dihapus"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "Removed from the family list. Confirming stops the tax relief from the next pay run."
+msgstr "Dihapus dari daftar keluarga. Konfirmasi menghentikan keringanan pajak mulai penggajian berikutnya."
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__activity_user_id
+msgid "Responsible User"
+msgstr "Penanggung jawab"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__message_has_sms_error model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Kesalahan pengiriman SMS"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.pbmd_toast
+msgid "Saved."
+msgstr "Tersimpan."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "Send for approval"
+msgstr "Kirim untuk persetujuan"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "Send to HR"
+msgstr "Kirim ke HR"
+
+#. module: pb_me_details
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0 code:addons/pb_me_details/static/src/js/family_lens.js:0 model_terms:ir.ui.view,arch_db:pb_me_details.pbmd_pill
+msgid "Sent back"
+msgstr "Dikembalikan"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.pbmd_toast
+msgid "Sent for approval. Your pay goes to the new account once a second person approves it."
+msgstr "Dikirim untuk persetujuan. Gaji Anda masuk ke rekening baru setelah orang kedua menyetujuinya."
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__submitted_on
+msgid "Sent on"
+msgstr "Dikirim pada"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.pbmd_toast
+msgid "Sent to HR. Nothing changes on your record until it is approved."
+msgstr "Dikirim ke HR. Data Anda tidak berubah sampai disetujui."
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__marital__single
+msgid "Single"
+msgstr "Lajang"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_employee_family__tax_action__add
+msgid "Start counting"
+msgstr "Mulai dihitung"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0 model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__state
+msgid "Status"
+msgstr "Status"
+
+#. module: pb_me_details
+#: model:ir.model.fields,help:pb_me_details.field_pb_employee_family__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Status berdasarkan aktivitas\n"
+"Terlambat: Tenggat sudah lewat\n"
+"Hari ini: Aktivitas hari ini\n"
+"Direncanakan: Aktivitas mendatang."
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_employee_family__tax_action__end
+msgid "Stop counting"
+msgstr "Berhenti dihitung"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_request
+msgid "Take it back"
+msgstr "Tarik kembali"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Taken back by %s"
+msgstr "Ditarik kembali oleh %s"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.pbmd_toast
+msgid "Taken back. You can change it and send it again."
+msgstr "Ditarik kembali. Anda dapat mengubah dan mengirimnya lagi."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.pbmd_toast
+msgid "Taken back. Your pay keeps going to the account on file."
+msgstr "Ditarik kembali. Gaji tetap dikirim ke rekening yang tercatat."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__tax_state
+msgid "Tax"
+msgstr "Pajak"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__vn_dependent_id
+msgid "Tax dependant"
+msgstr "Tanggungan pajak"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family.py:0
+msgid "Tax dependants are not kept in this database."
+msgstr "Tanggungan pajak tidak disimpan di sistem ini."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "That change is not yours to edit."
+msgstr "Perubahan ini bukan milik Anda untuk diubah."
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/js/family_lens.js:0
+msgid "That did not go through. Please try again."
+msgstr "Belum berhasil. Silakan coba lagi."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family_board.py:0
+msgid "That family member could not be found."
+msgstr "Anggota keluarga tersebut tidak ditemukan."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "That family member is not on your record."
+msgstr "Anggota keluarga tersebut tidak ada di data Anda."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "That kind of change is not offered here."
+msgstr "Jenis perubahan itu tidak tersedia di sini."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "The date of birth cannot be in the future."
+msgstr "Tanggal lahir tidak boleh di masa depan."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "The document could not be read automatically. Type the details exactly as they appear on it."
+msgstr "Dokumen tidak dapat dibaca otomatis. Ketik datanya persis seperti yang tertulis."
+
+#. module: pb_me_details
+#: model:ir.model.fields,help:pb_me_details.field_pb_employee_family__counts_for_tax
+msgid "The employee says this person depends on them for tax. In a Vietnam company HR confirms it before pay uses it."
+msgstr "Karyawan menyatakan orang ini adalah tanggungannya untuk pajak. Di perusahaan Vietnam, HR mengonfirmasinya sebelum dipakai gaji."
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/js/family_lens.js:0
+msgid "The family list could not be read just now. Try again in a moment."
+msgstr "Daftar keluarga belum dapat dibaca saat ini. Coba lagi sebentar lagi."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "The family member no longer exists."
+msgstr "Anggota keluarga tersebut sudah tidak ada."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "The file can be a PDF, JPG or PNG."
+msgstr "File dapat berupa PDF, JPG, atau PNG."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "The file is larger than 10 MB. Try a smaller copy, or a photo of the page."
+msgstr "File lebih dari 10 MB. Coba salinan yang lebih kecil, atau foto halamannya."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0
+msgid "The new photo"
+msgstr "Foto baru"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "The one on your record"
+msgstr "Yang ada di data Anda"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "The pay team confirms this."
+msgstr "Tim penggajian yang mengonfirmasi ini."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "The photo can be a JPG or PNG."
+msgstr "Foto dapat berupa JPG atau PNG."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "The photo is missing."
+msgstr "Fotonya tidak ada."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0
+msgid "The photo on file"
+msgstr "Foto yang tercatat"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "The same change is already waiting for HR. Take it back first if you want to send a different one."
+msgstr "Perubahan yang sama sudah menunggu HR. Tarik kembali dulu jika ingin mengirim yang lain."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/family.py:0
+msgid "The tax status of a family member is set by the Confirm for tax button only."
+msgstr "Status pajak anggota keluarga hanya diatur dengan tombol Konfirmasi untuk pajak."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "They depend on you financially."
+msgstr "Mereka bergantung secara finansial pada Anda."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_form
+msgid "They depend on you, so they reduce the tax on your pay once the pay team confirms it."
+msgstr "Mereka tanggungan Anda, jadi mengurangi pajak gaji Anda setelah tim penggajian mengonfirmasinya."
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "This one is for HR and the pay team"
+msgstr "Bagian ini untuk HR dan tim penggajian"
+
+#. module: pb_me_details
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0 code:addons/pb_me_details/static/src/js/family_lens.js:0 model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__state__refused model_terms:ir.ui.view,arch_db:pb_me_details.pbmd_pill
+msgid "Turned down"
+msgstr "Ditolak"
+
+#. module: pb_me_details
+#: model:ir.model.fields,help:pb_me_details.field_pb_employee_family__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Jenis aktivitas pengecualian pada catatan."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Update"
+msgstr "Perbarui"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0 model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__paper_expiry
+msgid "Valid until"
+msgstr "Berlaku sampai"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0 model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__state__hr_review model_terms:ir.ui.view,arch_db:pb_me_details.pbmd_pill
+msgid "Waiting for HR"
+msgstr "Menunggu HR"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_employee_family__tax_state__waiting model_terms:ir.ui.view,arch_db:pb_me_details.view_pb_employee_family_search
+msgid "Waiting for HR to confirm for tax"
+msgstr "Menunggu HR mengonfirmasi untuk pajak"
+
+#. module: pb_me_details
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0 code:addons/pb_me_details/static/src/js/family_lens.js:0 model_terms:ir.ui.view,arch_db:pb_me_details.pbmd_pill
+msgid "Waiting for approval"
+msgstr "Menunggu persetujuan"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0
+msgid "Waits for the pay team to confirm"
+msgstr "Menunggu konfirmasi tim penggajian"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "We read your document. Check every detail against it, correct anything that is wrong, then send it."
+msgstr "Kami sudah membaca dokumen Anda. Cocokkan setiap data, perbaiki yang salah, lalu kirim."
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__website_message_ids model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__website_message_ids
+msgid "Website Messages"
+msgstr "Pesan situs web"
+
+#. module: pb_me_details
+#: model:ir.model.fields,help:pb_me_details.field_pb_employee_family__website_message_ids model:ir.model.fields,help:pb_me_details.field_pb_me_detail_request__website_message_ids
+msgid "Website communication history"
+msgstr "Riwayat komunikasi situs web"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_me_detail_request__kind
+msgid "What"
+msgstr "Apa"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0
+msgid "What is changing"
+msgstr "Yang berubah"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "When"
+msgstr "Kapan"
+
+#. module: pb_me_details
+#: model:ir.model.fields,field_description:pb_me_details.field_pb_employee_family__tax_action
+msgid "When HR confirms"
+msgstr "Saat HR mengonfirmasi"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/xml/family_lens.xml:0
+msgid "When an approved family change could change somebody's tax, it waits here until the pay team confirms it."
+msgstr "Jika perubahan keluarga yang disetujui dapat mengubah pajak seseorang, perubahan itu menunggu di sini sampai tim penggajian mengonfirmasinya."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Where your pay is sent."
+msgstr "Tujuan pengiriman gaji Anda."
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__marital__widower
+msgid "Widowed"
+msgstr "Janda atau duda"
+
+#. module: pb_me_details
+#: model:ir.model.fields.selection,name:pb_me_details.selection__pb_me_detail_request__paper_kind__permit
+msgid "Work permit"
+msgstr "Izin kerja"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Write the date the paper is valid until."
+msgstr "Tulis tanggal berlaku dokumen."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Write the family member's name."
+msgstr "Tulis nama anggota keluarga."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "Write the number printed on the paper."
+msgstr "Tulis nomor yang tercetak pada dokumen."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_approval.py:0
+msgid "Yes"
+msgstr "Ya"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Yes, send to HR"
+msgstr "Ya, kirim ke HR"
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/detail_request.py:0
+msgid "You can only change your own details."
+msgstr "Anda hanya dapat mengubah data Anda sendiri."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_breadcrumbs_details model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_request
+msgid "Your change"
+msgstr "Perubahan Anda"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "Your changes"
+msgstr "Perubahan Anda"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "Your pay goes to this account from now on."
+msgstr "Mulai sekarang gaji Anda dikirim ke rekening ini."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank_new
+msgid "Your pay keeps going to the account on file until the new one is approved."
+msgstr "Gaji tetap dikirim ke rekening yang tercatat sampai rekening baru disetujui."
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_request
+msgid "Your record is updated."
+msgstr "Data Anda sudah diperbarui."
+
+#. module: pb_me_details
+#. odoo-python
+#: code:addons/pb_me_details/models/pb_me_home.py:0
+msgid "Your turn"
+msgstr "Giliran Anda"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_my_details
+msgid "change waiting for HR"
+msgstr "perubahan menunggu HR"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/js/family_lens.js:0
+msgid "changes waiting for approval"
+msgstr "perubahan menunggu persetujuan"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/js/family_lens.js:0
+msgid "decided in the last 30 days"
+msgstr "diputuskan dalam 30 hari terakhir"
+
+#. module: pb_me_details
+#. odoo-javascript
+#: code:addons/pb_me_details/static/src/js/family_lens.js:0
+msgid "waiting for HR to confirm for tax"
+msgstr "menunggu HR mengonfirmasi untuk pajak"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "<i> optional</i>"
+msgstr "<i> opsional</i>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "<span>Bank account in</span>"
+msgstr "<span>Rekening bank di</span>"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "Choose the country"
+msgstr "Pilih negara"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "MBBEMYKL"
+msgstr "MBBEMYKL"
+
+#. module: pb_me_details
+#: model_terms:ir.ui.view,arch_db:pb_me_details.portal_details_bank
+msgid "optional"
+msgstr "opsional"

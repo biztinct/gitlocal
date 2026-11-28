@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Who is emailed about every registered lead (demo signup + private-demo
+         request). Comma-separated. Editable in Settings → Technical → System
+         Parameters without a deploy. Owner ruling 2026-10-06. -->
+    <record id="param_lead_notify_to" model="ir.config_parameter">
+        <field name="key">pb_demo_portal.lead_notify_to</field>
+        <field name="value">ash@biztinct.com,hello@payobook.com,lehoa@payobook.com</field>
+    </record>
+</odoo>

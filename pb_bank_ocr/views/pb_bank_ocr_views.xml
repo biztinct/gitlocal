@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Bank registry (admin) -->
+    <record id="view_pb_bank_registry_list" model="ir.ui.view">
+        <field name="name">pb.bank.registry.list</field>
+        <field name="model">pb.bank.registry</field>
+        <field name="arch" type="xml">
+            <list string="VN Bank Registry" editable="bottom">
+                <field name="short_name"/>
+                <field name="name"/>
+                <field name="swift_prefix"/>
+                <field name="aliases"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_pb_bank_registry" model="ir.actions.act_window">
+        <field name="name">VN Bank Registry</field>
+        <field name="res_model">pb.bank.registry</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <!-- Bank change request (admin/debug — the cockpit is the primary UI) -->
+    <record id="view_pb_bank_change_request_list" model="ir.ui.view">
+        <field name="name">pb.bank.change.request.list</field>
+        <field name="model">pb.bank.change.request</field>
+        <field name="arch" type="xml">
+            <list string="Bank Change Requests">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="x_bank_name"/>
+                <field name="pb_bank_format" optional="show"/>
+                <field name="x_bank_code" optional="hide"/>
+                <field name="x_branch_code" optional="show"/>
+                <field name="ocr_state"/>
+                <field name="name_match_band"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'approved'"
+                       decoration-info="state in ('hr_review','finance_review')"
+                       decoration-danger="state == 'refused'"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_pb_bank_change_request_form" model="ir.ui.view">
+        <field name="name">pb.bank.change.request.form</field>
+        <field name="model">pb.bank.change.request</field>
+        <field name="arch" type="xml">
+            <form string="Bank Change Request">
+                <header>
+                    <button name="action_run_ocr" string="Run OCR" type="object"/>
+                    <button name="action_validate" string="Validate" type="object"/>
+                    <button name="action_submit" string="Submit" type="object"
+                            class="btn-primary" invisible="not can_submit"/>
+                    <button name="action_hr_approve" string="Approve as HR" type="object"
+                            class="btn-primary" invisible="not can_hr_approve"/>
+                    <button name="action_finance_approve" string="Approve as Finance" type="object"
+                            class="btn-primary" invisible="not can_finance_approve"/>
+                    <button name="action_refuse_chain" string="Refuse" type="object"
+                            invisible="not can_refuse"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,hr_review,finance_review,approved"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Request">
+                            <field name="name" readonly="1"/>
+                            <field name="employee_id"/>
+                            <field name="attachment_id"/>
+                            <field name="doc_kind"/>
+                            <field name="ocr_state"/>
+                            <field name="ocr_provider"/>
+                        </group>
+                        <group string="Validation">
+                            <field name="v_format_ok"/>
+                            <field name="v_format_msg"/>
+                            <field name="name_match_score"/>
+                            <field name="name_match_band"/>
+                            <field name="duplicate_ids" widget="many2many_tags"/>
+                            <field name="duplicate_ack"/>
+                        </group>
+                    </group>
+                    <group string="Extracted">
+                        <group>
+                            <field name="x_bank_name"/>
+                            <field name="x_bank_branch"/>
+                            <field name="x_account_name"/>
+                        </group>
+                        <group>
+                            <field name="x_account_number"/>
+                            <field name="pb_bank_format"/>
+                            <field name="x_bank_code" invisible="pb_bank_format not in ('SG', 'ID')"/>
+                            <field name="x_branch_code" invisible="pb_bank_format not in ('IN', 'AU', 'SG', 'TH')"/>
+                            <field name="x_iban"/>
+                            <field name="x_swift"/>
+                        </group>
+                    </group>
+                    <field name="approval_widget_json" widget="biz_approval_stepper" nolabel="1"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- WDGAP S6-A BK2: on the standard employee form the "Bank accounts"
+         field is read-only — where pay goes changes only through the bank
+         screen (or My Payobook / the Updates sheet), with a second person.
+         By inheritance; the standard view file is not edited. -->
+    <record id="view_employee_form_bank_read_only" model="ir.ui.view">
+        <field name="name">hr.employee.form.pb.bank.read.only</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <xpath expr="(//field[@name='bank_account_ids'])[1]" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="(//field[@name='bank_account_ids'])[2]" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="(//field[@name='bank_account_ids'])[3]" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+            <xpath expr="(//field[@name='bank_account_ids'])[3]" position="after">
+                <div class="text-muted small pb-bank-ro-note">To change where this person is paid, use Compliance › Bank: a second person approves it.</div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- WDGAP S6-A BK2: the pay data load says how many bank changes wait. -->
+    <record id="view_payroll_import_batch_form_bank_waiting" model="ir.ui.view">
+        <field name="name">hr.payroll.import.batch.form.pb.bank.waiting</field>
+        <field name="model">hr.payroll.import.batch</field>
+        <field name="inherit_id" ref="pb_hr_payroll_formula.view_payroll_import_batch_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-warning mb-0" role="status" invisible="not pb_bank_waiting_note">
+                    <field name="pb_bank_waiting_note" readonly="1" nolabel="1"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

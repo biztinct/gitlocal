@@ -1,0 +1,17 @@
+<odoo>
+    <record id="action_templates" model="ir.actions.client">
+        <field name="name">Configure Templates</field>
+        <field name="tag">pb_payroll_templates</field>
+    </record>
+    <record id="config_templates" model="ir.ui.view">
+        <field name="name">Payroll configuration templates</field>
+        <field name="model">hr.formula.config</field>
+        <field name="inherit_id" ref="pb_hr_payroll_formula.view_formula_config_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="%(action_templates)d" type="action" string="Configure Templates" context="{'templates_config_id': id}"/>
+            </xpath>
+            <xpath expr="//sheet" position="inside"><group string="Payroll input maintenance"><field name="focused_payroll_inputs"/></group></xpath>
+        </field>
+    </record>
+</odoo>

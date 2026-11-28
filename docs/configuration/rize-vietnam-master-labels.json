@@ -1,0 +1,1374 @@
+{
+  "code": "RIZE_VIETNAM_MASTER_V3",
+  "filename": "Rize_VN_Payroll_Report_Aug_2026_FINAL v3.xlsx",
+  "sha256": "c8c0424ce270b8829329c3f36d0683a3f10a970b1a43edf2e90b61ed79e8e4cb",
+  "rules": [
+    {
+      "code": "VNHCE",
+      "name": "Mã nhân viên (Code)",
+      "column": "B",
+      "key": "Salary|B"
+    },
+    {
+      "code": "VNHCF",
+      "name": "Họ và tên (Full name)",
+      "column": "C",
+      "key": "Salary|C"
+    },
+    {
+      "code": "VNHCU",
+      "name": "Vị trí (Position)",
+      "column": "D",
+      "key": "Salary|D"
+    },
+    {
+      "code": "VNPTYPE",
+      "name": "Loại (Type)",
+      "column": "E",
+      "key": "Salary|E"
+    },
+    {
+      "code": "VNSIJOIN",
+      "name": "Tham gia BHXH (SHUI Joining)",
+      "column": "F",
+      "key": "Salary|F"
+    },
+    {
+      "code": "VNPAYNAT",
+      "name": "Quốc tịch (Nationality)",
+      "column": "G",
+      "key": "Salary|G"
+    },
+    {
+      "code": "VNHCX",
+      "name": "Ngày bắt đầu (Commencing date)",
+      "column": "H",
+      "key": "Salary|H"
+    },
+    {
+      "code": "VNHCAB",
+      "name": "Ngày ký hợp đồng (Date contract)",
+      "column": "I",
+      "key": "Salary|I"
+    },
+    {
+      "code": "VNHCCB",
+      "name": "Ngày làm việc cuối cùng (Last working date)",
+      "column": "J",
+      "key": "Salary|J"
+    },
+    {
+      "code": "VNGROSSUSD",
+      "name": "Lương hợp đồng (Gross contract salary) — USD",
+      "column": "K",
+      "key": "Salary|K"
+    },
+    {
+      "code": "VNHCBK",
+      "name": "Lương hợp đồng (Gross contract salary) — VND",
+      "column": "L",
+      "key": "Salary|L"
+    },
+    {
+      "code": "VNEFFINS",
+      "name": "Lương bảo hiểm (Insurance salary)",
+      "column": "M",
+      "key": "Salary|M"
+    },
+    {
+      "code": "VNSTDDAYS",
+      "name": "Ngày công chuẩn (Standard working days)",
+      "column": "O",
+      "key": "Salary|O"
+    },
+    {
+      "code": "VNPAIDDAYS",
+      "name": "Số ngày làm việc thực tế (Paid days)",
+      "column": "P",
+      "key": "Salary|P"
+    },
+    {
+      "code": "VNBASIC",
+      "name": "Lương tháng (Actual gross salary)",
+      "column": "Q",
+      "key": "Salary|Q"
+    },
+    {
+      "code": "VNUNIFORM",
+      "name": "Đồng phục (Uniform)",
+      "column": "R",
+      "key": "Salary|R"
+    },
+    {
+      "code": "VNFREETEL",
+      "name": "Điện thoại (Phone)",
+      "column": "S",
+      "key": "Salary|S"
+    },
+    {
+      "code": "VNSEVER",
+      "name": "Trợ cấp thôi việc (Severance)",
+      "column": "T",
+      "key": "Salary|T"
+    },
+    {
+      "code": "VNFREOTH",
+      "name": "Phụ cấp khác (Others) — Phụ cấp không theo lương (Allowance-Non-taxable)",
+      "column": "U",
+      "key": "Salary|U"
+    },
+    {
+      "code": "VNLEAVEPAY",
+      "name": "Ngày phép năm (Annual leave)",
+      "column": "V",
+      "key": "Salary|V"
+    },
+    {
+      "code": "VNEXTRANS",
+      "name": "Xăng xe thêm (Additional Transportation)",
+      "column": "W",
+      "key": "Salary|W"
+    },
+    {
+      "code": "VNTRANSPAY",
+      "name": "Xăng xe (Transportation)",
+      "column": "X",
+      "key": "Salary|X"
+    },
+    {
+      "code": "VNPHONEPAY",
+      "name": "Phụ cấp điện thoại (Phone Allowance)",
+      "column": "Y",
+      "key": "Salary|Y"
+    },
+    {
+      "code": "VNPRIVATE",
+      "name": "Phụ cấp bảo hiểm tư nhân (Private Insurance allowance)",
+      "column": "Z",
+      "key": "Salary|Z"
+    },
+    {
+      "code": "VNTECH",
+      "name": "Trợ cấp tư vấn kỹ thuật Technical advisory allowance",
+      "column": "AA",
+      "key": "Salary|AA"
+    },
+    {
+      "code": "VNY2S2",
+      "name": "Y2S2 Ags incentive",
+      "column": "AB",
+      "key": "Salary|AB"
+    },
+    {
+      "code": "VNPRODUCT",
+      "name": "New product launching (RP-Lem Lep Hat) incentive",
+      "column": "AC",
+      "key": "Salary|AC"
+    },
+    {
+      "code": "VNACTBONUS",
+      "name": "Variable Bonus",
+      "column": "AD",
+      "key": "Salary|AD"
+    },
+    {
+      "code": "VNREFERRAL",
+      "name": "Refferal incentive",
+      "column": "AE",
+      "key": "Salary|AE"
+    },
+    {
+      "code": "VNOTHTAX",
+      "name": "Phụ cấp khác (Others) — Phụ cấp không theo lương (Allowance-Taxable)",
+      "column": "AF",
+      "key": "Salary|AF"
+    },
+    {
+      "code": "VNPREADD",
+      "name": "Điều chỉnh tăng (Additional Adjustment)",
+      "column": "AG",
+      "key": "Salary|AG"
+    },
+    {
+      "code": "VNPREDED",
+      "name": "Điều chỉnh giảm (Deduction Adjustment)",
+      "column": "AH",
+      "key": "Salary|AH"
+    },
+    {
+      "code": "VNBENEFIT",
+      "name": "Phúc lợi (không trả bằng tiền) Non-cash benefit",
+      "column": "AI",
+      "key": "Salary|AI"
+    },
+    {
+      "code": "VNOVERTIME",
+      "name": "Weekend",
+      "column": "AJ",
+      "key": "Salary|AJ"
+    },
+    {
+      "code": "VNHOLPAY",
+      "name": "Holiday",
+      "column": "AK",
+      "key": "Salary|AK"
+    },
+    {
+      "code": "VNTOTALINC",
+      "name": "Tổng thu nhập (Total monthly income)",
+      "column": "AL",
+      "key": "Salary|AL"
+    },
+    {
+      "code": "VNTAXABLE",
+      "name": "Thu nhập chịu thuế (Taxable income)",
+      "column": "AM",
+      "key": "Salary|AM"
+    },
+    {
+      "code": "VNSIEMP",
+      "name": "BHXH (SI) 8%",
+      "column": "AN",
+      "key": "Salary|AN"
+    },
+    {
+      "code": "VNHIEMP",
+      "name": "BHYT (HI) 1.5%",
+      "column": "AO",
+      "key": "Salary|AO"
+    },
+    {
+      "code": "VNUIEMP",
+      "name": "BHTN (UI) 1% — Trích từ lương nhân viên (Employee)",
+      "column": "AP",
+      "key": "Salary|AP"
+    },
+    {
+      "code": "VNUNIONEE",
+      "name": "KPCD (TU) 0.5 %",
+      "column": "AQ",
+      "key": "Salary|AQ"
+    },
+    {
+      "code": "VNTUFLAG",
+      "name": "Tham gia CĐ (TU Joining)",
+      "column": "AR",
+      "key": "Salary|AR"
+    },
+    {
+      "code": "VNSIER",
+      "name": "BHXH (SI) 17.5%",
+      "column": "AS",
+      "key": "Salary|AS"
+    },
+    {
+      "code": "VNHIERR",
+      "name": "BHYT (HI) 3%",
+      "column": "AT",
+      "key": "Salary|AT"
+    },
+    {
+      "code": "VNUIERR",
+      "name": "BHTN (UI) 1% — Người sử dụng lao động (Employer)",
+      "column": "AU",
+      "key": "Salary|AU"
+    },
+    {
+      "code": "VNTUER",
+      "name": "KPCD (TU) 2%",
+      "column": "AV",
+      "key": "Salary|AV"
+    },
+    {
+      "code": "VNPERSDED",
+      "name": "Bản thân (Personal)",
+      "column": "AW",
+      "key": "Salary|AW"
+    },
+    {
+      "code": "VNREGISTER",
+      "name": "Người phụ thuộc (Dependants) — Count",
+      "column": "AX",
+      "key": "Salary|AX"
+    },
+    {
+      "code": "VNDEPDED",
+      "name": "Người phụ thuộc (Dependants) — VND",
+      "column": "AY",
+      "key": "Salary|AY"
+    },
+    {
+      "code": "VNASSESS",
+      "name": "Thu nhập tính thuế (Assessable income)",
+      "column": "AZ",
+      "key": "Salary|AZ"
+    },
+    {
+      "code": "VNPITDUE",
+      "name": "Thuế TNCN (PIT)",
+      "column": "BA",
+      "key": "Salary|BA"
+    },
+    {
+      "code": "VNNETINC",
+      "name": "Thu nhập thuần (Net income) — VND",
+      "column": "BB",
+      "key": "Salary|BB"
+    },
+    {
+      "code": "VNUSDNET",
+      "name": "Thu nhập thuần (Net income) — USD",
+      "column": "BC",
+      "key": "Salary|BC"
+    },
+    {
+      "code": "VNEMPCTC",
+      "name": "Tổng chi phí lương (Total salary cost)",
+      "column": "BD",
+      "key": "Salary|BD"
+    },
+    {
+      "code": "VNADVANCE",
+      "name": "Tạm ứng (Advance)",
+      "column": "BE",
+      "key": "Salary|BE"
+    },
+    {
+      "code": "VNDEDUCT",
+      "name": "ĐC giảm (Deduction)",
+      "column": "BF",
+      "key": "Salary|BF"
+    },
+    {
+      "code": "VNNETADD",
+      "name": "ĐC tăng (Addition)",
+      "column": "BG",
+      "key": "Salary|BG"
+    },
+    {
+      "code": "VNPITREF",
+      "name": "PIT refund",
+      "column": "BH",
+      "key": "Salary|BH"
+    },
+    {
+      "code": "VNNETPAY",
+      "name": "Thực trả (Net payment) — VND",
+      "column": "BI",
+      "key": "Salary|BI"
+    },
+    {
+      "code": "VNUSDPAY",
+      "name": "Thực trả (Net payment) — USD",
+      "column": "BJ",
+      "key": "Salary|BJ"
+    },
+    {
+      "code": "VNTRIP",
+      "name": "Incentive trip",
+      "column": "BL",
+      "key": "Salary|BL"
+    },
+    {
+      "code": "VNPREMIUM",
+      "name": "Premium insurance for dependent",
+      "column": "BM",
+      "key": "Salary|BM"
+    },
+    {
+      "code": "VNREVTX",
+      "name": "Revised taxable income — Adjustment for premium insurance & incentive trip",
+      "column": "BN",
+      "key": "Salary|BN"
+    },
+    {
+      "code": "VNREVAI",
+      "name": "Revised accessable income — Adjustment for premium insurance & incentive trip",
+      "column": "BO",
+      "key": "Salary|BO"
+    },
+    {
+      "code": "VNREVPIT",
+      "name": "Revised PIT — Adjustment for premium insurance & incentive trip",
+      "column": "BP",
+      "key": "Salary|BP"
+    },
+    {
+      "code": "VNGAP",
+      "name": "PIT gap — Adjustment for premium insurance & incentive trip",
+      "column": "BQ",
+      "key": "Salary|BQ"
+    },
+    {
+      "code": "VNHCAH",
+      "name": "Department",
+      "column": "BR",
+      "key": "Salary|BR"
+    },
+    {
+      "code": "VNSUPPORT",
+      "name": "Support for incident",
+      "column": "BS",
+      "key": "Salary|BS"
+    },
+    {
+      "code": "VNSUPTX",
+      "name": "Revised taxable income — Adjustment for allowance (Company bears PIT)",
+      "column": "BT",
+      "key": "Salary|BT"
+    },
+    {
+      "code": "VNSUPAI",
+      "name": "Revised accessable income — Adjustment for allowance (Company bears PIT)",
+      "column": "BU",
+      "key": "Salary|BU"
+    },
+    {
+      "code": "VNSUPPIT",
+      "name": "Revised PIT — Adjustment for allowance (Company bears PIT)",
+      "column": "BV",
+      "key": "Salary|BV"
+    },
+    {
+      "code": "VNSUPGAP",
+      "name": "PIT gap — Adjustment for allowance (Company bears PIT)",
+      "column": "BW",
+      "key": "Salary|BW"
+    },
+    {
+      "code": "VNINSBASE",
+      "name": "Lương bảo hiểm (Insurance salary) — Fixed base",
+      "column": "M",
+      "key": "Salary|M"
+    },
+    {
+      "code": "VNPITRES",
+      "name": "Thuế TNCN (PIT) — Workbook",
+      "column": "BA",
+      "key": ""
+    }
+  ],
+  "columns": [
+    {
+      "key": "Salary|A",
+      "sheet": "Salary",
+      "header": "STT (No.)",
+      "label": "STT (No.)",
+      "letter": "A",
+      "physical_letter": "A",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|B",
+      "sheet": "Salary",
+      "header": "Mã nhân viên (Code)",
+      "label": "Mã nhân viên (Code)",
+      "letter": "B",
+      "physical_letter": "B",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|C",
+      "sheet": "Salary",
+      "header": "Họ và tên (Full name)",
+      "label": "Họ và tên (Full name)",
+      "letter": "C",
+      "physical_letter": "C",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|D",
+      "sheet": "Salary",
+      "header": "Vị trí (Position)",
+      "label": "Vị trí (Position)",
+      "letter": "D",
+      "physical_letter": "D",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|E",
+      "sheet": "Salary",
+      "header": "Loại (Type)",
+      "label": "Loại (Type)",
+      "letter": "E",
+      "physical_letter": "E",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|F",
+      "sheet": "Salary",
+      "header": "Tham gia BHXH (SHUI Joining)",
+      "label": "Tham gia BHXH (SHUI Joining)",
+      "letter": "F",
+      "physical_letter": "F",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|G",
+      "sheet": "Salary",
+      "header": "Quốc tịch (Nationality)",
+      "label": "Quốc tịch (Nationality)",
+      "letter": "G",
+      "physical_letter": "G",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|H",
+      "sheet": "Salary",
+      "header": "Ngày bắt đầu (Commencing date)",
+      "label": "Ngày bắt đầu (Commencing date)",
+      "letter": "H",
+      "physical_letter": "H",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|I",
+      "sheet": "Salary",
+      "header": "Ngày ký hợp đồng (Date contract)",
+      "label": "Ngày ký hợp đồng (Date contract)",
+      "letter": "I",
+      "physical_letter": "I",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|J",
+      "sheet": "Salary",
+      "header": "Ngày làm việc cuối cùng (Last working date)",
+      "label": "Ngày làm việc cuối cùng (Last working date)",
+      "letter": "J",
+      "physical_letter": "J",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|K",
+      "sheet": "Salary",
+      "header": "USD",
+      "label": "Lương hợp đồng (Gross contract salary) — USD",
+      "letter": "K",
+      "physical_letter": "K",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|L",
+      "sheet": "Salary",
+      "header": "VND",
+      "label": "Lương hợp đồng (Gross contract salary) — VND",
+      "letter": "L",
+      "physical_letter": "L",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|M",
+      "sheet": "Salary",
+      "header": "Lương bảo hiểm (Insurance salary)",
+      "label": "Lương bảo hiểm (Insurance salary)",
+      "letter": "M",
+      "physical_letter": "M",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|O",
+      "sheet": "Salary",
+      "header": "Ngày công chuẩn (Standard working days)",
+      "label": "Ngày công chuẩn (Standard working days)",
+      "letter": "O",
+      "physical_letter": "O",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|P",
+      "sheet": "Salary",
+      "header": "Số ngày làm việc thực tế (Paid days)",
+      "label": "Số ngày làm việc thực tế (Paid days)",
+      "letter": "P",
+      "physical_letter": "P",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|Q",
+      "sheet": "Salary",
+      "header": "Lương tháng (Actual gross salary)",
+      "label": "Lương tháng (Actual gross salary)",
+      "letter": "Q",
+      "physical_letter": "Q",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|R",
+      "sheet": "Salary",
+      "header": "Đồng phục (Uniform)",
+      "label": "Đồng phục (Uniform)",
+      "letter": "R",
+      "physical_letter": "R",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|S",
+      "sheet": "Salary",
+      "header": "Điện thoại (Phone)",
+      "label": "Điện thoại (Phone)",
+      "letter": "S",
+      "physical_letter": "S",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|T",
+      "sheet": "Salary",
+      "header": "Trợ cấp thôi việc (Severance)",
+      "label": "Trợ cấp thôi việc (Severance)",
+      "letter": "T",
+      "physical_letter": "T",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|U",
+      "sheet": "Salary",
+      "header": "Phụ cấp khác (Others)",
+      "label": "Phụ cấp khác (Others) — Phụ cấp không theo lương (Allowance-Non-taxable)",
+      "letter": "U",
+      "physical_letter": "U",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|V",
+      "sheet": "Salary",
+      "header": "Ngày phép năm (Annual leave)",
+      "label": "Ngày phép năm (Annual leave)",
+      "letter": "V",
+      "physical_letter": "V",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|W",
+      "sheet": "Salary",
+      "header": "Xăng xe thêm (Additional Transportation)",
+      "label": "Xăng xe thêm (Additional Transportation)",
+      "letter": "W",
+      "physical_letter": "W",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|X",
+      "sheet": "Salary",
+      "header": "Xăng xe (Transportation)",
+      "label": "Xăng xe (Transportation)",
+      "letter": "X",
+      "physical_letter": "X",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|Y",
+      "sheet": "Salary",
+      "header": "Phụ cấp điện thoại (Phone Allowance)",
+      "label": "Phụ cấp điện thoại (Phone Allowance)",
+      "letter": "Y",
+      "physical_letter": "Y",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|Z",
+      "sheet": "Salary",
+      "header": "Phụ cấp bảo hiểm tư nhân (Private Insurance allowance)",
+      "label": "Phụ cấp bảo hiểm tư nhân (Private Insurance allowance)",
+      "letter": "Z",
+      "physical_letter": "Z",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|AA",
+      "sheet": "Salary",
+      "header": "Trợ cấp tư vấn kỹ thuật Technical advisory allowance",
+      "label": "Trợ cấp tư vấn kỹ thuật Technical advisory allowance",
+      "letter": "AA",
+      "physical_letter": "AA",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|AB",
+      "sheet": "Salary",
+      "header": "Y2S2 Ags incentive",
+      "label": "Y2S2 Ags incentive",
+      "letter": "AB",
+      "physical_letter": "AB",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|AC",
+      "sheet": "Salary",
+      "header": "New product launching (RP-Lem Lep Hat) incentive",
+      "label": "New product launching (RP-Lem Lep Hat) incentive",
+      "letter": "AC",
+      "physical_letter": "AC",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|AD",
+      "sheet": "Salary",
+      "header": "Variable Bonus",
+      "label": "Variable Bonus",
+      "letter": "AD",
+      "physical_letter": "AD",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|AE",
+      "sheet": "Salary",
+      "header": "Refferal incentive",
+      "label": "Refferal incentive",
+      "letter": "AE",
+      "physical_letter": "AE",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|AF",
+      "sheet": "Salary",
+      "header": "Phụ cấp khác (Others)",
+      "label": "Phụ cấp khác (Others) — Phụ cấp không theo lương (Allowance-Taxable)",
+      "letter": "AF",
+      "physical_letter": "AF",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|AG",
+      "sheet": "Salary",
+      "header": "Điều chỉnh tăng (Additional Adjustment)",
+      "label": "Điều chỉnh tăng (Additional Adjustment)",
+      "letter": "AG",
+      "physical_letter": "AG",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|AH",
+      "sheet": "Salary",
+      "header": "Điều chỉnh giảm (Deduction Adjustment)",
+      "label": "Điều chỉnh giảm (Deduction Adjustment)",
+      "letter": "AH",
+      "physical_letter": "AH",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|AI",
+      "sheet": "Salary",
+      "header": "Phúc lợi (không trả bằng tiền) Non-cash benefit",
+      "label": "Phúc lợi (không trả bằng tiền) Non-cash benefit",
+      "letter": "AI",
+      "physical_letter": "AI",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|AJ",
+      "sheet": "Salary",
+      "header": "Weekend",
+      "label": "Weekend",
+      "letter": "AJ",
+      "physical_letter": "AJ",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|AK",
+      "sheet": "Salary",
+      "header": "Holiday",
+      "label": "Holiday",
+      "letter": "AK",
+      "physical_letter": "AK",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|AL",
+      "sheet": "Salary",
+      "header": "Tổng thu nhập (Total monthly income)",
+      "label": "Tổng thu nhập (Total monthly income)",
+      "letter": "AL",
+      "physical_letter": "AL",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|AM",
+      "sheet": "Salary",
+      "header": "Thu nhập chịu thuế (Taxable income)",
+      "label": "Thu nhập chịu thuế (Taxable income)",
+      "letter": "AM",
+      "physical_letter": "AM",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|AN",
+      "sheet": "Salary",
+      "header": "BHXH (SI) 8%",
+      "label": "BHXH (SI) 8%",
+      "letter": "AN",
+      "physical_letter": "AN",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|AO",
+      "sheet": "Salary",
+      "header": "BHYT (HI) 1.5%",
+      "label": "BHYT (HI) 1.5%",
+      "letter": "AO",
+      "physical_letter": "AO",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|AP",
+      "sheet": "Salary",
+      "header": "BHTN (UI) 1%",
+      "label": "BHTN (UI) 1% — Trích từ lương nhân viên (Employee)",
+      "letter": "AP",
+      "physical_letter": "AP",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|AQ",
+      "sheet": "Salary",
+      "header": "KPCD (TU) 0.5 %",
+      "label": "KPCD (TU) 0.5 %",
+      "letter": "AQ",
+      "physical_letter": "AQ",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|AR",
+      "sheet": "Salary",
+      "header": "Tham gia CĐ (TU Joining)",
+      "label": "Tham gia CĐ (TU Joining)",
+      "letter": "AR",
+      "physical_letter": "AR",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|AS",
+      "sheet": "Salary",
+      "header": "BHXH (SI) 17.5%",
+      "label": "BHXH (SI) 17.5%",
+      "letter": "AS",
+      "physical_letter": "AS",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|AT",
+      "sheet": "Salary",
+      "header": "BHYT (HI) 3%",
+      "label": "BHYT (HI) 3%",
+      "letter": "AT",
+      "physical_letter": "AT",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|AU",
+      "sheet": "Salary",
+      "header": "BHTN (UI) 1%",
+      "label": "BHTN (UI) 1% — Người sử dụng lao động (Employer)",
+      "letter": "AU",
+      "physical_letter": "AU",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|AV",
+      "sheet": "Salary",
+      "header": "KPCD (TU) 2%",
+      "label": "KPCD (TU) 2%",
+      "letter": "AV",
+      "physical_letter": "AV",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|AW",
+      "sheet": "Salary",
+      "header": "Bản thân (Personal)",
+      "label": "Bản thân (Personal)",
+      "letter": "AW",
+      "physical_letter": "AW",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|AX",
+      "sheet": "Salary",
+      "header": "Người phụ thuộc (Dependants)",
+      "label": "Người phụ thuộc (Dependants) — Count",
+      "letter": "AX",
+      "physical_letter": "AX",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|AY",
+      "sheet": "Salary",
+      "header": "Người phụ thuộc (Dependants)",
+      "label": "Người phụ thuộc (Dependants) — VND",
+      "letter": "AY",
+      "physical_letter": "AY",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|AZ",
+      "sheet": "Salary",
+      "header": "Thu nhập tính thuế (Assessable income)",
+      "label": "Thu nhập tính thuế (Assessable income)",
+      "letter": "AZ",
+      "physical_letter": "AZ",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|BA",
+      "sheet": "Salary",
+      "header": "Thuế TNCN (PIT)",
+      "label": "Thuế TNCN (PIT)",
+      "letter": "BA",
+      "physical_letter": "BA",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|BB",
+      "sheet": "Salary",
+      "header": "VND",
+      "label": "Thu nhập thuần (Net income) — VND",
+      "letter": "BB",
+      "physical_letter": "BB",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|BC",
+      "sheet": "Salary",
+      "header": "USD",
+      "label": "Thu nhập thuần (Net income) — USD",
+      "letter": "BC",
+      "physical_letter": "BC",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|BD",
+      "sheet": "Salary",
+      "header": "Tổng chi phí lương (Total salary cost)",
+      "label": "Tổng chi phí lương (Total salary cost)",
+      "letter": "BD",
+      "physical_letter": "BD",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|BE",
+      "sheet": "Salary",
+      "header": "Tạm ứng (Advance)",
+      "label": "Tạm ứng (Advance)",
+      "letter": "BE",
+      "physical_letter": "BE",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|BF",
+      "sheet": "Salary",
+      "header": "ĐC giảm (Deduction)",
+      "label": "ĐC giảm (Deduction)",
+      "letter": "BF",
+      "physical_letter": "BF",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|BG",
+      "sheet": "Salary",
+      "header": "ĐC tăng (Addition)",
+      "label": "ĐC tăng (Addition)",
+      "letter": "BG",
+      "physical_letter": "BG",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|BH",
+      "sheet": "Salary",
+      "header": "PIT refund",
+      "label": "PIT refund",
+      "letter": "BH",
+      "physical_letter": "BH",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|BI",
+      "sheet": "Salary",
+      "header": "VND",
+      "label": "Thực trả (Net payment) — VND",
+      "letter": "BI",
+      "physical_letter": "BI",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|BJ",
+      "sheet": "Salary",
+      "header": "USD",
+      "label": "Thực trả (Net payment) — USD",
+      "letter": "BJ",
+      "physical_letter": "BJ",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|BK",
+      "sheet": "Salary",
+      "header": "Kỳ lương (Period)",
+      "label": "Kỳ lương (Period)",
+      "letter": "BK",
+      "physical_letter": "BK",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|BL",
+      "sheet": "Salary",
+      "header": "Incentive trip",
+      "label": "Incentive trip",
+      "letter": "BL",
+      "physical_letter": "BL",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|BM",
+      "sheet": "Salary",
+      "header": "Premium insurance for dependent",
+      "label": "Premium insurance for dependent",
+      "letter": "BM",
+      "physical_letter": "BM",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|BN",
+      "sheet": "Salary",
+      "header": "Revised taxable income",
+      "label": "Revised taxable income — Adjustment for premium insurance & incentive trip",
+      "letter": "BN",
+      "physical_letter": "BN",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|BO",
+      "sheet": "Salary",
+      "header": "Revised accessable income",
+      "label": "Revised accessable income — Adjustment for premium insurance & incentive trip",
+      "letter": "BO",
+      "physical_letter": "BO",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|BP",
+      "sheet": "Salary",
+      "header": "Revised PIT",
+      "label": "Revised PIT — Adjustment for premium insurance & incentive trip",
+      "letter": "BP",
+      "physical_letter": "BP",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|BQ",
+      "sheet": "Salary",
+      "header": "PIT gap",
+      "label": "PIT gap — Adjustment for premium insurance & incentive trip",
+      "letter": "BQ",
+      "physical_letter": "BQ",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|BR",
+      "sheet": "Salary",
+      "header": "Department",
+      "label": "Department",
+      "letter": "BR",
+      "physical_letter": "BR",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|BS",
+      "sheet": "Salary",
+      "header": "Support for incident",
+      "label": "Support for incident",
+      "letter": "BS",
+      "physical_letter": "BS",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78
+    },
+    {
+      "key": "Salary|BT",
+      "sheet": "Salary",
+      "header": "Revised taxable income",
+      "label": "Revised taxable income — Adjustment for allowance (Company bears PIT)",
+      "letter": "BT",
+      "physical_letter": "BT",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|BU",
+      "sheet": "Salary",
+      "header": "Revised accessable income",
+      "label": "Revised accessable income — Adjustment for allowance (Company bears PIT)",
+      "letter": "BU",
+      "physical_letter": "BU",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|BV",
+      "sheet": "Salary",
+      "header": "Revised PIT",
+      "label": "Revised PIT — Adjustment for allowance (Company bears PIT)",
+      "letter": "BV",
+      "physical_letter": "BV",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    },
+    {
+      "key": "Salary|BW",
+      "sheet": "Salary",
+      "header": "PIT gap",
+      "label": "PIT gap — Adjustment for allowance (Company bears PIT)",
+      "letter": "BW",
+      "physical_letter": "BW",
+      "preferred": true,
+      "sample": "",
+      "data_start_row": 9,
+      "data_end_row": 78,
+      "calculated": true
+    }
+  ]
+}

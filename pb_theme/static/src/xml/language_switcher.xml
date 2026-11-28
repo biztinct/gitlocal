@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="pb_theme.LanguageSwitcher">
+        <div class="pb-language-switcher">
+            <Dropdown position="'bottom-end'" disabled="state.switching">
+                <button
+                    class="pb-language-switcher__toggle"
+                    type="button"
+                    t-att-title="currentLabel"
+                    t-att-aria-label="toggleAriaLabel"
+                    t-att-disabled="state.switching"
+                >
+                    <i class="fa fa-globe" aria-hidden="true"/>
+                    <span class="pb-language-switcher__code" t-esc="currentShortCode"/>
+                    <i class="fa fa-angle-down pb-language-switcher__chevron" aria-hidden="true"/>
+                </button>
+                <t t-set-slot="content">
+                    <div class="pb-language-switcher__heading">Language</div>
+                    <DropdownItem
+                        t-foreach="state.languages"
+                        t-as="language"
+                        t-key="language.code"
+                        class="{ 'pb-language-switcher__item--current': language.code === currentCode }"
+                        attrs="{
+                            'aria-current': language.code === currentCode ? 'true' : undefined,
+                            'data-language-code': language.code,
+                        }"
+                        onSelected="() => this.selectLanguage(language.code)"
+                    >
+                        <span class="pb-language-switcher__name" t-esc="language.name"/>
+                        <span class="pb-language-switcher__meta">
+                            <span t-esc="language.code"/>
+                            <i t-if="language.code === currentCode" class="fa fa-check" aria-label="Current language"/>
+                        </span>
+                    </DropdownItem>
+                </t>
+            </Dropdown>
+        </div>
+    </t>
+
+</templates>

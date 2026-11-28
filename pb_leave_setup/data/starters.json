@@ -1,0 +1,504 @@
+{
+  "version": "2026-11-15",
+  "_comment": "Ready-made kinds of leave per country (WDGAP S5-A, owner ruling L1). A STARTING POINT, NOT LEGAL ADVICE: figures were written from the laws named in each source note and are not a legal review. Nothing here is created on install; HR applies a country on demand, every kind is created switched off, HR reviews each and switches it on. Never written: pb_policy_code, pb_policy_category (Rize-only). pay = [treatment, paid fraction, funding, employer fraction] as pb_timeoff's _classification reads them; 'unconfigured' means HR must decide before switching the kind on. steps = [[after years, extra days a year], ...] (the highest step reached applies). Notes: en always; vi for Vietnam, id for Indonesia (the local HR team's language).",
+  "countries": {
+    "VN": {
+      "kinds": [
+        {
+          "key": "annual",
+          "name": {"en": "Annual leave", "vi": "Nghỉ phép năm", "id": "Cuti tahunan"},
+          "unit": "day", "counted": true, "earning": "monthly", "days": 12, "waiting": 0,
+          "steps": [[5, 1], [10, 2], [15, 3], [20, 4], [25, 5], [30, 6]],
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Labour Code 2019 (45/2019/QH14), Article 113: 12 working days a year for a full year of work; somebody who has worked less than a year gets a share for the months worked.",
+                     "vi": "Bộ luật Lao động 2019 (45/2019/QH14), Điều 113: 12 ngày làm việc mỗi năm khi làm đủ năm; làm chưa đủ năm thì tính theo tỷ lệ số tháng làm việc."},
+            "steps": {"en": "Labour Code 2019, Article 114: one more day for every 5 full years with the same employer.",
+                      "vi": "Bộ luật Lao động 2019, Điều 114: cứ đủ 5 năm làm việc cho một người sử dụng lao động thì được thêm 1 ngày."},
+            "pay": {"en": "Labour Code 2019, Article 113: annual leave is on full pay.",
+                    "vi": "Bộ luật Lao động 2019, Điều 113: nghỉ phép năm được hưởng nguyên lương."}
+          }
+        },
+        {
+          "key": "sick",
+          "name": {"en": "Sick leave", "vi": "Nghỉ ốm", "id": "Cuti sakit"},
+          "unit": "day", "counted": false, "earning": "none", "doc": true, "backdate": true,
+          "pay": ["partial", 0.75, "external", 0],
+          "sources": {
+            "pay": {"en": "Law on Social Insurance 2014 (58/2014/QH13), Articles 25-28: paid by the social insurance fund at 75% of the insured salary, 30 to 60 days a year depending on the years paid in; a medical certificate is needed.",
+                    "vi": "Luật Bảo hiểm xã hội 2014 (58/2014/QH13), Điều 25-28: quỹ bảo hiểm xã hội chi trả 75% mức lương đóng bảo hiểm, từ 30 đến 60 ngày mỗi năm tùy thời gian đóng; cần giấy chứng nhận nghỉ việc hưởng BHXH."}
+          }
+        },
+        {
+          "key": "maternity",
+          "name": {"en": "Maternity leave", "vi": "Nghỉ thai sản", "id": "Cuti melahirkan"},
+          "unit": "day", "counted": false, "earning": "none", "doc": true,
+          "pay": ["paid", 1, "external", 0],
+          "sources": {
+            "days": {"en": "Law on Social Insurance 2014, Article 34: 6 months before and after giving birth.",
+                     "vi": "Luật Bảo hiểm xã hội 2014, Điều 34: nghỉ 6 tháng trước và sau khi sinh con."},
+            "pay": {"en": "Paid by the social insurance fund at 100% of the average insured salary (Article 39), not by the employer.",
+                    "vi": "Quỹ bảo hiểm xã hội chi trả 100% mức bình quân tiền lương đóng bảo hiểm (Điều 39), không phải người sử dụng lao động."}
+          }
+        },
+        {
+          "key": "paternity",
+          "name": {"en": "Paternity leave", "vi": "Nghỉ khi vợ sinh con", "id": "Cuti ayah"},
+          "unit": "day", "counted": false, "earning": "none", "doc": true,
+          "pay": ["paid", 1, "external", 0],
+          "sources": {
+            "days": {"en": "Law on Social Insurance 2014, Article 34(2): 5 working days when the wife gives birth (more for twins or a caesarean), within 30 days of the birth.",
+                     "vi": "Luật Bảo hiểm xã hội 2014, Điều 34 khoản 2: 5 ngày làm việc khi vợ sinh con (nhiều hơn nếu sinh đôi hoặc sinh mổ), trong 30 ngày đầu kể từ ngày sinh."},
+            "pay": {"en": "Paid by the social insurance fund.", "vi": "Quỹ bảo hiểm xã hội chi trả."}
+          }
+        },
+        {
+          "key": "marriage",
+          "name": {"en": "Marriage leave", "vi": "Nghỉ kết hôn", "id": "Cuti menikah"},
+          "unit": "day", "counted": false, "earning": "none",
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Labour Code 2019, Article 115(1)(a): 3 days on full pay when the employee marries.",
+                     "vi": "Bộ luật Lao động 2019, Điều 115 khoản 1 điểm a: kết hôn được nghỉ 3 ngày, hưởng nguyên lương."}
+          }
+        },
+        {
+          "key": "child_marriage",
+          "name": {"en": "Child's marriage", "vi": "Nghỉ khi con kết hôn", "id": "Pernikahan anak"},
+          "unit": "day", "counted": false, "earning": "none",
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Labour Code 2019, Article 115(1)(b): 1 day on full pay when a child marries.",
+                     "vi": "Bộ luật Lao động 2019, Điều 115 khoản 1 điểm b: con đẻ, con nuôi kết hôn được nghỉ 1 ngày, hưởng nguyên lương."}
+          }
+        },
+        {
+          "key": "bereavement",
+          "name": {"en": "Bereavement leave", "vi": "Nghỉ tang", "id": "Cuti duka"},
+          "unit": "day", "counted": false, "earning": "none", "backdate": true,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Labour Code 2019, Article 115(1)(c): 3 days on full pay when a parent, a spouse's parent, the spouse or a child dies.",
+                     "vi": "Bộ luật Lao động 2019, Điều 115 khoản 1 điểm c: cha, mẹ (cả bên vợ hoặc chồng), vợ hoặc chồng, con chết được nghỉ 3 ngày, hưởng nguyên lương."}
+          }
+        },
+        {
+          "key": "unpaid",
+          "name": {"en": "Unpaid leave", "vi": "Nghỉ không lương", "id": "Cuti tanpa upah"},
+          "unit": "day", "counted": false, "earning": "none", "unpaid": true,
+          "pay": ["unpaid", 0, "none", 0],
+          "sources": {
+            "pay": {"en": "Labour Code 2019, Article 115(3): unpaid leave by agreement with the employer.",
+                    "vi": "Bộ luật Lao động 2019, Điều 115 khoản 3: nghỉ không hưởng lương khi thỏa thuận với người sử dụng lao động."}
+          }
+        }
+      ]
+    },
+    "ID": {
+      "kinds": [
+        {
+          "key": "annual",
+          "name": {"en": "Annual leave", "vi": "Nghỉ phép năm", "id": "Cuti tahunan"},
+          "unit": "day", "counted": true, "earning": "yearly", "days": 12, "waiting": 12,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Manpower Law 13/2003, Article 79(3), as amended by Law 6/2023 (Job Creation): at least 12 working days a year after 12 months of continuous work. Payobook adds the days each calendar year, in proportion for the first year after the 12 months.",
+                     "id": "UU Ketenagakerjaan 13/2003 Pasal 79 ayat (3), diubah oleh UU 6/2023 (Cipta Kerja): paling sedikit 12 hari kerja setahun setelah bekerja 12 bulan terus-menerus. Payobook menambahkan hari setiap tahun kalender, sebanding untuk tahun pertama setelah 12 bulan."},
+            "pay": {"en": "Article 84: full pay during annual leave.", "id": "Pasal 84: upah penuh selama cuti tahunan."}
+          }
+        },
+        {
+          "key": "sick",
+          "name": {"en": "Sick leave", "vi": "Nghỉ ốm", "id": "Cuti sakit"},
+          "unit": "day", "counted": false, "earning": "none", "doc": true, "backdate": true,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "pay": {"en": "Manpower Law 13/2003, Article 93(2)(a) and (3): the employer pays while the person cannot work, with a doctor's letter: full pay for the first 4 months, then 75%, 50% and 25%. Check longer absences by hand.",
+                    "id": "UU Ketenagakerjaan 13/2003 Pasal 93 ayat (2) huruf a dan ayat (3): pengusaha membayar upah selama pekerja sakit dengan surat dokter: 100% untuk 4 bulan pertama, lalu 75%, 50% dan 25%. Periksa sakit yang lebih lama secara manual."}
+          }
+        },
+        {
+          "key": "maternity",
+          "name": {"en": "Maternity leave", "vi": "Nghỉ thai sản", "id": "Cuti melahirkan"},
+          "unit": "day", "counted": false, "earning": "none", "doc": true,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Manpower Law 13/2003, Article 82(1): 1.5 months before and 1.5 months after giving birth. Law 4/2024 on Mother and Child Welfare allows up to 6 months in special conditions.",
+                     "id": "UU Ketenagakerjaan 13/2003 Pasal 82 ayat (1): 1,5 bulan sebelum dan 1,5 bulan sesudah melahirkan. UU 4/2024 tentang Kesejahteraan Ibu dan Anak memungkinkan sampai 6 bulan dalam kondisi khusus."},
+            "pay": {"en": "Article 84: full pay.", "id": "Pasal 84: upah penuh."}
+          }
+        },
+        {
+          "key": "miscarriage",
+          "name": {"en": "Miscarriage leave", "vi": "Nghỉ sảy thai", "id": "Cuti keguguran"},
+          "unit": "day", "counted": false, "earning": "none", "doc": true, "backdate": true,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Manpower Law 13/2003, Article 82(2): 1.5 months, or as the doctor or midwife says, on full pay.",
+                     "id": "UU Ketenagakerjaan 13/2003 Pasal 82 ayat (2): 1,5 bulan atau sesuai keterangan dokter atau bidan, dengan upah penuh."}
+          }
+        },
+        {
+          "key": "menstrual",
+          "name": {"en": "Menstrual leave", "vi": "Nghỉ kinh nguyệt", "id": "Cuti haid"},
+          "unit": "day", "counted": false, "earning": "none", "backdate": true,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Manpower Law 13/2003, Article 81: the first and second day of the period, for a worker who feels pain and tells the employer; paid (Article 93(2)(b)).",
+                     "id": "UU Ketenagakerjaan 13/2003 Pasal 81: hari pertama dan kedua haid bagi pekerja yang merasakan sakit dan memberitahukan kepada pengusaha; dibayar (Pasal 93 ayat (2) huruf b)."}
+          }
+        },
+        {
+          "key": "marriage",
+          "name": {"en": "Marriage leave", "vi": "Nghỉ kết hôn", "id": "Cuti menikah"},
+          "unit": "day", "counted": false, "earning": "none",
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Manpower Law 13/2003, Article 93(4)(a): 3 days on full pay when the employee marries.",
+                     "id": "UU Ketenagakerjaan 13/2003 Pasal 93 ayat (4) huruf a: pekerja menikah, dibayar untuk selama 3 hari."}
+          }
+        },
+        {
+          "key": "child_marriage",
+          "name": {"en": "Child's marriage", "vi": "Nghỉ khi con kết hôn", "id": "Pernikahan anak"},
+          "unit": "day", "counted": false, "earning": "none",
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Article 93(4)(b): 2 days when a child marries.", "id": "Pasal 93 ayat (4) huruf b: menikahkan anak, 2 hari."}
+          }
+        },
+        {
+          "key": "child_ceremony",
+          "name": {"en": "Child's circumcision or baptism", "vi": "Lễ cắt bao quy đầu hoặc rửa tội của con", "id": "Khitanan atau pembaptisan anak"},
+          "unit": "day", "counted": false, "earning": "none",
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Article 93(4)(c): 2 days for a child's circumcision or baptism.", "id": "Pasal 93 ayat (4) huruf c: mengkhitankan atau membaptiskan anak, 2 hari."}
+          }
+        },
+        {
+          "key": "wife_birth",
+          "name": {"en": "Wife gives birth", "vi": "Nghỉ khi vợ sinh con", "id": "Istri melahirkan"},
+          "unit": "day", "counted": false, "earning": "none",
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Article 93(4)(d): 2 days when the wife gives birth or miscarries.", "id": "Pasal 93 ayat (4) huruf d: istri melahirkan atau keguguran, 2 hari."}
+          }
+        },
+        {
+          "key": "bereavement",
+          "name": {"en": "Bereavement leave", "vi": "Nghỉ tang", "id": "Cuti duka"},
+          "unit": "day", "counted": false, "earning": "none", "backdate": true,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Article 93(4)(e): 2 days when a spouse, parent, parent-in-law, child or child-in-law dies.",
+                     "id": "Pasal 93 ayat (4) huruf e: suami/istri, orang tua/mertua, anak atau menantu meninggal dunia, 2 hari."}
+          }
+        },
+        {
+          "key": "household_death",
+          "name": {"en": "Death in the household", "vi": "Người trong nhà qua đời", "id": "Anggota keluarga serumah meninggal"},
+          "unit": "day", "counted": false, "earning": "none", "backdate": true,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Article 93(4)(f): 1 day when a member of the household dies.", "id": "Pasal 93 ayat (4) huruf f: anggota keluarga dalam satu rumah meninggal dunia, 1 hari."}
+          }
+        },
+        {
+          "key": "unpaid",
+          "name": {"en": "Unpaid leave", "vi": "Nghỉ không lương", "id": "Cuti tanpa upah"},
+          "unit": "day", "counted": false, "earning": "none", "unpaid": true,
+          "pay": ["unpaid", 0, "none", 0],
+          "sources": {
+            "pay": {"en": "Manpower Law 13/2003, Article 93(1): no work, no pay, unless the law says otherwise.",
+                    "id": "UU Ketenagakerjaan 13/2003 Pasal 93 ayat (1): upah tidak dibayar apabila pekerja tidak melakukan pekerjaan, kecuali ditentukan lain."}
+          }
+        }
+      ]
+    },
+    "IN": {
+      "kinds": [
+        {
+          "key": "earned",
+          "name": {"en": "Earned leave", "vi": "Nghỉ phép tích lũy", "id": "Cuti yang diperoleh"},
+          "unit": "day", "counted": true, "earning": "monthly", "days": 15, "waiting": 0,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Varies by state. Factories Act 1948, Section 79: one day for every 20 days worked, after 240 days in a year. Each state's Shops and Establishments Act sets its own figure (often 12 to 21 days). 15 is only a placeholder: set your state's figure before switching it on."},
+            "pay": {"en": "Paid at the ordinary rate of pay (Factories Act 1948, Section 80; state Shops and Establishments Acts)."}
+          }
+        },
+        {
+          "key": "casual",
+          "name": {"en": "Casual leave", "vi": "Nghỉ việc riêng", "id": "Cuti kasual"},
+          "unit": "day", "counted": true, "earning": "yearly", "days": 7, "waiting": 0,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Set by each state's Shops and Establishments Act (often 7 to 12 days a year). 7 is only a placeholder."}
+          }
+        },
+        {
+          "key": "sick",
+          "name": {"en": "Sick leave", "vi": "Nghỉ ốm", "id": "Cuti sakit"},
+          "unit": "day", "counted": true, "earning": "yearly", "days": 7, "waiting": 0, "doc": true, "backdate": true,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Set by each state's Shops and Establishments Act (often 7 to 12 days a year). 7 is only a placeholder."},
+            "pay": {"en": "Workers covered by the Employees' State Insurance Act 1948 are paid sickness benefit by the ESI instead: change the pay to \"from an outside fund\" for them."}
+          }
+        },
+        {
+          "key": "maternity",
+          "name": {"en": "Maternity leave", "vi": "Nghỉ thai sản", "id": "Cuti melahirkan"},
+          "unit": "day", "counted": false, "earning": "none", "doc": true,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Maternity Benefit Act 1961, Section 5 (amended 2017): 26 weeks for the first two children, 12 weeks from the third."},
+            "pay": {"en": "Paid by the employer at the average daily wage; the ESI pays instead for workers it covers."}
+          }
+        },
+        {
+          "key": "unpaid",
+          "name": {"en": "Leave without pay", "vi": "Nghỉ không lương", "id": "Cuti tanpa upah"},
+          "unit": "day", "counted": false, "earning": "none", "unpaid": true,
+          "pay": ["unpaid", 0, "none", 0],
+          "sources": {"pay": {"en": "By agreement with the employer."}}
+        }
+      ]
+    },
+    "SG": {
+      "kinds": [
+        {
+          "key": "annual",
+          "name": {"en": "Annual leave", "vi": "Nghỉ phép năm", "id": "Cuti tahunan"},
+          "unit": "day", "counted": true, "earning": "yearly", "days": 7, "waiting": 3,
+          "steps": [[1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7]],
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Employment Act 1968, Section 88A: 7 days in the first year of service, after 3 months of service."},
+            "steps": {"en": "Section 88A: one more day for each further year of service, up to 14 days from the eighth year."},
+            "pay": {"en": "On full pay."}
+          }
+        },
+        {
+          "key": "sick",
+          "name": {"en": "Outpatient sick leave", "vi": "Nghỉ ốm ngoại trú", "id": "Cuti sakit rawat jalan"},
+          "unit": "day", "counted": true, "earning": "yearly", "days": 14, "waiting": 6, "doc": true, "backdate": true,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Employment Act 1968, Section 89: 14 days a year after 6 months of service, with a medical certificate. Fewer days are due from the third month (5, 8, 11): add those by hand."}
+          }
+        },
+        {
+          "key": "hospital",
+          "name": {"en": "Hospitalisation leave", "vi": "Nghỉ nằm viện", "id": "Cuti rawat inap"},
+          "unit": "day", "counted": true, "earning": "yearly", "days": 60, "waiting": 6, "doc": true, "backdate": true,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Employment Act 1968, Section 89: up to 60 days a year in hospital, which includes the outpatient days, after 6 months of service."}
+          }
+        },
+        {
+          "key": "maternity",
+          "name": {"en": "Maternity leave", "vi": "Nghỉ thai sản", "id": "Cuti melahirkan"},
+          "unit": "day", "counted": false, "earning": "none", "doc": true,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Child Development Co-Savings Act 2001 (Government-Paid Maternity Leave): 16 weeks for a Singapore citizen child."},
+            "pay": {"en": "The employer pays and claims the government's part back."}
+          }
+        },
+        {
+          "key": "paternity",
+          "name": {"en": "Paternity leave", "vi": "Nghỉ khi vợ sinh con", "id": "Cuti ayah"},
+          "unit": "day", "counted": false, "earning": "none", "doc": true,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Government-Paid Paternity Leave: 4 weeks for children born on or after 1 April 2025."},
+            "pay": {"en": "The employer pays and claims it back."}
+          }
+        },
+        {
+          "key": "childcare",
+          "name": {"en": "Childcare leave", "vi": "Nghỉ chăm con", "id": "Cuti mengasuh anak"},
+          "unit": "day", "counted": true, "earning": "yearly", "days": 6, "waiting": 3,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Child Development Co-Savings Act 2001: 6 days a year while the youngest Singapore citizen child is under 7, after 3 months of service."},
+            "pay": {"en": "The employer pays; the government repays the last 3 days."}
+          }
+        },
+        {
+          "key": "unpaid",
+          "name": {"en": "Unpaid leave", "vi": "Nghỉ không lương", "id": "Cuti tanpa upah"},
+          "unit": "day", "counted": false, "earning": "none", "unpaid": true,
+          "pay": ["unpaid", 0, "none", 0],
+          "sources": {"pay": {"en": "By agreement with the employer."}}
+        }
+      ]
+    },
+    "TH": {
+      "kinds": [
+        {
+          "key": "annual",
+          "name": {"en": "Annual leave", "vi": "Nghỉ phép năm", "id": "Cuti tahunan"},
+          "unit": "day", "counted": true, "earning": "yearly", "days": 6, "waiting": 12,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Labour Protection Act B.E. 2541 (1998), Section 30: at least 6 working days a year after one full year of service."},
+            "pay": {"en": "Section 56: on full pay."}
+          }
+        },
+        {
+          "key": "sick",
+          "name": {"en": "Sick leave", "vi": "Nghỉ ốm", "id": "Cuti sakit"},
+          "unit": "day", "counted": true, "earning": "yearly", "days": 30, "waiting": 0, "doc": true, "backdate": true,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Section 32: sick leave as needed; a medical certificate may be asked for 3 days or more."},
+            "pay": {"en": "Section 57: paid for up to 30 working days a year."}
+          }
+        },
+        {
+          "key": "business",
+          "name": {"en": "Personal business leave", "vi": "Nghỉ việc riêng", "id": "Cuti keperluan pribadi"},
+          "unit": "day", "counted": true, "earning": "yearly", "days": 3, "waiting": 0,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Section 34 (amended 2019): at least 3 working days a year for necessary business, on full pay (Section 57/1)."}
+          }
+        },
+        {
+          "key": "maternity",
+          "name": {"en": "Maternity leave", "vi": "Nghỉ thai sản", "id": "Cuti melahirkan"},
+          "unit": "day", "counted": false, "earning": "none", "doc": true,
+          "pay": ["unconfigured", 1, "unconfigured", 0],
+          "sources": {
+            "days": {"en": "Section 41 (amended 2019): 98 days, including check-ups before the birth."},
+            "pay": {"en": "Section 59: the employer pays up to 45 days; Social Security pays a maternity benefit for the rest. Choose how your pay scheme pays it before switching it on."}
+          }
+        },
+        {
+          "key": "unpaid",
+          "name": {"en": "Unpaid leave", "vi": "Nghỉ không lương", "id": "Cuti tanpa upah"},
+          "unit": "day", "counted": false, "earning": "none", "unpaid": true,
+          "pay": ["unpaid", 0, "none", 0],
+          "sources": {"pay": {"en": "By agreement with the employer."}}
+        }
+      ]
+    },
+    "KH": {
+      "kinds": [
+        {
+          "key": "annual",
+          "name": {"en": "Annual leave", "vi": "Nghỉ phép năm", "id": "Cuti tahunan"},
+          "unit": "day", "counted": true, "earning": "monthly", "days": 18, "waiting": 0,
+          "steps": [[3, 1], [6, 2], [9, 3], [12, 4], [15, 5], [18, 6], [21, 7], [24, 8], [27, 9], [30, 10]],
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Labour Law 1997, Article 166: 1.5 working days of paid leave for each month of continuous service (18 days a year). The days can be taken once the person has a year of service."},
+            "steps": {"en": "Article 166: one more day for every 3 years of service."},
+            "pay": {"en": "On full pay."}
+          }
+        },
+        {
+          "key": "sick",
+          "name": {"en": "Sick leave", "vi": "Nghỉ ốm", "id": "Cuti sakit"},
+          "unit": "day", "counted": false, "earning": "none", "doc": true, "backdate": true,
+          "pay": ["unconfigured", 1, "unconfigured", 0],
+          "sources": {
+            "pay": {"en": "Labour Law 1997, Article 71, with the ministry's rules on sick leave: full pay for the first month, 60% for the next two months, then unpaid, with a medical certificate. Choose how your pay scheme pays it before switching it on."}
+          }
+        },
+        {
+          "key": "maternity",
+          "name": {"en": "Maternity leave", "vi": "Nghỉ thai sản", "id": "Cuti melahirkan"},
+          "unit": "day", "counted": false, "earning": "none", "doc": true,
+          "pay": ["partial", 0.5, "employer", 0.5],
+          "sources": {
+            "days": {"en": "Labour Law 1997, Article 182: 90 days."},
+            "pay": {"en": "Article 183: after a year of service the employer pays half the wages. The National Social Security Fund pays a maternity allowance separately."}
+          }
+        },
+        {
+          "key": "special",
+          "name": {"en": "Special leave", "vi": "Nghỉ đặc biệt", "id": "Cuti khusus"},
+          "unit": "day", "counted": false, "earning": "none", "backdate": true,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Labour Law 1997, Article 171: up to 7 days of special leave for events that directly affect the family (a marriage, a birth, a death)."}
+          }
+        },
+        {
+          "key": "unpaid",
+          "name": {"en": "Unpaid leave", "vi": "Nghỉ không lương", "id": "Cuti tanpa upah"},
+          "unit": "day", "counted": false, "earning": "none", "unpaid": true,
+          "pay": ["unpaid", 0, "none", 0],
+          "sources": {"pay": {"en": "By agreement with the employer."}}
+        }
+      ]
+    },
+    "MY": {
+      "kinds": [
+        {
+          "key": "annual",
+          "name": {"en": "Annual leave", "vi": "Nghỉ phép năm", "id": "Cuti tahunan"},
+          "unit": "day", "counted": true, "earning": "yearly", "days": 8, "waiting": 0,
+          "steps": [[2, 4], [5, 8]],
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Employment Act 1955, Section 60E: 8 days a year with under 2 years of service, in proportion for an incomplete year."},
+            "steps": {"en": "Section 60E: 12 days with 2 to 5 years of service, 16 days with 5 years or more."},
+            "pay": {"en": "On ordinary pay."}
+          }
+        },
+        {
+          "key": "sick",
+          "name": {"en": "Sick leave", "vi": "Nghỉ ốm", "id": "Cuti sakit"},
+          "unit": "day", "counted": true, "earning": "yearly", "days": 14, "waiting": 0, "doc": true, "backdate": true,
+          "steps": [[2, 4], [5, 8]],
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Employment Act 1955, Section 60F: 14 days a year with under 2 years of service, with a medical certificate."},
+            "steps": {"en": "Section 60F: 18 days with 2 to 5 years of service, 22 days with 5 years or more."}
+          }
+        },
+        {
+          "key": "hospital",
+          "name": {"en": "Hospitalisation leave", "vi": "Nghỉ nằm viện", "id": "Cuti rawat inap"},
+          "unit": "day", "counted": true, "earning": "yearly", "days": 60, "waiting": 0, "doc": true, "backdate": true,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Section 60F: up to 60 days a year when a doctor says the person needs to be in hospital."}
+          }
+        },
+        {
+          "key": "maternity",
+          "name": {"en": "Maternity leave", "vi": "Nghỉ thai sản", "id": "Cuti melahirkan"},
+          "unit": "day", "counted": false, "earning": "none", "doc": true,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Section 37 (amended 2022): 98 days, for a worker with at least 90 days of service."},
+            "pay": {"en": "Paid by the employer."}
+          }
+        },
+        {
+          "key": "paternity",
+          "name": {"en": "Paternity leave", "vi": "Nghỉ khi vợ sinh con", "id": "Cuti ayah"},
+          "unit": "day", "counted": false, "earning": "none", "doc": true,
+          "pay": ["paid", 1, "employer", 1],
+          "sources": {
+            "days": {"en": "Section 60FA (2022): 7 days for a married man with at least 12 months of service, up to five births."}
+          }
+        },
+        {
+          "key": "unpaid",
+          "name": {"en": "Unpaid leave", "vi": "Nghỉ không lương", "id": "Cuti tanpa upah"},
+          "unit": "day", "counted": false, "earning": "none", "unpaid": true,
+          "pay": ["unpaid", 0, "none", 0],
+          "sources": {"pay": {"en": "By agreement with the employer."}}
+        }
+      ]
+    }
+  }
+}

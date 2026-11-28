@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       FS-9: the Bank block on the side panel (Pay and tax). Template
+       inheritance only, no edit of the vault files. W22: no double hyphen
+       in an XML comment. W23: one class attribute per element. PRD-3: every
+       sentence on one line.
+       ==================================================================== -->
+
+  <t t-name="pb_employee_bank_panel.Employee360Drawer" t-inherit="pb_employee_vault.Employee360Drawer" t-inherit-mode="extension">
+
+    <!-- The generic section draws every other group; the Bank group is drawn below. -->
+    <xpath expr="//t[@t-foreach='groups(state.tab)']/section[hasclass('pev-sec')]" position="attributes">
+      <attribute name="t-if">grp.kind !== 'pb_bank'</attribute>
+    </xpath>
+
+    <xpath expr="//t[@t-foreach='groups(state.tab)']/section[hasclass('pev-sec')]" position="after">
+      <t t-set="bk" t-value="grp.pb_bank"/>
+      <section t-if="grp.kind === 'pb_bank' and grp.pb_bank" class="pev-sec pbbp" t-att-data-status="bk.status" aria-label="Bank">
+        <div class="pev-sec-h">
+          <span class="ci" t-out="bkIc('creditCard', 15)"/>
+          <span class="cn" t-esc="grp.title"/>
+          <span t-attf-class="pbbp-status is-{{ bk.status }}">
+            <t t-out="bkStatusIcon(bk)"/>
+            <span t-esc="bk.status_label"/>
+          </span>
+        </div>
+
+        <div class="pbbp-body">
+
+          <!-- The approved account -->
+          <div t-if="bk.status === 'approved'" class="pbbp-acct">
+            <span class="pbbp-tile" t-out="bkIc('landmark', 18)"/>
+            <div class="pbbp-acct-main">
+              <div class="pbbp-bank">
+                <b t-if="bk.bank" t-esc="bk.bank"/>
+                <b t-else="" class="is-muted">Bank not named</b>
+                <span t-if="bk.store === 'vn_file'" class="pbbp-src">Vietnamese bank file</span>
+              </div>
+              <div class="pbbp-num" aria-label="Account number, last four digits">
+                <t t-esc="bk.masked"/>
+              </div>
+              <div class="pbbp-holder">
+                <span class="k"><t t-out="bkIc('user', 12)"/> Account holder</span>
+                <span t-if="bk.holder" class="v" t-esc="bk.holder"/>
+                <span t-else="" class="v is-muted">Not recorded</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- No approved account -->
+          <div t-if="bk.status !== 'approved'" class="pbbp-none">
+            <span class="pbbp-tile is-quiet" t-out="bkIc('circleDashed', 18)"/>
+            <div class="tx">
+              <b>No approved bank account on record.</b>
+              <span>Bank files cannot pay this person until an account is approved.</span>
+            </div>
+            <button t-if="bk.can_add and !bk.waiting" type="button" class="pev-mini pbbp-go" t-on-click="pbBankOpenChecks">
+              Open Bank Verification <t t-out="bkIc('arrowUpRight', 13)"/>
+            </button>
+          </div>
+
+          <!-- A change still waiting for approval -->
+          <div t-if="bk.waiting" class="pbbp-note is-wait">
+            <span class="ic" t-out="bkIc('clock', 16)"/>
+            <div class="tx">
+              <b>Change waiting for approval</b>
+              <span t-if="bk.waiting.new_masked" class="pbbp-new">New account: <b class="pbbp-mono" t-esc="bk.waiting.new_masked"/></span>
+              <span t-if="bk.status === 'approved'">Until it is approved, pay goes to the account above.</span>
+              <span t-else="">Nothing is paid by bank file until it is approved.</span>
+            </div>
+            <button t-if="bk.waiting.link" type="button" class="pev-mini pbbp-go" t-on-click="() => this.pbBankOpenWaiting(bk.waiting.link)">
+              Open the request <t t-out="bkIc('arrowUpRight', 13)"/>
+            </button>
+          </div>
+
+          <!-- In another person's name (BL4) -->
+          <div t-if="bk.other_name and bk.other_name.show" class="pbbp-note is-warn" role="status">
+            <span class="ic" t-out="bkIc('userX', 16)"/>
+            <div class="tx">
+              <b>In another person's name: <t t-esc="bk.other_name.holder"/></b>
+              <span>Marking it as seen only hides this notice. Whether this person is paid by bank file is decided by the company setting on Settings › Payroll › Bank layouts.</span>
+            </div>
+            <button t-if="bk.other_name.can_mark" type="button" class="pev-mini pbbp-go" t-att-disabled="pbBank.busy" t-on-click="pbBankMarkSeen">
+              <t t-out="bkIc('eye', 13)"/> Mark as seen
+            </button>
+          </div>
+          <div t-if="bk.other_name and !bk.other_name.show" class="pbbp-note is-quiet">
+            <span class="ic" t-out="bkIc('eye', 16)"/>
+            <div class="tx">
+              <b>In another person's name: <t t-esc="bk.other_name.holder"/></b>
+              <span t-esc="pbBankSeenLine(bk.other_name)"/>
+            </div>
+          </div>
+
+          <!-- The two stores disagree -->
+          <div t-if="bk.vn_file_masked" class="pbbp-note is-quiet">
+            <span class="ic" t-out="bkIc('info', 16)"/>
+            <div class="tx">
+              <b>The Vietnamese bank file has a different account: <span class="pbbp-mono" t-esc="bk.vn_file_masked"/></b>
+              <span>The payment list pays the account above; the Vietnamese bank file pays this one.</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="pbbp-foot">Account numbers show the last four digits only. To change where this person is paid, use a bank change request.</p>
+      </section>
+    </xpath>
+  </t>
+
+</templates>

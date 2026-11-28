@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- WDGAP QF2 R1. Saved Explorer views: private to whoever saved them
+         unless they share them with everyone who can open the Explorer (the
+         Explorer gate itself is checked in code on every call). Group rules
+         OR together, so for READ only the first rule applies (own or shared),
+         for write/create/delete only the second (own). Settings admins may
+         tidy up anything. Cloned from pb_filter_kit/security/filter_view_rules.xml. -->
+    <record id="rule_pb_explorer_view_read" model="ir.rule">
+        <field name="name">Explorer views: read your own and the shared ones</field>
+        <field name="model_id" ref="model_pb_explorer_view"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('shared', '=', True)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    <record id="rule_pb_explorer_view_own" model="ir.rule">
+        <field name="name">Explorer views: change only your own</field>
+        <field name="model_id" ref="model_pb_explorer_view"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="perm_read" eval="False"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+    <record id="rule_pb_explorer_view_admin" model="ir.rule">
+        <field name="name">Explorer views: settings admins tidy any view</field>
+        <field name="model_id" ref="model_pb_explorer_view"/>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- Regular sends: seen by the person who set them up and by the people
+         they go to; changed only by the person who set them up. -->
+    <record id="rule_pb_explorer_schedule_read" model="ir.rule">
+        <field name="name">Explorer regular sends: yours, or sent to you</field>
+        <field name="model_id" ref="model_pb_explorer_schedule"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', ('user_id', '=', user.id), ('recipient_ids', 'in', [user.id])]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    <record id="rule_pb_explorer_schedule_own" model="ir.rule">
+        <field name="name">Explorer regular sends: change only your own</field>
+        <field name="model_id" ref="model_pb_explorer_schedule"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="perm_read" eval="False"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+    <record id="rule_pb_explorer_schedule_admin" model="ir.rule">
+        <field name="name">Explorer regular sends: settings admins tidy any</field>
+        <field name="model_id" ref="model_pb_explorer_schedule"/>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <!-- The send history is written by the system; it is read by the people
+         who can read the schedule it belongs to. -->
+    <record id="rule_pb_explorer_schedule_log_read" model="ir.rule">
+        <field name="name">Explorer regular sends history: yours, or sent to you</field>
+        <field name="model_id" ref="model_pb_explorer_schedule_log"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', ('schedule_id.user_id', '=', user.id), ('schedule_id.recipient_ids', 'in', [user.id])]</field>
+    </record>
+    <record id="rule_pb_explorer_schedule_log_admin" model="ir.rule">
+        <field name="name">Explorer regular sends history: settings admins read any</field>
+        <field name="model_id" ref="model_pb_explorer_schedule_log"/>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+</odoo>

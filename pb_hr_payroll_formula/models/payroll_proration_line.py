@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class HrPayrollProrationLine(models.Model):
@@ -8,17 +8,48 @@ class HrPayrollProrationLine(models.Model):
     _description = 'Payroll Proration Line'
     _order = 'date_from desc, employee_id'
 
+    @api.depends('employee_id', 'component_id', 'date_from')
+    def _compute_display_name(self):
+        for rec in self:
+            emp = rec.employee_id.name or 'Proration'
+            comp = rec.component_id.name or rec.component_code or ''
+            period = rec.date_from.strftime('%b %Y') if rec.date_from else ''
+            label = emp
+            if comp:
+                label += ' — ' + comp
+            if period:
+                label += ' · prorated ' + period
+            rec.display_name = label
+
     formula_config_id = fields.Many2one(
         'hr.formula.config',
         string='Formula Configuration',
         required=True,
-        ondelete='cascade',
+        ondelete='restrict',
     )
+    # GROUP P5 — no longer required.
+    #
+    # Every proration this table held until now was produced BY an import
+    # batch, so the batch was the row's owner and its `cascade` was how the
+    # rows went away. A split month is prorated on the payslip itself, with no
+    # file and no batch anywhere, and a row that cannot be written is a
+    # provenance drawer that cannot explain the number on the payslip beside
+    # it. So the batch becomes optional and `payslip_id` below carries the
+    # ownership for the rows that have no batch. Widening a required field is
+    # additive: every existing row still has its batch and every existing
+    # reader still finds it.
     import_batch_id = fields.Many2one(
         'hr.payroll.import.batch',
         string='Import Batch',
-        required=True,
         ondelete='cascade',
+    )
+    payslip_id = fields.Many2one(
+        'hr.payslip',
+        string='Payslip',
+        index=True,
+        ondelete='cascade',
+        help="The payslip this proration was written for, when it came from "
+             "the payslip rather than from an uploaded pay-data file.",
     )
     employee_id = fields.Many2one(
         'hr.employee',
@@ -63,6 +94,10 @@ class HrPayrollProrationLine(models.Model):
     proration_basis = fields.Selection([
         ('calendar', 'Calendar Days'),
         ('workdays', 'Work Days'),
+        # GROUP P5 — "the person was only here for part of the month", as
+        # distinct from "their pay changed part-way through it". Same table,
+        # same drawer, different reason, and the reason is worth saying.
+        ('segment', 'Days Worked Here'),
     ], string='Proration Basis', required=True, default='calendar')
     period_days = fields.Float(string='Period Days')
     old_days = fields.Float(string='Old Days')
@@ -83,10 +118,9 @@ class HrPayrollProrationLine(models.Model):
         readonly=True,
     )
 
-    _sql_constraints = [
-        (
-            'proration_unique_batch',
-            'unique(import_batch_id, employee_id, component_id, effective_date)',
-            'A proration line already exists for this batch, employee, component and date.'
-        ),
-    ]
+    # Odoo 19: legacy _sql_constraints is silently IGNORED (model_classes.py
+    # logs "no longer supported") — constraints must be models.Constraint
+    # class attributes or they never reach the database (ledger C9).
+    _proration_unique_batch = models.Constraint(
+        'unique(import_batch_id, employee_id, component_id, effective_date)',
+        'A proration line already exists for this batch, employee, component and date.')

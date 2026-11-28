@@ -1,0 +1,1950 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_report_builder
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-22 06:59+0000\n"
+"PO-Revision-Date: 2026-11-22 06:59+0000\n"
+"Last-Translator: \n"
+"Language-Team: Indonesian\n"
+"MIME-Version: 1.0\n"
+"Language: id_ID\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid " and %(count)s more"
+msgstr " dan %(count)s lainnya"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "%(count)s columns are hidden because you may not see them."
+msgstr "%(count)s kolom disembunyikan karena Anda tidak boleh melihatnya."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid ""
+"%(count)s filters were left out because they use fields you may not see, so "
+"the result may be wider than the saved report."
+msgstr "%(count)s filter dilewati karena memakai kolom yang tidak boleh Anda lihat, jadi hasilnya bisa lebih luas daripada laporan yang disimpan."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "%(field)s (your field)"
+msgstr "%(field)s (kolom Anda)"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "%(field)s currency"
+msgstr "Mata uang %(field)s"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "%(field)s from %(low)s"
+msgstr "%(field)s dari %(low)s"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "%(field)s from %(low)s to %(high)s"
+msgstr "%(field)s dari %(low)s sampai %(high)s"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid ""
+"%(field)s is shown in the company's money, because you cannot see which pay "
+"scheme pays each person."
+msgstr "%(field)s ditampilkan dalam mata uang perusahaan, karena Anda tidak bisa melihat skema gaji yang membayar tiap orang."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "%(field)s now"
+msgstr "%(field)s saat ini"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "%(field)s up to %(high)s"
+msgstr "%(field)s sampai %(high)s"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "%(name)s (copy)"
+msgstr "%(name)s (salinan)"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "%(subject)s fields"
+msgstr "Kolom %(subject)s"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "1 column is hidden because you may not see it."
+msgstr "1 kolom disembunyikan karena Anda tidak boleh melihatnya."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid ""
+"1 filter was left out because it uses a field you may not see, so the result"
+" may be wider than the saved report."
+msgstr "1 filter dilewati karena memakai kolom yang tidak boleh Anda lihat, jadi hasilnya bisa lebih luas daripada laporan yang disimpan."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "A copy is ready. It is yours to change."
+msgstr "Salinan sudah siap. Silakan ubah sesuai keinginan."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "A filter in this report cannot be used on that field."
+msgstr "Salah satu filter di laporan ini tidak bisa dipakai untuk kolom itu."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "A filter value in this report could not be read."
+msgstr "Salah satu nilai filter di laporan ini tidak dapat dibaca."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "A report can be grouped by two fields at most. Remove one first."
+msgstr "Laporan hanya bisa dikelompokkan menurut paling banyak dua kolom. Hapus satu dulu."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "A to Z"
+msgstr "A ke Z"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "A total in this report cannot be worked out."
+msgstr "Salah satu total di laporan ini tidak dapat dihitung."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "About the person"
+msgstr "Tentang orangnya"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "All reports"
+msgstr "Semua laporan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Any time"
+msgstr "Kapan saja"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Applicants"
+msgstr "Pelamar"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Applicants by open role and stage"
+msgstr "Pelamar per lowongan dan tahap"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Applied on"
+msgstr "Melamar pada"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Apply"
+msgstr "Terapkan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Approved requests grouped by department, with total days."
+msgstr "Pengajuan yang disetujui, dikelompokkan per departemen, dengan total hari."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Asset code"
+msgstr "Kode aset"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Assets"
+msgstr "Aset"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Assets held by person"
+msgstr "Aset per pemegang"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Assets held now"
+msgstr "Aset yang dipegang"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Attendance"
+msgstr "Kehadiran"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Average"
+msgstr "Rata-rata"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Bought on"
+msgstr "Dibeli pada"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Build a report"
+msgstr "Buat laporan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid ""
+"Building reports is for HR and the people who can open Insights. Ask your "
+"administrator if you believe you should."
+msgstr "Membuat laporan hanya untuk HR dan orang yang bisa membuka Wawasan. Tanyakan administrator jika Anda merasa seharusnya bisa."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Cancel"
+msgstr "Batal"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Category"
+msgstr "Kategori"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Check in"
+msgstr "Jam masuk"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Check out"
+msgstr "Jam keluar"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Claims sent and not yet decided, with totals per person."
+msgstr "Klaim yang sudah dikirim dan belum diputuskan, dengan total per orang."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Closed on"
+msgstr "Ditutup pada"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Column menu"
+msgstr "Menu kolom"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Contract"
+msgstr "Kontrak"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Contract pay"
+msgstr "Gaji kontrak"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Contract type"
+msgstr "Jenis kontrak"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Contracts"
+msgstr "Kontrak"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Contracts ending in the next 60 days"
+msgstr "Kontrak yang berakhir dalam 60 hari ke depan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Cost"
+msgstr "Biaya"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Count"
+msgstr "Jumlah"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Country"
+msgstr "Negara"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Country of Work"
+msgstr "Negara Kerja"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Counts from other areas"
+msgstr "Hitungan dari bagian lain"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Counts only"
+msgstr "Hanya untuk hitungan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Course"
+msgstr "Kursus"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Courses people have not finished yet, soonest due first."
+msgstr "Kursus yang belum selesai, tenggat terdekat di atas."
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__create_uid
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__create_date
+msgid "Created on"
+msgstr "Dibuat pada"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Date of birth"
+msgstr "Tanggal lahir"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Days"
+msgstr "Hari"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Days attended"
+msgstr "Hari hadir"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Days open"
+msgstr "Hari dibuka"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Deadline"
+msgstr "Tenggat"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Decided on"
+msgstr "Diputuskan pada"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Delete"
+msgstr "Hapus"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Delete this report? People you shared it with will lose it too."
+msgstr "Hapus laporan ini? Orang yang menerima bagikan juga akan kehilangannya."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Department"
+msgstr "Departemen"
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_builder__display_name
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__subject
+msgid "Each row is"
+msgstr "Setiap baris adalah"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Employee"
+msgstr "Karyawan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Employee type"
+msgstr "Jenis karyawan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "End date"
+msgstr "Tanggal berakhir"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "End of trial"
+msgstr "Akhir masa percobaan"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Enter"
+msgstr "Enter"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Every asset in someone's hands, grouped by who holds it."
+msgstr "Semua aset yang sedang dipegang, dikelompokkan per pemegang."
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__shared
+msgid "Everyone who can open reports"
+msgstr "Semua orang yang bisa membuka laporan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Everyone who left this year, and why."
+msgstr "Semua yang keluar tahun ini, dan alasannya."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Everyone who started this quarter, with their manager."
+msgstr "Semua yang mulai bekerja kuartal ini, beserta atasannya."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Excel"
+msgstr "Excel"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Expense claims"
+msgstr "Klaim biaya"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Expense claims still open"
+msgstr "Klaim biaya yang masih terbuka"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Expense claims waiting for approval"
+msgstr "Klaim biaya yang menunggu persetujuan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Extra hours"
+msgstr "Jam lembur"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Field"
+msgstr "Kolom"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Filter"
+msgstr "Filter"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Filter by this"
+msgstr "Filter dengan kolom ini"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Find"
+msgstr "Cari"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Find a field"
+msgstr "Cari kolom"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Finished on"
+msgstr "Selesai pada"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "First day"
+msgstr "Hari pertama"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "From"
+msgstr "Dari"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Gender"
+msgstr "Jenis kelamin"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Give the report a name first."
+msgstr "Beri nama laporan terlebih dahulu."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Give the report a name."
+msgstr "Beri nama laporan."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Goal sheet"
+msgstr "Lembar sasaran"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Goal year"
+msgstr "Tahun sasaran"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Goals"
+msgstr "Sasaran"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Goals set"
+msgstr "Sasaran yang ditetapkan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Grand total"
+msgstr "Total keseluruhan"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Group by"
+msgstr "Kelompokkan menurut"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Group by this"
+msgstr "Kelompokkan menurut kolom ini"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Group by…"
+msgstr "Kelompokkan menurut…"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Grouped"
+msgstr "Dikelompokkan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Held by"
+msgstr "Dipegang oleh"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Hide"
+msgstr "Sembunyikan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Hire date"
+msgstr "Tanggal diterima"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Hours worked"
+msgstr "Jam kerja"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "How"
+msgstr "Cara"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "How far along"
+msgstr "Kemajuan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "How far it has got"
+msgstr "Sejauh mana"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "How many people"
+msgstr "Berapa orang"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "How many people work in each country, by contract type."
+msgstr "Berapa orang bekerja di tiap negara, per jenis kontrak."
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_builder__id
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "ID number"
+msgstr "Nomor identitas"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Insights"
+msgstr "Wawasan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Job position"
+msgstr "Jabatan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Job title"
+msgstr "Judul jabatan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Joiners this quarter"
+msgstr "Karyawan baru kuartal ini"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Keep it"
+msgstr "Simpan saja"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Kind"
+msgstr "Jenis"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Kind of leave"
+msgstr "Jenis cuti"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Largest first"
+msgstr "Terbesar dulu"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Last 12 months"
+msgstr "12 bulan terakhir"
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__write_uid
+msgid "Last Updated by"
+msgstr "Terakhir diperbarui oleh"
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__write_date
+msgid "Last Updated on"
+msgstr "Terakhir diperbarui pada"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Last day"
+msgstr "Hari terakhir"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Last month"
+msgstr "Bulan lalu"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__last_opened
+msgid "Last opened"
+msgstr "Terakhir dibuka"
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__spec
+msgid "Layout"
+msgstr "Tata letak"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Leavers this year"
+msgstr "Karyawan keluar tahun ini"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Leaving date"
+msgstr "Tanggal keluar"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Load 50 more"
+msgstr "Muat 50 lagi"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Load more in this group"
+msgstr "Muat lagi di kelompok ini"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Location"
+msgstr "Lokasi"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Looking…"
+msgstr "Mencari…"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Make a copy"
+msgstr "Buat salinan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Manager"
+msgstr "Atasan"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "My reports"
+msgstr "Laporan saya"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__name
+msgid "Name"
+msgstr "Nama"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Name this report"
+msgstr "Beri nama laporan ini"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Nationality"
+msgstr "Kewarganegaraan"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "New report"
+msgstr "Laporan baru"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Newest first"
+msgstr "Terbaru dulu"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Next 30 days"
+msgstr "30 hari ke depan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Next 60 days"
+msgstr "60 hari ke depan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Next 90 days"
+msgstr "90 hari ke depan"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "No"
+msgstr "Tidak"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "No field matches that."
+msgstr "Tidak ada kolom yang cocok."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "No rows match. Try a wider period or fewer filters."
+msgstr "Tidak ada baris yang cocok. Coba periode yang lebih luas atau kurangi filter."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "No saved reports yet."
+msgstr "Belum ada laporan yang disimpan."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "No total"
+msgstr "Tanpa total"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Not saved"
+msgstr "Belum disimpan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Not set"
+msgstr "Belum diisi"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Not visible to you"
+msgstr "Tidak terlihat oleh Anda"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Nothing found."
+msgstr "Tidak ditemukan."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Oldest first"
+msgstr "Terlama dulu"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per applicant"
+msgstr "Satu baris per pelamar"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per asset"
+msgstr "Satu baris per aset"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per check in"
+msgstr "Satu baris per absen masuk"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per contract"
+msgstr "Satu baris per kontrak"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per course someone was put on"
+msgstr "Satu baris per kursus yang ditugaskan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per expense claim"
+msgstr "Satu baris per klaim biaya"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per goal sheet"
+msgstr "Satu baris per lembar sasaran"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "One row per person with counts from three areas, this month."
+msgstr "Satu baris per orang dengan hitungan dari tiga bagian, bulan ini."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per person, with counts from other areas"
+msgstr "Satu baris per orang, dengan hitungan dari bagian lain"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per role being hired for"
+msgstr "Satu baris per lowongan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "One row per time off request"
+msgstr "Satu baris per pengajuan cuti"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Only the first %(cap)s groups are included."
+msgstr "Hanya %(cap)s kelompok pertama yang disertakan."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid ""
+"Only the first %(cap)s groups are shown. Add a filter to see the others."
+msgstr "Hanya %(cap)s kelompok pertama yang ditampilkan. Tambahkan filter untuk melihat yang lain."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid ""
+"Only the person who saved this report can change it. Make a copy to change "
+"it your way."
+msgstr "Hanya orang yang menyimpan laporan ini yang bisa mengubahnya. Buat salinan untuk mengubahnya sesuai keinginan Anda."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Only you can see this report now."
+msgstr "Sekarang hanya Anda yang bisa melihat laporan ini."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Open role"
+msgstr "Lowongan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Open roles"
+msgstr "Lowongan terbuka"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Opened on"
+msgstr "Dibuka pada"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Opening the report builder…"
+msgstr "Membuka pembuat laporan…"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Opens with real rows. Change anything, then save it as your own."
+msgstr "Terbuka dengan data nyata. Ubah apa saja, lalu simpan sebagai milik Anda."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Paid on"
+msgstr "Dibayar pada"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Pay"
+msgstr "Gaji"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "People"
+msgstr "Karyawan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "People by country and contract type"
+msgstr "Karyawan per negara dan jenis kontrak"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Period"
+msgstr "Periode"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Pick dates"
+msgstr "Pilih tanggal"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid ""
+"Pick one. You can add facts about the person to any row that belongs to "
+"someone."
+msgstr "Pilih satu. Anda bisa menambahkan data tentang orangnya ke baris mana pun yang milik seseorang."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Pick one…"
+msgstr "Pilih satu…"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Pick what each row is, then click the fields you want."
+msgstr "Pilih apa isi setiap baris, lalu klik kolom yang Anda perlukan."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid ""
+"Pick what each row is, then click the fields you want. Save it, share it, "
+"take it to Excel."
+msgstr "Pilih apa isi setiap baris, lalu klik kolom yang Anda perlukan. Simpan, bagikan, bawa ke Excel."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Put on it"
+msgstr "Ditugaskan pada"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Reason given"
+msgstr "Alasan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Receipts"
+msgstr "Jumlah kuitansi"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Recruiter"
+msgstr "Perekrut"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Reference"
+msgstr "Nomor"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Remove filter"
+msgstr "Hapus filter"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Remove group"
+msgstr "Hapus kelompok"
+
+#. module: pb_report_builder
+#: model:ir.model,name:pb_report_builder.model_pb_report_builder
+msgid "Report builder"
+msgstr "Pembuat laporan"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Report deleted."
+msgstr "Laporan dihapus."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Report saved."
+msgstr "Laporan disimpan."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Role"
+msgstr "Posisi"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Rows"
+msgstr "Baris"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Save"
+msgstr "Simpan"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Save (⌘S)"
+msgstr "Simpan (⌘S)"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Save the report first."
+msgstr "Simpan laporan terlebih dahulu."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Save your changes first."
+msgstr "Simpan perubahan Anda terlebih dahulu."
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__user_id
+msgid "Saved by"
+msgstr "Disimpan oleh"
+
+#. module: pb_report_builder
+#: model:ir.model,name:pb_report_builder.model_pb_report_definition
+msgid "Saved report"
+msgstr "Laporan tersimpan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Sent on"
+msgstr "Dikirim pada"
+
+#. module: pb_report_builder
+#: model:ir.model.fields,field_description:pb_report_builder.field_pb_report_definition__sequence
+msgid "Sequence"
+msgstr "Urutan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Serial number"
+msgstr "Nomor seri"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Share"
+msgstr "Bagikan"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Share with everyone who can open reports"
+msgstr "Bagikan ke semua orang yang bisa membuka laporan"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Shared"
+msgstr "Dibagikan"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Shared by"
+msgstr "Dibagikan oleh"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Shared with everyone who can open reports."
+msgstr "Dibagikan ke semua orang yang bisa membuka laporan."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Showing"
+msgstr "Menampilkan"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Smallest first"
+msgstr "Terkecil dulu"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Something went wrong just now."
+msgstr "Baru saja terjadi kesalahan."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Source"
+msgstr "Sumber"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid ""
+"Spreadsheets cannot be written on this server yet. Ask an administrator to "
+"install the spreadsheet library."
+msgstr "Server ini belum bisa membuat spreadsheet. Minta administrator memasang pustaka spreadsheet."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Stage"
+msgstr "Tahap"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Start date"
+msgstr "Tanggal mulai"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Start from an example"
+msgstr "Mulai dari contoh"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Start from an example below, or press New report."
+msgstr "Mulai dari contoh di bawah, atau tekan Laporan baru."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Status"
+msgstr "Status"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Still working here"
+msgstr "Masih bekerja di sini"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Sum"
+msgstr "Jumlahkan"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Summary only"
+msgstr "Ringkasan saja"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Test score"
+msgstr "Nilai tes"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "That field has no list of choices."
+msgstr "Kolom itu tidak punya daftar pilihan."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid ""
+"The report builder could not be opened just now. Try again in a moment."
+msgstr "Pembuat laporan belum bisa dibuka. Coba lagi sebentar lagi."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "The table fills with real rows as you click."
+msgstr "Tabel langsung terisi data nyata saat Anda mengklik."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This group could not be opened."
+msgstr "Kelompok ini tidak dapat dibuka."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This month"
+msgstr "Bulan ini"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This page of the report could not be read."
+msgstr "Halaman laporan ini tidak dapat dibaca."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This quarter"
+msgstr "Kuartal ini"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report asks for a field the report builder does not know."
+msgstr "Laporan ini meminta kolom yang tidak dikenal oleh pembuat laporan."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report asks for something the report builder does not know."
+msgstr "Laporan ini meminta sesuatu yang tidak dikenal oleh pembuat laporan."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "This report can no longer be opened here."
+msgstr "Laporan ini tidak bisa dibuka lagi di sini."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report could not be read."
+msgstr "Laporan ini tidak dapat dibaca."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report has %(total)s rows; the first %(cap)s are included."
+msgstr "Laporan ini punya %(total)s baris; hanya %(cap)s baris pertama yang disertakan."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report is about something this system does not have."
+msgstr "Laporan ini tentang data yang tidak ada di sistem ini."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid ""
+"This report is about something you cannot open. Ask your administrator for "
+"access."
+msgstr "Laporan ini tentang data yang tidak bisa Anda buka. Minta akses ke administrator."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid ""
+"This report is no longer available. It may have been deleted, or it is no "
+"longer shared with you."
+msgstr "Laporan ini tidak tersedia lagi. Mungkin sudah dihapus, atau tidak dibagikan lagi kepada Anda."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report's filters could not be read."
+msgstr "Filter laporan ini tidak dapat dibaca."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report's groups could not be read."
+msgstr "Pengelompokan laporan ini tidak dapat dibaca."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report's order could not be read."
+msgstr "Urutan laporan ini tidak dapat dibaca."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report's period could not be read."
+msgstr "Periode laporan ini tidak dapat dibaca."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This report's totals could not be read."
+msgstr "Total laporan ini tidak dapat dibaca."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "This year"
+msgstr "Tahun ini"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Time off days taken"
+msgstr "Hari cuti yang diambil"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Time off requests"
+msgstr "Pengajuan cuti"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Time off taken by department this year"
+msgstr "Cuti yang diambil per departemen tahun ini"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Time off, attendance and assets per person"
+msgstr "Cuti, kehadiran, dan aset per orang"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "To"
+msgstr "Sampai"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "To be finished by"
+msgstr "Selesai paling lambat"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Total"
+msgstr "Total"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Total %(group)s"
+msgstr "Total %(group)s"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Training"
+msgstr "Pelatihan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Training finished"
+msgstr "Pelatihan selesai"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Training still to finish"
+msgstr "Pelatihan yang belum selesai"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Try again"
+msgstr "Coba lagi"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Type a word"
+msgstr "Ketik kata"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Type to find…"
+msgstr "Ketik untuk mencari…"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Undo"
+msgstr "Urungkan"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Undo (⌘Z)"
+msgstr "Urungkan (⌘Z)"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Value"
+msgstr "Nilai"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Wanted by"
+msgstr "Dibutuhkan sebelum"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Warranty ends"
+msgstr "Garansi berakhir"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "What is each row?"
+msgstr "Setiap baris berisi apa?"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "What it is"
+msgstr "Nama barang"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Where every applicant stands, role by role."
+msgstr "Posisi setiap pelamar, per lowongan."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Which date"
+msgstr "Tanggal yang mana"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid "Who needs a renewal decision soon."
+msgstr "Siapa yang segera perlu keputusan perpanjangan."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Why"
+msgstr "Alasan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Why they left"
+msgstr "Alasan keluar"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Work email"
+msgstr "Email kerja"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Work mobile"
+msgstr "Ponsel kerja"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "Working hours"
+msgstr "Jam kerja"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "Yes"
+msgstr "Ya"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_definition.py:0
+msgid ""
+"You already have %(cap)s saved reports. Delete one you no longer use first."
+msgstr "Anda sudah punya %(cap)s laporan tersimpan. Hapus dulu satu yang tidak dipakai lagi."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "You cannot open this kind of report."
+msgstr "Anda tidak bisa membuka jenis laporan ini."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "You cannot see Applicants. Ask your administrator for Hiring access."
+msgstr "Anda tidak bisa melihat Pelamar. Minta akses Rekrutmen ke administrator."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "You cannot see assets. Ask your administrator for Assets access."
+msgstr "Anda tidak bisa melihat aset. Minta akses Aset ke administrator."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid ""
+"You cannot see attendance. Ask your administrator for attendance access."
+msgstr "Anda tidak bisa melihat kehadiran. Minta akses kehadiran ke administrator."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "You cannot see contracts. Ask your administrator for contract access."
+msgstr "Anda tidak bisa melihat kontrak. Minta akses kontrak ke administrator."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid ""
+"You cannot see expense claims. Ask your administrator for Expenses access."
+msgstr "Anda tidak bisa melihat klaim biaya. Minta akses Biaya ke administrator."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "You cannot see goals. Ask your administrator for Talent access."
+msgstr "Anda tidak bisa melihat sasaran. Minta akses Talenta ke administrator."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "You cannot see open roles. Ask your administrator for Hiring access."
+msgstr "Anda tidak bisa melihat lowongan. Minta akses Rekrutmen ke administrator."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "You cannot see people. Ask your administrator for HR access."
+msgstr "Anda tidak bisa melihat karyawan. Minta akses HR ke administrator."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid ""
+"You cannot see time off requests. Ask your administrator for time off "
+"access."
+msgstr "Anda tidak bisa melihat pengajuan cuti. Minta akses cuti ke administrator."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/subjects.py:0
+msgid "You cannot see training. Ask your administrator for Learning access."
+msgstr "Anda tidak bisa melihat pelatihan. Minta akses Pembelajaran ke administrator."
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "You may not see this record."
+msgstr "Anda tidak boleh melihat data ini."
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "Your own fields"
+msgstr "Kolom Anda sendiri"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/js/report_builder.js:0
+msgid "Z to A"
+msgstr "Z ke A"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "add"
+msgstr "tambah"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "and"
+msgstr "dan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "average"
+msgstr "rata-rata"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "between"
+msgstr "di antara"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "by"
+msgstr "menurut"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "columns"
+msgstr "kolom"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "contains"
+msgstr "berisi"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "count"
+msgstr "jumlah"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "find"
+msgstr "cari"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "is"
+msgstr "adalah"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "is empty"
+msgstr "kosong"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "is not"
+msgstr "bukan"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "is not empty"
+msgstr "tidak kosong"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "is one of"
+msgstr "salah satu dari"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "of"
+msgstr "dari"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "row"
+msgstr "baris"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "rows"
+msgstr "baris"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "save"
+msgstr "simpan"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "to"
+msgstr "sampai"
+
+#. module: pb_report_builder
+#. odoo-python
+#: code:addons/pb_report_builder/models/report_builder.py:0
+msgid "total"
+msgstr "total"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "undo"
+msgstr "urungkan"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "⌘S"
+msgstr "⌘S"
+
+#. module: pb_report_builder
+#. odoo-javascript
+#: code:addons/pb_report_builder/static/src/xml/report_builder.xml:0
+msgid "⌘Z"
+msgstr "⌘Z"

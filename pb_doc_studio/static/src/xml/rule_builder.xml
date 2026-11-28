@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_doc_studio.RuleBuilder">
+    <div class="pbds-scrim" t-on-mousedown.self="props.onClose">
+      <div class="pbds-dialog pbds-rule" t-ref="first" role="dialog" aria-modal="true" aria-labelledby="pbds-rule-title" t-on-keydown="onKeydown">
+        <header class="pbds-dialog-h">
+          <span class="pbds-dialog-ic" t-out="ic('branch', 18)"/>
+          <div>
+            <h2 id="pbds-rule-title">Show this part only when…</h2>
+            <p>The part is printed for the people this fits. Everyone else gets the letter without it.</p>
+          </div>
+          <button type="button" class="pbds-x" aria-label="Close" t-on-click="props.onClose"><t t-out="ic('x', 16)"/></button>
+        </header>
+
+        <div class="pbds-rule-match" role="radiogroup" aria-label="How the conditions combine">
+          <button type="button" role="radio" t-att-aria-checked="state.rule.match !== 'any' ? 'true' : 'false'"
+                  t-att-class="{ 'is-on': state.rule.match !== 'any' }" t-on-click="() => this.setMatch('all')">All of these are true</button>
+          <button type="button" role="radio" t-att-aria-checked="state.rule.match === 'any' ? 'true' : 'false'"
+                  t-att-class="{ 'is-on': state.rule.match === 'any' }" t-on-click="() => this.setMatch('any')">Any one of these is true</button>
+        </div>
+
+        <div class="pbds-rule-lines">
+          <div t-foreach="state.rule.lines" t-as="line" t-key="line_index" class="pbds-rule-line">
+            <select class="pbds-in" aria-label="Field" t-on-change="(ev) => this.setField(line, ev)">
+              <optgroup label="About the person">
+                <option t-foreach="baseFields" t-as="f" t-key="f.key" t-att-value="f.key" t-att-selected="f.key === line.field" t-esc="f.label"/>
+              </optgroup>
+              <optgroup t-if="ownFields.length" label="Your own fields">
+                <option t-foreach="ownFields" t-as="f" t-key="f.key" t-att-value="f.key" t-att-selected="f.key === line.field" t-esc="f.label"/>
+              </optgroup>
+            </select>
+            <select class="pbds-in pbds-in-op" aria-label="Condition" t-on-change="(ev) => this.setOp(line, ev)">
+              <option t-foreach="ops(line)" t-as="o" t-key="o.value" t-att-value="o.value" t-att-selected="o.value === line.op" t-esc="o.label"/>
+            </select>
+            <t t-if="needsValue(line)">
+              <t t-set="k" t-value="kind(line)"/>
+              <select t-if="k === 'bool'" class="pbds-in" aria-label="Value" t-on-change="(ev) => this.setValue(line, ev)">
+                <option value="1" t-att-selected="line.value">Yes</option>
+                <option value="0" t-att-selected="!line.value">No</option>
+              </select>
+              <div t-elif="k === 'choice' and line.op === 'in'" class="pbds-picks">
+                <input t-if="options(line).length > 8 or state.optTerm[line.field]" type="search" class="pbds-in pbds-in-sm" placeholder="Find"
+                       aria-label="Find a value" t-on-input="(ev) => this.onOptTerm(line, ev)"/>
+                <div class="pbds-picks-list">
+                  <button t-foreach="options(line)" t-as="o" t-key="o.value" type="button" class="pbds-pick"
+                          t-att-class="{ 'is-on': isPicked(line, o) }" t-att-aria-pressed="isPicked(line, o) ? 'true' : 'false'"
+                          t-on-click="() => this.togglePick(line, o)">
+                    <t t-if="isPicked(line, o)" t-out="ic('check', 12)"/><span t-esc="o.label"/>
+                  </button>
+                  <span t-if="!options(line).length" class="pbds-muted">Nothing to choose from yet.</span>
+                </div>
+              </div>
+              <select t-elif="k === 'choice'" class="pbds-in" aria-label="Value" t-on-change="(ev) => this.setValue(line, ev)">
+                <option value="" t-att-selected="!line.value">Choose…</option>
+                <option t-foreach="options(line)" t-as="o" t-key="o.value" t-att-value="o.value" t-att-selected="isValue(line, o)" t-esc="o.label"/>
+              </select>
+              <input t-elif="k === 'date'" type="date" class="pbds-in" aria-label="Value" t-att-value="line.value or ''" t-on-change="(ev) => this.setValue(line, ev)"/>
+              <input t-elif="k === 'number'" type="number" class="pbds-in" aria-label="Value" t-att-value="line.value or ''" t-on-input="(ev) => this.setValue(line, ev)"/>
+              <input t-elif="line.op === 'in'" type="text" class="pbds-in" aria-label="Values, separated by commas" placeholder="Values, separated by commas"
+                     t-att-value="textList(line)" t-on-change="(ev) => this.setValue(line, ev)"/>
+              <input t-else="" type="text" class="pbds-in" aria-label="Value" t-att-value="line.value or ''" t-on-input="(ev) => this.setValue(line, ev)"/>
+            </t>
+            <button type="button" class="pbds-icon-btn" title="Remove this condition" aria-label="Remove this condition"
+                    t-on-click="() => this.removeLine(line_index)"><t t-out="ic('x', 14)"/></button>
+          </div>
+          <button type="button" class="pbds-link" t-on-click="addLine"><t t-out="ic('plus', 13)"/> <span>Add a condition</span></button>
+        </div>
+
+        <div class="pbds-rule-say" t-att-class="{ 'is-ready': complete }">
+          <span class="pbds-pill-demo"><t t-out="ic('branch', 12)"/> <span t-esc="sentence"/></span>
+        </div>
+
+        <footer class="pbds-dialog-f">
+          <button t-if="!props.isNew" type="button" class="pbds-btn ghost danger" t-on-click="props.onRemove">
+            <t t-out="ic('eye', 14)"/> <span>Show it for everyone</span>
+          </button>
+          <span class="pbds-spacer"/>
+          <button type="button" class="pbds-btn ghost" t-on-click="props.onClose">Cancel</button>
+          <button type="button" class="pbds-btn primary" t-att-disabled="!complete" t-on-click="save">
+            <t t-out="ic('check', 14)"/> <span>Done</span>
+          </button>
+        </footer>
+      </div>
+    </div>
+  </t>
+
+</templates>

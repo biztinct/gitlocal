@@ -1,0 +1,1087 @@
+<title>Rize HR Demo Cue Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+/* ------------------------------------------------------------------
+   Rize HR demo cue sheet — the companion to rize-demo-runbook.html,
+   which covers the pay side. This one covers the five HR areas built
+   in RIZE Wave 2: hiring, goals, announcements, leave & attendance,
+   learning.
+
+   Palette: the product's own chrome navy (#0E1430) pulled up into an
+   ink, on a paper with a cool blue bias; one deep cyan for "go here",
+   one clay for "careful". Archivo (condensed grotesque) carries the
+   headings, Public Sans the prose, JetBrains Mono every click path,
+   record number and screen label — the mono IS the interface, so it
+   is set apart from the talking.
+   ------------------------------------------------------------------ */
+:root {
+  --paper:       #F4F5F9;
+  --surface:     #FFFFFF;
+  --surface-2:   #EAECF4;
+  --ink:         #12162C;
+  --ink-2:       #38405F;
+  --muted:       #6B7290;
+  --rule:        #D8DBE8;
+  --rule-soft:   #E7E9F1;
+  --accent:      #0B6A85;
+  --accent-soft: #DCEEF3;
+  --flag:        #9A5310;
+  --flag-soft:   #F8E9D8;
+  --good:        #1B6B4B;
+  --good-soft:   #DCEFE5;
+  --shadow:      0 1px 2px rgba(18,22,44,.05), 0 10px 26px -18px rgba(18,22,44,.35);
+  --measure:     68ch;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:       #0B0E1C;
+    --surface:     #141931;
+    --surface-2:   #1C2240;
+    --ink:         #E8EAF4;
+    --ink-2:       #B5BBD3;
+    --muted:       #8A91AE;
+    --rule:        #2A3153;
+    --rule-soft:   #222846;
+    --accent:      #5FC2DA;
+    --accent-soft: #12303B;
+    --flag:        #E0A268;
+    --flag-soft:   #3A2612;
+    --good:        #6FD1A6;
+    --good-soft:   #123227;
+    --shadow:      0 1px 2px rgba(0,0,0,.45), 0 12px 30px -20px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"] {
+  --paper:       #0B0E1C;
+  --surface:     #141931;
+  --surface-2:   #1C2240;
+  --ink:         #E8EAF4;
+  --ink-2:       #B5BBD3;
+  --muted:       #8A91AE;
+  --rule:        #2A3153;
+  --rule-soft:   #222846;
+  --accent:      #5FC2DA;
+  --accent-soft: #12303B;
+  --flag:        #E0A268;
+  --flag-soft:   #3A2612;
+  --good:        #6FD1A6;
+  --good-soft:   #123227;
+  --shadow:      0 1px 2px rgba(0,0,0,.45), 0 12px 30px -20px rgba(0,0,0,.9);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Public Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 16.5px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding-inline: 20px;
+  padding-block: 40px 88px;
+}
+
+h1, h2, h3, .eyebrow, .cue, .chip, .tag {
+  font-family: Archivo, ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ---------------------------------------------------------- masthead */
+
+.mast { border-bottom: 2px solid var(--ink); padding-bottom: 22px; }
+
+.eyebrow {
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 10px;
+}
+
+h1 {
+  font-size: clamp(2rem, 1.3rem + 2.8vw, 3.1rem);
+  font-weight: 700;
+  letter-spacing: -.02em;
+  line-height: 1.04;
+  margin: 0 0 14px;
+  text-wrap: balance;
+}
+
+.standfirst {
+  margin: 0;
+  max-width: var(--measure);
+  font-size: 1.08rem;
+  color: var(--ink-2);
+}
+
+.mast-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  margin-top: 20px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--ink-2);
+  border: 1px solid var(--rule);
+}
+.tag b { font-weight: 700; color: var(--ink); }
+
+/* ---------------------------------------------------------- notices */
+
+.notice {
+  margin: 30px 0 0;
+  padding: 18px 20px;
+  border-radius: 4px;
+  border-left: 4px solid var(--flag);
+  background: var(--flag-soft);
+  color: var(--ink);
+}
+.notice.info { border-left-color: var(--accent); background: var(--accent-soft); }
+.notice h3 {
+  margin: 0 0 8px;
+  font-size: .95rem;
+  font-weight: 700;
+  letter-spacing: .01em;
+}
+.notice p { margin: 0 0 8px; max-width: var(--measure); font-size: .95rem; }
+.notice p:last-child { margin-bottom: 0; }
+
+/* ---------------------------------------------------------- sections */
+
+section { margin-top: 56px; scroll-margin-top: 20px; }
+
+.act-head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 18px;
+  align-items: start;
+  border-top: 1px solid var(--rule);
+  padding-top: 20px;
+}
+
+.cue {
+  grid-row: 1 / span 3;
+  font-size: 2.1rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  padding-top: 3px;
+}
+
+h2 {
+  margin: 0;
+  font-size: clamp(1.4rem, 1.1rem + 1vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: -.015em;
+  line-height: 1.15;
+}
+
+.act-sub {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: .95rem;
+  max-width: var(--measure);
+}
+
+.act-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.path, code, .kbd {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.path {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .82rem;
+  font-weight: 500;
+  padding: 5px 10px;
+  border-radius: 3px;
+  background: var(--ink);
+  color: var(--paper);
+  white-space: nowrap;
+}
+:root[data-theme="dark"] .path,
+:root:not([data-theme="light"]) .path { background: var(--surface-2); color: var(--ink); border: 1px solid var(--rule); }
+
+.mins {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: .78rem;
+  color: var(--muted);
+  border: 1px dashed var(--rule);
+  border-radius: 3px;
+  padding: 4px 9px;
+}
+
+/* ---------------------------------------------------------- body grid */
+
+.act-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: 32px;
+  margin-top: 26px;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .act-body { grid-template-columns: minmax(0, 1fr); gap: 26px; }
+  .cue { font-size: 1.6rem; }
+}
+
+/* the steps */
+
+ol.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; counter-reset: step; }
+
+ol.steps > li {
+  position: relative;
+  padding-left: 38px;
+  counter-increment: step;
+  max-width: var(--measure);
+}
+ol.steps > li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: 25px;
+  height: 25px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1.5px solid var(--rule);
+  background: var(--surface);
+  color: var(--ink-2);
+  font-family: "JetBrains Mono", monospace;
+  font-size: .78rem;
+  font-variant-numeric: tabular-nums;
+}
+ol.steps > li p { margin: 6px 0 0; color: var(--ink-2); font-size: .95rem; }
+ol.steps > li .do { font-weight: 500; color: var(--ink); }
+
+/* a named on-screen thing */
+.ui {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: .87em;
+  background: var(--surface-2);
+  border: 1px solid var(--rule-soft);
+  border-radius: 3px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+.rec {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: .87em;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* the aside column */
+
+.aside { display: grid; gap: 16px; }
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+.panel h3 {
+  margin: 0 0 10px;
+  font-size: .73rem;
+  font-weight: 700;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.panel p { margin: 0 0 10px; font-size: .93rem; color: var(--ink-2); }
+.panel p:last-child { margin-bottom: 0; }
+.panel ul { margin: 0; padding-left: 18px; display: grid; gap: 7px; }
+.panel li { font-size: .93rem; color: var(--ink-2); }
+
+.say {
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 5px 5px 0;
+  padding: 16px 18px;
+}
+.say h3 { color: var(--accent); }
+.say p { color: var(--ink); font-style: italic; font-size: .97rem; }
+
+.watch { border-left: 3px solid var(--flag); background: var(--flag-soft); border-radius: 0 5px 5px 0; box-shadow: none; }
+.watch h3 { color: var(--flag); }
+
+/* ---------------------------------------------------------- tables */
+
+.tablewrap { overflow-x: auto; margin-top: 26px; border: 1px solid var(--rule); border-radius: 5px; background: var(--surface); }
+
+table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: .92rem; }
+caption {
+  text-align: left;
+  padding: 14px 16px 0;
+  font-size: .73rem;
+  font-weight: 700;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-family: Archivo, sans-serif;
+}
+th, td { text-align: left; padding: 11px 16px; border-bottom: 1px solid var(--rule-soft); vertical-align: top; }
+th { font-family: Archivo, sans-serif; font-weight: 600; font-size: .82rem; color: var(--ink); }
+tbody tr:last-child td { border-bottom: 0; }
+td.num { font-family: "JetBrains Mono", monospace; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* ---------------------------------------------------------- footer */
+
+.end {
+  margin-top: 60px;
+  border-top: 2px solid var(--ink);
+  padding-top: 22px;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+.end .panel { box-shadow: none; }
+
+.colophon {
+  margin-top: 34px;
+  font-size: .82rem;
+  color: var(--muted);
+  max-width: var(--measure);
+}
+
+a { color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible, .path:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+/* contents strip */
+.toc {
+  margin-top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.toc a {
+  font-family: Archivo, sans-serif;
+  font-size: .82rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--ink-2);
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  padding: 6px 13px;
+}
+.toc a span { color: var(--accent); font-variant-numeric: tabular-nums; }
+</style>
+
+<div class="wrap">
+
+  <header class="mast">
+    <p class="eyebrow">Client demo · cue sheet</p>
+    <h1>Rize HR Demo Cue Sheet</h1>
+    <p class="standfirst">Five areas, in the order they tell a story: hiring someone, agreeing what they
+      will do, telling the company things, time off and attendance, and training. Each act says what to
+      click, what to say while you click it, and what the screen is proving.</p>
+    <div class="mast-meta">
+      <span class="tag">Site <b>payobook.com</b></span>
+      <span class="tag">Company <b>Payobook Vietnam JSC</b></span>
+      <span class="tag">Running time <b>about 35 minutes</b></span>
+      <span class="tag">Prepared <b>18 Sep 2026</b></span>
+    </div>
+  </header>
+
+  <div class="notice">
+    <h3>Read this before you book the call</h3>
+    <p><b>These five areas are not on the Rize site yet.</b> Hiring, Goals, Announcements and Training
+      are installed on our own <b>payobook.com</b> only. The Rize site (rize.payobook.com) has the
+      older time-off screens and nothing else from this list, so the demo has to run on payobook.com.</p>
+    <p>That means the people on screen are our demo cast with Vietnamese names, in a demo company.
+      Say so once, at the start, and nobody minds: <i>"This is our own demo company — your people and
+      your numbers would sit in your own space."</i> The India pay file you sent is the pay side, and
+      that is the other cue sheet.</p>
+    <p>If Rize want to see these five areas on <b>their own</b> site with their own people, that is a
+      separate install job on the Rize site — worth deciding before the call, because it changes what
+      you can promise in the room.</p>
+  </div>
+
+  <div class="notice info">
+    <h3>Two minutes of setting up</h3>
+    <p>Sign in on payobook.com as yourself. Check the company picker at the top says
+      <b>Payobook Vietnam JSC</b> — the demo content lives there. Open a second browser tab, signed in
+      as one of the demo staff, for the employee-side pages; you will switch to it three times.</p>
+    <p><b>Do not press</b> <span class="ui">Load demo data</span> or <span class="ui">Remove demo data</span>
+      under Settings. The second one takes the whole demo world away.</p>
+  </div>
+
+  <nav class="toc" aria-label="Contents">
+    <a href="#hiring"><span>01</span> &nbsp;Hiring</a>
+    <a href="#goals"><span>02</span> &nbsp;Goals</a>
+    <a href="#announce"><span>03</span> &nbsp;Announcements</a>
+    <a href="#leave"><span>04</span> &nbsp;Leave &amp; attendance</a>
+    <a href="#training"><span>05</span> &nbsp;Training</a>
+    <a href="#close"><span>06</span> &nbsp;Closing</a>
+  </nav>
+
+  <!-- ============================================================ 01 -->
+  <section id="hiring">
+    <div class="act-head">
+      <div class="cue">01</div>
+      <h2>Hiring &amp; recruitment</h2>
+      <p class="act-sub">From the moment a manager says "I need somebody" to the moment that person has a
+        start date and a contract.</p>
+      <div class="act-nav">
+        <span class="path">Left rail → Lifecycle → Hiring</span>
+        <span class="mins">8 min</span>
+      </div>
+    </div>
+
+    <div class="act-body">
+      <ol class="steps">
+        <li><span class="do">Open <span class="ui">Lifecycle</span> in the left rail, then the
+          <span class="ui">Hiring</span> tab.</span>
+          <p>Let the top row of counters land first: <span class="ui">Open for candidates</span>,
+            <span class="ui">Waiting for a sign-off</span>, <span class="ui">Waiting on you</span>,
+            <span class="ui">Candidates in play</span>, <span class="ui">Over budget</span>,
+            <span class="ui">Interviews this week</span>, <span class="ui">Opinions overdue</span>,
+            <span class="ui">Joined this month</span>. This is the whole hiring desk on one screen.</p>
+        </li>
+
+        <li><span class="do">Click the <span class="ui">Over budget</span> counter.</span>
+          <p>The list filters down to the requests that cost more than there is money for. This is the
+            bit finance people sit up for: the request carries what it will cost, and the system checks
+            it against the budget already in the system — within it, over it by this much, or nothing
+            budgeted at all. Click the counter again to clear the filter.</p>
+        </li>
+
+        <li><span class="do">Press <span class="ui">Raise a hiring request</span>.</span>
+          <p>Show the form — job title, how many people, which part of the business, what it will cost.
+            Say that the request then travels the route the business published: the manager, the HR
+            lead, the finance approver. Close it without saving; there is already a draft one
+            (<span class="rec">HR-2026-0055</span>) to show.</p>
+        </li>
+
+        <li><span class="do">Open <span class="rec">HR-2026-0056</span> from the
+          <span class="ui">Roles</span> tab.</span>
+          <p>The panel slides over and the path strip across the top shows where the role has got to —
+            agreed, advert written, open for candidates, interviews, offer, joined. One line, no chasing
+            emails.</p>
+        </li>
+
+        <li><span class="do">Point at the advert on that panel.</span>
+          <p>The advert (<span class="rec">DEMO Field Officer</span>) is written once, agreed by name,
+            and kept as versions — so nobody posts a job description that was never signed off. The
+            buttons read <span class="ui">Agree it</span> and <span class="ui">Advertise it</span>.</p>
+        </li>
+
+        <li><span class="do">Switch to the <span class="ui">Interviews</span> tab.</span>
+          <p>Nine interviews are booked. Each one sends a calendar invite. Everybody on the panel gets a
+            private page of their own to write their opinion — nobody sees anybody else's first — and it
+            is due within 24 working hours, with one automatic chase. The
+            <span class="ui">Opinions overdue</span> counter is the one HR actually uses.</p>
+        </li>
+
+        <li><span class="do">Open the offer for <span class="rec">DEMO Pham Quoc Cuong</span>.</span>
+          <p>This one is waiting on a manager, so you can show a real sign-off sitting in the queue. The
+            offer carries its own lines (the money), a letter, and a page the candidate opens to say yes
+            or no and upload the signed copy.</p>
+        </li>
+
+        <li><span class="do">Open a closed one — <span class="rec">DEMO Nguyen Van An</span>.</span>
+          <p>This is the moment worth slowing down for. When the offer closed, the system made the
+            employee record, the contract, a draft pay package, the joining checklist and their login.
+            Nobody retyped anything.</p>
+        </li>
+
+        <li><span class="do">Second tab: open <span class="ui">/my/refer</span>.</span>
+          <p>The staff side. Anybody in the company can put a friend forward from their own page, and it
+            lands on this same board as a referral.</p>
+        </li>
+
+        <li><span class="do">Finish on <span class="ui">Insights → Hiring</span>.</span>
+          <p>Average days to fill, where candidates came from, how many joined. There is an export to
+            Excel button if they ask for their own numbers.</p>
+        </li>
+      </ol>
+
+      <div class="aside">
+        <div class="say">
+          <h3>Say this</h3>
+          <p>"Every one of these steps happens somewhere in your company today — in a spreadsheet, a
+            WhatsApp group and somebody's inbox. Here it is one board, and the request that started it
+            all is still attached at the end."</p>
+        </div>
+        <div class="panel">
+          <h3>What this act proves</h3>
+          <ul>
+            <li>A hiring request is checked against real budget, not approved on faith.</li>
+            <li>Sign-offs follow a published route, and you can see who is holding one up.</li>
+            <li>Interview opinions are private, timed and chased on their own.</li>
+            <li>Closing an offer creates the employee, the contract and the first-day list.</li>
+            <li>Staff refer people from their own page; recruiters see it instantly.</li>
+          </ul>
+        </div>
+        <div class="panel watch">
+          <h3>Careful</h3>
+          <p><span class="ui">Run today's chasing</span> is a real button — it sends the nightly chase
+            mails now. Fine to show, don't press it unless you want mail to go.</p>
+          <p>The agency shown is called "Talent Partners" — a placeholder name we can change.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ 02 -->
+  <section id="goals">
+    <div class="act-head">
+      <div class="cue">02</div>
+      <h2>Goal setting</h2>
+      <p class="act-sub">Everybody writes what they will do this year, their manager weighs it, HR locks
+        it, and it is still there in November.</p>
+      <div class="act-nav">
+        <span class="path">Left rail → People → Goals</span>
+        <span class="mins">7 min</span>
+      </div>
+    </div>
+
+    <div class="act-body">
+      <ol class="steps">
+        <li><span class="do">Open <span class="ui">People</span>, then the <span class="ui">Goals</span>
+          tab.</span>
+          <p>Five tabs run across it: <span class="ui">Goal sheets</span>,
+            <span class="ui">Monthly conversations</span>, <span class="ui">Reviews</span>,
+            <span class="ui">Changes asked for</span>, <span class="ui">Scores</span>. That is the year,
+            left to right.</p>
+        </li>
+
+        <li><span class="do">Point at the goal year picker: <span class="rec">DEMO Goal year 2026</span>
+          is open, 2027 is still a draft, 2025 is closed.</span>
+          <p>A goal year holds the dates, the half-way point, and how long somebody gets to write their
+            goals.</p>
+        </li>
+
+        <li><span class="do">Hover <span class="ui">Open the goal year for everybody</span> —
+          don't press it.</span>
+          <p>One press opens a goal page for every person in the company, and it tells you how many it
+            is about to open before it opens any. Seventeen sheets are already open on this year.</p>
+        </li>
+
+        <li><span class="do">Second tab: open <span class="ui">/my/goals</span> as a member of
+          staff.</span>
+          <p>This is the page an employee actually uses. Two to four goals, each with the key results
+            that say whether it was met, and a weight. The weights must add up to 100 — the page will
+            not let them send it otherwise. Then <span class="ui">send to your manager</span>.</p>
+        </li>
+
+        <li><span class="do">Back to the board. Open a sheet that is waiting.</span>
+          <p>The manager sees the whole sheet and has two buttons: <span class="ui">Agree and lock</span>,
+            or send it back with a note. Once it is locked, it cannot be quietly rewritten in March.</p>
+        </li>
+
+        <li><span class="do">Open the <span class="ui">Changes asked for</span> tab.</span>
+          <p>Because things do change. After the lock, a change goes through a request with a reason —
+            one was agreed here and one was turned down — and every version is kept.</p>
+        </li>
+
+        <li><span class="do">Open <span class="ui">Monthly conversations</span>.</span>
+          <p>On the 25th of each month everyone is asked one short question about how each goal is going.
+            It takes two minutes and it means the year-end conversation is not two people's memories.</p>
+        </li>
+
+        <li><span class="do">Open <span class="ui">Scores</span> and show the closed 2025 year.</span>
+          <p>Key results get scored, the sheet gets a number, and the number becomes a word —
+            Outstanding, Strong, Solid. One person on the demo finished at 4.2, Strong. The words and
+            the cut-offs are yours to set.</p>
+        </li>
+
+        <li><span class="do">Finish on <span class="ui">Home → Goals</span>.</span>
+          <p>The same information as a lane on the front page — goals waiting on you — so a manager sees
+            it without going looking.</p>
+        </li>
+      </ol>
+
+      <div class="aside">
+        <div class="say">
+          <h3>Say this</h3>
+          <p>"The reason goals die in most companies is that they live in a file. Here they are a page
+            that belongs to the person, a lock that belongs to HR, and a question that arrives every
+            month on its own."</p>
+        </div>
+        <div class="panel">
+          <h3>What this act proves</h3>
+          <ul>
+            <li>One press opens the year for the whole company, and warns first.</li>
+            <li>Weights must total 100 — the sheet enforces it, not a reviewer.</li>
+            <li>Locked means locked; changes are requested, agreed and kept.</li>
+            <li>Monthly check-ins arrive by themselves.</li>
+            <li>Year-end scoring turns into a band you choose the words for.</li>
+          </ul>
+        </div>
+        <div class="panel watch">
+          <h3>Careful</h3>
+          <p>The demo year runs April–March with two weeks to write. If Rize run a different year, say
+            that these are settings, not the way it works.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ 03 -->
+  <section id="announce">
+    <div class="act-head">
+      <div class="cue">03</div>
+      <h2>Company announcements</h2>
+      <p class="act-sub">One calendar for everything the company is about to tell its people — and it
+        sends itself.</p>
+      <div class="act-nav">
+        <span class="path">Left rail → People → Announce</span>
+        <span class="mins">5 min</span>
+      </div>
+    </div>
+
+    <div class="act-body">
+      <ol class="steps">
+        <li><span class="do">Open <span class="ui">People</span>, then <span class="ui">Announce</span>.</span>
+          <p>A month at a glance, one pill a day, coloured by where each announcement has got to. Eight
+            are on this month.</p>
+        </li>
+
+        <li><span class="do">Point at two pills on the same day.</span>
+          <p>This is the whole argument for a calendar instead of a list: the town-hall notice and the
+            pay-day reminder both land in the same inbox an hour apart, and only a calendar shows you
+            that before it happens.</p>
+        </li>
+
+        <li><span class="do">Open <span class="rec">DEMO Pay day moves to the 25th</span> — still to
+          go out.</span>
+          <p>Show the fields: what it is called, what it says, who gets it, when it goes out, and a
+            poster or PDF that rides along with it.</p>
+        </li>
+
+        <li><span class="do">Open the audience picker and press
+          <span class="ui">Check who gets it</span>.</span>
+          <p>Everybody, or one department, or one job, or one country — and the count comes back before
+            anything is sent. Nobody sends a Vietnam public-holiday notice to Singapore by accident.</p>
+        </li>
+
+        <li><span class="do">Press <span class="ui">Put it on the calendar</span>.</span>
+          <p>That is the whole act of scheduling. It goes out on its own, at the minute it was booked
+            for, to everyone in the audience with a work email.</p>
+        </li>
+
+        <li><span class="do">Open <span class="rec">DEMO Monthly safety note</span>.</span>
+          <p>A recurring one — four have already gone out. Write it once, it comes round on its own.</p>
+        </li>
+
+        <li><span class="do">Open a sent one and show <span class="ui">Who got it</span>.</span>
+          <p>One row per person. When somebody says "I never got told", there is an answer.</p>
+        </li>
+
+        <li><span class="do">Finish on <span class="ui">Home → Coming up</span>.</span>
+          <p>What the company is about to be told, on the front page, for whoever is responsible.</p>
+        </li>
+      </ol>
+
+      <div class="aside">
+        <div class="say">
+          <h3>Say this</h3>
+          <p>"Announcements are usually written on the morning they go out, by whoever remembers. This
+            is the same job done a fortnight early, with the audience counted before you press send."</p>
+        </div>
+        <div class="panel">
+          <h3>What this act proves</h3>
+          <ul>
+            <li>A month view catches clashes a list hides.</li>
+            <li>Audience by everyone, department, job or country — counted first.</li>
+            <li>Scheduled sending, recurring notices, posters attached.</li>
+            <li>A delivery record per person.</li>
+            <li>A two-day window in which it can still be edited, and that edit is tracked.</li>
+          </ul>
+        </div>
+        <div class="panel watch">
+          <h3>Careful</h3>
+          <p>Sending is <b>on</b> in this demo. Anything you schedule for a time inside the demo will
+            actually go to demo addresses — harmless, but don't schedule one for two minutes' time and
+            then forget it.</p>
+          <p>Birthday and anniversary cards are built but switched off. Mention them; don't go looking
+            for them on screen.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ 04 -->
+  <section id="leave">
+    <div class="act-head">
+      <div class="cue">04</div>
+      <h2>Leave &amp; attendance</h2>
+      <p class="act-sub">Who is off, who approved it, who is late, and what the pay run should therefore
+        be told.</p>
+      <div class="act-nav">
+        <span class="path">Left rail → Workforce</span>
+        <span class="mins">8 min</span>
+      </div>
+    </div>
+
+    <div class="act-body">
+      <ol class="steps">
+        <li><span class="do">Open <span class="ui">Workforce</span>.</span>
+          <p>The tabs across the top are a manager's week in order: <span class="ui">Today</span>,
+            <span class="ui">Schedule</span>, <span class="ui">Time</span>,
+            <span class="ui">Time Off</span>, <span class="ui">Overtime</span>,
+            <span class="ui">Trips</span>, <span class="ui">Approvals</span>,
+            <span class="ui">Holidays</span>, <span class="ui">Field</span>,
+            <span class="ui">Close</span>.</p>
+        </li>
+
+        <li><span class="do">Start on <span class="ui">Today</span>.</span>
+          <p>Who is in, who is out, who has not turned up. One screen, this morning.</p>
+        </li>
+
+        <li><span class="do">Open <span class="ui">Time Off</span>.</span>
+          <p>Three things on one page: the approval queue, a month heat map of who is off by department,
+            and everybody's balance. Approve one request from the queue, and show that refusing one
+            makes you type a reason.</p>
+        </li>
+
+        <li><span class="do">Press <span class="ui">Apply on behalf</span>.</span>
+          <p>HR books leave for somebody who phoned in. It is a normal request underneath — the same
+            overlap and balance checks fire, nothing is smuggled past them.</p>
+        </li>
+
+        <li><span class="do">Say the escalation rule out loud while the queue is on screen.</span>
+          <p>A manager gets two working days. The day after that they are chased. The day after that it
+            goes to the HR lead. Nobody's leave sits unanswered because a manager is on a plane.</p>
+        </li>
+
+        <li><span class="do">Open <span class="ui">Holidays</span>.</span>
+          <p>Thirteen public holidays are loaded. There is <span class="ui">Add a public holiday</span>
+            for one, and <span class="ui">Paste a year of holidays</span> — paste a whole year in, one a
+            line, and it reads them. India's list would go in in about a minute.</p>
+        </li>
+
+        <li><span class="do">Second tab: open <span class="ui">/my/holidays</span>.</span>
+          <p>Every member of staff can see the holiday calendar for where they work, without asking HR.</p>
+        </li>
+
+        <li><span class="do">Open <span class="ui">Approvals</span> and pick the
+          <span class="ui">Attendance</span> group.</span>
+          <p>Missing punches, late arrivals, early departures. The system never invents a punch: it
+            raises the exception, somebody requests a correction, somebody approves it, and only then
+            does the record change. That is what makes attendance safe to pay from.</p>
+        </li>
+
+        <li><span class="do">Open <span class="ui">Field</span>.</span>
+          <p>Staff who work away from a desk check in from their phone with a photo and a location. For
+            a farming business with people in the field, this is usually the moment they lean in. There
+            is a phone page at <span class="ui">/field</span> if you want to show it on a handset.</p>
+        </li>
+
+        <li><span class="do">Mention the two rails without clicking them.</span>
+          <p>Back-dated sick leave is allowed but tells HR. Leave in a month that has already been paid
+            is locked, so nobody quietly changes a paid month.</p>
+        </li>
+      </ol>
+
+      <div class="aside">
+        <div class="say">
+          <h3>Say this</h3>
+          <p>"Leave and attendance only matter because they change what someone is paid. So everything
+            here is either approved by a person or refused — nothing is adjusted in the background, and
+            once a month is paid it locks."</p>
+        </div>
+        <div class="panel">
+          <h3>What this act proves</h3>
+          <ul>
+            <li>Approve or refuse in one click, with a reason required on refusal.</li>
+            <li>Heat map by department; balances for everybody on one board.</li>
+            <li>Requests escalate on their own: manager, chase, HR lead.</li>
+            <li>Public holidays pasted in a year at a time, visible to staff.</li>
+            <li>Attendance corrections are requested and approved, never invented.</li>
+            <li>Field staff check in from a phone with a photo.</li>
+          </ul>
+        </div>
+        <div class="panel watch">
+          <h3>Careful</h3>
+          <p>Only one person is set up as field staff on the demo, so the map is quiet. Say it is one
+            agronomist, not a bug.</p>
+          <p>Carry-forward caps are set to zero, which means "not watched". If they ask, that is a
+            setting per leave type.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ 05 -->
+  <section id="training">
+    <div class="act-head">
+      <div class="cue">05</div>
+      <h2>Learning &amp; development</h2>
+      <p class="act-sub">Put people through a course, let them take the test, hand them the certificate —
+        and pay back what they spent.</p>
+      <div class="act-nav">
+        <span class="path">Left rail → Learn → Training</span>
+        <span class="mins">7 min</span>
+      </div>
+    </div>
+
+    <div class="act-body">
+      <ol class="steps">
+        <li><span class="do">Open <span class="ui">Learn</span>, then <span class="ui">Training</span>.</span>
+          <p>The counters say it in one line: how many courses, how many people are on one, not started,
+            finished, passed the test, the pass rate, what is past its date and what is due in the next
+            week.</p>
+        </li>
+
+        <li><span class="do">Open the course <span class="rec">DEMO Agronomist basics</span>.</span>
+          <p>A course is lessons — a video, a document, a written page, a picture, a short question —
+            and a test at the end.</p>
+        </li>
+
+        <li><span class="do">Press <span class="ui">Put people on it</span>.</span>
+          <p>One person, or a whole department, or everybody doing one job. Set the date it is due by.</p>
+        </li>
+
+        <li><span class="do">Second tab: open <span class="ui">/my/training</span> as the demo
+          learner.</span>
+          <p>This is the page the employee sees, and it is deliberately small: the courses they are on,
+            how far through each one, what is left, and whether the test is still locked. No catalogue
+            to get lost in. Open a lesson, press <span class="ui">Mark as done</span>, watch the
+            progress bar move.</p>
+        </li>
+
+        <li><span class="do">Show the test and the certificate on that page.</span>
+          <p>The test unlocks when the lessons are done. Pass it and the certificate is issued and filed
+            against the person — so an auditor asking "prove this person was trained" takes one click,
+            not one afternoon.</p>
+        </li>
+
+        <li><span class="do">Back to the board: <span class="ui">Assignments</span>.</span>
+          <p>Seven on the demo, in every state including one that was missed. Reminders go three days
+            before, one day before, on the day, then every three days. The manager is told two days
+            after it is late; the HR lead five days after.</p>
+        </li>
+
+        <li><span class="do">Open <span class="ui">More time</span>.</span>
+          <p>Somebody genuinely could not finish — they ask for more time from their own page, and a
+            manager agrees it. It is a request with a name on it, not a quiet extension.</p>
+        </li>
+
+        <li><span class="do">Open <span class="ui">Comes round again</span> and
+          <span class="ui">Day one</span>.</span>
+          <p>Yearly safety training that reappears on its own, and the courses a new joiner starts on
+            their first day — those sit on the joining checklist the offer created back in act one.</p>
+        </li>
+
+        <li><span class="do">Open <span class="ui">Claims</span>.</span>
+          <p>Somebody paid for a course themselves. They upload the receipt and the certificate, it goes
+            for sign-off against a yearly allowance, and once agreed it becomes an item the pay team
+            queues into a pay run. It never writes itself into a payslip — a person still puts it on the
+            run.</p>
+        </li>
+
+        <li><span class="do">Finish on <span class="ui">Insights → Training</span>.</span>
+          <p>Who has been trained in what, what it cost, what is overdue — with an Excel export.</p>
+        </li>
+      </ol>
+
+      <div class="aside">
+        <div class="say">
+          <h3>Say this</h3>
+          <p>"Training usually lives in three places: a folder of videos, a spreadsheet of who watched
+            them, and somebody's memory of who passed. This is the same three things in one place, and
+            the employee can see their own list."</p>
+        </div>
+        <div class="panel">
+          <h3>What this act proves</h3>
+          <ul>
+            <li>Courses, tests and certificates all on our own pages.</li>
+            <li>Enrol a department or a job in one action, with a due date.</li>
+            <li>Reminders and escalation run themselves.</li>
+            <li>Compliance training comes round yearly; joiners start on day one.</li>
+            <li>Course costs are claimed, approved against an allowance, and reach the pay run through a
+              person.</li>
+          </ul>
+        </div>
+        <div class="panel watch">
+          <h3>Careful</h3>
+          <p>The yearly training allowance on screen is a demo figure, not a recommendation.</p>
+          <p>There is one course on the demo. If they ask "is that all", say the stock sample courses
+            were deliberately removed so nothing fake is on screen.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ 06 -->
+  <section id="close">
+    <div class="act-head">
+      <div class="cue">06</div>
+      <h2>Closing</h2>
+      <p class="act-sub">Two minutes. Land the three things that are true across all five areas.</p>
+      <div class="act-nav">
+        <span class="path">Anywhere · or Home</span>
+        <span class="mins">2 min</span>
+      </div>
+    </div>
+
+    <div class="act-body">
+      <ol class="steps">
+        <li><span class="do">One inbox for every sign-off.</span>
+          <p>The hiring request, the offer, the goal lock, the extra time on a course, the training
+            claim, the leave — every one of them runs on the same approval engine, and every one of them
+            shows up in one approvals list. You configure who signs off what once.</p>
+        </li>
+        <li><span class="do">The employee side is real, not an afterthought.</span>
+          <p>Refer a friend, write your goals, do your training, see the holidays, check in from the
+            field — all from pages the employee can reach on a phone.</p>
+        </li>
+        <li><span class="do">It ends in the pay run.</span>
+          <p>A closed offer becomes a contract and a pay package. A training claim becomes something the
+            pay team puts on a run. Attendance and leave decide what is paid. That is the difference
+            between an HR system and a set of forms.</p>
+        </li>
+        <li><span class="do">Offer the next step.</span>
+          <p>The honest one: put these five areas on the Rize site with Rize's own people, and run the
+            same walk-through on their data.</p>
+        </li>
+      </ol>
+
+      <div class="aside">
+        <div class="panel">
+          <h3>If they ask</h3>
+          <ul>
+            <li><b>Is it in other languages?</b> Every screen here is English and Vietnamese; another
+              language is a translation job, not a rebuild.</li>
+            <li><b>Dark mode?</b> Not yet on these screens — they render light. Everything is readable;
+              it is on the list.</li>
+            <li><b>Can we have our own approvers?</b> Yes — that is a settings screen, per company.</li>
+            <li><b>Can staff see all this on a phone?</b> The employee pages, yes. The HR boards are
+              built for a laptop.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ ref -->
+
+  <div class="tablewrap">
+    <table>
+      <caption>The five areas in one line each</caption>
+      <thead>
+        <tr><th>Area</th><th>Where it is</th><th>What it does</th><th>Demo content</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Hiring &amp; recruitment</td>
+          <td class="num">Lifecycle → Hiring</td>
+          <td>Request a person with a budget check, agree it, write and agree the advert, take referrals,
+            run interviews with private opinions, make the offer, and turn a yes into an employee with a
+            contract.</td>
+          <td class="num">10 requests · 9 interviews · 3 offers</td>
+        </tr>
+        <tr>
+          <td>Goal setting</td>
+          <td class="num">People → Goals</td>
+          <td>Open a goal year for everybody, let people write weighted goals with key results, manager
+            agrees and locks, monthly check-ins, changes by request, year-end scores and bands.</td>
+          <td class="num">4 goal years · 17 sheets</td>
+        </tr>
+        <tr>
+          <td>Company announcements</td>
+          <td class="num">People → Announce</td>
+          <td>A month calendar of everything about to be sent, audience by everyone / department / job /
+            country with a count before sending, recurring notices, posters, and a record of who got
+            what.</td>
+          <td class="num">8 announcements</td>
+        </tr>
+        <tr>
+          <td>Leave &amp; attendance</td>
+          <td class="num">Workforce</td>
+          <td>Approval queue with reasons, month heat map, balances, apply on behalf, public holidays
+            pasted a year at a time, escalation to the HR lead, approved attendance corrections, and
+            field check-in from a phone.</td>
+          <td class="num">13 public holidays · 1 field worker</td>
+        </tr>
+        <tr>
+          <td>Learning &amp; development</td>
+          <td class="num">Learn → Training</td>
+          <td>Courses with lessons and a test, enrol a department at once, the learner's own page with a
+            certificate at the end, reminders and escalation, yearly compliance, day-one courses, and
+            cost claims that reach the pay run.</td>
+          <td class="num">1 course · 7 assignments · 2 claims</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="end">
+    <div class="panel">
+      <h3>Employee-side pages</h3>
+      <ul>
+        <li><span class="ui">/my/refer</span> — put a friend forward</li>
+        <li><span class="ui">/my/hiring</span> — my interviews, if I am on a panel</li>
+        <li><span class="ui">/my/goals</span> — write and send my goals</li>
+        <li><span class="ui">/my/training</span> — my courses, test and certificate</li>
+        <li><span class="ui">/my/holidays</span> — the public holiday calendar</li>
+        <li><span class="ui">/field</span> — check in from the field, on a phone</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Do not press</h3>
+      <ul>
+        <li><span class="ui">Remove demo data</span> — takes the whole demo world away</li>
+        <li><span class="ui">Load demo data</span> — builds a second, untested world</li>
+        <li><span class="ui">Run today's chasing</span> — sends the nightly chase mails now</li>
+        <li>Don't confirm or pay any pay run; one demo award is sitting on a draft run</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Before the call</h3>
+      <ul>
+        <li>Decide: demo on payobook.com, or install these four areas on the Rize site first</li>
+        <li>Open the second browser tab and sign in as a demo employee</li>
+        <li>Check the company picker says Payobook Vietnam JSC</li>
+        <li>Have the pay-side cue sheet open too, if pay is on the agenda</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="colophon">Companion to the pay-side cue sheet (<span class="ui">docs/demo/rize-demo-runbook.html</span>).
+    Screen names, tabs, counters and record numbers on this sheet were read from the live payobook.com
+    database on 18 September 2026. No passwords are printed here — get the demo logins from the
+    programme closeout notes.</p>
+
+</div>

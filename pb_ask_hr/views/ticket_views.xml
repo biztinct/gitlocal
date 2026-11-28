@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- TIERS T3a — the HR queue. The kanban (grouped by state) is the first
+         view; the list is the secondary one with the same columns. The form
+         is the native form, skinned by the VU form engine like every other
+         form (no `vu-form-native` opt-out): the chatter IS the answer box. -->
+
+    <record id="view_pb_ask_hr_ticket_kanban" model="ir.ui.view">
+        <field name="name">pb.ask.hr.ticket.kanban</field>
+        <field name="model">pb.ask.hr.ticket</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="pbah-kanban" quick_create="false"
+                    group_create="false" group_delete="false" group_edit="false"
+                    records_draggable="false" sample="1">
+                <field name="state"/>
+                <field name="employee_id"/>
+                <field name="user_id"/>
+                <field name="waiting_days"/>
+                <field name="category"/>
+                <field name="last_public_by"/>
+                <templates>
+                    <t t-name="card" class="pbah-card">
+                        <div class="pbah-card-top">
+                            <span class="pbah-card-num"><field name="number"/></span>
+                            <span t-if="record.waiting_days.raw_value and ['new', 'with_hr'].includes(record.state.raw_value)"
+                                  t-attf-class="pbah-age #{record.waiting_days.raw_value &gt;= 2 ? 'is-late' : ''}">waiting <t t-out="record.waiting_days.raw_value"/> d</span>
+                            <span t-elif="['new', 'with_hr'].includes(record.state.raw_value)" class="pbah-age">today</span>
+                        </div>
+                        <div class="pbah-card-subject"><field name="name"/></div>
+                        <div class="pbah-card-person">
+                            <img t-att-src="'/web/image/hr.employee/' + record.employee_id.raw_value + '/avatar_128'"
+                                 class="pbah-card-av" alt="" loading="lazy"/>
+                            <span class="pbah-card-emp"><field name="employee_id"/></span>
+                        </div>
+                        <footer class="pbah-card-foot">
+                            <span t-attf-class="pbah-chip pbah-chip--#{record.category.raw_value}"><field name="category"/></span>
+                            <div class="pbah-card-actions">
+                                <button t-if="!record.user_id.raw_value and record.state.raw_value != 'closed'"
+                                        name="action_take" type="object" class="btn btn-sm btn-primary pbah-take">Take it</button>
+                                <field name="user_id" widget="many2one_avatar_user"/>
+                            </div>
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_pb_ask_hr_ticket_list" model="ir.ui.view">
+        <field name="name">pb.ask.hr.ticket.list</field>
+        <field name="model">pb.ask.hr.ticket</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'closed'" decoration-bf="state in ('new', 'with_hr')">
+                <field name="number"/>
+                <field name="name"/>
+                <field name="employee_id" widget="many2one_avatar_employee"/>
+                <field name="category" widget="badge"/>
+                <field name="waiting_days" string="Waiting (days)" invisible="state not in ('new', 'with_hr')"/>
+                <field name="last_activity_on" string="Last activity" optional="show"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'new'"
+                       decoration-warning="state == 'with_hr'"
+                       decoration-success="state == 'answered'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_ask_hr_ticket_form" model="ir.ui.view">
+        <field name="name">pb.ask.hr.ticket.form</field>
+        <field name="model">pb.ask.hr.ticket</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_take" type="object" string="Take it" class="btn-primary"
+                            invisible="state == 'closed' or user_id"/>
+                    <button name="action_answer_done" type="object" string="Mark answered"
+                            invisible="state not in ('new', 'with_hr')"/>
+                    <button name="action_close" type="object" string="Close"
+                            invisible="state == 'closed'"/>
+                    <button name="action_reopen" type="object" string="Reopen"
+                            invisible="state != 'closed'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="new,with_hr,answered,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <div class="text-muted small"><field name="number" readonly="1"/></div>
+                        <h1><field name="name" placeholder="Subject"/></h1>
+                        <p class="text-muted mb-0 pbah-form-hint">Reply with Send message. Notes stay private.</p>
+                    </div>
+                    <group>
+                        <group string="The question">
+                            <field name="employee_id" widget="many2one_avatar_employee"/>
+                            <field name="category"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Handling">
+                            <field name="user_id" widget="many2one_avatar_user"/>
+                            <field name="last_activity_on" readonly="1"/>
+                            <field name="answered_on" invisible="not answered_on"/>
+                            <field name="closed_on" invisible="not closed_on"/>
+                            <field name="closed_by" invisible="not closed_by"/>
+                        </group>
+                    </group>
+                    <separator string="What they need"/>
+                    <field name="description" placeholder="The employee's own words"/>
+                    <field name="attachment_ids" widget="many2many_binary" string="Files" invisible="not attachment_ids"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_ask_hr_ticket_search" model="ir.ui.view">
+        <field name="name">pb.ask.hr.ticket.search</field>
+        <field name="model">pb.ask.hr.ticket</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="number"/>
+                <field name="employee_id"/>
+                <field name="user_id"/>
+                <filter name="filter_open" string="Open"
+                        domain="[('state', 'in', ('new', 'with_hr'))]"/>
+                <separator/>
+                <filter name="filter_new" string="New" domain="[('state', '=', 'new')]"/>
+                <filter name="filter_with_hr" string="With HR" domain="[('state', '=', 'with_hr')]"/>
+                <filter name="filter_answered" string="Answered" domain="[('state', '=', 'answered')]"/>
+                <filter name="filter_closed" string="Closed" domain="[('state', '=', 'closed')]"/>
+                <separator/>
+                <filter name="filter_mine" string="Mine" domain="[('user_id', '=', uid)]"/>
+                <filter name="filter_unassigned" string="Nobody has it yet" domain="[('user_id', '=', False)]"/>
+                <group name="group_by">
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_category" string="Category" context="{'group_by': 'category'}"/>
+                    <filter name="group_owner" string="HR owner" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_employee" string="Employee" context="{'group_by': 'employee_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_ask_hr_ticket" model="ir.actions.act_window">
+        <field name="name">Ask HR</field>
+        <field name="res_model">pb.ask.hr.ticket</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_pb_ask_hr_ticket_search"/>
+        <field name="context">{'search_default_filter_open': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No questions waiting</p>
+            <p>When an employee asks HR something from their own pages, it lands here. Answer with Send message on the question; they get your reply by e-mail and on their page.</p>
+        </field>
+    </record>
+
+    <!-- after pb_me_portal's "Profile Changes" (sequence 86) -->
+    <menuitem id="menu_pb_ask_hr_ticket"
+              name="Ask HR"
+              parent="hr.menu_hr_root"
+              action="action_pb_ask_hr_ticket"
+              sequence="87"
+              groups="hr.group_hr_user"/>
+</odoo>

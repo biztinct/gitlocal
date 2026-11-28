@@ -505,16 +505,10 @@ class EmployeeImportWizard(models.TransientModel):
             if existing and not self.update_existing:
                 errors.append('Duplicate employee number')
         
-        # Custom validation
-        if self.custom_validation_code:
-            try:
-                # Execute custom validation code
-                local_vars = {'record': record, 'errors': errors}
-                exec(self.custom_validation_code, {}, local_vars)
-                errors = local_vars.get('errors', errors)
-            except Exception as e:
-                errors.append(f'Custom validation error: {str(e)}')
-        
+        # UPDATES P3a: the typed "custom validation code" used to be run with
+        # exec() here — arbitrary code from a form field. Deleted with the
+        # retirement of this import (People › Updates replaces it); the field
+        # stays so stored forms still load, and is never run.
         return '; '.join(errors)
 
     def _process_employee_record(self, record):
@@ -862,7 +856,8 @@ class EmployeeImportWizard(models.TransientModel):
             'name': _('Imported Employees'),
             'type': 'ir.actions.act_window',
             'res_model': 'hr.employee',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
+            'views': [[False, 'list'], [False, 'form']],
             'domain': [('country_id.code', '=', self.country_code)],
             'context': {'create': False},
         }

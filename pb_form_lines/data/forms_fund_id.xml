@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- WDGAP S2-B2 — Indonesia: the two BPJS monthly sheets. See pb_form_lines/models/fund_id.py. -->
+
+    <record id="form_id_bpjs_tk" model="pb.gov.form">
+        <field name="code">ID_BPJS_TK</field>
+        <field name="country_code">ID</field>
+        <field name="sequence">30</field>
+        <field name="name">BPJS Ketenagakerjaan — monthly wage report (SIPP)</field>
+        <field name="official_name">SIPP BPJS Ketenagakerjaan — Upload Upah tenaga kerja</field>
+        <field name="authority">BPJS Ketenagakerjaan</field>
+        <field name="period_kind">month</field>
+        <field name="quarter_allowed" eval="False"/>
+        <field name="output_kinds">xlsx</field>
+        <field name="total_line_code">TOTAL</field>
+        <field name="filing_section">fund</field>
+        <field name="tile_group">fund_file</field>
+        <field name="adviser_wording">fund</field>
+        <field name="employer_label">BPJS Ketenagakerjaan company number (NPP)</field>
+        <field name="compare_line_codes">JHT_EE,JHT_ER,JKK_ER,JKM_ER,JP_EE,JP_ER</field>
+        <field name="source_url">https://sipp.bpjsketenagakerjaan.go.id/</field>
+        <field name="source_note">BPJS Ketenagakerjaan, SIPP (Sistem Informasi Pelaporan Peserta), menu Mutasi Data, "Upload Upah": the Excel template is downloaded inside SIPP after login and is not published. Columns as listed in the published SIPP guide by Gadjian (gadjian.com, "5 Fitur SIPP BPJS Ketenagakerjaan untuk Pelaporan Data Online", 24 August 2022): NIK, KPJ number, full name, date of birth, wage, month. Read on 18 November 2026.</field>
+        <field name="inferred" eval="True"/>
+        <field name="inferred_note">The SIPP template itself is not published: the column order, the sheet name and the date format are taken from a published guide. Check them against the template you download from SIPP before the first upload. The contributions are not columns of the upload (SIPP works them out from the wage); they are on the summary for checking.</field>
+    </record>
+    <record id="form_id_bpjs_tk_wage" model="pb.gov.form.line">
+        <field name="form_id" ref="form_id_bpjs_tk"/>
+        <field name="code">WAGE</field>
+        <field name="sequence">10</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Wage reported to BPJS</field>
+        <field name="official_label">Upah</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">upah bpjs,dasar upah bpjs,dasar bpjs,gaji bpjs,upah tk,bpjs wage,bpjs base,bpjs tk wage</field>
+        <field name="suggest_roles">earning,info</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_id_bpjs_tk_jht_ee" model="pb.gov.form.line">
+        <field name="form_id" ref="form_id_bpjs_tk"/>
+        <field name="code">JHT_EE</field>
+        <field name="sequence">20</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Old-age savings (JHT) — employee</field>
+        <field name="official_label">Iuran JHT tenaga kerja (2%)</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">jht,jaminan hari tua,old age</field>
+        <field name="suggest_roles">deduction</field>
+        <field name="suggest_parts" eval="True"/>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_id_bpjs_tk_jht_er" model="pb.gov.form.line">
+        <field name="form_id" ref="form_id_bpjs_tk"/>
+        <field name="code">JHT_ER</field>
+        <field name="sequence">30</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Old-age savings (JHT) — employer</field>
+        <field name="official_label">Iuran JHT pemberi kerja (3,7%)</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">jht,jaminan hari tua,old age</field>
+        <field name="suggest_roles">employer_cost</field>
+        <field name="suggest_parts" eval="True"/>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_id_bpjs_tk_jkk_er" model="pb.gov.form.line">
+        <field name="form_id" ref="form_id_bpjs_tk"/>
+        <field name="code">JKK_ER</field>
+        <field name="sequence">40</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Work accident cover (JKK) — employer</field>
+        <field name="official_label">Iuran JKK</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">jkk,kecelakaan kerja,work accident,accident insurance</field>
+        <field name="suggest_roles">employer_cost,earning</field>
+        <field name="suggest_parts" eval="True"/>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_id_bpjs_tk_jkm_er" model="pb.gov.form.line">
+        <field name="form_id" ref="form_id_bpjs_tk"/>
+        <field name="code">JKM_ER</field>
+        <field name="sequence">50</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Death cover (JKM) — employer</field>
+        <field name="official_label">Iuran JKM</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">jkm,jaminan kematian,kematian,death cover,life insurance</field>
+        <field name="suggest_roles">employer_cost,earning</field>
+        <field name="suggest_parts" eval="True"/>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_id_bpjs_tk_jp_ee" model="pb.gov.form.line">
+        <field name="form_id" ref="form_id_bpjs_tk"/>
+        <field name="code">JP_EE</field>
+        <field name="sequence">60</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Pension (JP) — employee</field>
+        <field name="official_label">Iuran JP tenaga kerja (1%)</field>
+        <field name="suggest_words">jp,jaminan pensiun,pension</field>
+        <field name="suggest_roles">deduction</field>
+        <field name="suggest_parts" eval="True"/>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_id_bpjs_tk_jp_er" model="pb.gov.form.line">
+        <field name="form_id" ref="form_id_bpjs_tk"/>
+        <field name="code">JP_ER</field>
+        <field name="sequence">70</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Pension (JP) — employer</field>
+        <field name="official_label">Iuran JP pemberi kerja (2%)</field>
+        <field name="suggest_words">jp,jaminan pensiun,pension</field>
+        <field name="suggest_roles">employer_cost</field>
+        <field name="suggest_parts" eval="True"/>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_id_bpjs_tk_ee_total" model="pb.gov.form.line">
+        <field name="form_id" ref="form_id_bpjs_tk"/>
+        <field name="code">EE_TOTAL</field>
+        <field name="sequence">80</field>
+        <field name="kind">computed</field>
+        <field name="scope">employee</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">JHT_EE,JP_EE</field>
+        <field name="label">Employee share</field>
+        <field name="official_label">Iuran tenaga kerja</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_id_bpjs_tk_er_total" model="pb.gov.form.line">
+        <field name="form_id" ref="form_id_bpjs_tk"/>
+        <field name="code">ER_TOTAL</field>
+        <field name="sequence">90</field>
+        <field name="kind">computed</field>
+        <field name="scope">employee</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">JHT_ER,JKK_ER,JKM_ER,JP_ER</field>
+        <field name="label">Employer share</field>
+        <field name="official_label">Iuran pemberi kerja</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_id_bpjs_tk_total" model="pb.gov.form.line">
+        <field name="form_id" ref="form_id_bpjs_tk"/>
+        <field name="code">TOTAL</field>
+        <field name="sequence">100</field>
+        <field name="kind">computed</field>
+        <field name="scope">employee</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">EE_TOTAL,ER_TOTAL</field>
+        <field name="label">Total for the fund</field>
+        <field name="official_label">Total iuran</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_id_bpjs_tk_people" model="pb.gov.form.line">
+        <field name="form_id" ref="form_id_bpjs_tk"/>
+        <field name="code">PEOPLE</field>
+        <field name="sequence">110</field>
+        <field name="kind">count</field>
+        <field name="scope">total</field>
+        <field name="label">People</field>
+        <field name="official_label">Jumlah tenaga kerja</field>
+        <field name="mappable" eval="False"/>
+    </record>
+
+    <record id="form_id_bpjs_kes" model="pb.gov.form">
+        <field name="code">ID_BPJS_KES</field>
+        <field name="country_code">ID</field>
+        <field name="sequence">31</field>
+        <field name="name">BPJS Kesehatan — monthly member and contribution sheet (e-Dabu)</field>
+        <field name="official_name">e-Dabu BPJS Kesehatan — Data peserta dan iuran</field>
+        <field name="authority">BPJS Kesehatan</field>
+        <field name="period_kind">month</field>
+        <field name="quarter_allowed" eval="False"/>
+        <field name="output_kinds">xlsx</field>
+        <field name="total_line_code">TOTAL</field>
+        <field name="filing_section">fund</field>
+        <field name="tile_group">fund_file</field>
+        <field name="adviser_wording">fund</field>
+        <field name="employer_label">BPJS Kesehatan company code</field>
+        <field name="compare_line_codes">KES_EE,KES_ER</field>
+        <field name="source_url">https://edabu.bpjs-kesehatan.go.id/</field>
+        <field name="source_note">BPJS Kesehatan, e-Dabu (Elektronik Data Badan Usaha): the member and contribution data of a company are kept in e-Dabu after login; the upload template is not published. Columns follow what e-Dabu asks for (NIK, card number, name, date of birth, wage, employee 1% and employer 4% contribution) as described in published guides (detik.com, "Edabu BPJS Kesehatan", 2021). Read on 18 November 2026.</field>
+        <field name="inferred" eval="True"/>
+        <field name="inferred_note">The e-Dabu template is not published: every column of this sheet is taken from published guides. Check it against what e-Dabu shows before the first upload.</field>
+    </record>
+    <record id="form_id_bpjs_kes_wage" model="pb.gov.form.line">
+        <field name="form_id" ref="form_id_bpjs_kes"/>
+        <field name="code">WAGE</field>
+        <field name="sequence">10</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Wage reported to BPJS Health</field>
+        <field name="official_label">Gaji / upah</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">upah bpjs kesehatan,dasar bpjs kesehatan,gaji bpjs kesehatan,bpjs kes base,upah bpjs,dasar bpjs,bpjs health wage</field>
+        <field name="suggest_roles">earning,info</field>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_id_bpjs_kes_kes_ee" model="pb.gov.form.line">
+        <field name="form_id" ref="form_id_bpjs_kes"/>
+        <field name="code">KES_EE</field>
+        <field name="sequence">20</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Health insurance — employee</field>
+        <field name="official_label">Iuran pekerja (1%)</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">bpjs kesehatan,bpjs kes,jkn,health insurance,bpjs health employee,bpjs health</field>
+        <field name="suggest_roles">deduction</field>
+        <field name="suggest_parts" eval="True"/>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_id_bpjs_kes_kes_er" model="pb.gov.form.line">
+        <field name="form_id" ref="form_id_bpjs_kes"/>
+        <field name="code">KES_ER</field>
+        <field name="sequence">30</field>
+        <field name="kind">money</field>
+        <field name="scope">employee</field>
+        <field name="label">Health insurance — employer</field>
+        <field name="official_label">Iuran pemberi kerja (4%)</field>
+        <field name="required" eval="True"/>
+        <field name="suggest_words">bpjs kesehatan,bpjs kes,jkn,health insurance,bpjs health company,bpjs health</field>
+        <field name="suggest_roles">employer_cost,earning</field>
+        <field name="suggest_parts" eval="True"/>
+        <field name="inferred" eval="True"/>
+    </record>
+    <record id="form_id_bpjs_kes_total" model="pb.gov.form.line">
+        <field name="form_id" ref="form_id_bpjs_kes"/>
+        <field name="code">TOTAL</field>
+        <field name="sequence">40</field>
+        <field name="kind">computed</field>
+        <field name="scope">employee</field>
+        <field name="compute_op">sum</field>
+        <field name="operand_codes">KES_EE,KES_ER</field>
+        <field name="label">Total for the fund</field>
+        <field name="official_label">Total iuran</field>
+        <field name="mappable" eval="False"/>
+    </record>
+    <record id="form_id_bpjs_kes_people" model="pb.gov.form.line">
+        <field name="form_id" ref="form_id_bpjs_kes"/>
+        <field name="code">PEOPLE</field>
+        <field name="sequence">50</field>
+        <field name="kind">count</field>
+        <field name="scope">total</field>
+        <field name="label">People</field>
+        <field name="official_label">Jumlah peserta</field>
+        <field name="mappable" eval="False"/>
+    </record>
+</odoo>

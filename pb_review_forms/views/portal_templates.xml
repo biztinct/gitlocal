@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ==================================================================
+       WDGAP S9-A: the review form on My Payobook.
+
+       pb_goals' rules for server templates hold here too: `t-attf-class`,
+       never a dict `t-att-class` (R42); icon names passed with `t-value`
+       (W87); no `t-key`; no render key called `request`; section comments
+       ruled with `=` (R35); and no `%` formatting inside a `t-att-*`
+       (ledger PRB-W5).
+       ================================================================== -->
+
+  <!-- ============ the review card on /my/goals gains the form ============ -->
+  <template id="gl_year_review_form" name="My goals: the review form card"
+            inherit_id="pb_goals.gl_year">
+    <xpath expr="//div[hasclass('pbgl-rv-card')]/div[hasclass('pbgl-rv-card-top')]" position="after">
+      <div t-if="rv.get('form')" class="pbrf-card">
+        <div class="pbrf-card-ic">
+          <t t-call="pb_me_portal.ess_icon">
+            <t t-set="icon" t-value="'clipboard-list'"/>
+            <t t-set="isz" t-value="18"/>
+          </t>
+        </div>
+        <div class="pbrf-card-body">
+          <strong>Your review form</strong>
+          <p t-esc="rv['form']['sentence']"/>
+        </div>
+        <a class="pbme-btn pbgl-btn--primary" t-att-href="rv['form']['url']">
+          <t t-if="rv['form']['self_state'] != 'sent' and rv['form']['mgr_state'] != 'done'">Open my review</t>
+          <t t-else="">See my review</t>
+        </a>
+      </div>
+    </xpath>
+    <xpath expr="//details[hasclass('pbgl-edit')]" position="attributes">
+      <attribute name="t-if">rv['state'] != 'done' and not rv.get('form')</attribute>
+    </xpath>
+  </template>
+
+  <!-- The "My review" home tile (owner ruling RV4), added at the Step 9 merge
+       together with pb_me_portal's tile row (pb_me_portal's own test requires
+       every home entry to be in its registry). Door `/my/review`, eager key
+       `pb_rf_has` (true only while the person has a review on a form). -->
+  <template id="portal_my_home_review" name="Review home entry"
+            inherit_id="portal.portal_my_home" priority="47">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-if="pb_rf_has" t-call="portal.portal_docs_entry">
+        <t t-set="title">My review</t>
+        <t t-set="text">Your end-of-year review, both sides</t>
+        <t t-set="url" t-value="'/my/review'"/>
+        <t t-set="config_card" t-value="True"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ===================== one answer, as an input ===================== -->
+  <template id="rf_input" name="Review form: one answer">
+    <t t-if="ln['kind'] == 'rating'">
+      <div class="pbrf-scale" role="radiogroup">
+        <t t-foreach="rf['ratings']" t-as="op">
+          <label t-attf-class="pbrf-pill #{ln['mine'] == op['key'] and 'is-on' or ''}">
+            <input type="radio" t-attf-name="a_#{ln['id']}" t-att-value="op['key']"
+                   t-att-checked="ln['mine'] == op['key'] and 'checked' or None"/>
+            <span t-esc="op['label']"/>
+          </label>
+        </t>
+      </div>
+    </t>
+    <t t-elif="ln['kind'] == 'choice'">
+      <select class="pbrf-select" t-attf-name="a_#{ln['id']}">
+        <option value="">Choose one</option>
+        <t t-foreach="ln['choices']" t-as="ch">
+          <option t-att-value="ch" t-att-selected="ln['mine'] == ch and 'selected' or None" t-esc="ch"/>
+        </t>
+      </select>
+    </t>
+    <t t-else="">
+      <textarea class="pbrf-text" rows="3" t-attf-name="a_#{ln['id']}"><t t-esc="ln['mine'] or ''"/></textarea>
+    </t>
+  </template>
+
+  <!-- ===================== one line, read back ===================== -->
+  <template id="rf_line" name="Review form: one line">
+    <div class="pbrf-line">
+      <div class="pbrf-line-q">
+        <strong t-esc="ln['name']"/>
+        <span t-if="ln.get('description')" class="pbrf-hint" t-esc="ln['description']"/>
+      </div>
+      <t t-if="editing and ln['asks_me']">
+        <t t-call="pb_review_forms.rf_input"/>
+      </t>
+      <div t-else="" class="pbrf-said">
+        <div t-if="ln['asks_me']" class="pbrf-said-row">
+          <span class="pbrf-who">You</span>
+          <span class="pbrf-said-v" t-esc="ln.get('mine_words') or '-'"/>
+        </div>
+        <div t-if="'manager_words' in ln" class="pbrf-said-row">
+          <span class="pbrf-who pbrf-who--mgr">Manager</span>
+          <span class="pbrf-said-v" t-esc="ln['manager_words'] or '-'"/>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- ================================================================= -->
+  <!--  /my/goals/review/<id> (and HR's preview of it)                   -->
+  <!-- ================================================================= -->
+  <template id="portal_review_form" name="My review form">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbgl pbrf">
+
+        <t t-call="pb_goals.gl_notices"/>
+
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title" t-value="rf['title']"/>
+          <t t-set="hero_sub" t-value="rf['year']"/>
+        </t>
+
+        <div t-if="rf['preview']" class="pbrf-preview">
+          <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'user'"/></t>
+          <span>Preview. This is what employees see. Nothing you choose here is saved.</span>
+        </div>
+
+        <!-- ======================= where it has got to ======================= -->
+        <t t-set="step" t-value="rf['shown'] and 3 or ((rf['self_state'] == 'sent' or rf['mgr_done']) and 2 or 1)"/>
+        <ol class="pbrf-steps">
+          <li t-attf-class="pbrf-step #{step == 1 and 'is-now' or 'is-done'}">
+            <span class="pbrf-step-n">1</span><span>Your own view</span>
+          </li>
+          <li t-attf-class="pbrf-step #{step == 2 and 'is-now' or (step == 3 and 'is-done' or '')}">
+            <span class="pbrf-step-n">2</span><span>Your manager</span>
+          </li>
+          <li t-attf-class="pbrf-step #{step == 3 and 'is-now' or ''}">
+            <span class="pbrf-step-n">3</span><span>Read and confirm</span>
+          </li>
+        </ol>
+
+        <p t-if="rf['intro']" class="pbrf-intro" t-esc="rf['intro']"/>
+
+        <!-- ===================== waiting on the manager ===================== -->
+        <div t-if="step == 2" class="pbrf-wait">
+          <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="20"/></t>
+          <div>
+            <strong t-if="not rf['mgr_done']">Your own view is with your manager</strong>
+            <strong t-else="">Your manager has finished</strong>
+            <p t-if="not rf['mgr_done']">
+              <t t-if="rf['self_sent_on']"><span>Sent on</span> <t t-esc="rf['self_sent_on']"/>. </t>
+              <span>They write their part next. You can read it once it is shared with you.</span>
+            </p>
+            <p t-else="" t-esc="rf['when_words']"/>
+          </div>
+        </div>
+
+        <!-- ======================= the result ======================= -->
+        <div t-if="rf['shown']" class="pbrf-result">
+          <div class="pbrf-result-big">
+            <span class="pbrf-result-label">Overall result</span>
+            <span class="pbrf-result-n">
+              <t t-if="rf['result']['overall'] is not None" t-esc="rf['result']['overall']"/>
+              <t t-else="">-</t>
+            </span>
+            <span class="pbrf-result-of">out of 5</span>
+          </div>
+          <div class="pbrf-result-parts">
+            <t t-foreach="rf['result']['parts']" t-as="part">
+              <div class="pbrf-part">
+                <span t-esc="part['label']"/>
+                <strong><t t-if="part['value'] is not None" t-esc="part['value']"/><t t-else="">-</t></strong>
+                <span class="pbrf-part-share"><t t-esc="part['share']"/>%</span>
+              </div>
+            </t>
+          </div>
+          <div class="pbrf-comment">
+            <strong>From your manager</strong>
+            <p t-esc="rf['result']['comment']"/>
+          </div>
+        </div>
+
+        <!-- ======================= the form ======================= -->
+        <t t-set="editing" t-value="rf['may_edit']"/>
+        <form t-if="editing" method="post" class="pbrf-form"
+              t-att-action="(not rf['preview']) and ('/my/goals/review/' + str(rf['review_id']) + '/save') or None">
+          <input t-if="not rf['preview']" type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+          <section t-if="rf['skills']" class="pbrf-sec">
+            <h3>Skills and values</h3>
+            <p class="pbrf-sec-sub">How you think the year went on each one.</p>
+            <t t-foreach="rf['skills']" t-as="ln"><t t-call="pb_review_forms.rf_line"/></t>
+          </section>
+          <section t-if="[q for q in rf['questions'] if q['asks_me']]" class="pbrf-sec">
+            <h3>Questions</h3>
+            <t t-foreach="rf['questions']" t-as="ln">
+              <t t-if="ln['asks_me']"><t t-call="pb_review_forms.rf_line"/></t>
+            </t>
+          </section>
+          <div class="pbrf-acts">
+            <button type="submit" name="do" value="save" class="pbme-btn"
+                    t-att-disabled="rf['preview'] and 'disabled' or None">Save for later</button>
+            <button type="submit" name="do" value="send" class="pbme-btn pbgl-btn--primary"
+                    t-att-disabled="rf['preview'] and 'disabled' or None">
+              <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'send'"/><t t-set="isz" t-value="15"/></t>
+              Send to my manager
+            </button>
+          </div>
+          <p class="pbrf-small">Once you send it, it cannot be changed. Your manager sees nothing before you send it.</p>
+        </form>
+
+        <div t-else="" class="pbrf-form pbrf-form--read">
+          <section t-if="rf['skills']" class="pbrf-sec">
+            <h3>Skills and values</h3>
+            <t t-foreach="rf['skills']" t-as="ln"><t t-call="pb_review_forms.rf_line"/></t>
+          </section>
+          <section t-if="[q for q in rf['questions'] if q['asks_me'] or 'manager_words' in q]" class="pbrf-sec">
+            <h3>Questions</h3>
+            <t t-foreach="rf['questions']" t-as="ln">
+              <t t-if="ln['asks_me'] or 'manager_words' in ln"><t t-call="pb_review_forms.rf_line"/></t>
+            </t>
+          </section>
+        </div>
+
+        <!-- ======================= read and confirm ======================= -->
+        <div t-if="rf['shown']" class="pbrf-ack">
+          <t t-if="rf['ack_state'] == 'none'">
+            <div>
+              <strong>Have you read it?</strong>
+              <p>Tell us you have read your review. If something in it is not right, ask to talk about it.</p>
+            </div>
+            <div class="pbrf-ack-acts">
+              <form method="post" t-att-action="'/my/goals/review/' + str(rf['review_id']) + '/ack'">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="kind" value="talk"/>
+                <button type="submit" class="pbme-btn">
+                  <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'message-circle-question'"/><t t-set="isz" t-value="15"/></t>
+                  I want to talk about it
+                </button>
+              </form>
+              <form method="post" t-att-action="'/my/goals/review/' + str(rf['review_id']) + '/ack'">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="kind" value="read"/>
+                <button type="submit" class="pbme-btn pbgl-btn--primary">
+                  <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="15"/></t>
+                  I have read this
+                </button>
+              </form>
+            </div>
+          </t>
+          <t t-else="">
+            <div>
+              <strong t-if="rf['ack_state'] == 'read'">You have read it</strong>
+              <strong t-else="">You asked to talk about it</strong>
+              <p><t t-esc="rf['ack_on']"/></p>
+            </div>
+            <form t-if="rf['ack_state'] == 'read'" method="post" t-att-action="'/my/goals/review/' + str(rf['review_id']) + '/ack'">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <input type="hidden" name="kind" value="talk"/>
+              <button type="submit" class="pbme-btn">I want to talk about it</button>
+            </form>
+          </t>
+          <a t-if="rf['has_pdf']" class="pbme-btn" t-att-href="'/my/goals/review/' + str(rf['review_id']) + '/pdf'">
+            <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'download'"/><t t-set="isz" t-value="15"/></t>
+            Download the PDF
+          </a>
+        </div>
+
+        <div class="pbgl-past-head">
+          <a class="pbme-btn" href="/my/goals">
+            <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'arrow-left'"/><t t-set="isz" t-value="15"/></t>
+            Back to my goals
+          </a>
+        </div>
+
+      </div>
+    </t>
+  </template>
+
+</odoo>

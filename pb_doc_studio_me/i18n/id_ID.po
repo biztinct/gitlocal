@@ -1,0 +1,82 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_doc_studio_me
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-22 11:46+0000\n"
+"PO-Revision-Date: 2026-11-22 11:46+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_doc_studio_me
+#: model:ir.model,name:pb_doc_studio_me.model_pb_me_certificate
+msgid "Certificate asked for on My Payobook"
+msgstr "Surat keterangan yang diminta di My Payobook"
+
+#. module: pb_doc_studio_me
+#. odoo-python
+#: code:addons/pb_doc_studio_me/models/doc_studio.py:0
+msgid "Date issued"
+msgstr "Tanggal terbit"
+
+#. module: pb_doc_studio_me
+#: model:ir.model.fields,field_description:pb_doc_studio_me.field_pb_doc_studio__display_name
+#: model:ir.model.fields,field_description:pb_doc_studio_me.field_pb_hr_letter__display_name
+#: model:ir.model.fields,field_description:pb_doc_studio_me.field_pb_me_certificate__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_doc_studio_me
+#: model:ir.model,name:pb_doc_studio_me.model_pb_doc_studio
+msgid "Document studio"
+msgstr "Studio dokumen"
+
+#. module: pb_doc_studio_me
+#: model:ir.model,name:pb_doc_studio_me.model_pb_hr_letter
+msgid "Employee Letter"
+msgstr "Surat karyawan"
+
+#. module: pb_doc_studio_me
+#: model:ir.model.fields,field_description:pb_doc_studio_me.field_pb_doc_studio__id
+#: model:ir.model.fields,field_description:pb_doc_studio_me.field_pb_hr_letter__id
+#: model:ir.model.fields,field_description:pb_doc_studio_me.field_pb_me_certificate__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_doc_studio_me
+#. odoo-python
+#: code:addons/pb_doc_studio_me/models/doc_studio.py:0
+msgid "Issued %s times"
+msgstr "Diterbitkan %s kali"
+
+#. module: pb_doc_studio_me
+#. odoo-python
+#: code:addons/pb_doc_studio_me/models/doc_studio.py:0
+msgid "Issued once"
+msgstr "Diterbitkan 1 kali"
+
+#. module: pb_doc_studio_me
+#. odoo-python
+#: code:addons/pb_doc_studio_me/models/doc_studio.py:0
+msgid "Joining date, as the certificate prints it"
+msgstr "Tanggal bergabung, seperti tercetak di surat keterangan"
+
+#. module: pb_doc_studio_me
+#. odoo-python
+#: code:addons/pb_doc_studio_me/models/doc_studio.py:0
+msgid "Printed at once when an employee asks for it on My Payobook"
+msgstr "Dicetak langsung saat karyawan memintanya di My Payobook"
+
+#. module: pb_doc_studio_me
+#. odoo-python
+#: code:addons/pb_doc_studio_me/models/doc_studio.py:0
+msgid "Printed when HR agrees an employee's request on My Payobook"
+msgstr "Dicetak saat HR menyetujui permintaan karyawan di My Payobook"

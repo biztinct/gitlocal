@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="pb_hr_payroll_indonesia.PayrollCountryBreadcrumb" owl="1">
+        <div class="payroll-country-indicator" t-if="state.country">
+            <span class="badge badge-primary">
+                <i class="fa fa-globe mr-1"/>
+                <span t-esc="state.countryName"/> Payroll
+            </span>
+            <button class="btn btn-sm btn-link" t-on-click="onChangeCountry">
+                <i class="fa fa-exchange"/> Change
+            </button>
+        </div>
+    </t>
+</templates>

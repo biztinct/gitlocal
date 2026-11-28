@@ -1,0 +1,321 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_hr_payroll_formula
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: id_ID\n"
+"Plural-Forms: \n"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "%(fact)s could not be worked out."
+msgstr "%(fact)s tidak dapat dihitung."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_payslip__pb_clock_stamp
+msgid "A fingerprint of the shifts, overtime and time off the clock hours of this payslip were worked out from. Approval is refused if they changed since."
+msgstr "Sidik jari shift, lembur dan cuti yang dipakai untuk menghitung jam slip gaji ini. Persetujuan ditolak jika sudah berubah sejak itu."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Actual hours (from punches)"
+msgstr "Jam aktual (dari absensi)"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_rule__pb_clock_key
+msgid "Answered by the clocks"
+msgstr "Dijawab oleh mesin absensi"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Choose the column this is paid in — only information columns are added here."
+msgstr "Pilih kolom tempat ini dibayar — di sini hanya kolom informasi yang bisa ditambahkan."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Clock hours are not installed for this scheme. Ask an administrator to install the late and overtime rules."
+msgstr "Jam dari mesin absensi belum terpasang untuk skema ini. Minta administrator memasang aturan terlambat dan lembur."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Clock hours changed after these payslips were computed (%s). Recompute before approving."
+msgstr "Jam dari mesin absensi berubah setelah slip gaji ini dihitung (%s). Hitung ulang sebelum menyetujui."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_payslip__pb_clock_stamp
+msgid "Clock hours stamp"
+msgstr "Cap jam mesin absensi"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Days worked"
+msgstr "Hari kerja"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_rule__pb_clock_key
+msgid "From the scheme's clock start date, this component takes its value from the clocks and the late and overtime rules instead of the pay data file."
+msgstr "Mulai tanggal jam dari mesin absensi pada skema, komponen ini mengambil nilainya dari mesin absensi serta aturan terlambat dan lembur, bukan dari file data gaji."
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,help:pb_hr_payroll_formula.field_hr_formula_config__pb_clock_from
+msgid "From this date, the components marked 'From the clocks' take their value from the clocks and the late and overtime rules instead of the pay data file. Pay periods before it are paid exactly as before. Empty = off."
+msgstr "Mulai tanggal ini, komponen bertanda 'Dari mesin absensi' mengambil nilainya dari mesin absensi serta aturan terlambat dan lembur, bukan dari file data gaji. Periode gaji sebelumnya dibayar persis seperti sebelumnya. Kosong = mati."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Hours from the clocks are not ready for %(who)s: %(why)s"
+msgstr "Jam dari mesin absensi untuk %(who)s belum siap: %(why)s"
+
+#. module: pb_hr_payroll_formula
+#: model:ir.model.fields,field_description:pb_hr_payroll_formula.field_hr_formula_config__pb_clock_from
+msgid "Hours from the clocks from"
+msgstr "Jam dari mesin absensi mulai"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Hours from the clocks need the person this row is about."
+msgstr "Jam dari mesin absensi perlu tahu baris ini milik siapa."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Hours taken off for lateness"
+msgstr "Jam dipotong karena terlambat"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Late minutes"
+msgstr "Menit terlambat"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Late minutes are already taken off through the late rules. Remove the column “%s” to avoid taking them off twice."
+msgstr "Menit terlambat sudah dipotong lewat aturan terlambat. Hapus kolom “%s” agar tidak dipotong dua kali."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Left empty (paid through the clocks)"
+msgstr "Dibiarkan kosong (dibayar lewat mesin absensi)"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Overtime above the legal limit"
+msgstr "Lembur di atas batas hukum"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Overtime hours (within the legal limit)"
+msgstr "Jam lembur (dalam batas hukum)"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Overtime premium hours"
+msgstr "Jam premi lembur"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Paid days (days worked + paid leave + public holidays)"
+msgstr "Hari dibayar (hari kerja + cuti berbayar + hari libur nasional)"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Paid leave days"
+msgstr "Hari cuti berbayar"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Paid normal hours"
+msgstr "Jam normal dibayar"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "Public holiday days"
+msgstr "Hari libur nasional"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "That column is not an input of this scheme."
+msgstr "Kolom itu bukan kolom isian skema ini."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "The clocks do not answer that. Pick one of the hours or days in the list."
+msgstr "Mesin absensi tidak menjawab itu. Pilih salah satu jam atau hari di daftar."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/formula_rule.py:0
+msgid "The clocks do not answer “%s”. Pick one of the hours or days the clocks work out."
+msgstr "Mesin absensi tidak menjawab “%s”. Pilih salah satu jam atau hari yang dihitung mesin absensi."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "This pay period starts before and ends after the clock start date (%(day)s). Split it at that date."
+msgstr "Periode gaji ini dimulai sebelum dan berakhir setelah tanggal mulai jam dari mesin absensi (%(day)s). Pisahkan periode pada tanggal itu."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "this person"
+msgstr "orang ini"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "“%(col)s” must be empty in months paid from the clocks — that work is paid as overtime from the clocks (the file says %(value)s)."
+msgstr "“%(col)s” harus kosong pada bulan yang dibayar dari mesin absensi — pekerjaan itu dibayar sebagai lembur dari mesin absensi (file berisi %(value)s)."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "“%s” is already filled from overtime requests or approved weeks. Use another component for hours from the clocks."
+msgstr "“%s” sudah diisi dari pengajuan lembur atau minggu yang disetujui. Gunakan komponen lain untuk jam dari mesin absensi."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "“%s” is calculated — only an input can come from the clocks."
+msgstr "“%s” dihitung — hanya kolom isian yang bisa berasal dari mesin absensi."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "“%s” is shown for information and cannot be paid. Set its pay role to “Information only” and keep it off the payslip lines."
+msgstr "“%s” hanya untuk informasi dan tidak dibayar. Atur peran gajinya menjadi “Hanya informasi” dan jangan masukkan ke baris slip gaji."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "“%s” is shown for information and cannot be used in a formula. Pay is worked out from paid hours."
+msgstr "“%s” hanya untuk informasi dan tidak bisa dipakai dalam rumus. Gaji dihitung dari jam yang dibayar."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/clock_source.py:0
+msgid "From the clocks from %s — leave blank for those months"
+msgstr "Dari mesin absensi mulai %s — kosongkan untuk bulan-bulan itu"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "%(names)s and %(count)s more"
+msgstr "%(names)s dan %(count)s lainnya"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Accept the drafted map"
+msgstr "Terima pemetaan yang disusun"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Add a scheme mapping"
+msgstr "Tambah pemetaan skema"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Change a person's pay scheme"
+msgstr "Ubah skema gaji seseorang"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Mid-month advance"
+msgstr "Uang muka pertengahan bulan"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "None"
+msgstr "Tidak ada"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid ""
+"Nothing was changed. Somebody changed %s since this was asked for. Send it "
+"back and ask again for what is there now."
+msgstr "Tidak ada yang diubah. Seseorang telah mengubah %s sejak ini diajukan. Kembalikan dan ajukan lagi sesuai keadaan sekarang."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Nothing was changed: %s."
+msgstr "Tidak ada yang diubah: %s."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Remove a scheme mapping"
+msgstr "Hapus pemetaan skema"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Stays as it is"
+msgstr "Tetap seperti sekarang"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Take a team off a scheme"
+msgstr "Lepaskan tim dari skema"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Who"
+msgstr "Siapa"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/schememap_approval.py:0
+msgid "Wire a team to a scheme"
+msgstr "Hubungkan tim ke skema"
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
+msgid ""
+"%(n)s people in this file have another pay scheme of their own: %(names)s. "
+"They are not changed."
+msgstr "%(n)s orang di berkas ini punya skema gaji sendiri yang lain: %(names)s. Mereka tidak diubah."
+
+#. module: pb_hr_payroll_formula
+#. odoo-python
+#: code:addons/pb_hr_payroll_formula/models/payroll_import_batch.py:0
+msgid ""
+"1 person in this file has another pay scheme of their own: %s. They are not "
+"changed."
+msgstr "1 orang di berkas ini punya skema gaji sendiri yang lain: %s. Orang ini tidak diubah."

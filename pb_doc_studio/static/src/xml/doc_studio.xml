@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- Settings › Documents. Sentences stay on one line each (a template text
+       spread over lines is not matched by its translation, ledger PRD-3). -->
+  <t t-name="pb_doc_studio.DocStudio">
+    <div class="pbim pbds" t-att-class="{ 'pbds-is-designer': state.view === 'designer' }">
+      <t t-if="state.view === 'gallery'" t-call="pb_doc_studio.Gallery"/>
+      <t t-else="" t-call="pb_doc_studio.Designer"/>
+      <t t-if="state.dialog" t-call="pb_doc_studio.Dialogs"/>
+      <RuleBuilder t-if="state.ruleEdit" rule="state.ruleEdit.rule" conditions="state.doc.conditions" isNew="state.ruleEdit.isNew"
+                   onSave.bind="onRuleSave" onRemove.bind="onRuleRemove" onClose.bind="onRuleClose"/>
+    </div>
+  </t>
+
+  <!-- ============================================================ gallery -->
+  <t t-name="pb_doc_studio.Gallery">
+    <div class="pbds-gallery">
+      <div class="pbds-top">
+        <HubBackChip t-if="back" back="back" tone="'light'"/>
+      </div>
+      <header class="pbds-hero" data-coach="ds-hero">
+        <span class="pbds-hero-ic" t-out="ic('fileText', 24)"/>
+        <div class="pbds-hero-t">
+          <h1>Documents</h1>
+          <p>The wording and the look of every letter Payobook prepares: change it, add details from the person's record, decide who sees which paragraph, and check it with a real person before anything is printed.</p>
+        </div>
+        <button type="button" class="pbds-btn primary" t-on-click="askNew"><t t-out="ic('plus', 15)"/> <span>New document</span></button>
+      </header>
+
+      <div t-if="state.loading" class="pbds-grid">
+        <div t-foreach="[1,2,3,4,5,6]" t-as="i" t-key="i" class="pbds-card is-skel"><div class="pbds-thumb"/><div class="pbds-skel-l"/><div class="pbds-skel-l short"/></div>
+      </div>
+      <div t-elif="state.error" class="pbds-state err">
+        <span class="pbds-state-ic" t-out="ic('alert', 22)"/>
+        <div><b>The documents could not be loaded.</b> <span t-esc="state.error"/></div>
+        <button type="button" class="pbds-btn ghost" t-on-click="loadBoard"><t t-out="ic('rotateCcw', 14)"/> <span>Try again</span></button>
+      </div>
+      <t t-else="">
+        <div t-if="state.board.coach and state.board.cards.length" class="pbds-coach">
+          <span class="pbds-coach-ic" t-out="ic('sparkles', 18)"/>
+          <div><b>Pick a letter to make it yours.</b> <span>Change the wording, add fields, show some paragraphs only to some people, and preview it with a real person before you save.</span></div>
+        </div>
+
+        <div class="pbds-filter" data-coach="ds-filter">
+          <div class="pbds-find">
+            <span class="pbds-find-ic" t-out="ic('search', 15)"/>
+            <input type="search" t-ref="search" placeholder="Find a document" aria-label="Find a document" aria-keyshortcuts="/"
+                   t-att-value="state.term" t-on-input="onTerm"/>
+            <kbd t-if="!state.term">/</kbd>
+          </div>
+          <div class="pbds-chips" role="group" aria-label="Kind of document">
+            <button t-foreach="kindChips" t-as="k" t-key="k.key" type="button" class="pbds-chip-f"
+                    t-att-class="{ 'is-on': state.kind === k.key, 'is-zero': !k.n }" t-att-aria-pressed="state.kind === k.key ? 'true' : 'false'"
+                    t-on-click="() => this.setKind(k.key)">
+              <span t-esc="k.label"/> <b t-esc="k.n"/>
+            </button>
+          </div>
+          <span class="pbds-spacer"/>
+          <span class="pbds-count" t-if="yoursCount"><t t-out="ic('pen', 13)"/> <span t-esc="yoursText"/></span>
+        </div>
+
+        <div t-if="!state.board.cards.length" class="pbds-empty">
+          <span class="pbds-empty-ic" t-out="ic('fileText', 30)"/>
+          <h2>No documents yet</h2>
+          <p>Letters appear here as soon as a part of Payobook that writes letters is switched on. You can also start one from a blank page.</p>
+          <button type="button" class="pbds-btn primary" t-on-click="askNew"><t t-out="ic('plus', 15)"/> <span>New document</span></button>
+        </div>
+        <div t-elif="!groups.length" class="pbds-empty small">
+          <span class="pbds-empty-ic" t-out="ic('search', 24)"/>
+          <h2>Nothing matches</h2>
+          <p>No document has that name or wording.</p>
+          <button type="button" class="pbds-btn ghost" t-on-click="clearFilters">Clear the search</button>
+        </div>
+
+        <section t-foreach="groups" t-as="g" t-key="g.key" class="pbds-group" data-coach="ds-group">
+          <h2 class="pbds-group-h"><span class="pbds-group-ic" t-out="ic(g.icon, 16)"/> <span t-esc="g.label"/> <small t-esc="g.cards.length"/></h2>
+          <div class="pbds-grid">
+            <article t-foreach="g.cards" t-as="c" t-key="c.id" class="pbds-card" tabindex="0" role="button"
+                     t-att-class="{ 'is-off': !c.active, 'is-variant': c.variant_of, 'is-yours': c.edited }"
+                     t-att-aria-label="c.name" t-on-click="() => this.openDoc(c.id)"
+                     t-on-keydown="(ev) => this.onCardKey(c, ev)">
+              <div class="pbds-thumb" aria-hidden="true">
+                <div class="pbds-thumb-paper">
+                  <span class="pbds-thumb-lh"/>
+                  <b t-esc="c.subject or c.name"/>
+                  <span class="pbds-thumb-text" t-esc="c.snippet"/>
+                </div>
+                <span t-if="c.variant_of" class="pbds-thumb-copy"><t t-out="ic('copy', 12)"/> <span>Copy</span></span>
+              </div>
+              <div class="pbds-card-b">
+                <div class="pbds-card-t">
+                  <h3 t-esc="c.name"/>
+                  <button type="button" class="pbds-kebab" aria-label="More" title="More" t-on-click="(ev) => this.toggleMenu(c, ev)"><t t-out="ic('more', 16)"/></button>
+                </div>
+                <div class="pbds-pills-row">
+                  <span t-if="!c.active" class="pbds-tag grey"><t t-out="ic('power', 11)"/> <span>Switched off</span></span>
+                  <span t-if="c.edited" class="pbds-tag indigo"><t t-out="ic('pen', 11)"/> <span>Your wording</span></span>
+                  <span t-else="" class="pbds-tag grey">Built-in wording</span>
+                  <span t-if="c.missing" class="pbds-tag amber"><t t-out="ic('alert', 11)"/> <span t-esc="missingText(c.missing)"/></span>
+                </div>
+                <dl class="pbds-meta">
+                  <div><dt t-out="ic('users', 13)"/><dd><span class="pbds-meta-l">For</span> <span t-esc="cardFor(c)"/></dd></div>
+                  <div><dt t-out="ic('languages', 13)"/><dd><span t-foreach="c.langs" t-as="l" t-key="l.code" class="pbds-lang" t-att-title="l.name" t-esc="l.code.slice(0, 2).toUpperCase()"/></dd></div>
+                  <div t-if="c.variant_of"><dt t-out="ic('copy', 13)"/><dd><span class="pbds-meta-l">Copy of</span> <span t-esc="c.variant_of.name"/></dd></div>
+                </dl>
+                <p class="pbds-changed" t-if="c.changed_on" t-esc="cardChanged(c)"/>
+              </div>
+              <div t-if="state.menu === c.id" class="pbds-menu" role="menu" t-on-click.stop="noop">
+                <button type="button" role="menuitem" t-on-click="() => this.openDoc(c.id)"><t t-out="ic('pen', 14)"/> <span>Open</span></button>
+                <button type="button" role="menuitem" t-on-click="() => this.askCopy(c)"><t t-out="ic('copy', 14)"/> <span>Make a copy for…</span></button>
+                <button t-if="c.active" type="button" role="menuitem" t-on-click="() => this.setActive(c, false)"><t t-out="ic('power', 14)"/> <span>Switch off</span></button>
+                <button t-else="" type="button" role="menuitem" t-on-click="() => this.setActive(c, true)"><t t-out="ic('power', 14)"/> <span>Switch on</span></button>
+                <button t-if="c.can_reset" type="button" role="menuitem" class="danger" t-on-click="() => this.askReset(c)"><t t-out="ic('rotateCcw', 14)"/> <span>Put back the built-in wording</span></button>
+              </div>
+            </article>
+          </div>
+        </section>
+      </t>
+    </div>
+  </t>
+
+  <!-- ============================================================ designer -->
+  <t t-name="pb_doc_studio.Designer">
+    <div class="pbds-designer">
+      <div t-if="state.docLoading or !state.doc" class="pbds-dz-loading">
+        <span class="pbds-spin"/> <span>Opening the document…</span>
+      </div>
+      <t t-else="">
+        <header class="pbds-dz-top" data-coach="ds-top">
+          <button type="button" class="pbds-back" t-on-click="() => this.backToGallery()"><t t-out="ic('back', 14)"/> <span>All documents</span></button>
+          <div class="pbds-dz-name">
+            <input type="text" class="pbds-name-in" aria-label="Document name" t-att-value="state.draft.name" t-on-input="onName"/>
+            <div class="pbds-dz-sub">
+              <span t-if="state.doc.edited" class="pbds-tag indigo">Your wording</span>
+              <span t-else="" class="pbds-tag grey">Built-in wording</span>
+              <span t-if="state.doc.type_label" class="pbds-muted" t-esc="state.doc.type_label"/>
+              <span t-if="state.doc.for_company or state.doc.for_countries.length" class="pbds-tag indigo-l">
+                <t t-out="ic('users', 11)"/> <span>For</span> <span t-esc="docForText"/>
+              </span>
+              <span t-if="!state.doc.active" class="pbds-tag grey"><t t-out="ic('power', 11)"/> <span>Switched off</span></span>
+            </div>
+          </div>
+          <span class="pbds-spacer"/>
+          <span class="pbds-savestate" t-att-class="{ 'is-dirty': state.dirty }" aria-live="polite"><i/> <span t-esc="saveText"/></span>
+          <div class="pbds-dz-more">
+            <button type="button" class="pbds-btn ghost" t-on-click="askCopyDoc"><t t-out="ic('copy', 14)"/> <span>Make a copy for…</span></button>
+            <button t-if="state.doc.can_reset" type="button" class="pbds-btn ghost" t-on-click="askResetDoc">
+              <t t-out="ic('rotateCcw', 14)"/> <span>Built-in wording</span>
+            </button>
+          </div>
+          <button type="button" class="pbds-btn primary" t-att-disabled="state.saving" t-on-click="save" t-att-title="mod + 'S'">
+            <t t-out="ic('save', 15)"/> <span>Save</span> <kbd t-esc="mod + 'S'"/>
+          </button>
+        </header>
+
+        <div t-if="state.restore" class="pbds-banner">
+          <t t-out="ic('clock', 16)"/>
+          <span t-esc="restoreText"/>
+          <span class="pbds-spacer"/>
+          <button type="button" class="pbds-btn ghost sm" t-on-click="discardLocal">Discard them</button>
+          <button type="button" class="pbds-btn primary sm" t-on-click="restoreLocal">Restore</button>
+        </div>
+
+        <div class="pbds-dz">
+          <!-- LEFT: fields -->
+          <aside class="pbds-fields" data-coach="ds-fields" aria-label="Fields">
+            <div class="pbds-fields-h">
+              <h2>Fields</h2>
+              <p>Click to add at the cursor, or drag onto the page.</p>
+              <div class="pbds-find sm">
+                <span class="pbds-find-ic" t-out="ic('search', 14)"/>
+                <input type="search" placeholder="Find a field" aria-label="Find a field" t-att-value="state.fieldTerm" t-on-input="onFieldTerm"/>
+              </div>
+            </div>
+            <div t-if="missingFields.length" class="pbds-missing">
+              <div class="pbds-missing-h"><t t-out="ic('alert', 14)"/> <b t-esc="missingText(missingFields.length)"/></div>
+              <p>It was removed from the record. The letter prints nothing in its place.</p>
+              <div t-foreach="missingFields" t-as="k" t-key="k" class="pbds-missing-row">
+                <code t-esc="k"/>
+                <button type="button" class="pbds-link" t-on-click="() => this.removeMissing(k)">Take it out of the wording</button>
+              </div>
+            </div>
+            <div class="pbds-fields-list">
+              <section t-foreach="fieldGroups" t-as="g" t-key="g.key" class="pbds-fg">
+                <button type="button" class="pbds-fg-h" t-att-aria-expanded="isCollapsed(g) ? 'false' : 'true'" t-on-click="() => this.toggleGroup(g)">
+                  <span class="pbds-fg-ic" t-out="ic(g.icon, 13)"/> <span t-esc="g.label"/> <small t-esc="g.fields.length"/>
+                  <span class="pbds-fg-chev" t-att-class="{ 'is-closed': isCollapsed(g) }" t-out="ic('chevronDown', 13)"/>
+                </button>
+                <div t-if="!isCollapsed(g)" class="pbds-fg-list">
+                  <button t-foreach="g.fields" t-as="f" t-key="f.key" type="button" class="pbds-f" draggable="true"
+                          t-att-disabled="!hasEditor" t-on-dragstart="(ev) => this.onFieldDrag(f, ev)" t-on-click="() => this.insertField(f)">
+                    <span class="pbds-f-grip" t-out="ic('grip', 12)"/>
+                    <span class="pbds-f-l">
+                      <span class="pbds-f-n"><t t-esc="f.label"/> <t t-if="f.pay" t-out="ic('lock', 11)"/></span>
+                      <span class="pbds-f-v" t-att-class="{ 'is-later': f.later }" t-esc="fieldValue(f)"/>
+                    </span>
+                    <span class="pbds-f-add" t-out="ic('plus', 13)"/>
+                  </button>
+                </div>
+              </section>
+              <p t-if="!fieldGroups.length" class="pbds-muted pbds-pad">No field has that name.</p>
+            </div>
+            <p class="pbds-fields-tip"><t t-out="ic('keyboard', 13)"/> <span>While typing, press <kbd>/</kbd> to pick a field.</span></p>
+          </aside>
+
+          <!-- CENTRE: the page -->
+          <main class="pbds-centre">
+            <div class="pbds-langs" data-coach="ds-langs" role="tablist" aria-label="Languages">
+              <button t-foreach="langTabs" t-as="l" t-key="l.code" type="button" role="tab" class="pbds-lang-tab"
+                      t-att-aria-selected="state.lang === l.code ? 'true' : 'false'"
+                      t-att-class="{ 'is-on': state.lang === l.code, 'is-has': l.has }" t-on-click="() => this.switchLang(l.code)">
+                <i/> <span t-if="l.main" t-esc="mainTabLabel"/><span t-else="" t-esc="l.short"/>
+              </button>
+              <label t-if="isMain" class="pbds-mainlang" title="The language the main wording is written in">
+                <span>Written in</span>
+                <select aria-label="The language the main wording is written in" t-on-change="setMainLang">
+                  <option t-foreach="state.doc.langs" t-as="ml" t-key="ml.code" t-att-value="ml.code" t-att-selected="ml.code === mainLang" t-esc="shortLang(ml.name)"/>
+                </select>
+              </label>
+              <span class="pbds-spacer"/>
+              <button t-if="!isMain and hasEditor" type="button" class="pbds-link danger" t-on-click="askRemoveVersion">
+                <t t-out="ic('trash', 13)"/> <span>Remove this language</span>
+              </button>
+            </div>
+            <DocToolbar api="editorApi" ui="ui" disabled="!hasEditor" onImage.bind="chooseImage" onPick.bind="openPicker"/>
+            <input type="file" class="d-none" t-ref="imgInput" accept="image/png,image/jpeg,image/webp,image/gif" t-on-change="onImageChosen"/>
+            <div class="pbds-desk" t-ref="desk">
+              <div class="pbds-paper" data-coach="ds-paper" t-ref="paper" t-att-style="paperStyle">
+                <div t-if="page.letterhead" class="pbds-lh">
+                  <span class="pbds-lh-logo"><img t-if="state.doc.company.logo" t-att-src="state.doc.company.logo" alt=""/><t t-else="" t-out="ic('building', 22)"/></span>
+                  <span class="pbds-lh-id">
+                    <span class="pbds-lh-name" t-esc="state.doc.company.name"/>
+                    <span t-if="state.doc.company.address" class="pbds-lh-ad" t-esc="state.doc.company.address"/>
+                    <span t-if="state.doc.company.contact" class="pbds-lh-ct" t-esc="state.doc.company.contact"/>
+                  </span>
+                </div>
+                <div t-else="" class="pbds-lh-off"><t t-out="ic('fileText', 13)"/> <span>No letterhead: the space is kept for your own printed paper.</span></div>
+                <div class="pbds-date" t-esc="todayText"/>
+                <t t-if="hasEditor">
+                  <input type="text" class="pbds-subject-in" t-att-value="subjectValue" t-on-input="onSubject" placeholder="Heading on the page (optional)" aria-label="Heading on the page"/>
+                  <DocEditor t-key="state.editorKey + '-' + state.lang" html="editorHtml" fields="fieldMap" sentences="sentences"
+                             values="state.pv.values" ui="ui" hint="editorPlaceholder"
+                             onChange.bind="onEditorChange" onReady.bind="onEditorReady" onRule.bind="onRule"
+                             onPick.bind="openPicker" onUpload.bind="uploadFile"/>
+                </t>
+                <div t-else="" class="pbds-nolang">
+                  <span class="pbds-nolang-ic" t-out="ic('languages', 26)"/>
+                  <h3 t-esc="noLangTitle"/>
+                  <p t-esc="noLangText"/>
+                  <div class="pbds-nolang-acts">
+                    <button t-if="curTranslated" type="button" class="pbds-btn primary" t-on-click="() => this.startVersion('translated')"><t t-out="ic('languages', 14)"/> <span>Start from the translation</span></button>
+                    <button type="button" class="pbds-btn" t-att-class="curTranslated ? 'ghost' : 'primary'" t-on-click="() => this.startVersion('main')"><t t-out="ic('copy', 14)"/> <span t-esc="copyFromText"/></button>
+                    <button type="button" class="pbds-btn ghost" t-on-click="() => this.startVersion('blank')">Start from a blank page</button>
+                  </div>
+                </div>
+                <div t-if="page.sign !== 'off'" class="pbds-sign">
+                  <img t-if="page.sign === 'image' and signUrl" t-att-src="signUrl" class="pbds-sign-img" alt=""/>
+                  <div t-elif="page.sign === 'image'" class="pbds-sign-ph" t-on-click="chooseSign"><t t-out="ic('pen', 14)"/> <span>Add a signature picture</span></div>
+                  <div t-else="" class="pbds-sign-space"/>
+                  <div class="pbds-sign-line"><strong t-esc="signName"/><div class="pbds-sign-title" t-esc="signTitle"/></div>
+                </div>
+                <div t-foreach="pageBreaks" t-as="b" t-key="b.n" class="pbds-break" t-attf-style="top: {{b.top}}px;"><span t-esc="b.label"/></div>
+              </div>
+            </div>
+          </main>
+
+          <!-- RIGHT: Preview / Page -->
+          <aside class="pbds-side">
+            <div class="pbds-tabs" role="tablist">
+              <button type="button" role="tab" t-att-aria-selected="state.rightTab === 'preview' ? 'true' : 'false'" t-att-class="{ 'is-on': state.rightTab === 'preview' }" t-on-click="() => this.setRightTab('preview')"><t t-out="ic('eye', 14)"/> <span>Preview</span></button>
+              <button type="button" role="tab" t-att-aria-selected="state.rightTab === 'page' ? 'true' : 'false'" t-att-class="{ 'is-on': state.rightTab === 'page' }" t-on-click="() => this.setRightTab('page')"><t t-out="ic('layout', 14)"/> <span>Page</span></button>
+            </div>
+            <div t-if="state.rightTab === 'preview'" class="pbds-pv" data-coach="ds-preview">
+              <t t-if="!state.person">
+                <div class="pbds-state">
+                  <span class="pbds-state-ic" t-out="ic('users', 20)"/>
+                  <div><b>No one to preview with yet.</b> <span>Add people first, then come back to see a real letter.</span></div>
+                </div>
+              </t>
+              <t t-else="">
+                <div class="pbds-person">
+                  <button type="button" class="pbds-person-btn" t-on-click="openPeople" aria-haspopup="listbox" t-att-aria-expanded="state.peopleOpen ? 'true' : 'false'">
+                    <span class="pbds-av" t-esc="initials(state.person.name)"/>
+                    <span class="pbds-person-t">
+                      <b t-esc="state.person.name"/>
+                      <span><t t-esc="state.person.job or state.person.company"/></span>
+                    </span>
+                    <span class="pbds-person-chg">Change <t t-out="ic('chevronDown', 12)"/></span>
+                  </button>
+                  <div t-if="state.peopleOpen" class="pbds-people">
+                    <div class="pbds-find sm">
+                      <span class="pbds-find-ic" t-out="ic('search', 14)"/>
+                      <input type="search" t-ref="peopleInput" placeholder="Find a person" aria-label="Find a person" t-att-value="state.peopleTerm" t-on-input="onPeopleTerm" t-on-keydown="onPeopleKey"/>
+                    </div>
+                    <div class="pbds-people-list" role="listbox">
+                      <button t-foreach="state.people" t-as="p" t-key="p.id" type="button" role="option" class="pbds-people-row"
+                              t-att-class="{ 'is-on': p.id === state.person.id }" t-on-click="() => this.choosePerson(p)">
+                        <span class="pbds-av sm" t-esc="initials(p.name)"/>
+                        <span class="pbds-person-t"><b t-esc="p.name"/><span><t t-esc="p.job or p.company"/> · <t t-esc="p.lang_name"/></span></span>
+                      </button>
+                      <p t-if="!state.people.length and !state.peopleBusy" class="pbds-muted pbds-pad">Nobody you can see has that name.</p>
+                    </div>
+                  </div>
+                </div>
+                <label class="pbds-pv-lang">
+                  <span class="pbds-pv-lang-l"><t t-out="ic('languages', 13)"/> <span>Language</span></span>
+                  <select t-on-change="onPreviewLang" aria-label="Preview language">
+                    <option t-foreach="state.doc.langs" t-as="l" t-key="l.code" t-att-value="l.code" t-att-selected="l.code === state.previewLang" t-esc="langLabel(l)"/>
+                  </select>
+                </label>
+                <p class="pbds-pv-hint" t-if="readLangHint" t-esc="readLangHint"/>
+                <p class="pbds-pv-hint" t-elif="state.previewLang === state.person.lang">This is the language their letter is made in.</p>
+                <div t-if="state.pv.hidden" class="pbds-pv-hidden">
+                  <t t-out="ic('eyeOff', 14)"/> <span t-esc="hiddenText"/>
+                  <button type="button" class="pbds-switch" role="switch" t-att-aria-checked="state.ghosts ? 'true' : 'false'" t-on-click="toggleGhosts">
+                    <i/> <span>Show them faded</span>
+                  </button>
+                </div>
+                <div t-if="state.pv.missing.length" class="pbds-pv-miss">
+                  <span t-foreach="state.pv.missing" t-as="m" t-key="m.key" t-attf-class="pbds-mchip {{ m.why.includes('later') ? 'later' : '' }}" t-esc="m.text"/>
+                </div>
+                <div t-if="state.pv.error" class="pbds-state err sm">
+                  <span class="pbds-state-ic" t-out="ic('alert', 16)"/>
+                  <div><span t-esc="state.pv.error"/></div>
+                  <button type="button" class="pbds-btn ghost sm" t-on-click="() => this.schedulePreview(0)">Try again</button>
+                </div>
+                <div class="pbds-pv-box" t-ref="pvBox" t-att-class="{ 'is-loading': state.pv.loading }">
+                  <div class="pbds-pv-wrap" t-att-style="pvWrapStyle">
+                    <iframe t-if="state.pv.html" t-ref="pvFrame" class="pbds-pv-frame" title="Preview of the letter" sandbox="allow-same-origin"
+                            t-att-srcdoc="pvDoc" t-att-style="pvFrameStyle" t-on-load="onPvLoad"/>
+                    <div t-else="" class="pbds-pv-skel"><span class="pbds-spin"/></div>
+                  </div>
+                  <span class="pbds-pv-live" t-if="state.pv.loading"><i/> <span>Updating</span></span>
+                </div>
+                <div class="pbds-pv-acts">
+                  <button type="button" class="pbds-btn primary" t-att-disabled="state.pdfBusy" t-on-click="downloadPdf">
+                    <t t-if="state.pdfBusy"><span class="pbds-spin sm"/></t><t t-else="" t-out="ic('download', 14)"/> <span>Download a sample PDF</span>
+                  </button>
+                  <button type="button" class="pbds-btn ghost" title="Open the preview large" aria-label="Open the preview large" t-on-click="openLarge"><t t-out="ic('maximize', 14)"/></button>
+                </div>
+                <p class="pbds-pv-foot">Nothing is saved, filed or sent from here.</p>
+              </t>
+            </div>
+
+            <div t-else="" class="pbds-pg" data-coach="ds-page">
+              <section class="pbds-pg-s">
+                <div class="pbds-pg-row">
+                  <div><h3>Letterhead</h3><p>Your company's logo, name and address at the top, as on your other documents. Switch it off to print on your own headed paper.</p></div>
+                  <button type="button" class="pbds-toggle" role="switch" t-att-aria-checked="page.letterhead ? 'true' : 'false'" aria-label="Letterhead" t-on-click="() => this.setPage('letterhead', !page.letterhead)"><i/></button>
+                </div>
+              </section>
+              <section class="pbds-pg-s">
+                <h3>Margins</h3>
+                <div class="pbds-seg three">
+                  <button t-foreach="styles.margins.options" t-as="o" t-key="o.value" type="button" class="pbds-seg-b" t-att-class="{ 'is-on': page.margins === o.value }" t-on-click="() => this.setPage('margins', o.value)">
+                    <span t-attf-class="pbds-mg pbds-mg-{{o.value}}"><i/></span>
+                    <span t-esc="o.label"/>
+                  </button>
+                </div>
+              </section>
+              <section class="pbds-pg-s">
+                <h3>Font</h3>
+                <div class="pbds-fonts">
+                  <button t-foreach="styles.font.options" t-as="o" t-key="o.value" type="button" class="pbds-font" t-att-class="{ 'is-on': page.font === o.value }" t-on-click="() => this.setPage('font', o.value)">
+                    <span class="pbds-font-aa" t-att-style="'font-family: ' + o.css">Aa</span>
+                    <span class="pbds-font-n" t-esc="o.label"/>
+                    <span class="pbds-font-s" t-att-style="'font-family: ' + o.css">Tiếng Việt · Indonesia</span>
+                  </button>
+                </div>
+              </section>
+              <section class="pbds-pg-s">
+                <h3>Text size</h3>
+                <div class="pbds-seg">
+                  <button t-foreach="styles.size.options" t-as="o" t-key="o.value" type="button" class="pbds-seg-b" t-att-class="{ 'is-on': page.size === o.value }" t-on-click="() => this.setPage('size', o.value)" t-esc="o.label"/>
+                </div>
+              </section>
+              <section class="pbds-pg-s">
+                <h3>Signature block</h3>
+                <div class="pbds-radio">
+                  <button t-foreach="styles.sign.options" t-as="o" t-key="o.value" type="button" class="pbds-radio-b" role="radio"
+                          t-att-aria-checked="page.sign === o.value ? 'true' : 'false'" t-att-class="{ 'is-on': page.sign === o.value }" t-on-click="() => this.setPage('sign', o.value)">
+                    <i/> <span t-esc="o.label"/>
+                  </button>
+                </div>
+                <div t-if="page.sign !== 'off'" class="pbds-pg-fields">
+                  <label><span>Signed by</span><input type="text" class="pbds-in" t-att-value="page.sign_name" t-att-placeholder="state.doc.company.name" t-on-input="(ev) => this.onPageText('sign_name', ev)"/></label>
+                  <label><span>Their title</span><input type="text" class="pbds-in" t-att-value="page.sign_title" placeholder="Authorised signatory" t-on-input="(ev) => this.onPageText('sign_title', ev)"/></label>
+                </div>
+                <div t-if="page.sign === 'image'" class="pbds-signpic">
+                  <img t-if="signUrl" t-att-src="signUrl" alt="Signature"/>
+                  <div t-else="" class="pbds-signpic-ph"><t t-out="ic('pen', 18)"/></div>
+                  <div class="pbds-signpic-acts">
+                    <button type="button" class="pbds-btn ghost sm" t-on-click="chooseSign"><t t-out="ic('image', 13)"/> <span t-if="signUrl">Replace the picture</span><span t-else="">Add a picture</span></button>
+                    <button t-if="signUrl" type="button" class="pbds-link danger" t-on-click="removeSign">Remove</button>
+                    <p>PNG or JPEG, 2 MB at most. A clear signature on a white background prints best.</p>
+                  </div>
+                </div>
+                <input type="file" class="d-none" t-ref="signInput" accept="image/png,image/jpeg" t-on-change="onSignChosen"/>
+              </section>
+            </div>
+          </aside>
+        </div>
+
+        <!-- the field picker ( / ) -->
+        <div t-if="state.picker" class="pbds-picker" t-attf-style="left: {{state.picker.x}}px; top: {{state.picker.y}}px;" role="dialog" aria-label="Add a field">
+          <div class="pbds-find sm">
+            <span class="pbds-find-ic" t-out="ic('braces', 14)"/>
+            <input type="text" t-ref="pickerInput" placeholder="Add a field…" aria-label="Find a field" t-att-value="state.picker.term" t-on-input="onPickerInput" t-on-keydown="onPickerKey"/>
+          </div>
+          <div class="pbds-picker-list" role="listbox">
+            <button t-foreach="pickerList" t-as="f" t-key="f.key" type="button" role="option" class="pbds-picker-row"
+                    t-att-class="{ 'is-on': f_index === state.picker.index }" t-att-aria-selected="f_index === state.picker.index ? 'true' : 'false'"
+                    t-on-mousedown.prevent="noop" t-on-click="() => this.pick(f)">
+              <span t-esc="f.label"/> <small t-esc="f.groupLabel"/>
+            </button>
+            <p t-if="!pickerList.length" class="pbds-muted pbds-pad">No field has that name.</p>
+          </div>
+          <p class="pbds-picker-foot"><kbd>↑</kbd><kbd>↓</kbd> <span>to move</span> <kbd>Enter</kbd> <span>to add</span> <kbd>Esc</kbd> <span>to close</span></p>
+        </div>
+
+        <!-- the large preview -->
+        <div t-if="state.large" class="pbds-scrim" t-on-mousedown.self="closeLarge">
+          <div class="pbds-large" role="dialog" aria-modal="true" aria-label="Preview">
+            <header>
+              <b t-esc="state.person and state.person.name"/>
+              <span class="pbds-spacer"/>
+              <button type="button" class="pbds-btn primary sm" t-att-disabled="state.pdfBusy" t-on-click="downloadPdf"><t t-out="ic('download', 13)"/> <span>Download a sample PDF</span></button>
+              <button type="button" class="pbds-x" aria-label="Close" t-on-click="closeLarge"><t t-out="ic('x', 16)"/></button>
+            </header>
+            <div class="pbds-large-b">
+              <iframe t-ref="largeFrame" class="pbds-large-frame" title="Preview of the letter, large" sandbox="allow-same-origin" t-att-srcdoc="pvDoc" t-on-load="onPvLoad"/>
+            </div>
+          </div>
+        </div>
+      </t>
+    </div>
+  </t>
+
+  <!-- ============================================================ dialogs -->
+  <t t-name="pb_doc_studio.Dialogs">
+    <t t-set="d" t-value="state.dialog"/>
+    <div class="pbds-scrim" t-on-mousedown.self="closeDialog">
+      <!-- make a copy -->
+      <div t-if="d.type === 'copy'" class="pbds-dialog" role="dialog" aria-modal="true" aria-labelledby="pbds-copy-t">
+        <header class="pbds-dialog-h">
+          <span class="pbds-dialog-ic" t-out="ic('copy', 18)"/>
+          <div><h2 id="pbds-copy-t">Make a copy for…</h2><p t-esc="copyIntro"/></div>
+          <button type="button" class="pbds-x" aria-label="Close" t-on-click="closeDialog"><t t-out="ic('x', 16)"/></button>
+        </header>
+        <div class="pbds-dialog-b">
+          <label t-if="state.board.multi_company" class="pbds-field">
+            <span>Company</span>
+            <select class="pbds-in" t-on-change="onCopyCompany">
+              <option value="0" t-att-selected="!d.company">Any company</option>
+              <option t-foreach="state.board.companies" t-as="co" t-key="co.id" t-att-value="co.id" t-att-selected="co.id === d.company" t-esc="co.name"/>
+            </select>
+          </label>
+          <div class="pbds-field">
+            <span>Countries of work</span>
+            <input t-if="state.board.countries.length > 8" type="search" class="pbds-in pbds-in-sm" placeholder="Find a country" aria-label="Find a country" t-on-input="onCopyTerm"/>
+            <div class="pbds-picks-list">
+              <button t-foreach="copyCountries" t-as="co" t-key="co.id" type="button" class="pbds-pick" t-att-class="{ 'is-on': d.countries.includes(co.id) }"
+                      t-att-aria-pressed="d.countries.includes(co.id) ? 'true' : 'false'" t-on-click="() => this.copyToggle(co.id)">
+                <t t-if="d.countries.includes(co.id)" t-out="ic('check', 12)"/><span t-esc="co.name"/>
+              </button>
+            </div>
+          </div>
+          <div class="pbds-say" t-att-class="{ 'is-ready': copyReady }"><t t-out="ic('info', 14)"/> <span t-esc="copySentence"/></div>
+        </div>
+        <footer class="pbds-dialog-f">
+          <span class="pbds-spacer"/>
+          <button type="button" class="pbds-btn ghost" t-on-click="closeDialog">Cancel</button>
+          <button type="button" class="pbds-btn primary" t-att-disabled="!copyReady or d.busy" t-on-click="doCopy"><t t-out="ic('copy', 14)"/> <span>Make the copy</span></button>
+        </footer>
+      </div>
+
+      <!-- put back the built-in wording -->
+      <div t-elif="d.type === 'reset'" class="pbds-dialog" role="alertdialog" aria-modal="true" aria-labelledby="pbds-reset-t">
+        <header class="pbds-dialog-h">
+          <span class="pbds-dialog-ic amber" t-out="ic('rotateCcw', 18)"/>
+          <div><h2 id="pbds-reset-t">Put back the built-in wording?</h2><p t-esc="resetIntro"/></div>
+          <button type="button" class="pbds-x" aria-label="Close" t-on-click="closeDialog"><t t-out="ic('x', 16)"/></button>
+        </header>
+        <div class="pbds-dialog-b">
+          <ul class="pbds-lost"><li t-foreach="d.lost" t-as="l" t-key="l_index" t-esc="l"/></ul>
+          <p class="pbds-muted">You can undo this for a few seconds afterwards.</p>
+        </div>
+        <footer class="pbds-dialog-f">
+          <span class="pbds-spacer"/>
+          <button type="button" class="pbds-btn ghost" t-on-click="closeDialog">Keep my wording</button>
+          <button type="button" class="pbds-btn danger" t-att-disabled="d.busy" t-on-click="doReset"><t t-out="ic('rotateCcw', 14)"/> <span>Put it back</span></button>
+        </footer>
+      </div>
+
+      <!-- new document -->
+      <div t-elif="d.type === 'new'" class="pbds-dialog" role="dialog" aria-modal="true" aria-labelledby="pbds-new-t">
+        <header class="pbds-dialog-h">
+          <span class="pbds-dialog-ic" t-out="ic('plus', 18)"/>
+          <div><h2 id="pbds-new-t">New document</h2><p>Start from a blank page. You can use it from journeys and checklists, and prepare it for anyone.</p></div>
+          <button type="button" class="pbds-x" aria-label="Close" t-on-click="closeDialog"><t t-out="ic('x', 16)"/></button>
+        </header>
+        <div class="pbds-dialog-b">
+          <label class="pbds-field"><span>Name</span><input type="text" class="pbds-in" placeholder="For example, Welcome letter" t-att-value="d.name" t-on-input="onNewName" t-on-keydown="onNewKey"/></label>
+          <div class="pbds-field">
+            <span>Show it under</span>
+            <div class="pbds-kinds">
+              <button t-foreach="state.board.kinds" t-as="k" t-key="k.key" type="button" class="pbds-kind" t-att-class="{ 'is-on': d.kind === k.key }" t-on-click="() => this.setNewKind(k.key)">
+                <t t-out="ic(kindIcon(k.key), 16)"/>
+                <span t-esc="k.label"/>
+              </button>
+            </div>
+          </div>
+        </div>
+        <footer class="pbds-dialog-f">
+          <span class="pbds-spacer"/>
+          <button type="button" class="pbds-btn ghost" t-on-click="closeDialog">Cancel</button>
+          <button type="button" class="pbds-btn primary" t-att-disabled="d.busy" t-on-click="doNew"><t t-out="ic('check', 14)"/> <span>Create</span></button>
+        </footer>
+      </div>
+
+      <!-- leave with unsaved changes -->
+      <div t-elif="d.type === 'leave'" class="pbds-dialog sm" role="alertdialog" aria-modal="true" aria-labelledby="pbds-leave-t">
+        <header class="pbds-dialog-h">
+          <span class="pbds-dialog-ic amber" t-out="ic('alert', 18)"/>
+          <div><h2 id="pbds-leave-t">Leave without saving?</h2><p>Your changes to this document are not saved yet.</p></div>
+        </header>
+        <footer class="pbds-dialog-f">
+          <button type="button" class="pbds-btn ghost danger" t-on-click="leaveDiscard">Leave without saving</button>
+          <span class="pbds-spacer"/>
+          <button type="button" class="pbds-btn ghost" t-on-click="closeDialog">Keep editing</button>
+          <button type="button" class="pbds-btn primary" t-on-click="leaveSave"><t t-out="ic('save', 14)"/> <span>Save and leave</span></button>
+        </footer>
+      </div>
+
+      <!-- remove a language -->
+      <div t-elif="d.type === 'removeLang'" class="pbds-dialog sm" role="alertdialog" aria-modal="true" aria-labelledby="pbds-rl-t">
+        <header class="pbds-dialog-h">
+          <span class="pbds-dialog-ic amber" t-out="ic('trash', 18)"/>
+          <div><h2 id="pbds-rl-t" t-esc="removeLangTitle"/><p t-esc="removeLangText"/></div>
+        </header>
+        <footer class="pbds-dialog-f">
+          <span class="pbds-spacer"/>
+          <button type="button" class="pbds-btn ghost" t-on-click="closeDialog">Keep it</button>
+          <button type="button" class="pbds-btn danger" t-on-click="doRemoveVersion">Remove</button>
+        </footer>
+      </div>
+    </div>
+  </t>
+
+</templates>

@@ -1,0 +1,55 @@
+Recruitment connections and defect closure — implementation design
+
+Scope: payobook.com recruitment, with the shared custom code upgraded on
+payobook, payobook_template, p0clone and rize where installed. Never ABM.
+
+Health19 reference inspected: addons/health_care_command_channels 19.0.12.6.1
+(LGPL-3, I Am Dream Catcher Ltd). Reuse its principles: separate protected
+credentials from user-facing state, company-scoped connections, fail-closed
+webhooks, provider evidence for readiness, four-step setup and actionable
+provider prerequisites. Do not import its healthcare records or credentials.
+
+Product: Hiring connections is reached from Set up hiring. Cards explain what
+each connection does, who must act and what was last checked. The guided flow
+is Overview, Configure, Check, Finish. Saving credentials never claims that
+a provider works. Configuration changes invalidate previous check evidence.
+No test button sends a candidate a message or an offer.
+
+Services: Documenso envelopes for signing; an isolated Docling + spaCy service
+for CV extraction; Google/Microsoft official SDKs for calendar availability,
+with Odoo's existing OAuth and event synchronisation; direct Meta WhatsApp
+templates for optional reminders. Email continues through Odoo mail servers.
+Payobook's current 2 GB server is not suitable for colocating the CV service
+and signing application. Service hosting is a separate activation prerequisite.
+
+Signing: prepare a draft envelope, review the fields and signers, explicitly
+send after the existing hiring-request gate. Persist provider identifiers.
+Provider completion is checked over authenticated API before filing the PDF
+and recording signed. A callback alone cannot mark an offer signed. Repeated
+callbacks must not create duplicate attachments or trigger closure twice.
+
+CVs: extract supported attachments in a separate service, match the configured
+skill vocabulary with spaCy, retain extracted text and structured evidence,
+and let the recruiter review before accepting fields. Never infer candidate
+quality or silently overwrite manually entered information.
+
+Scheduling: unknown availability is an error, never a free slot. Intersect
+all panel calendars with working windows, check again at booking and protect
+concurrent reservations. Candidate links expire and disclose no panel diary
+details. Invitations and changes continue through the existing interview flow.
+
+Native rules: explicit company/country TA Lead and HR fallback for cover;
+stage-aware group policies augment the existing scoped candidate access and
+preserve the feedback embargo; employer-cost simulation reuses the payroll
+formula engine and requires an explicit approved country mapping. No statutory
+rates are guessed. Website branding remains an administrator setup item.
+
+Job boards: LinkedIn/JobStreet/VietnamWorks cannot be labelled implemented
+without their approved API contracts and account entitlements. Keep manual
+tracked-link posting and show missing connector/account work explicitly.
+
+Acceptance: regression tests on an isolated database, provider contract tests,
+deployed Chrome checks, combined repository content/version verification on
+all four active databases, workbook comments with green/amber/red/blue status.
+Provider contract tests do not count as live signing, delivery or calendar
+tests. Manual activation and untested client acceptance remain visible.

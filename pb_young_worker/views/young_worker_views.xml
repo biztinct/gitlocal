@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ===================== Rule config (native forms) ===================== -->
+    <record id="view_pb_young_worker_rule_list" model="ir.ui.view">
+        <field name="name">pb.young.worker.rule.list</field>
+        <field name="model">pb.young.worker.rule</field>
+        <field name="arch" type="xml">
+            <list string="Young Worker Rules">
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="name"/>
+                <field name="night_from"/>
+                <field name="night_to"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_young_worker_rule_form" model="ir.ui.view">
+        <field name="name">pb.young.worker.rule.form</field>
+        <field name="model">pb.young.worker.rule</field>
+        <field name="arch" type="xml">
+            <form string="Young Worker Rule">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Young Worker Rules"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="night_from"/>
+                            <field name="night_to"/>
+                        </group>
+                    </group>
+                    <separator string="Age Bands"/>
+                    <field name="band_ids">
+                        <list editable="bottom">
+                            <field name="age_min"/>
+                            <field name="age_max"/>
+                            <field name="max_hours_day"/>
+                            <field name="max_hours_week"/>
+                            <field name="ot_blocked" widget="boolean_toggle"/>
+                            <field name="night_blocked" widget="boolean_toggle"/>
+                            <field name="note"/>
+                        </list>
+                    </field>
+                    <field name="note" placeholder="Notes…"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_young_worker_rule" model="ir.actions.act_window">
+        <field name="name">Young Worker Rules</field>
+        <field name="res_model">pb.young.worker.rule</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

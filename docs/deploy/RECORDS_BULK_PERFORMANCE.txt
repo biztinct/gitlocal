@@ -1,0 +1,34 @@
+Records bulk-update performance — November 2026
+
+A 650-person employee import remained uncommitted after ten minutes. A
+diagnostic stack showed Records writing an employee field while standard
+chatter tracking computed employee work-location fields. The evaluation
+phase correctly prefetched the whole roster, but that same roster travelled
+into each individual write. Contract/version invalidation caused repeated
+computation over the entire batch.
+
+The change limits the employee and contract prefetch cohort to the current
+record while executing a planned write. Evaluation keeps its efficient batch
+reads. Field values, write order, real-user access checks, approval decisions,
+bank-account linking and both chatter and per-value Records audits are kept.
+The change has no customer names, tenant branches or new UI controls.
+
+Regression coverage counts real tracked-field computations after repeated
+invalidation rather than asserting a machine-dependent time threshold. It
+also checks the saved values, unchanged control employee and per-value audit.
+Run the existing Records suites for approval, concurrent edits, bank handling,
+contract components, undo, imports, company isolation and access capabilities.
+
+Deploy pb_records version 19.0.1.8.3 on Payobook19v2, upgrading only installed
+copies in payobook, payobook_template, p0clone, rize and sudima. Recheck the
+latest combined repository state and compare all installed custom-addon files
+before and after deployment. Preserve server standard addons and other
+sessions' edits. Back up each active database and filestore; keep Rize's
+backup permanently, and preserve the latest usable nonproduction backup.
+Do not touch retired ABM. Preserve cron activation states during upgrades.
+
+For Sudima, retry the existing pending RD00189/RD00190 through HR's Approval
+Inbox after deployment. Never submit duplicate data or skip the route.
+Verify every saved master/contract value and audit row, then rerun payroll
+reconciliation. The payroll configuration remains draft and excludes Actual
+Pay extras. This performance release does not certify biometric automation.

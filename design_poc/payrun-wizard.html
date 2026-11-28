@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Run Payroll wizard · Payobook POC</title>
+<link rel="stylesheet" href="payrun-poc.css"/>
+<style>
+  .wz { max-width:900px; margin:0 auto; }
+  .stepper { display:flex; align-items:center; margin:6px 0 22px; }
+  .stepper .s { display:flex; align-items:center; gap:10px; }
+  .stepper .n { width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; background:#fff; border:2px solid var(--line); color:var(--muted); }
+  .stepper .t { font-size:12.5px; font-weight:700; color:var(--muted); }
+  .stepper .ln { flex:1; height:3px; border-radius:2px; background:var(--line); margin:0 12px; }
+  .stepper .s.done .n { background:var(--green); border-color:var(--green); color:#fff; }
+  .stepper .s.done .t { color:#047857; }
+  .stepper .ln.done { background:var(--green); }
+  .stepper .s.cur .n { background:var(--i); border-color:var(--i); color:#fff; box-shadow:0 0 0 4px rgba(79,70,229,.16); }
+  .stepper .s.cur .t { color:var(--i); }
+  .wz-card { background:#fff; border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow-lg); overflow:hidden; }
+  .wz-head { padding:22px 26px 0; }
+  .wz-head h2 { margin:0; font-size:18px; font-weight:800; }
+  .wz-head p { margin:5px 0 0; color:var(--muted); font-size:13px; }
+  .wz-body { padding:20px 26px; }
+  .res { display:grid; grid-template-columns:repeat(3,1fr); gap:13px; margin-bottom:18px; }
+  .res .r { border:1px solid var(--line); border-radius:14px; padding:15px 18px; }
+  .res .r.ok { background:var(--green-soft); border-color:#A7F3D0; }
+  .res .r.hero { background:var(--i-deep); border-color:var(--i-deep); color:#fff; }
+  .res .k { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); }
+  .res .r.hero .k { color:#C7CBF5; } .res .r.ok .k { color:#047857; }
+  .res .v { font-size:24px; font-weight:800; margin-top:3px; }
+  .res .r.hero .v { color:#fff; } .res .r.ok .v { color:#047857; }
+  .exc { border:1px solid var(--line); border-radius:14px; overflow:hidden; }
+  .exc-h { background:var(--amber-soft); color:var(--amber); font-size:12px; font-weight:800; padding:10px 16px; }
+  .exc-row { display:flex; align-items:center; gap:12px; padding:11px 16px; border-bottom:1px solid var(--line-soft); font-size:13px; }
+  .exc-row:last-child { border-bottom:none; }
+  .exc-row .av { background:var(--amber); }
+  .exc-row .sp { flex:1; }
+  .exc-row .why { color:var(--amber); font-weight:700; font-size:12px; }
+  .wz-foot { display:flex; align-items:center; gap:10px; padding:16px 26px; border-top:1px solid var(--line); background:var(--bg); }
+  .wz-foot .sp { flex:1; }
+  .prog { height:8px; border-radius:5px; background:var(--line-soft); overflow:hidden; margin:4px 0 18px; }
+  .prog > span { display:block; height:100%; width:100%; background:var(--green); border-radius:5px; }
+</style>
+</head>
+<body>
+<div class="poc-bar">
+  <b>Payobook · Pay Run redesign POC</b>
+  <a href="payrun-landing.html">① Pay Runs landing</a>
+  <a href="payslip-statement.html">② Payslip statement</a>
+  <a href="payrun-batch.html">③ Batch form</a>
+  <a href="payrun-wizard.html" class="on">④ Run wizard</a>
+  <a href="payrun-report.html">⑤ Report</a>
+  <span class="sp"></span><span class="tag">guided · fewer clicks</span>
+</div>
+
+<div class="app">
+  <aside class="side">
+    <div class="brand"><div class="logo">P</div><div><div class="bt">Payobook</div><div class="bs">Payroll Suite</div></div></div>
+    <div class="nav"><svg class="ic nav"><use href="#i-grid"/></svg> Dashboard</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-checksquare"/></svg> Approvals</div>
+    <div class="sec">Pay Run</div>
+    <div class="nav on"><svg class="ic nav"><use href="#i-zap"/></svg> Run Payroll</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-calendar"/></svg> Pay Runs</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-receipt"/></svg> Payslips</div>
+    <div class="sec">People</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-users"/></svg> Employees</div>
+    <div class="nav"><svg class="ic nav"><use href="#i-filetext"/></svg> Contracts</div>
+  </aside>
+
+  <main class="main">
+    <div class="cp"><div class="cp-row"><div class="cp-bc"><svg class="ic sm" style="color:var(--muted)"><use href="#i-home"/></svg><svg class="ic sm" style="color:var(--i-border)"><use href="#i-chevronr"/></svg><span class="cur">Run Payroll</span></div></div></div>
+
+    <div class="page">
+      <div class="wz">
+        <h1 class="h1" style="text-align:center;">Run payroll</h1>
+        <p class="sub" style="text-align:center;margin-bottom:6px;">Create, compute and submit a pay run in one guided flow.</p>
+
+        <div class="stepper">
+          <div class="s done"><span class="n">✓</span><span class="t">Period &amp; scope</span></div>
+          <div class="ln done"></div>
+          <div class="s cur"><span class="n">2</span><span class="t">Compute</span></div>
+          <div class="ln"></div>
+          <div class="s"><span class="n">3</span><span class="t">Review</span></div>
+          <div class="ln"></div>
+          <div class="s"><span class="n">4</span><span class="t">Submit</span></div>
+        </div>
+
+        <div class="wz-card">
+          <div class="wz-head">
+            <h2>Computing payslips…</h2>
+            <p>June 2026 · 01 Jun – 30 Jun 2026 · Vietnam Standard Payroll · 7 eligible employees</p>
+          </div>
+          <div class="wz-body">
+            <div class="prog"><span></span></div>
+            <div class="res">
+              <div class="r ok"><div class="k">Computed</div><div class="v num">7 / 7</div></div>
+              <div class="r"><div class="k">Total gross</div><div class="v num">₫86.1M</div></div>
+              <div class="r hero"><div class="k">Total net</div><div class="v num">₫76.7M</div></div>
+            </div>
+            <div class="exc">
+              <div class="exc-h"><svg class="ic sm"><use href="#i-alert"/></svg> 1 item needs a look before you submit</div>
+              <div class="exc-row"><span class="av">TH</span><div><div style="font-weight:700;">Trương Thị Thu Hiền</div><div style="color:var(--muted);font-size:12px;">SLIP/26/06/004</div></div><div class="sp"></div><span class="why">Net ≤ 0 — missing worked days</span><button class="btn sm">Fix</button></div>
+            </div>
+          </div>
+          <div class="wz-foot">
+            <button class="btn ghost">‹ Back</button>
+            <div class="sp"></div>
+            <span class="sub" style="margin:0;">Looks good? Continue to review.</span>
+            <button class="btn primary lg">Review &amp; submit ›</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="payrun-icons.js"></script>
+</body>
+</html>

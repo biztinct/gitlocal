@@ -1,0 +1,292 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_form_studio_reach
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-19 10:13+0000\n"
+"PO-Revision-Date: 2026-11-19 10:13+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/models/records.py:0
+msgid "%s does not apply to this person's country of work."
+msgstr "%s tidak berlaku untuk negara kerja orang ini."
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_company_form
+msgid "<option value=\"\">Choose…</option>"
+msgstr "<option value=\"\">Pilih…</option>"
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_company_form
+msgid "A change is already waiting for HR; sending again replaces it."
+msgstr ""
+"Sudah ada perubahan yang menunggu HR; mengirim lagi akan menggantikannya."
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_pb_access
+msgid "Access & delegation board — facade"
+msgstr "Papan akses & delegasi"
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/models/portal_request.py:0
+msgid "Approved and written to the employee record."
+msgstr "Disetujui dan dicatat di data karyawan."
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_biz_audit_entry
+msgid "Audit Entry"
+msgstr "Entri jejak perubahan"
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_biz_audit_rule
+msgid "Audit Rule"
+msgstr "Aturan jejak perubahan"
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_company_form
+msgid "Cancel"
+msgstr "Batalkan"
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_company_form
+msgid "Change company details"
+msgstr "Ubah detail perusahaan"
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_my_details_form_builder
+msgid "Change these details"
+msgstr "Ubah detail ini"
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_pb_me_detail_request
+msgid "Change to my details"
+msgstr "Perubahan data saya"
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_company_form
+msgid ""
+"Change what is wrong and send it. Some details are saved at once; the others"
+" change on your record once HR approves them."
+msgstr ""
+"Ubah yang salah lalu kirim. Sebagian detail langsung disimpan; yang lain "
+"berubah di data Anda setelah HR menyetujuinya."
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_company_form
+msgid "Changes once HR approves it."
+msgstr "Berubah setelah HR menyetujuinya."
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/models/form_studio.py:0
+msgid "Changes waiting on My Payobook"
+msgstr "Perubahan yang menunggu di My Payobook"
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/controllers/portal.py:0
+#: code:addons/pb_form_studio_reach/models/mapping.py:0
+#: model:ir.model.fields.selection,name:pb_form_studio_reach.selection__pb_me_detail_request__kind__company_details
+msgid "Company details"
+msgstr "Detail perusahaan"
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/models/formula_sources.py:0
+#: code:addons/pb_form_studio_reach/models/portal_request.py:0
+msgid "Company details: %s"
+msgstr "Detail perusahaan: %s"
+
+#. module: pb_form_studio_reach
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_biz_audit_entry__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_biz_audit_mixin__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_biz_audit_rule__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_hr_formula_config__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_access__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_contracts__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_employee_timeline__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_form_field_meta__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_form_studio__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_formula_studio__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_me_detail_request__display_name
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_records_desk__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_pb_employee_timeline
+msgid "Employee 360 Timeline"
+msgstr "Linimasa 360 karyawan"
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_hr_formula_config
+msgid "Excel Formula Configuration"
+msgstr "Konfigurasi rumus gaji"
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_biz_audit_mixin
+msgid "Field-Change Audit Mixin"
+msgstr "Jejak perubahan kolom"
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_pb_form_studio
+msgid "Form builder"
+msgstr "Pembuat formulir"
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_pb_form_field_meta
+msgid "Form builder field settings"
+msgstr "Pengaturan kolom Pembuat formulir"
+
+#. module: pb_form_studio_reach
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_biz_audit_entry__id
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_biz_audit_mixin__id
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_biz_audit_rule__id
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_hr_formula_config__id
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_access__id
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_contracts__id
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_employee_timeline__id
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_form_field_meta__id
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_form_studio__id
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_formula_studio__id
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_me_detail_request__id
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_records_desk__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_my_details_form_builder
+msgid ""
+"Kept by your company. If something here is wrong, ask HR to correct it."
+msgstr ""
+"Disimpan oleh perusahaan Anda. Jika ada yang salah, minta HR memperbaikinya."
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/models/portal_request.py:0
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_company_form
+msgid "No"
+msgstr "Tidak"
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/controllers/portal.py:0
+msgid "Nothing was changed."
+msgstr "Tidak ada yang diubah."
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/models/form_studio.py:0
+msgid "Pay formulas"
+msgstr "Rumus gaji"
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/models/form_studio.py:0
+msgid ""
+"Pay formulas read this field: %s. Choose another source for them first, then"
+" switch \"Use in pay formulas\" off."
+msgstr ""
+"Rumus gaji membaca kolom ini: %s. Pilih sumber lain untuknya dulu, lalu "
+"matikan \"Gunakan dalam rumus gaji\"."
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_pb_formula_studio
+msgid "Payobook Formula Studio data layer (wraps the formula engine)"
+msgstr "Lapisan data Studio rumus"
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_pb_contracts
+msgid "Payobook contracts cockpit data"
+msgstr "Data papan kontrak"
+
+#. module: pb_form_studio_reach
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_me_detail_request__fb_values_json
+msgid "Proposed company details"
+msgstr "Detail perusahaan yang diusulkan"
+
+#. module: pb_form_studio_reach
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_me_detail_request__fb_model
+msgid "Record type"
+msgstr "Jenis data"
+
+#. module: pb_form_studio_reach
+#: model:ir.model,name:pb_form_studio_reach.model_pb_records_desk
+msgid "Records Desk"
+msgstr "Meja data"
+
+#. module: pb_form_studio_reach
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_me_detail_request__fb_replaced
+msgid "Replaced by a newer change"
+msgstr "Digantikan oleh perubahan yang lebih baru"
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_company_form
+msgid "Saved at once."
+msgstr "Langsung disimpan."
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_company_form
+msgid "Send"
+msgstr "Kirim"
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/models/portal_request.py:0
+msgid ""
+"The company no longer takes changes to %s on My Payobook, so this change was"
+" closed. Nothing on your record changed."
+msgstr ""
+"Perusahaan tidak lagi menerima perubahan %s di My Payobook, jadi perubahan "
+"ini ditutup. Tidak ada yang berubah di data Anda."
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/models/portal_request.py:0
+msgid "There is no change to send."
+msgstr "Tidak ada perubahan untuk dikirim."
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_company_form
+msgid "There is nothing you can change here right now."
+msgstr "Saat ini tidak ada yang bisa Anda ubah di sini."
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/controllers/portal.py:0
+msgid "This change could not be sent."
+msgstr "Perubahan ini tidak dapat dikirim."
+
+#. module: pb_form_studio_reach
+#: model:ir.model.fields,field_description:pb_form_studio_reach.field_pb_me_detail_request__kind
+msgid "What"
+msgstr "Apa"
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/models/portal_request.py:0
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_company_form
+msgid "Yes"
+msgstr "Ya"
+
+#. module: pb_form_studio_reach
+#. odoo-python
+#: code:addons/pb_form_studio_reach/models/portal_request.py:0
+msgid "You can only change your own details."
+msgstr "Anda hanya dapat mengubah data Anda sendiri."
+
+#. module: pb_form_studio_reach
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_reach.portal_my_details_form_builder
+msgid "change waiting for HR"
+msgstr "perubahan menunggu HR"

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <t t-inherit="web.FormView" t-inherit-mode="extension">
+    <xpath expr="//t[@t-set-slot='layout-actions']" position="inside">
+      <button t-if="workflowProgress.available" type="button" aria-label="View workflow" class="btn btn-outline-primary ms-2" t-on-click="openWorkflowProgress" title="See this record’s live workflow">
+        <i class="fa fa-code-fork me-2" aria-hidden="true"/>View workflow
+      </button>
+      <button t-if="workflowProgress.canDesign" type="button" aria-label="Set up workflow" class="btn btn-outline-primary ms-2" t-on-click="setupRecordWorkflow" title="Find or create a workflow for this record type">
+        <i class="fa fa-pencil me-2" aria-hidden="true"/>Set up workflow
+      </button>
+    </xpath>
+  </t>
+</templates>

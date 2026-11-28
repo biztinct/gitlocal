@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       Change job: the board, the person picker, the guided flow and one
+       change's page.
+
+       Comments ruled with `=`, never a doubled hyphen. No `t-as` variable is
+       named lt / gt / lte / gte / and / or / not / in: rows `rw`, people
+       `pe`, kinds `kd`, options `op`, lines `ln`, problems `pr`, steps `st`,
+       months `mo`, reads `rd`, managers `mg`, diff rows `dr`.
+       Every sentence a person reads sits on one line (ledger PRD-3).
+       ==================================================================== -->
+  <t t-name="pb_job_change.PbJobChange">
+    <div class="pbim pbim-page pbjc" t-att-class="{ 'pbjc--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading the job changes…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <div t-if="!state.allowed" class="pbim-panel pbjc-locked">
+          <div class="pbjc-locked-ic"><t t-out="icon('lock', 30)"/></div>
+          <h2>This one is for HR and the pay team</h2>
+          <p t-esc="state.why"/>
+        </div>
+
+        <!-- ============================ the board ============================ -->
+        <t t-elif="state.view === 'board'">
+          <div class="pbjc-head">
+            <div class="pbjc-head-id">
+              <h1 class="pbim-h1">Job changes</h1>
+              <p class="pbim-sub">Promotions, transfers and pay changes, each one signed off once and written on its start date.</p>
+            </div>
+            <div class="pbjc-head-actions">
+              <button class="pbim-btn ghost" t-on-click="refresh" title="Read the board again" aria-label="Read the board again">
+                <t t-out="icon('refresh', 15)"/>
+              </button>
+              <button class="pbim-btn primary" t-on-click="startPick">
+                <t t-out="icon('plus', 15)"/> Change someone's job
+              </button>
+            </div>
+          </div>
+
+          <div t-if="!state.total" class="pbjc-start">
+            <div class="pbjc-start-ic"><t t-out="icon('briefcase', 30)"/></div>
+            <div class="pbjc-start-tx">
+              <h2>A promotion, a move and a pay rise: one request</h2>
+              <p>Pick the person, say what changes and from which day. Their manager, HR and, when the rise is above the guidance, Finance sign it off once. Everything is written together on the start date, with one letter and one line on their timeline.</p>
+              <ul class="pbjc-start-list">
+                <li><t t-out="icon('calendar', 15)"/> <span>Nothing is written before the start date.</span></li>
+                <li><t t-out="icon('layers', 15)"/> <span>You see first if the move changes who pays them.</span></li>
+                <li><t t-out="icon('history', 15)"/> <span>A start date in a month already paid is allowed, and the pay team can re-work that month.</span></li>
+              </ul>
+              <button class="pbim-btn primary" t-on-click="startPick"><t t-out="icon('plus', 15)"/> Change someone's job</button>
+            </div>
+          </div>
+
+          <t t-else="">
+            <t t-call="pb_import_kit.QuietGlance">
+              <t t-set="qGlance" t-value="glance"/>
+              <t t-set="qGlanceOn" t-value="glanceOn"/>
+            </t>
+
+            <PbFilterLayout kit="kit" coach="'jobchange-filters'" searchPlaceholder="searchLabel">
+              <div t-if="state.listError" class="pbim-empty pbjc-empty">
+                <div class="pbjc-empty-ic"><t t-out="icon('alert', 30)"/></div>
+                <h3>The job changes could not load</h3>
+                <p>The connection may have dropped. Your filters are kept.</p>
+                <button class="pbim-btn primary" t-on-click="retry"><t t-out="icon('refresh', 14)"/> Try again</button>
+              </div>
+
+              <div t-elif="state.rows.length" class="pbim-tablewrap pbjc-tablewrap">
+                <table class="pbim-table pbjc-table">
+                  <thead>
+                    <tr>
+                      <th>Person</th>
+                      <th>What changes</th>
+                      <th>Starts on</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr t-foreach="state.rows" t-as="rw" t-key="rw.id" class="pbjc-row" tabindex="0"
+                        t-on-click="() => this.openChange(rw.id)" t-on-keydown="(ev) => ev.key === 'Enter' and this.openChange(rw.id)">
+                      <td>
+                        <span class="pbjc-who">
+                          <img class="pbjc-ava" t-att-src="'/web/image/hr.employee/' + rw.employee_id + '/avatar_128'" alt=""/>
+                          <span class="pbjc-who-tx"><b t-esc="rw.employee"/><small><t t-esc="rw.kind_label"/><t t-if="rw.name"> · <t t-esc="rw.name"/></t></small></span>
+                        </span>
+                      </td>
+                      <td><span class="pbjc-what" t-esc="rw.what or '—'"/></td>
+                      <td><span t-esc="rw.start or '—'"/></td>
+                      <td>
+                        <span class="pbim-badge pbjc-badge" t-att-class="'is-' + rw.state" t-esc="rw.state_label"/>
+                        <small t-if="rw.waiting" class="pbjc-sub"><t t-esc="rw.waiting"/></small>
+                        <small t-if="rw.paid_month" class="pbjc-sub pbjc-amber"><t t-out="icon('history', 12)"/> <span>Starts in a month already paid</span></small>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div t-elif="!state.listLoaded" class="pbjc-skeleton" aria-label="Loading">
+                <div t-foreach="[1,2,3]" t-as="i" t-key="i" class="pbjc-skel-row"/>
+              </div>
+
+              <div t-else="" class="pbim-empty pbjc-empty">
+                <div class="pbjc-empty-ic"><t t-out="icon('search', 30)"/></div>
+                <h3>No job changes match these filters</h3>
+                <p>Remove a filter, or start again from every job change.</p>
+                <button class="pbim-btn ghost" t-on-click="() => kit.toggleFilters({})">Show every job change</button>
+              </div>
+
+              <div t-if="state.rows.length and !state.listError" class="pbjc-foot">
+                Showing <b t-esc="fmtInt(state.rows.length)"/> of <b t-esc="fmtInt(state.listTotal)"/>
+                <button t-if="hasMore" class="pbim-btn ghost pbim-btn-sm" t-att-disabled="state.loadingMore" t-on-click="loadMore">
+                  <t t-if="state.loadingMore">Loading…</t>
+                  <t t-else="">Show <t t-esc="nextPage"/> more</t>
+                </button>
+              </div>
+            </PbFilterLayout>
+          </t>
+        </t>
+
+        <!-- ============================ pick a person ============================ -->
+        <t t-elif="state.view === 'pick'">
+          <div class="pbjc-rhead">
+            <button class="pbim-btn-sm ghost pbjc-back" t-on-click="backToBoard"><t t-out="icon('chevronLeft', 16)"/> Every job change</button>
+            <h2 class="pbjc-title">Whose job is changing?</h2>
+          </div>
+          <div class="pbim-panel pbjc-pick">
+            <label class="pbjc-search">
+              <t t-out="icon('search', 16)"/>
+              <input type="search" placeholder="Type a name…" t-att-value="state.pick.term" t-on-input="onPickTerm" autofocus="autofocus"/>
+            </label>
+            <div t-if="state.pick.loading and !state.pick.rows.length" class="pbjc-muted">Looking…</div>
+            <div t-elif="!state.pick.rows.length" class="pbjc-muted">Nobody by that name in your companies.</div>
+            <div class="pbjc-people">
+              <button t-foreach="state.pick.rows" t-as="pe" t-key="pe.id" class="pbjc-person" t-on-click="() => this.openFlow(pe.id)">
+                <img class="pbjc-ava" t-att-src="pe.avatar" alt=""/>
+                <span class="pbjc-who-tx"><b t-esc="pe.name"/><small><t t-esc="pe.job or '—'"/><t t-if="pe.team"> · <t t-esc="pe.team"/></t></small></span>
+                <t t-out="icon('chevron', 15)"/>
+              </button>
+            </div>
+          </div>
+        </t>
+
+        <!-- ============================ the guided flow ============================ -->
+        <t t-elif="state.view === 'flow' and state.flow">
+          <t t-set="f" t-value="state.flow"/>
+          <div class="pbjc-rhead">
+            <button class="pbim-btn-sm ghost pbjc-back" t-on-click="backToBoard"><t t-out="icon('chevronLeft', 16)"/> Every job change</button>
+            <div class="pbjc-rhead-main">
+              <div class="pbjc-who">
+                <img class="pbjc-ava lg" t-att-src="f.d.person.avatar" alt=""/>
+                <div class="pbjc-who-tx">
+                  <h2 class="pbjc-title">Change job · <t t-esc="f.d.person.name"/></h2>
+                  <small><t t-esc="f.d.now.job_title or f.d.now.job or '—'"/><t t-if="f.d.now.team"> · <t t-esc="f.d.now.team"/></t><t t-if="f.d.now.scheme"> · <span>Paid by</span> <t t-esc="f.d.now.scheme"/></t></small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <ol class="pbjc-steps" aria-label="Steps">
+            <li t-att-class="f.step === 1 ? 'on' : (f.step > 1 ? 'done' : '')"><button t-on-click="() => this.goStep(1)"><span class="n">1</span> <span>What changes</span></button></li>
+            <li t-att-class="f.step === 2 ? 'on' : (f.step > 2 ? 'done' : '')"><button t-att-disabled="!anySection" t-on-click="() => this.goStep(2)"><span class="n">2</span> <span>The details</span></button></li>
+            <li t-att-class="f.step === 3 ? 'on' : ''"><button t-att-disabled="!anySection" t-on-click="() => this.goStep(3)"><span class="n">3</span> <span>When and why</span></button></li>
+          </ol>
+
+          <div class="pbjc-grid">
+            <div class="pbjc-main">
+
+              <!-- ======== step 1 ======== -->
+              <div t-if="f.step === 1" class="pbim-panel pbjc-card">
+                <h3>What kind of change is it?</h3>
+                <div class="pbjc-kinds">
+                  <button t-foreach="f.d.kinds" t-as="kd" t-key="kd.key" class="pbjc-kind" t-att-class="f.draft.reason_kind === kd.key ? 'on' : ''" t-on-click="() => this.setKind(kd.key)">
+                    <t t-out="icon(kd.key === 'promotion' ? 'trendingUp' : (kd.key === 'transfer' ? 'arrowLeftRight' : (kd.key === 'pay' ? 'banknote' : 'pencil')), 18)"/>
+                    <span t-esc="kd.label"/>
+                  </button>
+                </div>
+                <h3>What moves?</h3>
+                <p class="pbjc-muted">Pick everything that changes. It all starts on the same day and is signed off once.</p>
+                <div class="pbjc-sections">
+                  <button class="pbjc-section" t-att-class="f.sections.job ? 'on' : ''" t-on-click="() => this.toggleSection('job')">
+                    <span class="pbjc-section-ic"><t t-out="icon('briefcase', 20)"/></span>
+                    <span class="pbjc-section-tx"><b>Job and title</b><small>A new job or job title</small></span>
+                    <span class="pbjc-tick"><t t-if="f.sections.job" t-out="icon('check', 14)"/></span>
+                  </button>
+                  <button class="pbjc-section" t-att-class="f.sections.team ? 'on' : ''" t-on-click="() => this.toggleSection('team')">
+                    <span class="pbjc-section-ic"><t t-out="icon('building', 20)"/></span>
+                    <span class="pbjc-section-tx"><b>Team and place</b><small>Team, manager, place of work, working hours, company or Country of work</small></span>
+                    <span class="pbjc-tick"><t t-if="f.sections.team" t-out="icon('check', 14)"/></span>
+                  </button>
+                  <button class="pbjc-section" t-att-class="(f.sections.pay ? 'on ' : '') + (f.d.can_pay ? '' : 'off')" t-att-disabled="!f.d.can_pay" t-on-click="() => this.toggleSection('pay')">
+                    <span class="pbjc-section-ic"><t t-out="icon('banknote', 20)"/></span>
+                    <span class="pbjc-section-tx"><b>Pay</b><small t-if="f.d.can_pay">Monthly pay and pay lines</small><small t-else="">The pay team adds pay changes</small></span>
+                    <span class="pbjc-tick"><t t-if="f.sections.pay" t-out="icon('check', 14)"/></span>
+                  </button>
+                </div>
+                <div class="pbjc-actions">
+                  <button class="pbim-btn primary" t-att-disabled="!anySection" t-on-click="() => this.goStep(2)">Next <t t-out="icon('arrowRight', 15)"/></button>
+                </div>
+              </div>
+
+              <!-- ======== step 2 ======== -->
+              <div t-if="f.step === 2" class="pbim-panel pbjc-card">
+                <div t-if="f.sections.job" class="pbjc-block">
+                  <h3><t t-out="icon('briefcase', 16)"/> Job and title</h3>
+                  <div class="pbjc-pair">
+                    <span class="k">Job</span>
+                    <span class="now" t-esc="f.d.now.job or '—'"/>
+                    <select class="pbjc-in" t-on-change="(ev) => this.onField('new_job_id', ev, true)">
+                      <option value="0" t-att-selected="!f.draft.new_job_id">Unchanged</option>
+                      <option t-foreach="f.d.options.jobs" t-as="op" t-key="op.id" t-att-value="op.id" t-att-selected="f.draft.new_job_id === op.id" t-esc="op.label"/>
+                    </select>
+                  </div>
+                  <div class="pbjc-pair">
+                    <span class="k">Job title</span>
+                    <span class="now" t-esc="f.d.now.job_title or '—'"/>
+                    <input class="pbjc-in" type="text" placeholder="Unchanged" t-att-value="f.draft.new_job_title" t-on-input="(ev) => this.onField('new_job_title', ev)"/>
+                  </div>
+                </div>
+
+                <div t-if="f.sections.team" class="pbjc-block">
+                  <h3><t t-out="icon('building', 16)"/> Team and place</h3>
+                  <div class="pbjc-pair">
+                    <span class="k">Company</span>
+                    <span class="now" t-esc="f.d.now.company or '—'"/>
+                    <select class="pbjc-in" t-on-change="(ev) => this.onField('new_company_id', ev, true)">
+                      <option value="0" t-att-selected="!f.draft.new_company_id">Unchanged</option>
+                      <option t-foreach="f.d.options.companies" t-as="op" t-key="op.id" t-att-value="op.id" t-att-selected="f.draft.new_company_id === op.id" t-esc="op.label"/>
+                    </select>
+                  </div>
+                  <div class="pbjc-pair">
+                    <span class="k">Country of work</span>
+                    <span class="now" t-esc="f.d.now.country or '—'"/>
+                    <select class="pbjc-in" t-on-change="(ev) => this.onField('new_payroll_country', ev)" aria-label="New Country of work">
+                      <option value="" t-att-selected="!f.draft.new_payroll_country">Unchanged</option>
+                      <option t-foreach="f.d.options.countries || []" t-as="op" t-key="op.id" t-att-value="op.id" t-att-selected="f.draft.new_payroll_country === op.id" t-esc="op.label"/>
+                    </select>
+                  </div>
+                  <t t-call="pb_job_change.SchemePick"/>
+                  <div class="pbjc-pair">
+                    <span class="k">Team</span>
+                    <span class="now" t-esc="f.d.now.team or '—'"/>
+                    <select class="pbjc-in" t-on-change="(ev) => this.onField('new_department_id', ev, true)">
+                      <option value="0" t-att-selected="!f.draft.new_department_id">Unchanged</option>
+                      <option t-foreach="f.d.options.teams" t-as="op" t-key="op.id" t-att-value="op.id" t-att-selected="f.draft.new_department_id === op.id" t-esc="op.label"/>
+                    </select>
+                  </div>
+                  <div class="pbjc-pair">
+                    <span class="k">Manager</span>
+                    <span class="now" t-esc="f.d.now.manager or '—'"/>
+                    <div class="pbjc-combo">
+                      <input class="pbjc-in" type="search" placeholder="Unchanged. Type a name…" t-att-value="f.mgr.term" t-on-input="onMgrTerm" t-on-focus="focusMgr" t-on-blur="blurMgr"/>
+                      <div t-if="f.mgr.open and f.mgr.rows.length" class="pbjc-combo-list">
+                        <button t-foreach="f.mgr.rows" t-as="mg" t-key="mg.id" t-on-mousedown.prevent="() => this.pickMgr(mg)"><b t-esc="mg.label"/><small t-esc="mg.sub"/></button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="pbjc-pair">
+                    <span class="k">Place of work</span>
+                    <span class="now" t-esc="f.d.now.location or '—'"/>
+                    <select class="pbjc-in" t-on-change="(ev) => this.onField('new_work_location_id', ev, true)">
+                      <option value="0" t-att-selected="!f.draft.new_work_location_id">Unchanged</option>
+                      <option t-foreach="f.d.options.locations" t-as="op" t-key="op.id" t-att-value="op.id" t-att-selected="f.draft.new_work_location_id === op.id" t-esc="op.label"/>
+                    </select>
+                  </div>
+                  <div class="pbjc-pair">
+                    <span class="k">Working hours</span>
+                    <span class="now" t-esc="f.d.now.calendar or '—'"/>
+                    <select class="pbjc-in" t-on-change="(ev) => this.onField('new_resource_calendar_id', ev, true)">
+                      <option value="0" t-att-selected="!f.draft.new_resource_calendar_id">Unchanged</option>
+                      <option t-foreach="f.d.options.calendars" t-as="op" t-key="op.id" t-att-value="op.id" t-att-selected="f.draft.new_resource_calendar_id === op.id" t-esc="op.label"/>
+                    </select>
+                  </div>
+                </div>
+
+                <div t-if="f.sections.pay and f.d.can_pay" class="pbjc-block">
+                  <h3><t t-out="icon('banknote', 16)"/> Pay</h3>
+                  <p t-if="!f.d.now.has_contract" class="pbjc-amber">This person has no running contract, so their pay cannot be changed here.</p>
+                  <t t-else="">
+                    <div class="pbjc-pair">
+                      <span class="k">Monthly pay</span>
+                      <span class="now"><t t-esc="money(f.d.now.wage)"/> <t t-esc="f.d.now.currency"/></span>
+                      <span class="pbjc-money">
+                        <input class="pbjc-in num" type="text" inputmode="decimal" t-att-value="f.draft.new_wage" t-on-change="(ev) => this.onMoney('new_wage', ev)"/>
+                        <small class="pbjc-rise" t-if="rise" t-esc="rise"/>
+                      </span>
+                    </div>
+                    <div t-foreach="f.lines" t-as="ln" t-key="ln.code" class="pbjc-pair">
+                      <span class="k" t-esc="ln.name"/>
+                      <span class="now" t-esc="money(ln.old)"/>
+                      <input class="pbjc-in num" type="text" inputmode="decimal" t-att-value="ln.new" t-on-change="(ev) => this.onLine(ln, ev)"/>
+                    </div>
+                    <div t-if="addableLeft.length" class="pbjc-add">
+                      <select class="pbjc-in" t-on-change="onAddCode">
+                        <option value="">Add a pay line from their scheme…</option>
+                        <option t-foreach="addableLeft" t-as="op" t-key="op.code" t-att-value="op.code" t-esc="op.name"/>
+                      </select>
+                      <button class="pbim-btn ghost pbim-btn-sm" t-att-disabled="!f.addCode" t-on-click="addLine"><t t-out="icon('plus', 14)"/> Add</button>
+                    </div>
+                  </t>
+                </div>
+                <div class="pbjc-actions">
+                  <button class="pbim-btn ghost" t-on-click="() => this.goStep(1)"><t t-out="icon('chevronLeft', 15)"/> Back</button>
+                  <button class="pbim-btn primary" t-on-click="() => this.goStep(3)">Next <t t-out="icon('arrowRight', 15)"/></button>
+                </div>
+              </div>
+
+              <!-- ======== step 3 ======== -->
+              <div t-if="f.step === 3" class="pbim-panel pbjc-card">
+                <div class="pbjc-pair one">
+                  <span class="k">Starts on</span>
+                  <input class="pbjc-in" type="date" t-att-value="f.draft.effective_date" t-on-change="(ev) => this.onField('effective_date', ev)"/>
+                </div>
+                <label class="pbjc-lbl">Why</label>
+                <textarea class="pbjc-ta" rows="4" placeholder="What has changed, and why now. The people who sign it off read this first." t-att-value="f.draft.reason" t-on-input="(ev) => this.onField('reason', ev)"/>
+                <div class="pbjc-actions">
+                  <button class="pbim-btn ghost" t-on-click="() => this.goStep(2)"><t t-out="icon('chevronLeft', 15)"/> Back</button>
+                  <button class="pbim-btn ghost" t-att-disabled="f.busy" t-on-click="saveDraft"><t t-out="icon('save', 15)"/> Save for later</button>
+                  <button class="pbim-btn primary" t-att-disabled="f.busy or f.previewBusy or !P.ok" t-on-click="send"><t t-out="icon('send', 15)"/> Send for sign-off</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ======== what this does (the server's answer) ======== -->
+            <aside class="pbim-panel pbjc-impact" aria-live="polite">
+              <h3><t t-out="icon('info', 16)"/> What this does</h3>
+              <div t-if="f.previewBusy and !f.preview" class="pbjc-muted">Working it out…</div>
+              <t t-else="">
+                <table t-if="P.rows.length" class="pbjc-diff">
+                  <tbody>
+                    <tr t-foreach="P.rows" t-as="dr" t-key="dr_index">
+                      <th t-esc="dr.label"/>
+                      <td class="was" t-esc="dr.now"/>
+                      <td class="arrow"><t t-out="icon('arrowRight', 13)"/></td>
+                      <td class="new" t-esc="dr.new"/>
+                    </tr>
+                  </tbody>
+                </table>
+                <p t-else="" class="pbjc-muted">Nothing changes yet.</p>
+
+                <div t-if="P.timing === 'future'" class="pbjc-note is-blue"><t t-out="icon('calendar', 15)"/> <span>Starts on <b t-esc="P.start"/>. Once it is signed off it waits, and is written that morning.</span></div>
+                <div t-elif="P.timing === 'today'" class="pbjc-note"><t t-out="icon('calendar', 15)"/> <span>Starts today: written as soon as it is signed off.</span></div>
+                <div t-elif="P.timing === 'past'" class="pbjc-note is-amber"><t t-out="icon('calendar', 15)"/> <span>Starts on <b t-esc="P.start"/>, a date in the past. It is written when it is signed off and recorded as starting that day.</span></div>
+
+                <div t-if="P.paid.length" class="pbjc-note is-amber">
+                  <t t-out="icon('history', 15)"/>
+                  <span>
+                    <span>This change starts in a month already paid:</span> <b><t t-foreach="P.paid" t-as="mo" t-key="mo_index"><t t-if="mo_index">, </t><t t-esc="mo.month_label"/></t></b>.
+                    <span t-if="P.retro">When it is done, the pay team can open a Past-month re-work for those months. Nothing is paid back by itself.</span>
+                    <span t-else="">Nothing is paid back by itself: the pay team works out any difference on the next pay run.</span>
+                  </span>
+                </div>
+
+                <div t-if="P.scheme_line" class="pbjc-note is-blue pbjc-scheme-note"><t t-out="icon('layers', 15)"/> <span><t t-esc="P.scheme_line"/><t t-if="P.scheme_r6"> <b t-esc="P.scheme_r6"/></t></span></div>
+                <div t-elif="P.changes_scheme" class="pbjc-note is-amber"><t t-out="icon('layers', 15)"/> <span>Paid by changes from <b t-esc="P.scheme_now or '—'"/> to <b t-esc="P.scheme_after or '—'"/>. Check their next payslip with the pay team.</span></div>
+                <div t-if="P.scheme_stays and !schemeShown" class="pbjc-note pbjc-scheme-note"><t t-out="icon('layers', 15)"/> <span><t t-esc="P.scheme_stays"/> <button type="button" class="pbjc-link" t-on-click="openScheme">Change pay scheme</button></span></div>
+                <div t-if="P.reads.length" class="pbjc-note"><t t-out="icon('layers', 15)"/> <span>Their pay scheme reads what this changes, in: <b><t t-foreach="P.reads" t-as="rd" t-key="rd_index"><t t-if="rd_index">, </t><t t-esc="rd"/></t></b>.</span></div>
+                <div t-if="P.above_band" class="pbjc-note is-amber"><t t-out="icon('trendingUp', 15)"/> <span>The new pay is above the top of the band for this job.</span></div>
+
+                <h4>Who signs it off</h4>
+                <ol class="pbjc-route">
+                  <li t-foreach="P.steps" t-as="st" t-key="st.key"><span class="dot"/><b t-esc="st.label"/><small t-if="st.who" t-esc="st.who"/></li>
+                </ol>
+                <p t-if="P.above_guidance" class="pbjc-muted">Finance signs too, because the rise is above the guidance.</p>
+
+                <ul t-if="P.problems.length" class="pbjc-problems">
+                  <li t-foreach="P.problems" t-as="pr" t-key="pr_index"><t t-out="icon('alert', 14)"/> <span t-esc="pr"/></li>
+                </ul>
+              </t>
+            </aside>
+          </div>
+        </t>
+
+        <!-- ============================ one change ============================ -->
+        <t t-elif="state.view === 'detail' and state.detail">
+          <t t-set="d" t-value="D"/>
+          <div class="pbjc-rhead">
+            <button class="pbim-btn-sm ghost pbjc-back" t-on-click="backToBoard"><t t-out="icon('chevronLeft', 16)"/> Every job change</button>
+            <div class="pbjc-rhead-main">
+              <div class="pbjc-who">
+                <img class="pbjc-ava lg" t-att-src="d.person.avatar" alt=""/>
+                <div class="pbjc-who-tx">
+                  <h2 class="pbjc-title"><t t-esc="d.kind_label"/> · <t t-esc="d.person.name"/></h2>
+                  <small><t t-esc="d.name"/> · <span>Starts on</span> <t t-esc="d.start or '—'"/> · <span>Prepared by</span> <t t-esc="d.prepared_by"/></small>
+                </div>
+              </div>
+              <span class="pbim-badge pbjc-badge lg" t-att-class="'is-' + d.state" t-esc="d.state_label"/>
+            </div>
+          </div>
+
+          <div class="pbjc-grid">
+            <div class="pbjc-main">
+              <div t-if="d.state === 'scheduled'" class="pbjc-banner is-blue"><t t-out="icon('calendar', 18)"/> <span>Signed off. It is written on <b t-esc="d.start"/>, early that morning. Nothing has changed yet.</span></div>
+              <div t-if="d.state === 'pending'" class="pbjc-banner is-amber"><t t-out="icon('clock', 18)"/> <span>Waiting for <b t-esc="d.waiting or '—'"/>.</span></div>
+              <div t-if="d.blocked" class="pbjc-banner is-rose"><t t-out="icon('alert', 18)"/> <span t-esc="d.block_reason"/></div>
+              <div t-if="d.block_note" class="pbjc-banner is-rose"><t t-out="icon('alert', 18)"/> <span t-esc="d.block_note"/></div>
+              <div t-if="d.state === 'applied'" class="pbjc-banner is-green"><t t-out="icon('checkCircle', 18)"/> <span>Done on <b t-esc="d.done_on"/><t t-if="d.by_job"> <span>(written automatically on its start date)</span></t>. The person, their contract and their pay now read the new details.</span></div>
+
+              <div t-if="d.paid.length" class="pbjc-banner is-amber pbjc-paid">
+                <t t-out="icon('history', 18)"/>
+                <div>
+                  <b>This change starts in a month already paid</b>
+                  <p><t t-foreach="d.paid" t-as="mo" t-key="mo_index"><t t-if="mo_index">, </t><t t-esc="mo.month_label"/></t> <span>was paid with the old figures. Nothing is paid back by itself.</span></p>
+                  <t t-if="d.retro">
+                    <button t-if="d.retro_allowed and !d.rework_id" class="pbim-btn primary pbim-btn-sm" t-att-disabled="state.detail.busy" t-on-click="() => this.act('rework')"><t t-out="icon('history', 14)"/> Re-work those months</button>
+                    <button t-if="d.retro_allowed and d.rework_id" class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.openRework(d.rework_id)"><t t-out="icon('external', 14)"/> Open the re-work</button>
+                    <p t-if="!d.retro_allowed" class="pbjc-muted">The people who approve pay runs can re-work those months from here.</p>
+                  </t>
+                  <p t-else="" class="pbjc-muted">Tell the pay team: they can work out any difference by hand on the next pay run.</p>
+                </div>
+              </div>
+
+              <div class="pbim-panel pbjc-card">
+                <h3>What changes</h3>
+                <table t-if="d.rows.length" class="pbjc-diff lg">
+                  <thead><tr><th/><th>Before</th><th/><th>After</th></tr></thead>
+                  <tbody>
+                    <tr t-foreach="d.rows" t-as="dr" t-key="dr_index">
+                      <th t-esc="dr.label"/>
+                      <td class="was" t-esc="dr.now"/>
+                      <td class="arrow"><t t-out="icon('arrowRight', 13)"/></td>
+                      <td class="new" t-esc="dr.new"/>
+                    </tr>
+                  </tbody>
+                </table>
+                <h4>Why</h4>
+                <p class="pbjc-reason" t-esc="d.reason or '—'"/>
+              </div>
+
+              <div class="pbjc-actions left">
+                <button t-if="d.can_edit" class="pbim-btn ghost" t-on-click="editChange"><t t-out="icon('pencil', 15)"/> Change it</button>
+                <button t-if="d.can_edit" class="pbim-btn primary" t-att-disabled="state.detail.busy" t-on-click="() => this.act('send')"><t t-out="icon('send', 15)"/> Send for sign-off</button>
+                <button t-if="d.letter_id" class="pbim-btn ghost" t-on-click="openLetter"><t t-out="icon('fileText', 15)"/> The letter</button>
+                <button t-if="d.undo" class="pbim-btn ghost" t-att-disabled="state.detail.busy" t-on-click="() => this.act('undo')"><t t-out="icon('undo', 15)"/> Take it back</button>
+                <button t-if="d.can_cancel" class="pbim-btn ghost danger" t-att-disabled="state.detail.busy" t-on-click="() => this.act('cancel')"><t t-out="icon('xCircle', 15)"/> Cancel it</button>
+              </div>
+              <p t-if="d.undo" class="pbjc-muted">You can take it back for <t t-esc="d.undo_hours"/> hours after it was written, as long as nobody has changed these details since.</p>
+            </div>
+
+            <aside class="pbim-panel pbjc-impact">
+              <h3><t t-out="icon('route', 16)"/> Sign-off</h3>
+              <ol t-if="d.steps.length" class="pbjc-route">
+                <li t-foreach="d.steps" t-as="st" t-key="st_index" t-att-class="'is-' + stepTone(st.status)"><span class="dot"/><b t-esc="st.title"/><small t-esc="st.people"/></li>
+              </ol>
+              <p t-elif="d.state === 'draft'" class="pbjc-muted">Not sent yet.</p>
+              <p t-else="" class="pbjc-muted">No sign-off was needed.</p>
+            </aside>
+          </div>
+        </t>
+      </div>
+    </div>
+  </t>
+
+  <!-- PSCHEME P2b — the pay scheme a permanent move brings, from the start
+       date: the usual scheme of the (new) Country of work pre-filled, the
+       others as cards, "keep" unless the company changes (ledger A9). -->
+  <t t-name="pb_job_change.SchemePick">
+    <div t-if="schemeShown" class="pbjc-scheme" role="group" aria-label="Pay scheme">
+      <div class="pbjc-scheme-h">
+        <span class="pbjc-scheme-ic"><t t-out="icon('layers', 16)"/></span>
+        <span class="pbjc-scheme-tx">
+          <b>Pay scheme</b>
+          <small t-if="f.scheme.opts" t-esc="schemeSub"/>
+        </span>
+        <button t-if="f.scheme.open and !f.draft.new_payroll_country and !schemeNeeded" type="button" class="pbjc-x" t-on-click="closeScheme" title="Leave the pay scheme out of this change" aria-label="Leave the pay scheme out of this change"><t t-out="icon('x', 14)"/></button>
+      </div>
+      <div t-if="f.scheme.loading and !f.scheme.opts" class="pbjc-scheme-skel" aria-label="Loading"><span/><span/></div>
+      <t t-elif="f.scheme.opts">
+        <p t-if="!schemeCards.length" class="pbjc-scheme-none"><t t-out="icon('alert', 14)"/> <span t-esc="f.scheme.opts.none_words"/></p>
+        <p t-elif="f.scheme.opts.ask and !f.draft.new_scheme_id and !f.scheme.keep" class="pbjc-scheme-ask"><t t-out="icon('info', 14)"/> <span>This country has several pay schemes. Pick the one that pays them.</span></p>
+        <div class="pbjc-scheme-cards" role="radiogroup" aria-label="Pay scheme" t-on-keydown="onSchemeKey">
+          <button t-if="!schemeNeeded" type="button" role="radio" data-scheme="0"
+                  t-att-aria-checked="f.scheme.keep ? 'true' : 'false'" t-att-tabindex="f.scheme.keep ? '0' : '-1'"
+                  class="pbjc-scard is-keep" t-att-class="{ on: f.scheme.keep }" t-on-click="keepScheme">
+            <span class="pbjc-scard-dot"/>
+            <span class="pbjc-scard-tx"><b t-esc="keepLabel"/><small>Their pay scheme does not change</small></span>
+          </button>
+          <button t-foreach="schemeCards" t-as="sc" t-key="sc.id" type="button" role="radio" t-att-data-scheme="sc.id"
+                  t-att-aria-checked="f.draft.new_scheme_id === sc.id ? 'true' : 'false'"
+                  t-att-tabindex="f.draft.new_scheme_id === sc.id or (!f.draft.new_scheme_id and !f.scheme.keep and sc_index === 0) ? '0' : '-1'"
+                  class="pbjc-scard" t-att-class="{ on: f.draft.new_scheme_id === sc.id, usual: f.scheme.opts.default_id === sc.id }"
+                  t-on-click="() => this.pickScheme(sc.id)">
+            <span class="pbjc-scard-dot"/>
+            <span class="pbjc-scard-tx">
+              <b t-esc="sc.name"/>
+              <small><t t-esc="sc.kind_words"/><t t-if="sc.id === f.scheme.opts.now_id"> · <span>their pay scheme now</span></t><t t-elif="sc.id === f.scheme.opts.default_id"> · <span>usual for this country</span></t></small>
+            </span>
+            <span t-if="sc.currency" class="pbjc-scard-cur" t-esc="sc.currency"/>
+          </button>
+        </div>
+        <div t-if="pickedAdvances.length === 1" class="pbjc-adv">
+          <button type="button" role="switch" class="pbjc-switch" t-att-class="{ on: f.draft.new_advance_scheme_id }"
+                  t-att-aria-checked="f.draft.new_advance_scheme_id ? 'true' : 'false'" t-on-click="toggleAdvance"
+                  aria-label="Mid-month advance"><span/></button>
+          <span t-esc="advanceLine"/>
+        </div>
+        <div t-elif="pickedAdvances.length > 1" class="pbjc-adv">
+          <label class="pbjc-adv-l" for="pbjc-adv-sel">Mid-month advance</label>
+          <select id="pbjc-adv-sel" class="pbjc-in" t-on-change="onAdvance">
+            <option value="0" t-att-selected="!f.draft.new_advance_scheme_id">No mid-month advance</option>
+            <option t-foreach="pickedAdvances" t-as="ad" t-key="ad.id" t-att-value="ad.id" t-att-selected="f.draft.new_advance_scheme_id === ad.id" t-esc="ad.name"/>
+          </select>
+        </div>
+      </t>
+    </div>
+    <div t-elif="f.sections.team and f.d.now.scheme" class="pbjc-pair pbjc-scheme-stay">
+      <span class="k">Pay scheme</span>
+      <span class="now" t-esc="f.d.now.scheme"/>
+      <button type="button" class="pbjc-link" t-on-click="openScheme"><t t-out="icon('pencil', 13)"/> Change pay scheme</button>
+    </div>
+  </t>
+
+</templates>

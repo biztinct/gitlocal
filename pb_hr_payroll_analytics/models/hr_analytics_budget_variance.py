@@ -4,6 +4,8 @@ from odoo import models, fields, api, _
 import json
 import logging
 
+from .hr_analytics_dashboard import _demo_world
+
 _logger = logging.getLogger(__name__)
 
 
@@ -32,7 +34,9 @@ class HrAnalyticsBudgetVariance(models.Model):
 
     # Alerts
     budget_alerts = fields.Text(string='Budget Alerts (JSON)')
-    use_sample_data = fields.Boolean(string='Using Sample Data', default=True, readonly=True)
+    # Default False: a record only carries sample data once a demo world has
+    # deliberately generated it. Outside a demo world nothing here is written.
+    use_sample_data = fields.Boolean(string='Using Sample Data', default=False, readonly=True)
 
     state = fields.Selection([('draft', 'Draft'), ('ready', 'Ready')], default='draft')
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
@@ -74,8 +78,26 @@ class HrAnalyticsBudgetVariance(models.Model):
                 record.variance_percentage = 0
 
     def action_generate_analytics(self):
-        """Generate budget variance analytics with sample data"""
+        """Generate budget variance analytics.
+
+        There is no real budget source behind this model — the figures below
+        are invented — so outside a demo world it generates NOTHING and says
+        so. In a demo world the sample path stays, and the form labels it
+        (`views/hr_analytics_budget.xml`, the note bound to `use_sample_data`).
+        """
         self.ensure_one()
+        if not _demo_world(self.env):
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Nothing generated'),
+                    'message': _('Budget analytics needs payroll history — '
+                                 'nothing generated.'),
+                    'type': 'warning',
+                    'sticky': False,
+                },
+            }
         try:
             # Create sample budget and actual data
             budget_data = {

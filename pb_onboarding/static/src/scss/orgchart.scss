@@ -1,0 +1,108 @@
+.pborg-home-link {
+    display: inline-flex; align-items: center; gap: 8px; margin-top: 8px;
+    padding: 8px 13px; border: 1px solid #d7d0f7; border-radius: 10px;
+    background: #fff; color: #5d47ba; font-size: 13px; font-weight: 700;
+    text-decoration: none;
+    &:hover { background: #eeebfa; }
+}
+.pborg {
+    --org-purple: #5d47ba; --org-ink: #201b39; --org-muted: #66738d;
+    color: var(--org-ink); padding-bottom: 28px;
+    button, input, select { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button { cursor: pointer; }
+    :focus-visible { outline: 3px solid #a491f0; outline-offset: 3px; }
+    .pborg-heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin: 18px 0 25px; }
+    .pborg-back { color: var(--org-muted); font-size: 13px; text-decoration: none; }
+    h1 { font-size: clamp(25px, 3vw, 34px); font-weight: 800; letter-spacing: -1px; margin: 12px 0 7px; }
+    .pborg-heading p { margin: 0; color: var(--org-muted); }
+    .pborg-readonly { display: inline-block; vertical-align: middle; margin-left: 12px; padding: 5px 9px; border: 1px solid #ddd6f3; border-radius: 20px; color: var(--org-purple); font-size: 11px; font-weight: 600; letter-spacing: 0; }
+    .pborg-company { display: flex; align-items: center; gap: 12px; max-width: 300px; color: var(--org-purple); font-weight: 700; }
+    .pborg-toolbar { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 14px; padding: 18px; background: #fff; border: 1px solid #e1e5ef; border-radius: 16px; }
+    .pborg-toolbar label { display: flex; flex-direction: column; gap: 7px; margin: 0; min-width: 140px; flex: 1; }
+    .pborg-toolbar label > span { font-size: 11px; font-weight: 700; letter-spacing: .5px; color: var(--org-muted); text-transform: uppercase; }
+    .pborg-toolbar .pborg-search { flex: 2; min-width: 230px; }
+    input, select { border: 1px solid #dbe0ee; border-radius: 9px; background: #fafbfe; color: var(--org-ink); padding: 10px 12px; width: 100%; height: 43px; }
+    .pborg-btn { border: 1px solid #dcd5f4; border-radius: 9px; padding: 10px 13px; background: #fff; color: var(--org-purple); font-size: 13px; font-weight: 650; }
+    .pborg-btn:hover { background: #f1edfc; }
+    .pborg-primary { background: var(--org-purple); color: #fff; border-color: var(--org-purple); &:hover { background: #493599; } }
+    .pborg-search-results { background: #fff; padding: 16px; border: 1px solid #ddd6f5; border-radius: 14px; margin-top: 10px; max-height: 280px; overflow: auto; }
+    .pborg-search-results p { color: var(--org-muted); font-size: 13px; }
+    .pborg-search-results button { margin: 0 8px 8px 0; text-align: left; }
+    .pborg-viewbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 20px 0 12px; }
+    .pborg-tabs { display: flex; padding: 4px; border-radius: 11px; background: #eae7f4; }
+    .pborg-tabs button { border: 0; background: none; border-radius: 8px; color: var(--org-muted); padding: 9px 18px; font-weight: 700; font-size: 13px; }
+    .pborg-tabs [aria-pressed=true] { background: #fff; color: var(--org-purple); box-shadow: 0 2px 6px #31255c12; }
+    .pborg-tools { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pborg-tools button { background: #fff; border: 1px solid #e1e5ef; border-radius: 8px; color: var(--org-purple); padding: 8px 12px; font-size: 12px; font-weight: 650; }
+    .pborg-context { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 12px; font-size: 12px; color: var(--org-muted); }
+    .pborg-path { flex: 1; }
+    .pborg-path-link { background: none; border: 0; padding: 2px; color: var(--org-purple); text-align: left; }
+    .pborg-status { flex-shrink: 0; }
+    .pborg-workspace { display: grid; grid-template-columns: minmax(0, 1fr) 280px; align-items: start; gap: 16px; }
+    .pborg-canvas-wrap { border: 1px solid #dfe3ef; border-radius: 17px; overflow: hidden; background: #f8f9fc; }
+    .pborg-canvas { height: 570px; overflow: auto; background-image: radial-gradient(#d6dbe8 .8px, transparent .8px); background-size: 18px 18px; overscroll-behavior: contain; }
+    .pborg-canvas { cursor: grab; user-select: none; -webkit-user-select: none; }
+    .pborg-canvas img { -webkit-user-drag: none; }
+    .pborg-canvas.is-panning, .pborg-canvas.is-panning * { cursor: grabbing !important; }
+    .pborg-tree { width: max-content; min-width: 100%; padding: 35px 28px 50px; }
+    .pborg-branches { display: flex; justify-content: center; list-style: none; padding: 0; margin: 0; }
+    .pborg-branch { display: flex; flex-direction: column; align-items: center; position: relative; padding: 28px 10px 0; }
+    .pborg-branch::before, .pborg-branch::after { content: ''; position: absolute; top: 0; width: 50%; height: 28px; border-top: 1.5px solid #bfc4da; }
+    .pborg-branch::before { right: 50%; }
+    .pborg-branch::after { left: 50%; border-left: 1.5px solid #bfc4da; }
+    .pborg-branch:first-child::before, .pborg-branch:last-child::after { border-top: 0; }
+    .pborg-branch:only-child::before { display: none; }
+    .pborg-tree > .pborg-branches > .pborg-branch { padding-top: 0; &::before, &::after { display: none; } }
+    .pborg-node + .pborg-branches { padding-top: 28px; position: relative; &::before { content: ''; position: absolute; left: 50%; top: 0; height: 28px; border-left: 1.5px solid #bfc4da; } }
+    .pborg-node { width: 238px; background: #fff; border: 1px solid #dce1ee; border-top: 3px solid #b4a4e6; border-radius: 12px; box-shadow: 0 4px 12px #25203f08; transition: box-shadow .15s, border-color .15s; }
+    .pborg-node:hover { border-color: #9b88dd; box-shadow: 0 7px 20px #47357f17; }
+    .pborg-node.is-selected { border-color: var(--org-purple); box-shadow: 0 0 0 3px #5d47ba18; }
+    .pborg-node.is-context { border-top-color: #c5cad7; background: #f4f5f9; }
+    .pborg-person { display: flex; gap: 11px; align-items: flex-start; padding: 16px 13px 12px; width: 100%; background: none; border: 0; text-align: left; border-radius: 10px; color: var(--org-ink); }
+    .pborg-avatar { width: 41px; height: 41px; object-fit: cover; border-radius: 50%; background: #eeebf7; flex-shrink: 0; }
+    .pborg-person-text { display: flex; flex-direction: column; min-width: 0; gap: 4px; }
+    .pborg-person strong { font-size: 13px; line-height: 1.4; overflow-wrap: anywhere; }
+    .pborg-role { font-size: 12px; color: var(--org-muted); line-height: 1.5; }
+    .pborg-dept { font-size: 10px; color: var(--org-purple); }
+    .pborg-node-meta { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #edf0f6; padding: 8px 12px; color: var(--org-muted); font-size: 10px; min-height: 38px; }
+    .pborg-disclosure { background: #f0ecfb; border: 0; color: var(--org-purple); border-radius: 6px; font-size: 11px; padding: 5px 7px; font-weight: 650; }
+    .pborg-canvas-wrap { scroll-margin-top: 85px; }
+    .pborg-overflow { padding: 10px 14px; background: #fff; border-top: 1px solid #e1e5ef; }
+    .pborg-canvas-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid #e1e5ef; background: #fff; padding: 10px 14px; font-size: 10px; color: var(--org-muted); }
+    .pborg-zoom { display: flex; align-items: center; flex-shrink: 0; gap: 3px; }
+    .pborg-zoom button { border: 1px solid #e5e7ef; background: #fff; border-radius: 5px; color: var(--org-purple); height: 30px; min-width: 29px; }
+    .pborg-detail { padding: 21px; border: 1px solid #e1e5ef; border-radius: 17px; background: #fff; box-shadow: 0 5px 20px #25203f05; }
+    .pborg-kicker { color: var(--org-muted); font-size: 10px; font-weight: 750; letter-spacing: 1px; display: block; }
+    .pborg-detail-avatar { display: block; width: 64px; height: 64px; object-fit: cover; border-radius: 50%; margin: 22px 0 13px; background: #eeebf7; }
+    .pborg-detail h2 { font-size: 21px; font-weight: 750; letter-spacing: -.5px; overflow-wrap: anywhere; }
+    .pborg-detail h3 { font-size: 10px; text-transform: uppercase; letter-spacing: .8px; color: var(--org-muted); font-weight: 700; margin: 23px 0 8px; }
+    .pborg-tag { display: inline-block; padding: 5px 8px; border-radius: 6px; background: #f0edf9; color: var(--org-purple); font-size: 10px; margin: 0 5px 5px 0; }
+    .pborg-tag.is-you { background: #e4f2ea; color: #32784c; }
+    .pborg-stats { display: flex; gap: 30px; padding: 17px 0; border-top: 1px solid #edf0f6; border-bottom: 1px solid #edf0f6; margin-top: 16px; }
+    .pborg-stats strong { display: block; font-size: 24px; font-weight: 750; color: var(--org-purple); }
+    .pborg-stats span { font-size: 10px; color: var(--org-muted); }
+    .pborg-detail > .pborg-btn { width: 100%; margin-top: 10px; }
+    .pborg-related { display: block; border: 0; background: #f7f7fc; color: var(--org-purple); padding: 9px 11px; border-radius: 7px; width: 100%; text-align: left; font-size: 12px; margin-top: 5px; }
+    .pborg-detail .pborg-email { font-size: 12px; overflow-wrap: anywhere; color: var(--org-purple); display: block; margin-bottom: 17px; }
+    .pborg-note, .pborg-detail > p:not(.pborg-role) { font-size: 12px; color: var(--org-muted); }
+    .pborg-footnote { color: var(--org-muted); font-size: 11px; margin: 16px 0 0; }
+    .pborg-empty { padding: 30px; color: var(--org-muted); }
+    @media (max-width: 900px) {
+        .pborg-workspace { grid-template-columns: minmax(0, 1fr); }
+        .pborg-detail { display: grid; grid-template-columns: 1fr; }
+        .pborg-canvas { height: 440px; }
+        .pborg-company { display: none; }
+        .pborg-context { flex-direction: column; }
+    }
+    @media (max-width: 520px) {
+        .pborg-heading { margin-top: 10px; }
+        .pborg-readonly { margin-left: 0; margin-top: 8px; display: table; }
+        .pborg-toolbar { padding: 12px; gap: 10px; }
+        .pborg-toolbar .pborg-search { min-width: 100%; }
+        .pborg-tools { gap: 5px; }
+        .pborg-tools button { padding: 8px; }
+        .pborg-canvas-footer > span { max-width: 170px; }
+    }
+    @media (prefers-reduced-motion: reduce) { .pborg-node { transition: none; } }
+}

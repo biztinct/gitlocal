@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_business_trip.PbTrips">
+    <div class="pbim pbtr" t-att-class="{ 'pbtr--embedded': props.embedded }">
+
+      <!-- first paint: the shape of the board, not a word -->
+      <div t-if="!state.loaded" class="pbtr-skel" aria-busy="true" aria-label="Loading trips">
+        <div class="pbtr-skel__line pbtr-skel__line--l"/>
+        <div class="pbtr-skel__line"/>
+        <div class="pbtr-skel__lanes">
+          <t t-foreach="[1,2,3,4,5]" t-as="sk" t-key="sk"><span class="pbtr-skel__lane"/></t>
+        </div>
+      </div>
+
+      <t t-else="">
+        <!-- toolbar -->
+        <div class="pbtr-top">
+          <!-- W17: the shell's rail already says "TRIPS"; the New-trip door
+               beside this title is not chrome and stays. -->
+          <div class="pbtr-title" t-if="!props.embedded">
+            <svg class="pbtr-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>
+            </svg>
+            <span>Business Trips</span>
+          </div>
+          <div class="pbtr-spacer"/>
+          <button class="pbtr-btn pbtr-btn--primary" t-on-click="() => this.newTrip()">New trip</button>
+        </div>
+
+        <!-- the quiet numbers: one slim line, grey at zero, amber only
+             for what is waiting on the reader. A figure that filters ticks
+             the panel; pressing it again goes back to the first view. -->
+        <t t-call="pb_import_kit.QuietGlance">
+          <t t-set="qGlance" t-value="glance"/>
+          <t t-set="qGlanceOn" t-value="glanceOn"/>
+        </t>
+
+        <!-- the numbered steps: a trip is at exactly ONE step (its lane);
+             the counts are the panel's, so they follow the other filters -->
+        <t t-call="pb_import_kit.QuietSteps">
+          <t t-set="qSteps" t-value="steps"/>
+          <t t-set="qStepsLabel" t-value="stepsLabel"/>
+          <t t-set="qStepPick" t-value="(k) =&gt; this.pickStep(k)"/>
+        </t>
+
+        <!-- the shared filter panel: views, search, the left panel with a
+             count beside every value, the chips. The board is its slot. -->
+        <PbFilterLayout kit="kit" searchPlaceholder="searchHint">
+          <t t-set="ek" t-value="emptyKind"/>
+
+          <div t-if="!state.listLoaded" class="pbtr-skel pbtr-skel--board" aria-busy="true" aria-label="Loading trips">
+            <div class="pbtr-skel__lanes">
+              <t t-foreach="[1,2,3,4,5]" t-as="sk" t-key="sk"><span class="pbtr-skel__lane"/></t>
+            </div>
+          </div>
+
+          <div t-elif="kit.failed" class="pbtr-empty">
+            <span class="pbtr-empty__ic" t-out="ic('alert', 26)"/>
+            <h3>The trips could not be loaded</h3>
+            <p>Reload the page to try again. If it keeps happening, tell your administrator.</p>
+          </div>
+
+          <div t-elif="ek === 'none'" class="pbtr-empty">
+            <span class="pbtr-empty__ic" t-out="ic('plane', 26)"/>
+            <h3>No trips yet</h3>
+            <p>A trip request goes to the manager, then finance, then HR. Start one for yourself or for someone on your team.</p>
+            <button type="button" class="pbtr-btn pbtr-btn--primary" t-on-click="() => this.newTrip()">New trip</button>
+          </div>
+
+          <div t-elif="ek === 'search'" class="pbtr-empty">
+            <span class="pbtr-empty__ic" t-out="ic('search', 26)"/>
+            <h3>No trip matches “<t t-esc="kit.search"/>”</h3>
+            <p>Try a trip reference, the traveller’s name, a city or a country.</p>
+            <button type="button" class="pbtr-btn" t-on-click="() => kit.setSearch('', true)">Clear the search</button>
+          </div>
+
+          <div t-elif="ek === 'filters'" class="pbtr-empty">
+            <span class="pbtr-empty__ic" t-out="ic('filter', 26)"/>
+            <h3>No trip matches these filters</h3>
+            <p>Remove a filter above, or start again from the open trips.</p>
+            <div class="pbtr-empty__acts">
+              <button type="button" class="pbtr-btn pbtr-btn--primary" t-on-click="startAgain">Start again</button>
+              <button type="button" class="pbtr-btn" t-on-click="clearAll">Show every trip</button>
+            </div>
+          </div>
+
+          <t t-else="">
+            <!-- kanban lanes: a lane the filters leave out folds to a slim
+                 column that still says how many it would hold -->
+            <div class="pbtr-board" t-key="boardKey">
+              <t t-foreach="lanes" t-as="lane" t-key="lane.key">
+                <button t-if="!lane.on" type="button" class="pbtr-lane pbtr-lane--folded"
+                        t-att-title="laneTitle(lane)" t-on-click="() => this.addLane(lane.key)">
+                  <span class="pbtr-lane__count" t-esc="lane.count"/>
+                  <span class="pbtr-lane__vname" t-esc="lane.label"/>
+                  <span class="pbtr-lane__plus" t-out="ic('plus', 14)"/>
+                </button>
+                <div t-else="" class="pbtr-lane">
+                  <div class="pbtr-lane__head">
+                    <span class="pbtr-lane__name" t-esc="lane.label"/>
+                    <span class="pbtr-lane__count" t-esc="countsReady ? lane.count : lane.cards.length"/>
+                  </div>
+                  <div class="pbtr-lane__exposure" t-if="lane.advance">
+                    <t t-esc="money(lane.advance)"/> advance
+                  </div>
+                  <div class="pbtr-lane__body">
+                    <t t-foreach="lane.cards" t-as="card" t-key="card.id">
+                      <div class="pbtr-card" tabindex="0" role="button"
+                           t-att-aria-label="card.name + ' · ' + card.employee"
+                           t-on-click="() => this.openTrip(card)"
+                           t-on-keydown="(ev) => ev.key === 'Enter' and this.openTrip(card)">
+                        <div class="pbtr-card__top">
+                          <span class="pbtr-card__dest" t-esc="card.destination"/>
+                          <span class="pbtr-card__flag" t-if="card.country" t-esc="card.country"/>
+                        </div>
+                        <div class="pbtr-card__dates">
+                          <t t-esc="card.date_from"/> → <t t-esc="card.date_to"/>
+                          <span class="pbtr-card__days" t-esc="card.days + 'd'"/>
+                        </div>
+                        <div class="pbtr-card__chips">
+                          <span class="pbtr-chip" t-if="card.per_diem_total">PD <t t-esc="money(card.per_diem_total)"/></span>
+                          <span class="pbtr-chip pbtr-chip--adv" t-if="card.advance">Adv <t t-esc="money(card.advance)"/></span>
+                        </div>
+                        <div class="pbtr-card__foot">
+                          <div class="pbtr-emp">
+                            <img class="pbtr-emp__avatar" t-att-src="card.avatar" alt="" loading="lazy"/>
+                            <span class="pbtr-emp__name" t-esc="card.employee"/>
+                          </div>
+                          <span t-attf-class="pbtr-aging pbtr-aging--{{ agingTone(card) }}"
+                                t-if="card.waiting_days">
+                            <t t-esc="card.waiting_days"/>d waiting
+                          </span>
+                        </div>
+                        <div class="pbtr-card__actions" t-if="card.can_act" t-on-click.stop="() => {}">
+                          <button class="pbtr-btn pbtr-btn--approve"
+                                  t-on-click.stop="() => this.approve(card)"
+                                  t-esc="laneAdvanceLabel(card)"/>
+                          <button class="pbtr-btn pbtr-btn--refuse"
+                                  t-on-click.stop="() => this.askRefuse(card)">Refuse</button>
+                        </div>
+                      </div>
+                    </t>
+                    <div class="pbtr-lane__empty" t-if="!lane.cards.length and !lane.below">Nothing here</div>
+                    <button t-if="lane.below and hasMore" type="button" class="pbtr-lane__more"
+                            t-att-disabled="state.loadingMore" t-on-click="loadMore">
+                      +<t t-esc="lane.below"/> further down · show more
+                    </button>
+                  </div>
+                </div>
+              </t>
+            </div>
+
+            <!-- refused / cancelled: the view "Refused or cancelled" -->
+            <div class="pbtr-closed" t-if="closedCards.length">
+              <div class="pbtr-closed__head">
+                <span t-out="ic('ban', 14)"/> Refused or cancelled
+                <span class="pbtr-lane__count" t-esc="closedCount"/>
+              </div>
+              <div class="pbtr-closed__list">
+                <t t-foreach="closedCards" t-as="card" t-key="card.id">
+                  <div class="pbtr-closed__row" tabindex="0" role="button"
+                       t-on-click="() => this.openTrip(card)"
+                       t-on-keydown="(ev) => ev.key === 'Enter' and this.openTrip(card)">
+                    <span t-esc="card.name"/> · <span t-esc="card.employee"/> ·
+                    <span t-esc="card.destination"/> ·
+                    <span t-attf-class="pbtr-state pbtr-state--{{ card.state }}" t-esc="stateWord(card.state)"/>
+                  </div>
+                </t>
+              </div>
+            </div>
+            <div class="pbtr-closed" t-elif="!closedOn and closedCount">
+              <button class="pbtr-closed__toggle" t-on-click="showClosed">
+                <span t-out="ic('ban', 14)"/> <t t-esc="closedLabel"/>
+              </button>
+            </div>
+
+            <div class="pbtr-foot">
+              Showing <b t-esc="state.cards.length"/> of <b t-esc="state.total"/>
+              <button t-if="hasMore" type="button" class="pbtr-btn"
+                      t-att-disabled="state.loadingMore" t-on-click="loadMore">
+                <t t-if="state.loadingMore">Loading…</t>
+                <t t-else="">Show <t t-esc="nextPage"/> more</t>
+              </button>
+            </div>
+          </t>
+        </PbFilterLayout>
+      </t>
+
+      <!-- refuse-with-note modal -->
+      <div class="pbtr-modal" t-if="state.refuseCard" t-on-click="() => this.cancelRefuse()">
+        <div class="pbtr-modal__box" t-on-click.stop="() => {}">
+          <div class="pbtr-modal__title">Refuse trip <t t-esc="state.refuseCard.name"/></div>
+          <textarea class="pbtr-modal__note" placeholder="Reason (optional)…"
+                    t-on-input="(ev) => this.onRefuseNote(ev)"/>
+          <div class="pbtr-modal__actions">
+            <button class="pbtr-btn" t-on-click="() => this.cancelRefuse()">Cancel</button>
+            <button class="pbtr-btn pbtr-btn--refuse" t-on-click="() => this.confirmRefuse()">Refuse</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </t>
+
+</templates>

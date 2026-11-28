@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Contract Country Updater Form View -->
+    <record id="view_contract_country_updater_form" model="ir.ui.view">
+        <field name="name">contract.country.updater.form</field>
+        <field name="model">contract.country.updater</field>
+        <field name="arch" type="xml">
+            <form string="Update Contract Country Structure">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="country" placeholder="Select Target Country" required="1"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group string="Update Options">
+                            <field name="update_mode" widget="radio"/>
+                        </group>
+                        
+                        <group string="Employee Selection" attrs="{'invisible': [('update_mode', '!=', 'selected')]}">
+                            <field name="employee_ids" widget="many2many_tags" 
+                                   domain="[('employee_id', '!=', False)]"
+                                   options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    
+                    <div class="alert alert-info" role="alert">
+                        <strong>Update Modes:</strong>
+                        <ul>
+                            <li><strong>Update All Active Contracts:</strong> Updates all employees with active contracts to use the selected country structure</li>
+                            <li><strong>Update Selected Employees Only:</strong> Updates only the specifically selected employees</li>
+                            <li><strong>Force Create New Contracts:</strong> Creates new contracts for all employees regardless of existing ones</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="alert alert-warning" role="alert" attrs="{'invisible': [('update_mode', '!=', 'force_create')]}">
+                        <strong>Warning:</strong> Force Create mode will create new contracts even if employees already have active contracts. 
+                        Make sure to close existing contracts manually if needed.
+                    </div>
+                </sheet>
+                
+                <footer>
+                    <button name="action_update_contracts" type="object" string="Update Contracts" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Contract Country Updater Action -->
+    <record id="action_contract_country_updater" model="ir.actions.act_window">
+        <field name="name">Update Contract Country Structure</field>
+        <field name="res_model">contract.country.updater</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_contract_country_updater_form"/>
+    </record>
+    
+    <!-- Menu Item -->
+    <menuitem id="menu_contract_country_updater"
+              name="Update Contract Structure"
+              parent="om_hr_payroll.menu_integ_spreadsheet_root"
+              action="action_contract_country_updater"
+              sequence="25"/>
+
+</odoo>

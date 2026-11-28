@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- FS-12 (R30): My Profile drawn from the administrator's page. Reached
+       from OUTSIDE pb_me_portal: without a published page (`profile['page']`
+       empty) My Profile renders exactly as before; the only addition for a
+       tenant administrator is "Edit this page" in the header. One sentence
+       per line (PRD-3); no double hyphen in a comment (W22). -->
+  <template id="ic_pencil" name="My Payobook page: pencil icon">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pbme-ic" aria-hidden="true"><path d="M21.17 6.81a1 1 0 0 0-3.99-3.99L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z"/><path d="m15 5 4 4"/></svg>
+  </template>
+  <template id="ic_eye" name="My Payobook page: eye icon">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="pbme-ic" aria-hidden="true"><path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/></svg>
+  </template>
+
+  <template id="portal_my_profile_page" name="My Profile: page from the Form builder"
+            inherit_id="pb_me_portal.portal_my_profile" priority="60">
+    <xpath expr="//div[hasclass('pbme')]" position="attributes">
+      <attribute name="t-if">not profile.get('page')</attribute>
+    </xpath>
+    <xpath expr="//div[hasclass('pbme')]" position="before">
+      <t t-if="profile.get('page')" t-call="pb_form_studio_portal.my_page"/>
+    </xpath>
+    <xpath expr="//t[@t-call='pb_me_portal.ess_hero']" position="inside">
+      <t t-if="profile.get('page_can_edit')" t-set="hero_actions">
+        <a class="pbme-btn pbme-btn--ghost pbfp-edit" t-att-href="profile['page_can_edit']"><t t-call="pb_form_studio_portal.ic_pencil"/>Edit this page</a>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- The page itself: header, the person card (fixed, always first), the
+       administrator's sections, "Request a change", and the side blocks in
+       the administrator's order (My requests, the My details door). -->
+  <template id="my_page" name="My Payobook page (Form builder)">
+    <t t-set="pg" t-value="profile['page']"/>
+    <t t-set="hd" t-value="pg['header']"/>
+    <t t-set="pbme_brand" t-value="request and (request.env['ir.config_parameter'].sudo().get_param('biz_debrand.brand_name') or request.env.company.name)"/>
+    <div t-attf-class="pbme pbfp #{pbfp_preview and 'is-preview' or ''}">
+      <div t-if="pbfp_preview" class="pbfp-preview" role="status">
+        <t t-call="pb_form_studio_portal.ic_eye"/>
+        <span>Preview as <b t-esc="pbfp_preview"/>. Look only: nothing here can be changed or sent.</span>
+      </div>
+      <div t-attf-class="pbfp-hero pbfp-tint-#{hd['tint']} #{hd['banner_url'] and 'has-banner' or ''}">
+        <img t-if="hd['banner_url']" class="pbfp-banner" t-att-src="hd['banner_url']" t-att-alt="hd['banner_alt'] or ''"/>
+        <div class="pbfp-hero-in">
+          <div class="pbfp-hero-tx">
+            <div class="pbme-eyebrow"><t t-esc="(pbme_brand and ('My %s' % pbme_brand)) or 'My workspace'"/></div>
+            <h1 class="pbme-h1"><t t-if="hd['title']" t-esc="hd['title']"/><t t-else="">My Profile</t></h1>
+            <p class="pbme-hero-sub"><t t-if="hd['sub']" t-esc="hd['sub']"/><t t-else="">Your details on file. Bank changes go through a separate secure flow.</t></p>
+          </div>
+          <div t-if="profile.get('page_can_edit') and not pbfp_preview" class="pbme-hero-actions">
+            <a class="pbme-btn pbme-btn--ghost pbfp-edit" t-att-href="profile['page_can_edit']"><t t-call="pb_form_studio_portal.ic_pencil"/>Edit this page</a>
+          </div>
+        </div>
+      </div>
+
+      <div t-if="request.params.get('done') and not pbfp_preview" class="pbfp-toast" role="status" aria-live="polite">
+        <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="16"/></t>
+        <span t-if="request.params.get('done') == 'sent'">Sent to HR. Nothing changes on your record until it is approved.</span>
+        <span t-else="">Saved.</span>
+      </div>
+      <div t-if="pbfp_error" class="pbfp-alert" role="alert">
+        <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="16"/></t>
+        <span t-esc="pbfp_error"/>
+      </div>
+
+      <div class="pbme-detail">
+        <div class="pbme-detail-main">
+          <div class="pbme-card pbme-profile pbfp-person">
+            <div class="pbme-profile-head">
+              <img class="pbme-avatar" t-att-src="profile['avatar_url']" alt=""/>
+              <div>
+                <div class="pbme-profile-name"><t t-esc="profile['name']"/></div>
+                <div class="pbme-profile-job"><t t-esc="profile['job']"/><t t-if="profile['department']"> · <t t-esc="profile['department']"/></t></div>
+              </div>
+            </div>
+          </div>
+
+          <section t-foreach="pg['sections']" t-as="sec" class="pbme-card pbfp-sec">
+            <h2 class="pbfp-sec-h" t-esc="sec['title']"/>
+            <div t-attf-class="pbfp-grid pbfp-cols-#{sec['cols']}">
+              <div t-foreach="sec['fields']" t-as="fl" t-attf-class="pbme-kv pbfp-kv #{fl['width'] == 'full' and 'is-full' or ''}">
+                <span t-esc="fl['label']"/>
+                <b><t t-esc="fl['value'] or '—'"/></b>
+              </div>
+            </div>
+          </section>
+
+          <div t-if="pg['form']" class="pbme-card pbme-reqform pbfp-form">
+            <h3 class="pbme-card-title">Request a change</h3>
+            <p class="pbme-muted">Change what is wrong and send it. Some details are saved at once; the others change on your record once HR approves them.</p>
+            <form action="/my/profile/page/send" method="post">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <fieldset t-att-disabled="'disabled' if pbfp_preview else None">
+                <div class="pbme-form-grid">
+                  <label t-foreach="pg['form']" t-as="row" t-att-class="'pbme-form-wide' if row['type'] == 'text' else None">
+                    <t t-set="val" t-value="(pbfp_posted or {}).get(row['input'], row['value'])"/>
+                    <span t-esc="row['label']"/>
+                    <textarea t-if="row['type'] == 'text'" t-att-name="row['input']" rows="3" maxlength="2000"><t t-esc="val"/></textarea>
+                    <select t-elif="row['type'] == 'boolean'" t-att-name="row['input']">
+                      <option value="1" t-att-selected="(val and val not in ('0', '')) or None">Yes</option>
+                      <option value="0" t-att-selected="(not val or val == '0') or None">No</option>
+                    </select>
+                    <select t-elif="row['type'] in ('selection', 'many2one')" t-att-name="row['input']">
+                      <option value="">Choose…</option>
+                      <option t-foreach="row['options']" t-as="opt" t-att-value="opt['value']" t-att-selected="str(opt['value']) == str(val) or None" t-esc="opt['label']"/>
+                    </select>
+                    <input t-elif="row['type'] == 'date'" type="date" t-att-name="row['input']" t-att-value="val"/>
+                    <input t-elif="row['type'] in ('integer', 'float', 'monetary')" type="text" inputmode="decimal" t-att-name="row['input']" t-att-value="val"/>
+                    <input t-else="" type="text" t-att-name="row['input']" t-att-value="val" maxlength="200"/>
+                    <small class="pbfp-mode"><t t-if="row['mode'] == 'instant'">Saved at once.</t><t t-else="">Changes once HR approves it.</t><t t-if="row['waiting']"> A change is already waiting for HR; sending again replaces it.</t></small>
+                  </label>
+                  <label class="pbme-form-wide"><span>Note to HR (optional)</span>
+                    <textarea name="note" rows="2"/></label>
+                </div>
+                <button type="submit" class="pbme-btn pbme-btn--primary">Send</button>
+              </fieldset>
+            </form>
+          </div>
+        </div>
+
+        <div class="pbme-detail-side">
+          <t t-foreach="pg['side']" t-as="blk">
+            <div t-if="blk == 'requests'" class="pbme-card">
+              <h3 class="pbme-card-title">My requests</h3>
+              <t t-if="not pcr_requests">
+                <p class="pbme-muted">No change requests yet.</p>
+              </t>
+              <div t-else="" class="pbme-req-list">
+                <t t-foreach="pcr_requests" t-as="r">
+                  <a t-att-href="'/my/profile/request/%s' % r['id']" class="pbme-req-row">
+                    <span class="pbme-req-name"><t t-esc="r['name']"/></span>
+                    <span t-attf-class="pbme-badge pbme-badge--#{r['state']}"><t t-esc="r['state']"/></span>
+                  </a>
+                </t>
+              </div>
+            </div>
+            <a t-if="blk == 'door'" class="pbme-card pbmd-door" href="/my/details">
+              <span class="pbmd-door-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'user-check'"/><t t-set="isz" t-value="18"/></t></span>
+              <span class="pbmd-door-tx"><b>Family, ID papers, photo and bank account</b><span>See them all and ask for a change</span></span>
+              <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'chevron-right'"/><t t-set="isz" t-value="16"/></t>
+            </a>
+          </t>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- FS-13: an administrator with no employee record opens My Profile.
+       My Profile is always somebody's own page, so a short note and the way
+       into the page builder, where the page can be previewed as anybody. -->
+  <!-- name = the browser tab's title (the website layout reads it) -->
+  <template id="my_profile_no_employee" name="My Profile">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbfp">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">My Profile</t>
+        </t>
+        <div class="pbme-empty pbfp-noemp">
+          <div class="pbme-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'user'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>Your login has no employee record</h3>
+          <p>My Profile shows a person's own details, so there is nothing to show for you here.</p>
+          <p>You can still arrange this page for your employees and preview it as any of them.</p>
+          <a class="pbme-btn pbme-btn--primary pbfp-edit" t-att-href="pbfp_builder_url"><t t-call="pb_form_studio_portal.ic_pencil"/>Edit this page</a>
+        </div>
+      </div>
+    </t>
+  </template>
+
+  <!-- My details: with a page published, the company details live on My
+       Profile; one door there instead of a second copy of them. -->
+  <template id="portal_my_details_page_door" name="My details: door to My Profile (Form builder page)"
+            inherit_id="pb_me_details.portal_my_details" priority="60">
+    <xpath expr="//section[hasclass('pbmd-family')]" position="after">
+      <a t-if="pbfp_door" class="pbme-card pbmd-door pbfp-door" href="/my/profile">
+        <span class="pbmd-door-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'briefcase'"/><t t-set="isz" t-value="18"/></t></span>
+        <span class="pbmd-door-tx"><b>Company details</b><span>See them and ask for a change on My Profile</span></span>
+        <t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'chevron-right'"/><t t-set="isz" t-value="16"/></t>
+      </a>
+    </xpath>
+  </template>
+</odoo>

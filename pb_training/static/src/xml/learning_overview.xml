@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       Learning › Overview (LEARNING L0). Section comments use `=` rules and
+       never a doubled hyphen (R35). Loop variables avoid OWL's reserved
+       words (R1): `que`, `bit`, `dep`, `cb`, `rb`.
+       ==================================================================== -->
+  <t t-name="pb_training.PbLearningOverview">
+    <div class="pblo" t-att-class="{ 'pblo--embedded': props.embedded }">
+      <div class="pblo-wrap">
+
+        <!-- ============ reading ============ -->
+        <t t-if="!state.loaded">
+          <div class="pblo-hero pblo-skel" aria-busy="true">
+            <div class="pblo-skel-line pblo-skel-line--s"/>
+            <div class="pblo-skel-line"/>
+            <div class="pblo-skel-line pblo-skel-line--m"/>
+          </div>
+        </t>
+
+        <!-- ============ could not read ============ -->
+        <div t-elif="state.failed" class="pblo-panel pblo-empty">
+          <div class="pblo-empty-ic"><t t-out="ic('alert',26)"/></div>
+          <h2>The overview could not be read just now</h2>
+          <p>Nothing was changed. Try again in a moment; if it keeps happening, the Courses and Assigned tabs still work on their own.</p>
+          <button class="pbim-btn primary" t-on-click="retry">
+            <t t-out="ic('refresh',15)"/> Try again
+          </button>
+        </div>
+
+        <!-- ============ not for this reader ============ -->
+        <div t-elif="!allowed" class="pblo-panel pblo-empty">
+          <div class="pblo-empty-ic"><t t-out="ic('lock',26)"/></div>
+          <h2>Learning numbers are for the training team</h2>
+          <p>Your own courses, what is next and how far you have got are on My learning.</p>
+          <button class="pbim-btn primary" t-on-click="() => this.openLens('mine')">
+            <t t-out="ic('user',15)"/> Open My learning
+          </button>
+        </div>
+
+        <t t-else="">
+          <!-- ============ the hero: one sentence, three doors ============ -->
+          <!-- LEARNING L6: the headline is composed from the blocks (at most
+               three concerns, worst first); what waits is in colour, the rest
+               sits quiet in one grey line; nothing waiting is the calm hero. -->
+          <section class="pblo-hero" t-att-class="{ 'is-calm': data.calm }">
+            <div class="pblo-eyebrow">
+              <t t-if="data.calm" t-out="ic('checkCircle',14)"/><t t-else="" t-out="ic('graduationCap',14)"/> Training at a glance
+            </div>
+            <p class="pblo-headline" t-esc="data.headline"/>
+            <div t-if="waiting.length" class="pblo-queue" role="list">
+              <button t-foreach="waiting" t-as="que" t-key="que.key"
+                      role="listitem" class="pblo-chip is-act"
+                      t-on-click="() => this.openQueue(que)"
+                      t-att-title="que.label">
+                <span class="pblo-chip-ic"><t t-out="ic(queueIcon(que),14)"/></span>
+                <b class="pblo-chip-n" t-esc="que.count"/>
+                <span t-esc="que.label"/>
+                <span class="pblo-chip-go"><t t-out="ic('chevron',13)"/></span>
+              </button>
+            </div>
+            <div t-if="quiet.length" class="pblo-quiet" role="list">
+              <span class="pblo-quiet-l"><t t-if="waiting.length">Nothing waiting on</t><t t-else="">Nothing is waiting for the training team</t></span>
+              <button t-foreach="quiet" t-as="qq" t-key="qq.key" role="listitem" class="pblo-quiet-chip" t-on-click="() => this.openQueue(qq)" t-att-title="qq.label">
+                <t t-out="ic(queueIcon(qq),12)"/> <span t-esc="qq.label"/>
+              </button>
+            </div>
+          </section>
+
+          <!-- ============ this month, one slim line ============ -->
+          <div class="pblo-month">
+            <span class="pblo-month-l">This month</span>
+            <t t-foreach="monthBits" t-as="bit" t-key="bit.key">
+              <span class="pblo-month-b"
+                    t-att-class="{ 'is-warn': bit.warn and bit.n, 'is-good': bit.good and bit.n, 'is-zero': !bit.n }"
+                    t-esc="bit.text"/>
+            </t>
+          </div>
+
+          <!-- ============ required training (LEARNING L2) ============ -->
+          <section t-if="required.has_rules" class="pblo-panel pblo-certs">
+            <div class="pblo-sec-h">
+              <h3>Required training</h3>
+              <span class="pblo-dim">Who must hold what</span>
+            </div>
+            <div class="pblo-certbits">
+              <button class="pblo-certbit" t-att-class="{ 'is-good': required.percent !== null and required.percent >= 95, 'is-warn': required.percent !== null and required.percent &lt; 95 }" t-on-click="() => this.openRequired('')">
+                <t t-esc="requiredWords"/>
+              </button>
+              <button t-foreach="requiredBits" t-as="rb" t-key="rb.key" class="pblo-certbit"
+                      t-att-class="{ 'is-warn': rb.warn and rb.n, 'is-bad': rb.bad and rb.n, 'is-zero': !rb.n }"
+                      t-on-click="() => this.openRequired(rb.key)">
+                <t t-esc="rb.text"/>
+              </button>
+            </div>
+            <div class="pblo-foot">
+              <button class="pbim-btn ghost" t-on-click="() => this.openRequired('')">
+                <t t-out="ic('layoutGrid',14)"/> Open the matrix
+              </button>
+            </div>
+          </section>
+
+          <!-- ============ learning paths (LEARNING L3) ============ -->
+          <section t-if="paths.has_paths" class="pblo-panel pblo-certs">
+            <div class="pblo-sec-h">
+              <h3>Learning paths</h3>
+              <span class="pblo-dim">Courses in order, for a role, a career move or a skill</span>
+            </div>
+            <div class="pblo-certbits">
+              <button t-foreach="pathBits" t-as="pb" t-key="pb.key" class="pblo-certbit" t-att-class="{ 'is-bad': pb.bad and pb.n, 'is-good': pb.good and pb.n, 'is-zero': !pb.n }" t-on-click="() => this.openPaths(pb.key === 'late' and pb.n ? 'overdue' : '')">
+                <t t-esc="pb.text"/>
+              </button>
+            </div>
+            <div class="pblo-foot">
+              <button class="pbim-btn ghost" t-on-click="() => this.openPaths('')">
+                <t t-out="ic('route',14)"/> Open the paths
+              </button>
+            </div>
+          </section>
+
+          <!-- ============ sessions (LEARNING L4) ============ -->
+          <section t-if="sessions.has_sessions" class="pblo-panel pblo-certs">
+            <div class="pblo-sec-h">
+              <h3>Sessions</h3>
+              <span class="pblo-dim">Training in a room or on site</span>
+            </div>
+            <div class="pblo-certbits">
+              <button t-foreach="sessionBits" t-as="sb" t-key="sb.key" class="pblo-certbit" t-att-class="{ 'is-warn': sb.warn and sb.n, 'is-zero': !sb.n }" t-on-click="() => this.openSessions(sb.key === 'to_close' and sb.n ? 'to_close' : '')">
+                <t t-esc="sb.text"/>
+              </button>
+            </div>
+            <div class="pblo-foot">
+              <button class="pbim-btn ghost" t-on-click="() => this.openSessions('')">
+                <t t-out="ic('calendar',14)"/> Open the sessions
+              </button>
+            </div>
+          </section>
+
+          <!-- ============ certificates (LEARNING L1) ============ -->
+          <section class="pblo-panel pblo-certs">
+            <div class="pblo-sec-h">
+              <h3>Certificates</h3>
+              <span class="pblo-dim">Who is about to lapse</span>
+            </div>
+            <p t-if="!certificates.total" class="pblo-calm">
+              <t t-out="ic('info',14)"/>
+              No certificates yet. A passed test files one by itself; add outside ones from Certificates.
+            </p>
+            <div t-else="" class="pblo-certbits">
+              <button t-foreach="certBits" t-as="cb" t-key="cb.key" class="pblo-certbit"
+                      t-att-class="{ 'is-warn': cb.warn and cb.n, 'is-bad': cb.bad and cb.n, 'is-good': cb.good and cb.n, 'is-zero': !cb.n }"
+                      t-on-click="() => this.openCerts(cb.key)">
+                <t t-esc="cb.text"/>
+              </button>
+            </div>
+            <div class="pblo-foot">
+              <button class="pbim-btn ghost" t-on-click="() => this.openCerts('')">
+                <t t-out="ic('award',14)"/> Open the register
+              </button>
+            </div>
+          </section>
+
+          <!-- ============ departments ============ -->
+          <section class="pblo-panel pblo-depsec" t-att-class="{ 'is-open': state.depsOpen }">
+            <div class="pblo-sec-h">
+              <h3>Departments</h3>
+              <span class="pblo-dim">The last 90 days, biggest first</span>
+              <button class="pblo-deptoggle" t-on-click="() => { this.state.depsOpen = !this.state.depsOpen; }" t-att-aria-expanded="state.depsOpen ? 'true' : 'false'"><t t-if="state.depsOpen">Hide</t><t t-else="">Show</t></button>
+            </div>
+            <p t-if="!departments.length" class="pblo-calm">
+              <t t-out="ic('info',14)"/>
+              No department has had a course set in the last 90 days. Put people on a course from Assigned and the figures start here.
+            </p>
+            <div t-else="" class="pblo-deps">
+              <div t-foreach="departments" t-as="dep" t-key="dep.name"
+                   class="pblo-dep">
+                <div class="pblo-dep-name">
+                  <b t-esc="dep.name"/>
+                  <span class="pblo-dim" t-esc="peopleWords(dep.people)"/>
+                </div>
+                <div class="pblo-dep-bar" role="img"
+                     t-att-aria-label="dep.percent + '%'">
+                  <div class="pblo-dep-fill" t-attf-style="width: {{ dep.percent }}%;"/>
+                </div>
+                <span class="pblo-dep-pc"><t t-esc="dep.percent"/>%</span>
+                <span t-if="dep.overdue" class="pblo-dep-late"
+                      t-att-title="lateWords(dep.overdue)">
+                  <t t-out="ic('alert',12)"/> <t t-esc="dep.overdue"/>
+                </span>
+              </div>
+            </div>
+            <div class="pblo-foot">
+              <button class="pbim-btn ghost" t-on-click="() => this.openLens('courses')">
+                <t t-out="ic('bookOpen',14)"/> Every course
+              </button>
+              <button class="pbim-btn ghost" t-on-click="() => this.openLens('assigned')">
+                <t t-out="ic('userCheck',14)"/> Who is on what
+              </button>
+            </div>
+          </section>
+        </t>
+
+      </div>
+    </div>
+  </t>
+
+</templates>

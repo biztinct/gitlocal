@@ -1,0 +1,200 @@
+// =====================================================================
+//  My details on My Payobook — .pbmd-* (WDGAP S6-A)
+//
+//  A thin layer on pb_me_portal's .pbme kit. Tokens only (--pbim-*), flat
+//  colours, no gradients. Four calm cards (you, bank, ID papers, family)
+//  then "Your changes". Quiet palette: grey at rest; the one coloured pill
+//  is "Sent back" (the person's turn); waiting is an amber dot on white.
+// =====================================================================
+
+.pbme.pbmd {
+    max-width: 1040px; margin-left: auto; margin-right: auto;
+
+    .pbmd-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-bottom: 16px; }
+    .pbmd-card { padding: 20px 22px; margin: 0; animation: pbmd-in 260ms ease-out both; }
+    .pbmd-grid > .pbmd-card:nth-child(2) { animation-delay: 40ms; }
+    .pbmd-grid > .pbmd-card:nth-child(3) { animation-delay: 80ms; }
+    .pbmd-grid > .pbmd-card:nth-child(4) { animation-delay: 120ms; }
+    .pbmd-h2 {
+        display: flex; align-items: center; gap: 8px; margin: 0 0 4px;
+        font-size: 16px; font-weight: 800; color: var(--pbim-ink);
+        .pbme-ic { color: var(--pbim-primary); }
+    }
+    .pbmd-muted { margin: 0 0 12px; font-size: 13.5px; color: var(--pbim-muted); line-height: 1.5; }
+    .pbmd-none { margin: 8px 0 14px; font-size: 14px; color: var(--pbim-muted); }
+    .pbmd-fine { margin: 12px 0 0; font-size: 12.5px; color: var(--pbim-muted); line-height: 1.5; }
+    .pbmd-dot { display: inline-block; width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: .55; margin: 0 7px; vertical-align: middle; }
+    .pbmd-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; form { margin: 0; } }
+
+    // ---------- you ----------
+    .pbmd-you-head { display: flex; gap: 14px; align-items: center; margin-bottom: 14px; }
+    .pbmd-avatar { width: 64px; height: 64px; border-radius: 18px; object-fit: cover; }
+    .pbmd-name { font-size: 19px; font-weight: 800; color: var(--pbim-ink); }
+    .pbmd-sub { font-size: 13px; color: var(--pbim-muted); }
+    .pbmd-kv {
+        margin: 0; display: grid; gap: 8px;
+        > div { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 1px solid var(--pbim-line); }
+        dt { font-weight: 600; font-size: 13px; color: var(--pbim-muted); }
+        dd { margin: 0; font-size: 14px; font-weight: 600; color: var(--pbim-text); text-align: right; }
+    }
+    .pbmd-wait {
+        display: inline-flex; align-items: center; gap: 6px; margin-left: 8px; font-size: 12px; font-weight: 700; color: var(--pbim-text);
+        &::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--pbim-amber); }
+    }
+
+    // ---------- bank ----------
+    .pbmd-acct {
+        margin: 6px 0 2px; padding: 14px 16px; border-radius: 14px;
+        background: var(--pbim-bg); border: 1px solid var(--pbim-line);
+    }
+    .pbmd-acct-n { font-size: 20px; font-weight: 800; letter-spacing: .06em; color: var(--pbim-ink); font-variant-numeric: tabular-nums; }
+    .pbmd-acct-b { font-size: 13px; color: var(--pbim-muted); margin-top: 2px; }
+    .pbmd-open {
+        display: flex; align-items: center; gap: 10px; margin-top: 14px; padding: 10px 12px;
+        border: 1px solid var(--pbim-line); border-radius: 12px; color: var(--pbim-text); text-decoration: none;
+        font-size: 13.5px; transition: border-color .15s, box-shadow .15s;
+        > span:nth-of-type(1) { flex: 1; }
+        &:hover { border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-ring); }
+    }
+
+    // ---------- lists ----------
+    .pbmd-list { list-style: none; margin: 8px 0 0; padding: 0; }
+    .pbmd-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 11px 0; border-top: 1px solid var(--pbim-line); }
+    .pbmd-row:first-child { border-top: 0; }
+    .pbmd-row-main { min-width: 0; flex: 1; }
+    .pbmd-row-t { font-weight: 700; color: var(--pbim-ink); font-size: 14px; }
+    .pbmd-row-s { font-size: 13px; color: var(--pbim-muted); margin-top: 2px; }
+    .pbmd-why { color: var(--pbim-text); }
+    .pbmd-row-go { font-size: 13px; font-weight: 700; color: var(--pbim-primary); text-decoration: none; white-space: nowrap; &:hover { text-decoration: underline; } }
+    .pbmd-row-acts { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+    .pbmd-row-link { display: flex; align-items: center; gap: 12px; width: 100%; text-decoration: none; color: inherit; border-radius: 10px; margin: -4px -6px; padding: 4px 6px; &:hover { background: var(--pbim-bg); } }
+    .pbmd-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+    .pbmd-chip {
+        display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 999px;
+        font-size: 11.5px; font-weight: 700; background: var(--pbim-slate-soft); color: var(--pbim-slate);
+    }
+    .pbmd-chip--ok { background: var(--pbim-green-soft); color: var(--pbim-green); }
+    .pbmd-chip--wait { background: var(--pbim-surface); border: 1px solid var(--pbim-line); color: var(--pbim-text); &::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--pbim-amber); } }
+    .pbmd-remove {
+        summary { font-size: 12.5px; font-weight: 700; color: var(--pbim-muted); cursor: pointer; list-style: none; text-align: right; }
+        summary::-webkit-details-marker { display: none; }
+        &[open] summary { color: var(--pbim-rose); }
+    }
+    .pbmd-remove-f { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-top: 6px; font-size: 12.5px; color: var(--pbim-text); }
+    .pbmd-changes { margin-top: 0; }
+
+    // ---------- pills ----------
+    .pbmd-pill {
+        display: inline-flex; align-items: center; gap: 6px; flex: none; white-space: nowrap;
+        padding: 5px 11px; border-radius: 999px; font-size: 12px; font-weight: 700;
+        background: var(--pbim-slate-soft); color: var(--pbim-slate);
+    }
+    .pbmd-pill-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .55; }
+    .pbmd-pill--hr_review, .pbmd-pill--finance_review {
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line); color: var(--pbim-text);
+        .pbmd-pill-dot { background: var(--pbim-amber); opacity: 1; }
+    }
+    .pbmd-pill--approved .pbmd-pill-dot { background: var(--pbim-green); opacity: 1; }
+    .pbmd-pill--sent_back, .pbmd-pill--draft { background: var(--pbim-primary); color: #fff; .pbmd-pill-dot { background: #fff; opacity: 1; } }
+
+    // ---------- forms ----------
+    .pbmd-form-card { max-width: 720px; }
+    .pbmd-form { display: flex; flex-direction: column; gap: 14px; }
+    .pbmd-checks { display: grid; gap: 10px; }
+    .pbmd-check {
+        display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; margin: 0;
+        border: 1px solid var(--pbim-line); border-radius: 12px; cursor: pointer;
+        input { margin-top: 3px; accent-color: var(--pbim-primary); }
+        span { display: flex; flex-direction: column; gap: 2px; font-size: 14px; color: var(--pbim-text); }
+        small { font-size: 12.5px; color: var(--pbim-muted); }
+        &:has(input:checked) { border-color: var(--pbim-primary); background: var(--pbim-primary-light); }
+    }
+    .pbmd-drop {
+        display: flex; align-items: center; gap: 12px; margin: 0; padding: 14px 16px; cursor: pointer;
+        border: 1.5px dashed var(--pbim-line-2, var(--pbim-line)); border-radius: 14px; background: var(--pbim-bg);
+        input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0; }
+        &:hover, &:focus-within { border-color: var(--pbim-primary); }
+    }
+    .pbmd-drop-ic { display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: var(--pbim-surface); color: var(--pbim-primary); flex: none; }
+    .pbmd-drop-t { display: flex; flex-direction: column; font-size: 13px; color: var(--pbim-muted); b { font-size: 14px; color: var(--pbim-ink); } }
+    .pbmd-note { display: flex; flex-direction: column; gap: 6px; margin: 0; font-size: 13px; font-weight: 600; color: var(--pbim-muted); textarea { font: inherit; font-weight: 400; } }
+    .pbmd-back {
+        display: flex; gap: 10px; align-items: flex-start; margin: 0 0 14px; padding: 12px 14px; border-radius: 12px;
+        background: var(--pbim-amber-soft); color: var(--pbim-ink); font-size: 13.5px; line-height: 1.5;
+    }
+    .pbmd-alert {
+        display: flex; align-items: flex-start; gap: 10px; margin: 0 0 14px; padding: 11px 14px; border-radius: 12px;
+        background: var(--pbim-rose-soft); color: var(--pbim-ink); font-size: 13.5px; font-weight: 600; line-height: 1.45;
+    }
+    .pbmd-alert-ic { color: var(--pbim-rose); display: inline-grid; padding-top: 1px; }
+    .pbmd-status { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 14px; .pbmd-muted { margin: 0; } }
+    .pbmd-diff { margin-top: 6px; }
+    .pbmd-steps {
+        counter-reset: pbmd; list-style: none; margin: 0 0 16px; padding: 0; display: grid; gap: 10px;
+        li { counter-increment: pbmd; display: grid; grid-template-columns: 28px 1fr; column-gap: 10px; font-size: 13.5px; color: var(--pbim-muted); line-height: 1.45; }
+        li::before { content: counter(pbmd); grid-row: span 2; display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--pbim-primary-light); color: var(--pbim-primary); font-weight: 800; font-size: 12.5px; }
+        b { color: var(--pbim-ink); font-size: 14px; }
+    }
+    .pbmd-checklist {
+        list-style: none; margin: 0; padding: 0; display: grid; gap: 6px;
+        li { display: flex; gap: 8px; align-items: flex-start; font-size: 13.5px; color: var(--pbim-text); }
+        li.is-ok .pbme-ic { color: var(--pbim-green); }
+        li.is-look .pbme-ic { color: var(--pbim-amber); }
+    }
+
+    // ---------- the profile page's door ----------
+    .pbmd-door { display: flex; align-items: center; gap: 12px; padding: 14px 16px; text-decoration: none; color: var(--pbim-text); }
+
+    .pbmd-toast {
+        position: fixed; z-index: 1060; left: 50%; bottom: 24px; transform: translateX(-50%);
+        display: flex; align-items: center; gap: 10px; max-width: calc(100vw - 32px);
+        padding: 11px 18px 11px 12px; border-radius: 14px; background: var(--pbim-ink); color: #fff; box-shadow: var(--pbim-sh-lg);
+        font-size: 13.5px; font-weight: 600;
+        animation: pbmd-toast-in 320ms cubic-bezier(.2, .7, .3, 1) both, pbmd-toast-out 400ms ease-in 5s forwards;
+    }
+    .pbmd-toast-ic { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--pbim-green); color: #fff; flex: none; }
+
+    @media (max-width: 820px) {
+        .pbmd-grid { grid-template-columns: minmax(0, 1fr); }
+    }
+    @media (max-width: 520px) {
+        .pbmd-card { padding: 16px; }
+        .pbmd-row { flex-direction: column; }
+        .pbmd-row-acts { flex-direction: row; align-items: center; }
+        .pbmd-actions .pbme-btn { flex: 1 1 auto; justify-content: center; }
+    }
+    @media (prefers-reduced-motion: reduce) { .pbmd-card, .pbmd-toast { animation: none; } }
+}
+
+// The profile page's door sits in pb_me_portal's page (root .pbme).
+.pbme .pbmd-door {
+    display: flex; align-items: center; gap: 12px; padding: 14px 16px; margin-top: 12px;
+    text-decoration: none; color: var(--pbim-text);
+    .pbmd-door-ic { display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: var(--pbim-primary-light); color: var(--pbim-primary); flex: none; }
+    .pbmd-door-tx { flex: 1; display: flex; flex-direction: column; font-size: 12.5px; color: var(--pbim-muted); b { font-size: 13.5px; color: var(--pbim-ink); } }
+    &:hover { border-color: var(--pbim-primary); }
+}
+
+@keyframes pbmd-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes pbmd-toast-in { from { opacity: 0; transform: translate(-50%, 12px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@keyframes pbmd-toast-out { to { opacity: 0; transform: translate(-50%, 8px); visibility: hidden; } }
+
+// pb_me_portal's form grid styles inputs and textareas, not selects: give the
+// selects and the note box on these pages the same look.
+.pbme.pbmd .pbme-form-grid select, .pbme.pbmd .pbmd-note textarea {
+    border: 1px solid var(--pbim-line); border-radius: 9px; padding: 9px 11px; font-size: 13.5px;
+    font-family: inherit; color: var(--pbim-text); background: #fff; width: 100%;
+    &:focus { outline: none; border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-ring); }
+}
+
+// NEWHIRE P7: the account's country leads the bank boxes; codes read like codes.
+.pbme.pbmd .pbmd-bank-country {
+    display: flex; flex-direction: row; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin: 0 0 14px;
+    label { display: flex; flex-direction: column; gap: 5px; flex: 1 1 220px; max-width: 360px; font-size: 12.5px; font-weight: 600; color: var(--pbim-muted, #64748B); }
+    select { border: 1px solid var(--pbim-line); border-radius: 9px; padding: 9px 11px; font-size: 13.5px; font-family: inherit; background: #fff; width: 100%; }
+    select:focus { outline: none; border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-ring); }
+}
+.pbme.pbmd .pbme-form-grid label small { display: block; margin-top: 4px; font-size: 11.5px; font-weight: 400; color: var(--pbim-muted, #64748B); }
+.pbme.pbmd .pbme-form-grid label em { font-style: normal; color: #C0264B; }
+.pbme.pbmd .pbme-form-grid label i { font-style: normal; font-weight: 400; color: var(--pbim-muted, #94A3B8); }
+.pbme.pbmd .pbmd-code input { font-variant-numeric: tabular-nums; letter-spacing: .06em; }

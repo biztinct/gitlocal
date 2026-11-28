@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ==================================================================
+       The My Payobook page builder (FS-12). The Form builder's look:
+       studio bar, list on the left, the page in the middle, settings on
+       the right. W22: no double hyphen in an XML comment. W96: every
+       expression is a component method or a plain state read. PRD-3: one
+       sentence per line.
+       ================================================================== -->
+  <t t-name="pb_form_studio_portal.PageBuilder">
+    <div class="pbim pbfb pbfb-overlay pbpb" role="dialog" aria-label="My Payobook page">
+
+      <div class="pbfb-studiobar">
+        <span class="pbfb-tag"><t t-out="ic('wand',15)"/> <span>Form builder</span></span>
+        <span class="pbfb-tag pbfb-tag-target"><t t-out="ic('smartphone',14)"/> <span>My Payobook page</span></span>
+        <span class="pbfb-changes pbpb-chg-long" t-esc="changeText"/>
+        <span t-if="changeShort" class="pbpb-chg-short" t-att-title="changeText" t-esc="changeShort"/>
+        <span class="pbfb-spacer"/>
+        <div class="pbpb-views" role="group" aria-label="Build or preview">
+          <button type="button" t-att-class="viewClass('build')" t-on-click="() => this.setView('build')"><t t-out="ic('layers',14)"/> <span>Build</span></button>
+          <button type="button" t-att-class="viewClass('preview')" t-on-click="() => this.setView('preview')"><t t-out="ic('eye',14)"/> <span>Preview</span></button>
+        </div>
+        <button type="button" class="pbfb-btn ghost pbfb-discard" title="Discard" aria-label="Discard" t-att-disabled="!changeCount" t-on-click="discard">
+          <t t-out="ic('rotate',15)"/> <span>Discard</span>
+        </button>
+        <button type="button" class="pbfb-btn light" t-att-disabled="!changeCount" t-on-click="() => this.openSheet('publish')">
+          <t t-out="ic('upload',15)"/> <span>Publish</span>
+        </button>
+        <button type="button" class="pbfb-btn ghost icon" title="Close the page builder" aria-label="Close the page builder" t-on-click="close">
+          <t t-out="ic('x',16)"/>
+        </button>
+      </div>
+
+      <div t-if="state.loading" class="pbfb-loading"><span class="pbfb-spin"/> <span>Opening the page builder…</span></div>
+      <div t-elif="state.error" class="pbfb-note err pbfb-wide-note"><t t-out="ic('octagonX',16)"/> <span t-esc="state.error"/></div>
+      <t t-else="">
+        <div class="pbfb-banners">
+          <div t-if="state.draftNote" class="pbfb-note ok">
+            <t t-out="ic('fileClock',15)"/> <span t-esc="state.draftNote"/>
+            <span class="pbfb-spacer"/>
+            <button type="button" class="pbfb-btn sm ghost-dark" t-on-click="dismissNote">Keep going</button>
+            <button type="button" class="pbfb-btn sm ghost-dark" t-on-click="discard">Start again</button>
+          </div>
+          <div t-if="state.stale and state.sheet !== 'stale'" class="pbfb-note warn">
+            <t t-out="ic('alert',15)"/> <span t-esc="state.stale.message"/>
+            <span class="pbfb-spacer"/>
+            <button type="button" class="pbfb-btn sm ghost-dark" t-on-click="discard">Start again from the published page</button>
+          </div>
+        </div>
+
+        <div class="pbfb-work" t-att-class="{ 'sheet-open': !!state.sel, 'is-preview': state.view === 'preview' }">
+          <!-- LEFT: fields and the page's own settings -->
+          <aside class="pbfb-panel pbfb-left" aria-label="Fields and page settings">
+            <div class="pbfb-ptabs" role="tablist">
+              <button type="button" role="tab" t-att-class="{ on: state.left === 'fields' }" t-on-click="() => this.setLeft('fields')">Fields</button>
+              <button type="button" role="tab" t-att-class="{ on: state.left === 'page' }" t-on-click="() => this.setLeft('page')">Page</button>
+            </div>
+            <t t-if="state.left === 'fields'">
+              <div class="pbfb-findbar">
+                <div class="pbfb-find">
+                  <span class="ic" t-out="ic('search', 14)"/>
+                  <input type="text" placeholder="Find a field" aria-label="Find a field" t-att-value="state.term" t-on-input="onTerm"/>
+                  <button t-if="filtered" type="button" class="pbfb-find-x" title="Clear the filter" aria-label="Clear the filter" t-on-click="clearFilter"><t t-out="ic('x', 13)"/></button>
+                </div>
+                <div class="pbfb-tchips" role="group" aria-label="Show">
+                  <button t-foreach="chips" t-as="c" t-key="c.key" type="button" t-att-class="chipClass(c)" t-on-click="() => this.setChip(c.key)" t-esc="c.label"/>
+                </div>
+                <label class="pbfb-cow">
+                  <span class="ic" t-out="ic('globe', 14)"/>
+                  <select aria-label="Country of Work" t-on-change="onCountry">
+                    <option value="0">Any Country of Work</option>
+                    <option t-foreach="countryOptions" t-as="c" t-key="c.id" t-att-value="c.id" t-att-selected="isCountry(c)" t-esc="c.name"/>
+                  </select>
+                </label>
+                <p class="pbfb-count" aria-live="polite" t-esc="countText"/>
+              </div>
+              <p class="pbfb-hint">Drag a field onto a section, or tap it to add it to the section you picked. Every field the employee may see is here; pay figures never are.</p>
+              <div class="pbpb-flist">
+                <t t-set="same" t-value="sameLabels"/>
+                <button t-foreach="fieldList" t-as="f" t-key="f.name" type="button" class="pbpb-fit" t-att-class="rowClass(f)"
+                        draggable="true" t-on-dragstart="(ev) => this.onDragStart(ev, f.name)" t-on-click="() => this.addField(f)">
+                  <span class="ki" t-out="kindIcon(f)"/>
+                  <span class="tx"><b t-esc="label(f)"/><small t-esc="rowSub(f, same)"/></span>
+                  <span class="st" t-if="placed.has(f.name)" t-out="ic('check', 14)"/>
+                  <span class="st add" t-else="" t-out="ic('plus', 14)"/>
+                </button>
+                <div t-if="!fieldList.length" class="pbfb-nomatch">
+                  <span class="ic" t-out="ic('search', 18)"/>
+                  <b>No field matches</b>
+                  <button type="button" class="pbfb-btn sm outline" t-on-click="clearFilter"><t t-out="ic('x', 13)"/> <span>Clear the filter</span></button>
+                </div>
+              </div>
+            </t>
+            <t t-else="">
+              <div class="pbpb-pane">
+                <div t-if="limited" class="pbfb-note lock"><t t-out="ic('building',15)"/> <span t-esc="limitedLine"/></div>
+                <t t-if="companies.length">
+                  <div class="pbpb-h">Page for</div>
+                  <label class="pbpb-lab">
+                    <select t-on-change="setScope" aria-label="Page for">
+                      <option value="default" t-att-selected="state.scope === 'default'">All companies</option>
+                      <option t-foreach="companies" t-as="c" t-key="c.id" t-att-value="c.id" t-att-selected="isScope(c)" t-esc="c.name"/>
+                    </select>
+                  </label>
+                  <t t-if="state.scope !== 'default'">
+                    <p t-if="!ownPage" class="pbfb-hint flush">This company shows the page for all companies.</p>
+                    <button t-if="!ownPage" type="button" class="pbfb-btn sm outline" t-on-click="ownPageForCompany"><t t-out="ic('copy',13)"/> <span>Give this company its own page</span></button>
+                    <button t-else="" type="button" class="pbfb-btn sm outline" t-on-click="dropCompanyPage"><t t-out="ic('undo',13)"/> <span>Use the page for all companies again</span></button>
+                  </t>
+                </t>
+                <t t-if="!limited">
+                <div class="pbpb-h">History</div>
+                <p t-if="!history.length" class="pbfb-hint flush">Nothing published yet: employees see the standard page.</p>
+                <div t-foreach="history" t-as="h" t-key="h.id" class="pbpb-hist">
+                  <div class="tx"><b t-esc="h.summary"/><small><t t-esc="h.when"/> · <t t-esc="h.who"/></small></div>
+                  <button t-if="h.restorable" type="button" class="pbfb-btn sm outline" t-on-click="() => this.restore(h)"><t t-out="ic('history',13)"/> <span>Restore</span></button>
+                </div>
+                <div class="pbpb-row">
+                  <button type="button" class="pbfb-btn sm outline" t-att-disabled="!canUndo" t-on-click="undo"><t t-out="ic('undo',13)"/> <span>Undo the last publish</span></button>
+                  <button type="button" class="pbfb-btn sm danger" t-att-disabled="!data.published" t-on-click="() => this.openSheet('reset')"><t t-out="ic('rotate',13)"/> <span>Reset to the standard page</span></button>
+                </div>
+                </t>
+                <button type="button" class="pbfb-link" t-on-click="openMyProfile"><t t-out="ic('external',13)"/> <span>Open my own My Profile</span></button>
+              </div>
+            </t>
+          </aside>
+
+          <!-- CENTER: the page, or the live preview -->
+          <section class="pbfb-screen pbpb-screen" aria-label="The page being changed">
+            <t t-if="state.view === 'preview'">
+              <div class="pbpb-pvbar">
+                <label class="pbpb-lab grow"><span>Preview as</span>
+                  <select t-on-change="onPreviewEmp" aria-label="Preview as">
+                    <option t-foreach="state.emps" t-as="e" t-key="e.id" t-att-value="e.id" t-att-selected="isPreviewEmp(e)" t-esc="empLabel(e)"/>
+                  </select>
+                </label>
+                <input type="text" class="pbpb-empfind" placeholder="Find a person" aria-label="Find a person" t-att-value="state.empTerm" t-on-input="onEmpInput" t-on-keydown="onEmpKey"/>
+                <div class="pbpb-views light" role="group" aria-label="Screen size">
+                  <button type="button" t-att-class="sizeClass('desktop')" t-on-click="() => this.setSize('desktop')"><t t-out="ic('monitor',14)"/> <span>Desktop</span></button>
+                  <button type="button" t-att-class="sizeClass('phone')" t-on-click="() => this.setSize('phone')"><t t-out="ic('smartphone',14)"/> <span>Phone</span></button>
+                </div>
+              </div>
+              <p t-if="!state.emps.length" class="pbfb-hint flush">No employee was found to preview as.</p>
+              <iframe t-else="" t-att-class="frameClass()" t-att-src="previewUrl" title="Preview of My Profile"/>
+            </t>
+            <t t-else="">
+              <div class="pbpb-page">
+                <div t-att-class="heroClass()" role="button" tabindex="0" t-on-click="selectHeader">
+                  <img t-if="bannerUrl" class="pbpb-banner" t-att-src="bannerUrl" alt=""/>
+                  <div class="pbpb-hero-in">
+                    <div class="pbpb-eyebrow" t-esc="eyebrow"/>
+                    <h1 t-esc="headingText"/>
+                    <p t-esc="subText"/>
+                  </div>
+                  <span class="pbpb-edithint"><t t-out="ic('pencil',13)"/> <span>Header</span></span>
+                </div>
+                <div class="pbpb-cols">
+                  <div class="pbpb-main">
+                    <div class="pbpb-block fixed">
+                      <span class="pbpb-av"><t t-out="ic('user',18)"/></span>
+                      <div class="tx"><b>Photo, name and department</b><small>Always first on the page</small></div>
+                      <span class="pbpb-lock" title="Always shown"><t t-out="ic('lock',13)"/></span>
+                    </div>
+                    <t t-foreach="sections" t-as="sec" t-key="sec.id">
+                      <div class="pbpb-sec" t-att-class="secClass(sec)"
+                           t-on-dragover="(ev) => this.onSecOver(ev, sec)" t-on-dragleave="(ev) => this.onSecLeave(ev, sec)"
+                           t-on-drop="(ev) => this.onSecDrop(ev, sec)">
+                        <div class="pbpb-sec-h" role="button" tabindex="0" t-on-click="() => this.selectSection(sec)">
+                          <h3 t-esc="sectionTitle(sec)"/>
+                          <span class="pbpb-meta"><t t-if="sec.cols === 1">One column</t><t t-else="">Two columns</t></span>
+                          <button type="button" class="pbfb-btn sm ghost-dark icon" title="Move up" aria-label="Move up" t-on-click.stop="() => this.moveSection(sec, -1)"><t t-out="ic('arrowUp',13)"/></button>
+                          <button type="button" class="pbfb-btn sm ghost-dark icon" title="Move down" aria-label="Move down" t-on-click.stop="() => this.moveSection(sec, 1)"><t t-out="ic('arrowDown',13)"/></button>
+                        </div>
+                        <div t-att-class="gridClass(sec)">
+                          <t t-foreach="tiles(sec)" t-as="t" t-key="t.name">
+                            <div class="pbpb-tile" t-att-class="tileClass(sec, t)" role="button" tabindex="0" draggable="true"
+                                 t-on-click="() => this.selectField(t.name)" t-on-keydown="(ev) => this.onTileKey(ev, t)"
+                                 t-on-dragstart="(ev) => this.onDragStart(ev, t.name)"
+                                 t-on-dragover="(ev) => this.onTileOver(ev, t)" t-on-dragleave="() => this.onTileLeave(t)"
+                                 t-on-drop="(ev) => this.onTileDrop(ev, sec, t)">
+                              <span class="grip" t-out="ic('gripVertical',14)"/>
+                              <span class="ki" t-out="kindIcon(t.f)"/>
+                              <span class="lb" t-esc="label(t.f)"/>
+                              <span t-if="canChange(t.f)" class="pbpb-can" title="The employee can change it"><t t-out="ic('pencil',11)"/></span>
+                              <span t-if="(t.f.countries || []).length" class="pbpb-can cty" t-att-title="countryText(t.f)"><t t-out="ic('globe',11)"/></span>
+                              <button type="button" class="pbpb-x" title="Take it off the page" aria-label="Take it off the page" t-on-click.stop="() => this.removeField(t.name)"><t t-out="ic('x',12)"/></button>
+                            </div>
+                          </t>
+                        </div>
+                        <div class="pbfb-drop"><t t-out="ic('plus',13)"/> <span>Drop a field here</span></div>
+                      </div>
+                    </t>
+                    <button type="button" class="pbpb-addsec" t-on-click="addSection"><t t-out="ic('plusCircle',15)"/> <span>Add a section</span></button>
+                    <div class="pbpb-block auto">
+                      <span class="pbpb-av"><t t-out="ic('send',16)"/></span>
+                      <div class="tx"><b>Request a change</b>
+                        <small t-if="formRows.length"><t t-esc="formRows.length"/> changeable fields, in page order</small>
+                        <small t-else="">Shown when a field on the page can be changed by the employee</small></div>
+                    </div>
+                  </div>
+                  <div class="pbpb-side">
+                    <div t-foreach="sideBlocks" t-as="b" t-key="b" class="pbpb-block fixed">
+                      <div class="tx"><b t-esc="sideLabel(b)"/><small>Always on the page; the order can change</small></div>
+                      <button type="button" class="pbfb-btn sm ghost-dark icon" title="Move up" aria-label="Move up" t-on-click="() => this.moveSide(b, -1)"><t t-out="ic('arrowUp',13)"/></button>
+                      <button type="button" class="pbfb-btn sm ghost-dark icon" title="Move down" aria-label="Move down" t-on-click="() => this.moveSide(b, 1)"><t t-out="ic('arrowDown',13)"/></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </t>
+          </section>
+
+          <!-- RIGHT: settings of what is picked -->
+          <aside class="pbfb-panel pbfb-right" aria-label="Settings" t-att-class="{ 'has-sel': !!state.sel }">
+            <div t-if="!state.sel" class="pbfb-empty-prop">
+              <t t-out="ic('pointer',28)"/>
+              <p>Pick the header, a section or a field on the page to change it.</p>
+            </div>
+            <t t-elif="state.sel.type === 'header'">
+              <div class="pbfb-prophead"><h4>Header</h4>
+                <button type="button" class="pbfb-btn sm outline pbfb-propdone" t-on-click="deselect"><t t-out="ic('check',13)"/> <span>Done</span></button></div>
+              <div class="pbfb-prop">
+                <div class="pbpb-h">Heading</div>
+                <label t-foreach="langs" t-as="lang" t-key="lang"><span t-esc="langName(lang)"/>
+                  <input type="text" maxlength="80" placeholder="My Profile" t-att-value="headerValue('title', lang)" t-on-change="(ev) => this.onHeader('title', lang, ev)"/></label>
+                <div class="pbpb-h">Line under the heading</div>
+                <label t-foreach="langs" t-as="lang" t-key="lang"><span t-esc="langName(lang)"/>
+                  <input type="text" maxlength="200" t-att-value="headerValue('sub', lang)" t-on-change="(ev) => this.onHeader('sub', lang, ev)"/></label>
+                <p class="pbfb-hint flush">Leave a language empty to keep the standard words.</p>
+                <div class="pbpb-h">Colour</div>
+                <div class="pbpb-swatches">
+                  <button t-foreach="tints" t-as="t" t-key="t" type="button" t-att-class="tintClass(t)" t-att-title="tintLabel(t)" t-att-aria-label="tintLabel(t)" t-on-click="() => this.setTint(t)"/>
+                </div>
+                <div class="pbpb-h">Banner picture</div>
+                <div t-if="bannerUrl" class="pbpb-bprev"><img t-att-src="bannerUrl" alt=""/></div>
+                <input type="file" accept="image/jpeg,image/png,image/webp" class="d-none" t-ref="fileInput" t-on-change="onBanner"/>
+                <div class="pbpb-row">
+                  <button type="button" class="pbfb-btn sm outline" t-att-disabled="state.uploading" t-on-click="pickBanner"><t t-out="ic('image',13)"/> <span t-if="bannerUrl">Change the picture</span><span t-else="">Add a picture</span></button>
+                  <button t-if="bannerUrl" type="button" class="pbfb-btn sm danger" t-on-click="removeBanner"><t t-out="ic('trash',13)"/> <span>Remove</span></button>
+                </div>
+                <p class="pbfb-hint flush">JPG, PNG or WebP, at most 2 MB. It is cut to the width of the header.</p>
+                <t t-if="bannerUrl">
+                  <div class="pbpb-h">What the picture shows (for screen readers)</div>
+                  <label t-foreach="langs" t-as="lang" t-key="lang"><span t-esc="langName(lang)"/>
+                    <input type="text" maxlength="120" t-att-value="headerValue('banner_alt', lang)" t-on-change="(ev) => this.onHeader('banner_alt', lang, ev)"/></label>
+                </t>
+              </div>
+            </t>
+            <t t-elif="state.sel.type === 'section' and selSection">
+              <t t-set="sec" t-value="selSection"/>
+              <div class="pbfb-prophead"><h4>Section</h4>
+                <button type="button" class="pbfb-btn sm outline pbfb-propdone" t-on-click="deselect"><t t-out="ic('check',13)"/> <span>Done</span></button></div>
+              <div class="pbfb-prop">
+                <div class="pbpb-h">Name</div>
+                <label t-foreach="langs" t-as="lang" t-key="lang"><span t-esc="langName(lang)"/>
+                  <input type="text" maxlength="60" t-att-value="secTitleValue(sec, lang)" t-on-change="(ev) => this.onSecTitle(sec, lang, ev)"/></label>
+                <div class="pbpb-h">Columns</div>
+                <div class="pbfb-seg" role="group" aria-label="Columns">
+                  <button type="button" t-att-class="colsClass(sec, 1)" t-on-click="() => this.setCols(sec, 1)"><t t-out="ic('rows2',13)"/> <span>One column</span></button>
+                  <button type="button" t-att-class="colsClass(sec, 2)" t-on-click="() => this.setCols(sec, 2)"><t t-out="ic('columns',13)"/> <span>Two columns</span></button>
+                </div>
+                <div class="pbpb-row">
+                  <button type="button" class="pbfb-btn sm outline" t-on-click="() => this.moveSection(sec, -1)"><t t-out="ic('arrowUp',13)"/> <span>Move up</span></button>
+                  <button type="button" class="pbfb-btn sm outline" t-on-click="() => this.moveSection(sec, 1)"><t t-out="ic('arrowDown',13)"/> <span>Move down</span></button>
+                </div>
+                <button type="button" class="pbfb-btn sm danger" t-att-disabled="!canRemoveSection(sec)" t-on-click="() => this.removeSection(sec)"><t t-out="ic('trash',13)"/> <span>Remove this section</span></button>
+                <p class="pbfb-hint flush">Only an empty section can be removed, and the page keeps at least one.</p>
+              </div>
+            </t>
+            <t t-elif="state.sel.type === 'field' and selField">
+              <t t-set="f" t-value="selField"/>
+              <div class="pbfb-prophead"><h4><t t-if="f.custom">Own field</t><t t-else="">Standard field</t></h4>
+                <button type="button" class="pbfb-btn sm outline pbfb-propdone" t-on-click="deselect"><t t-out="ic('check',13)"/> <span>Done</span></button></div>
+              <div class="pbfb-prop">
+                <div class="pbfb-stdname"><b t-esc="label(f)"/><span t-esc="f.type_label"/></div>
+                <div t-if="(f.countries || []).length" class="pbfb-note lock"><t t-out="ic('globe',15)"/> <span>Shown only to people whose Country of Work is <t t-esc="countryText(f)"/>.</span></div>
+                <t t-if="!limited">
+                <div class="pbpb-h">Label</div>
+                <label t-foreach="langs" t-as="lang" t-key="lang"><span t-esc="langName(lang)"/>
+                  <input type="text" maxlength="60" t-att-value="labelValue(f, lang)" t-att-placeholder="f.field_label" t-on-change="(ev) => this.onLabel(f, lang, ev)"/></label>
+                <p class="pbfb-hint flush">The label is the field's own: it changes on every screen, as in the Form builder.</p>
+                </t>
+                <div t-else="" class="pbfb-note lock"><t t-out="ic('lock',15)"/> <span>Its label and what the employee can change apply to every company, so an administrator changes them.</span></div>
+                <t t-if="selItem">
+                  <div class="pbpb-h">Width</div>
+                  <div class="pbfb-seg" role="group" aria-label="Width">
+                    <button type="button" t-att-class="widthClass('half')" t-on-click="() => this.setWidth(f.name, 'half')"><span>Half</span></button>
+                    <button type="button" t-att-class="widthClass('full')" t-on-click="() => this.setWidth(f.name, 'full')"><span>Full</span></button>
+                  </div>
+                  <label>Section
+                    <select t-on-change="moveFieldTo">
+                      <option t-foreach="sections" t-as="s" t-key="s.id" t-att-value="s.id" t-att-selected="isItemSection(s)" t-esc="sectionTitle(s)"/>
+                    </select>
+                  </label>
+                </t>
+                <div t-if="!limited" class="pbfb-portal">
+                  <div class="pbfb-portal-h"><t t-out="ic('smartphone',14)"/> <span>The employee</span></div>
+                  <t t-if="f.request">
+                    <div class="pbfb-row">
+                      <div><div class="t">Employee can change it</div><div class="d" t-if="profileEdit(f)">Offered in "Request a change" on the page.</div><div class="d" t-else="">Look only: the employee sees it; only HR changes it.</div></div>
+                      <button type="button" class="pbfb-sw" role="switch" aria-label="Employee can change it" t-att-aria-checked="switchAttr(profileEdit(f))" t-on-click="() => this.toggleProfile(f)"/>
+                    </div>
+                    <div t-if="profileEdit(f)" class="pbfb-note lock"><t t-out="ic('userCheck',15)"/> <span>The employee changes it with "Request a change"; HR approves every change.</span></div>
+                  </t>
+                  <t t-else="">
+                    <t t-set="p" t-value="portal(f)"/>
+                    <div class="pbfb-row" t-att-class="{ off: !p.can_edit }">
+                      <div><div class="t">Employee can change it</div><div class="d" t-if="p.can_edit">Offered in "Request a change" on the page.</div><div class="d" t-else="" t-esc="p.edit_reason"/></div>
+                      <button type="button" class="pbfb-sw" role="switch" aria-label="Employee can change it" t-att-aria-checked="switchAttr(p.edit)" t-att-disabled="!p.can_edit" t-on-click="() => this.toggleChange(f)"/>
+                    </div>
+                    <div t-if="p.edit" class="pbfb-seg" role="group" aria-label="When the employee changes it">
+                      <button type="button" t-att-class="modeClass(f, 'approve')" t-on-click="() => this.setMode(f, 'approve')"><t t-out="ic('userCheck',13)"/> <span>HR approves the change</span></button>
+                      <button type="button" t-att-class="modeClass(f, 'instant')" t-att-disabled="!!p.mode_lock" t-att-title="p.mode_lock" t-on-click="() => this.setMode(f, 'instant')"><t t-out="ic('zap',13)"/> <span>Saves at once</span></button>
+                    </div>
+                    <div t-if="p.edit and p.mode_lock" class="pbfb-note lock"><t t-out="ic('lock',14)"/> <span t-esc="p.mode_lock"/></div>
+                  </t>
+                </div>
+                <div class="pbfb-row pbfb-actions">
+                  <button t-if="placed.has(f.name)" type="button" class="pbfb-btn sm outline" t-on-click="() => this.removeField(f.name)"><t t-out="ic('eyeOff',13)"/> <span>Take it off the page</span></button>
+                  <button t-else="" type="button" class="pbfb-btn sm outline" t-on-click="() => this.addField(f)"><t t-out="ic('plus',13)"/> <span>Put it on the page</span></button>
+                </div>
+                <p class="pbfb-hint flush">On the page means shown on My Payobook: the same tick as in the employee Form builder. Taking a field off never deletes what is stored.</p>
+              </div>
+            </t>
+          </aside>
+        </div>
+      </t>
+
+      <!-- Sheets -->
+      <div t-if="state.sheet" class="pbfb-sheet" t-on-click.self="closeSheet">
+        <div class="pbfb-sheet-box" role="dialog" aria-modal="true">
+          <t t-if="state.sheet === 'publish'">
+            <div class="hd"><h2>Publish this page for every employee?</h2><p>Every employee sees it the next time they open My Profile.</p></div>
+            <div class="bd">
+              <div t-foreach="state.changes" t-as="c" t-key="c_index" class="pbfb-chg"><t t-out="ic('pencil',15)"/><span t-esc="changeLine(c)"/></div>
+            </div>
+            <div class="ft">
+              <button type="button" class="pbfb-btn ghost-dark" t-on-click="closeSheet">Keep editing</button>
+              <button type="button" class="pbfb-btn primary" t-att-disabled="state.publishing" t-on-click="() => this.publish(false)"><t t-out="ic('upload',15)"/> <span>Publish for everyone</span></button>
+            </div>
+          </t>
+          <t t-elif="state.sheet === 'stale'">
+            <div class="hd"><h2>Someone published first</h2><p t-esc="state.stale.message"/></div>
+            <div class="ft">
+              <button type="button" class="pbfb-btn ghost-dark" t-on-click="discard">Start again from their page</button>
+              <button type="button" class="pbfb-btn danger" t-on-click="() => this.publish(true)"><span>Publish mine over it</span></button>
+            </div>
+          </t>
+          <t t-elif="state.sheet === 'reset'">
+            <div class="hd"><h2>Reset My Profile to the standard page?</h2><p>Employees see the standard page again at once. Fields go back to how they were shown on My Payobook before the page was first published. The history is kept, so you can restore this page later.</p></div>
+            <div class="ft">
+              <button type="button" class="pbfb-btn ghost-dark" t-on-click="closeSheet">Keep this page</button>
+              <button type="button" class="pbfb-btn danger" t-on-click="resetPage"><t t-out="ic('rotate',15)"/> <span>Reset to the standard page</span></button>
+            </div>
+          </t>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

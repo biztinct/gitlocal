@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Client Action: Leave Command Center cockpit (Phase K). -->
+    <record id="action_pb_timeoff" model="ir.actions.client">
+        <field name="name">Time Off</field>
+        <field name="tag">pb_timeoff</field>
+    </record>
+
+    <!-- Client Action: the public-holiday calendar (RIZE W2 D1).
+
+         Its everyday door is the Holidays LENS of Mission Control, which is
+         where the ⌘K row points. This record exists so the surface has a
+         name and an address of its own — a bare tag is synthesised with no
+         action NAME and anything returning through a breadcrumb reads
+         "Unnamed" (R180) — and so it can be opened directly at
+         /odoo/action-pb_holidays while it is being checked. -->
+    <record id="action_pb_holidays" model="ir.actions.client">
+        <field name="name">Public holidays</field>
+        <field name="tag">pb_holidays</field>
+    </record>
+
+    <!-- ==================================================================
+         The carry-forward warnings, as a plain list.
+
+         A native list, deliberately: it is a log, it is read perhaps twice a
+         year, and a bespoke cockpit for it would be a screen to keep working
+         for no benefit. Columns carry explicit widths so the long employee
+         name does not starve the numbers (R130).
+         ================================================================== -->
+    <record id="view_pb_carry_log_list" model="ir.ui.view">
+        <field name="name">pb.timeoff.carry.log.list</field>
+        <field name="model">pb.timeoff.carry.log</field>
+        <field name="arch" type="xml">
+            <list string="Days to use before the cut-off" create="false" edit="false">
+                <field name="warned_on" widget="date"/>
+                <field name="employee_id" width="240px"/>
+                <field name="leave_type_id" width="200px"/>
+                <field name="days_left" sum="Days"/>
+                <field name="cap_days"/>
+                <field name="cutoff_date"/>
+                <field name="told_manager" widget="boolean_toggle" readonly="1"/>
+                <field name="company_id" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_carry_log_search" model="ir.ui.view">
+        <field name="name">pb.timeoff.carry.log.search</field>
+        <field name="model">pb.timeoff.carry.log</field>
+        <field name="arch" type="xml">
+            <!-- A search-view <group> takes NO string and NO expand on Odoo
+                 19; either one fails RNG validation and aborts the whole
+                 module load (R129). -->
+            <search string="Carry-forward warnings">
+                <field name="employee_id"/>
+                <field name="leave_type_id"/>
+                <filter name="this_year" string="This cut-off"
+                        domain="[('cutoff_year', '=', context_today().year)]"/>
+                <group name="group_by">
+                    <filter name="gb_type" string="Kind of time off"
+                            context="{'group_by': 'leave_type_id'}"/>
+                    <filter name="gb_year" string="Cut-off year"
+                            context="{'group_by': 'cutoff_year'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pb_carry_log" model="ir.actions.act_window">
+        <field name="name">Days to use before the cut-off</field>
+        <field name="res_model">pb.timeoff.carry.log</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_pb_carry_log_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nobody has been warned yet</p>
+            <p>
+                Set "Warn above this many days" on a kind of time off, and
+                anybody still holding that many as the cut-off comes round is
+                emailed once, along with their manager. Every warning that
+                goes out is listed here.
+            </p>
+        </field>
+    </record>
+</odoo>

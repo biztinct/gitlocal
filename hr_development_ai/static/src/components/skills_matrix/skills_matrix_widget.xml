@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="hr_development_ai.SkillsMatrixWidget">
+        <div class="skills-matrix-widget">
+            <!-- Loading State -->
+            <t t-if="state.isLoading">
+                <div class="loading-state">
+                    <div class="hr-dev-spinner"/>
+                    <p>Loading skills matrix...</p>
+                </div>
+            </t>
+
+            <!-- Loaded State -->
+            <t t-else="">
+                <!-- Header with Summary -->
+                <div class="matrix-header">
+                    <h4>Skills Matrix</h4>
+                    <div class="matrix-summary">
+                        <t t-set="summary" t-value="getSkillsSummary()"/>
+                        <div class="summary-card">
+                            <div class="summary-value" t-esc="getProgressPercentage()"/>
+                            <div class="summary-label">% at Target</div>
+                        </div>
+                        <div class="summary-stats">
+                            <div class="stat-item at-target">
+                                <span class="stat-dot"/>
+                                <span class="stat-label" t-esc="summary.at_target"/> At Target
+                            </div>
+                            <div class="stat-item minor-gap">
+                                <span class="stat-dot"/>
+                                <span class="stat-label" t-esc="summary.minor_gap"/> Minor Gap
+                            </div>
+                            <div class="stat-item major-gap">
+                                <span class="stat-dot"/>
+                                <span class="stat-label" t-esc="summary.major_gap"/> Major Gap
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <t t-if="state.matrixData.categories.length === 0">
+                    <div class="hr-dev-empty-state">
+                        <div class="hr-dev-empty-state-icon">
+                            <i class="fa fa-graduation-cap"/>
+                        </div>
+                        <div class="hr-dev-empty-state-text">No Skills Defined</div>
+                        <p class="text-muted">Add skills to this employee to see the skills matrix</p>
+                    </div>
+                </t>
+
+                <!-- Skills Matrix Grid -->
+                <t t-else="">
+                    <div class="matrix-grid">
+                        <t t-foreach="state.matrixData.categories" t-as="category" t-key="category">
+                            <div class="category-section">
+                                <h5 class="category-title">
+                                    <i class="fa fa-folder-open me-2"/>
+                                    <t t-esc="category"/>
+                                </h5>
+
+                                <div class="skills-list">
+                                    <t t-set="categorySkills" t-value="getSkillsForCategory(category)"/>
+
+                                    <t t-foreach="categorySkills" t-as="skill" t-key="skill.id">
+                                        <div class="skill-item"
+                                             t-att-class="getSkillLevelClass(skill)"
+                                             t-on-click="() => openSkillDetail(skill.id)"
+                                             t-att-title="getSkillTooltip(skill)">
+                                            <div class="skill-name">
+                                                <t t-esc="skill.name"/>
+                                            </div>
+
+                                            <div class="skill-level-container">
+                                                <div class="skill-level-dots">
+                                                    <t t-foreach="getSkillDots(skill)" t-as="dot" t-key="dot.index">
+                                                        <span class="skill-dot"
+                                                              t-att-class="{
+                                                                  'filled': dot.filled,
+                                                                  'target': dot.target,
+                                                                  'is-target': dot.isTarget
+                                                              }"/>
+                                                    </t>
+                                                </div>
+
+                                                <div class="skill-level-text">
+                                                    <span class="current-level" t-esc="skill.current_level"/>
+                                                    <span class="level-separator">/</span>
+                                                    <span class="target-level" t-esc="skill.target_level"/>
+                                                </div>
+                                            </div>
+
+                                            <div class="skill-gap">
+                                                <t t-if="skill.target_level - skill.current_level > 0">
+                                                    <span class="gap-badge">
+                                                        Gap: +<t t-esc="skill.target_level - skill.current_level"/>
+                                                    </span>
+                                                </t>
+                                                <t t-else="">
+                                                    <span class="gap-badge achieved">
+                                                        <i class="fa fa-check"/>
+                                                    </span>
+                                                </t>
+                                            </div>
+                                        </div>
+                                    </t>
+
+                                    <t t-if="categorySkills.length === 0">
+                                        <div class="no-skills-message">
+                                            <i class="fa fa-info-circle me-1"/>
+                                            No skills in this category
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="matrix-legend">
+                        <h6>Legend:</h6>
+                        <div class="legend-items">
+                            <div class="legend-item">
+                                <span class="legend-color at-target"/>
+                                <span>At or Above Target</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color minor-gap"/>
+                                <span>1 Level Below Target</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color major-gap"/>
+                                <span>2+ Levels Below Target</span>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </div>
+    </t>
+
+</templates>

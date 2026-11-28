@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       People › Family. Loop variable: rows `rw`.
+       Every sentence a person reads sits on one line (ledger PRD-3).
+       ==================================================================== -->
+  <t t-name="pb_me_details.PbFamilyLens">
+    <div class="pbim pbim-page pbfl" t-att-class="{ 'pbfl--embedded': props.embedded }">
+
+      <div t-if="!state.loaded" class="pbim-busy">
+        <div class="pbim-spin"/><span>Reading the family list…</span>
+      </div>
+
+      <div t-else="" class="pbim-wrap">
+        <div t-if="!state.allowed" class="pbim-panel pbfl-locked">
+          <div class="pbfl-locked-ic"><t t-out="icon('lock', 30)"/></div>
+          <h2>This one is for HR and the pay team</h2>
+          <p t-esc="state.why"/>
+        </div>
+
+        <t t-else="">
+          <div class="pbfl-head">
+            <div>
+              <h1 class="pbim-h1" t-if="!props.embedded">Family</h1>
+              <p class="pbim-sub">Family members employees added or changed on My Payobook. A family member who counts for tax reaches pay only when the pay team confirms it here.</p>
+            </div>
+            <div class="pbfl-head-actions">
+              <button class="pbim-btn ghost" t-on-click="openApprovals"><t t-out="icon('inbox', 15)"/> Approvals</button>
+              <button class="pbim-btn ghost" t-on-click="() => this.load()" title="Read the list again" aria-label="Read the list again"><t t-out="icon('refresh', 15)"/></button>
+            </div>
+          </div>
+
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="glanceOn"/>
+          </t>
+
+          <div class="pbfl-tools">
+            <label class="pbfl-search">
+              <t t-out="icon('search', 15)"/>
+              <input type="search" placeholder="Find a person…" t-att-value="state.search" t-on-input="onSearch" aria-label="Find a person"/>
+            </label>
+          </div>
+
+          <!-- ======================= waiting for the tick ======================= -->
+          <t t-if="state.view === 'waiting'">
+            <div t-if="!state.rows.length" class="pbim-empty pbfl-empty">
+              <div class="pbfl-empty-ic"><t t-out="icon('checkCircle', 28)"/></div>
+              <h3>Nothing waits for a tax decision</h3>
+              <p>When an approved family change could change somebody's tax, it waits here until the pay team confirms it.</p>
+            </div>
+            <div t-else="" class="pbfl-cards">
+              <article t-foreach="state.rows" t-as="rw" t-key="rw.id" class="pbim-panel pbfl-card">
+                <div class="pbfl-card-main">
+                  <div class="pbfl-card-t"><t t-esc="rw.member"/><span class="pbfl-rel" t-esc="rw.relationship"/></div>
+                  <div class="pbfl-card-s"><span>Family of</span> <b t-esc="rw.employee"/><span class="pbfl-dot" aria-hidden="true"/><t t-esc="rw.company"/></div>
+                  <div class="pbfl-card-f">
+                    <span t-if="rw.birthdate"><span>Born</span> <b t-esc="rw.birthdate"/></span>
+                    <span t-if="rw.id_number"><span>ID</span> <b t-esc="rw.id_number"/></span>
+                  </div>
+                  <div class="pbfl-what" t-att-class="rw.action === 'end' ? 'is-end' : ''">
+                    <t t-out="icon(rw.action === 'end' ? 'minusCircle' : 'plus', 14)"/>
+                    <span t-if="rw.action === 'end' and rw.removed">Removed from the family list. Confirming stops the tax relief from the next pay run.</span>
+                    <span t-elif="rw.action === 'end'">No longer counts for tax. Confirming stops the tax relief from the next pay run.</span>
+                    <span t-else="">Counts for tax. Confirming starts the tax relief from the next pay run.</span>
+                  </div>
+                </div>
+                <div class="pbfl-card-a">
+                  <t t-if="state.canTick">
+                    <button class="pbim-btn primary" t-att-disabled="state.busy" t-on-click="() => this.tick(rw, true)"><t t-out="icon('check', 15)"/> Confirm for tax</button>
+                    <button class="pbim-btn ghost" t-att-disabled="state.busy" t-on-click="() => this.tick(rw, false)">Leave pay as it is</button>
+                  </t>
+                  <span t-else="" class="pbfl-note">The pay team confirms this.</span>
+                  <button class="pbim-btn ghost" t-on-click="() => this.openMember(rw)"><t t-out="icon('eye', 15)"/> Open</button>
+                </div>
+              </article>
+            </div>
+          </t>
+
+          <!-- ======================= changes ======================= -->
+          <t t-else="">
+            <div t-if="!state.rows.length" class="pbim-empty pbfl-empty">
+              <h3>Nothing here</h3>
+              <p t-if="state.view === 'open'">No change is waiting for approval. New ones arrive in Approvals.</p>
+              <p t-else="">Nothing was decided in the last 30 days.</p>
+            </div>
+            <div t-else="" class="pbim-tablewrap">
+              <table class="pbim-table pbfl-table">
+                <thead><tr><th>Change</th><th>Person</th><th>Status</th><th>When</th></tr></thead>
+                <tbody>
+                  <tr t-foreach="state.rows" t-as="rw" t-key="rw.id">
+                    <td class="pbfl-strong" t-esc="rw.title"/>
+                    <td><t t-esc="rw.employee"/><div class="pbfl-muted" t-esc="rw.company"/></td>
+                    <td><span t-att-class="'pbfl-pill pbfl-pill--' + rw.state" t-esc="stateLabel(rw.state)"/></td>
+                    <td class="pbfl-muted" t-esc="rw.when ? rw.when.slice(0, 10) : ''"/>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </t>
+        </t>
+      </div>
+    </div>
+  </t>
+
+</templates>

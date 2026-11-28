@@ -1,0 +1,1306 @@
+# -*- coding: utf-8 -*-
+"""`pb.scheme.map` — the one answer to "which scheme pays this person?".
+
+WHY THIS EXISTS
+---------------
+Until now nothing on a person said which payroll scheme paid them. The pay run
+took everybody with a running contract and each payslip worked its scheme out
+afterwards, on its own, down a ladder that ended in "the first active scheme I
+can find" (`hr.payslip._find_formula_config`). On one company with one scheme
+that is right every time. On a group with fifteen it is a coin toss, and the
+tell is that a payslip and the person beside it can disagree.
+
+So the map becomes the truth, and this model is the only thing that reads it.
+Every caller — the pay run's population, the payslip ladder, the "Paid by"
+field on a person, the exceptions queue, the canvas' coverage rings — asks the
+same question here and gets the same answer with the same reason attached.
+
+THE LADDER, AND WHY IT ENDS WHERE IT DOES
+-----------------------------------------
+    1. segment       P5. A confirmed stretch of days says where this person
+                     worked and, when somebody named one, which scheme pays
+                     those days. It is the most specific statement there is —
+                     a person went to the trouble of drawing it on a calendar
+                     — so nothing below it can beat it. It answers only for
+                     the employments a segment actually names; everybody else
+                     falls straight through to rung 2 exactly as before, which
+                     is what keeps this rung free on every database that has
+                     never written a segment.
+    2. department    the person's own team, then its parent, then its parent's
+                     parent. Attaching at the top of a branch covers the branch;
+                     a team further down overrides it, because the more specific
+                     statement is the one somebody went to the trouble of making.
+    3. division      the part of the business the team belongs to (P1's
+                     `pb.division`), which is how one attachment covers the same
+                     line of business in four countries.
+    4. rule          the advanced escape hatch that already existed: an employee
+                     domain, in `sequence` order.
+    5. only scheme   the company has exactly one active scheme. THIS RUNG IS THE
+                     WHOLE OF LEDGER RULE 8: a company that has never drawn a map
+                     must behave exactly as it did before this module existed.
+    6. nobody        and it says so by name, rather than picking something.
+
+WHY `resolve_many` IS NOT A LOOP
+--------------------------------
+Company 5 has 4,533 people. Resolving them one at a time is 4,533 department
+reads, 4,533 map searches and a division walk each. `resolve_many` does the
+department read as ONE query, the map as ONE search, the division links as ONE
+search, and then walks `parent_path` strings in Python — which is where the
+walk always belonged, because a chain is four integers.
+
+NOTHING HERE WRITES except `accept_draft`, which is the one method a person
+presses a button for.
+"""
+
+import logging
+import time
+from collections import defaultdict
+
+from odoo import _, api, fields, models
+from odoo.tools.misc import format_date
+
+from .formula_scheme_assignment import CYCLE_WORDS
+
+_logger = logging.getLogger(__name__)
+
+#: The rungs, in the order they are tried. Exported so a test can assert the
+#: order rather than a behaviour that happens to look like it.
+#: PSCHEME A2: `'person'` — the person's own pay scheme (`pb.person.scheme`),
+#: below a work segment and above everything a team decides.
+RUNGS = ('segment', 'person', 'department', 'division', 'rule', 'only', 'none')
+
+#: PSCHEME A6 — the rungs whose answer to "who pays the mid-month advance?"
+#: counts as a real advance. "The only scheme in this company" (rung `only`)
+#: would make the end-of-month scheme pay the advance too, and a work segment
+#: answers every kind of run with the same scheme. ONE constant: "Paid by"
+#: (`hr_employee.py`) and the side panel chip (`pb_scheme_board.py`) read it;
+#: the copy in `pb_hr_payroll_formula/models/scheme_component_scope.py` stays a
+#: literal (dependency rail) and `test_person_scheme` asserts the three agree.
+ADVANCE_RUNGS = ('person', 'department', 'division', 'rule')
+
+#: The context key that makes `resolve_many` answer as if nobody had a pay
+#: scheme of their own (PSCHEME A.2: the pay run's "paid elsewhere" list and
+#: the one-time fill). Read nowhere else.
+SKIP_PERSON = 'pb_scheme_skip_person'
+
+#: The context key that says "this is the MAIN question — who pays this
+#: person's month?" ("Paid by", the side panel, the pay items' scope), asked
+#: with the company's main kind of run (`_pb_main_cycle`: end of month where
+#: the company runs one). A person's own row of the OTHER main kind (regular
+#: vs end of month) then still answers: their main pay scheme is their main
+#: pay scheme. A pay run never sets it, so a run of one kind never takes a
+#: person whose own scheme is of the other.
+MAIN_QUESTION = 'pb_scheme_main_question'
+MAIN_KINDS = ('regular', 'end_cycle')
+
+#: Caps on anything a caller controls — this model is reachable over JSON-RPC.
+MAX_EMPLOYEES = 20000
+MAX_NAMED = 200
+MAX_SLIPS = 200000
+MAX_DRAFT_ROWS = 200
+
+#: How far back "what you actually paid" looks, and how many runs count.
+DRAFT_MONTHS = 24
+DRAFT_RUNS = 3
+#: Below this share of agreement a proposal is amber and says what disagreed.
+DRAFT_CONFIDENT = 0.9
+
+
+class PbSchemeMap(models.AbstractModel):
+    _name = 'pb.scheme.map'
+    _description = 'Who is paid by what'
+
+    # ==================================================================== bits
+    @api.model
+    def _as_company_id(self, company=None):
+        if isinstance(company, models.BaseModel):
+            return company[:1].id
+        if isinstance(company, (int, float)) and int(company):
+            return int(company)
+        return self.env.company.id
+
+    @api.model
+    def cycle_words(self, cycle_type):
+        """The kind of run, in words a person uses — one `_()` literal per
+        word so the catalogue carries them (PSCHEME P1: the dict alone was
+        never extracted, so these stayed English on every screen)."""
+        words = {
+            'any': _("any kind of run"),
+            'regular': _("regular payroll"),
+            'mid_cycle': _("mid-month advance"),
+            'end_cycle': _("end-of-month"),
+            'full_final': _("final settlement"),
+        }
+        return words.get(cycle_type or 'any') or words['any']
+
+    # ============================================================ the roster
+    @api.model
+    def _departments_for(self, employee_ids=None, company_ids=None):
+        """`{employee_id: (department_id, company_id)}` as ONE query.
+
+        The team comes from the open contract when it names one and from the
+        person's current record otherwise — one code path that answers both
+        databases (WFPLAN WF7). Counts and ids only; no pay, no names.
+        """
+        cr = self.env.cr
+        where, args = ['e.active'], []
+        if employee_ids:
+            where.append('e.id = ANY(%s)')
+            args.append([int(i) for i in employee_ids])
+        if company_ids:
+            where.append('e.company_id = ANY(%s)')
+            args.append([int(c) for c in company_ids])
+        if 'hr.contract' in self.env:
+            sql = """
+                WITH open_contract AS (
+                    SELECT DISTINCT ON (employee_id)
+                           employee_id, department_id
+                      FROM hr_contract
+                     WHERE state = 'open'
+                     ORDER BY employee_id, wage DESC NULLS LAST, id DESC
+                )
+                SELECT e.id,
+                       COALESCE(c.department_id, v.department_id),
+                       e.company_id
+                  FROM hr_employee e
+             LEFT JOIN hr_version v    ON v.id = e.current_version_id
+             LEFT JOIN open_contract c ON c.employee_id = e.id
+                 WHERE {where}
+            """.format(where=' AND '.join(where))
+        else:
+            sql = """
+                SELECT e.id, v.department_id, e.company_id
+                  FROM hr_employee e
+             LEFT JOIN hr_version v ON v.id = e.current_version_id
+                 WHERE {where}
+            """.format(where=' AND '.join(where))
+        cr.execute(sql, args)
+        return {row[0]: (row[1] or 0, row[2] or 0)
+                for row in cr.fetchall()[:MAX_EMPLOYEES]}
+
+    @api.model
+    def _chains(self, company_ids=None):
+        """`{department_id: [root_id, …, own_id]}` for every department."""
+        cr = self.env.cr
+        if company_ids:
+            cr.execute("SELECT id, parent_path, company_id, parent_id "
+                       "FROM hr_department WHERE company_id = ANY(%s)",
+                       ([int(c) for c in company_ids],))
+        else:
+            cr.execute("SELECT id, parent_path, company_id, parent_id "
+                       "FROM hr_department")
+        out, meta = {}, {}
+        for dept_id, path, company_id, parent_id in cr.fetchall():
+            clean = (path or '').strip('/')
+            out[dept_id] = ([int(p) for p in clean.split('/') if p]
+                            if clean else [dept_id])
+            meta[dept_id] = {'company_id': company_id or 0,
+                             'parent_id': parent_id or 0}
+        return out, meta
+
+    @api.model
+    def _department_names(self, dept_ids):
+        if not dept_ids:
+            return {}
+        rows = self.env['hr.department'].sudo().with_context(
+            active_test=False).browse(sorted({int(d) for d in dept_ids if d}))
+        return {d.id: (d.complete_name or d.name or '')
+                for d in rows.exists()}
+
+    # ============================================================== the map
+    @api.model
+    def _map_rows(self, company_ids, on_date=None):
+        """The active map, read once.
+
+        A scheme with no company is shared, so its rows travel with it — the
+        same reasoning `_find_formula_config` already applies to configs.
+        """
+        day = fields.Date.to_date(on_date) if on_date else fields.Date.context_today(self)
+        domain = [('active', '=', True), ('config_id.state', '=', 'active'),
+                  '|', ('date_from', '=', False), ('date_from', '<=', day),
+                  '|', ('date_to', '=', False), ('date_to', '>=', day)]
+        if company_ids:
+            domain += ['|', ('company_id', '=', False),
+                       ('company_id', 'in', [int(c) for c in company_ids])]
+        return self.env['hr.formula.scheme.assignment'].sudo().search(
+            domain, order='sequence, id')
+
+    @api.model
+    def _by_department(self, rows):
+        """`{department_id: {cycle_type: row}}`, first row wins."""
+        out = defaultdict(dict)
+        for row in rows:
+            if not row.department_id:
+                continue
+            out[row.department_id.id].setdefault(row.cycle_type, row)
+        return out
+
+    @api.model
+    def _by_division(self, rows):
+        out = defaultdict(dict)
+        for row in rows:
+            if not row.division_id:
+                continue
+            out[row.division_id.id].setdefault(row.cycle_type, row)
+        return out
+
+    @api.model
+    def _division_of_department(self, on_date=None):
+        """`{department_id: division_id}` for the attachments live on a date."""
+        if 'pb.division' not in self.env:
+            return {}
+        try:
+            return self.env['pb.division'].sudo()._links_on(on_date)
+        except Exception:       # noqa: BLE001 — a missing division board is
+            _logger.debug('Divisions could not be read for the scheme map')
+            return {}
+
+    @staticmethod
+    def _pick(bucket, cycle_type):
+        """The line on the map that answers this question.
+
+        Asked about a KIND of run, the line naming that kind wins and a line
+        that says "any kind" is the fallback — the specific statement beats the
+        general one, which is the whole reason the field exists.
+
+        Asked about NO PARTICULAR kind ("who pays this person?"), a line saying
+        "any kind" is still the best answer, but a map made entirely of
+        specific lines must not read as no map at all. That is exactly what
+        happened on the demo company the first time the map was drafted: every
+        line was end-of-month or mid-month, nothing said "any", and the board
+        reported 0 of 4,533 people covered over a map it had just written. So
+        the fallback runs down a ladder of what "the scheme that pays you"
+        normally means, and a MID-MONTH ADVANCE is last on it — an advance is
+        never the answer to "who pays this person" unless somebody asked for
+        the advance.
+        """
+        if not bucket:
+            return None
+        if cycle_type and cycle_type != 'any':
+            if cycle_type in bucket:
+                return bucket[cycle_type]
+            return bucket.get('any')
+        for kind in ('any', 'end_cycle', 'regular', 'full_final', 'mid_cycle'):
+            if kind in bucket:
+                return bucket[kind]
+        return None
+
+    # ========================================================= the only scheme
+    @api.model
+    def _only_scheme(self, company_id, cycle_type='any'):
+        """The company's single active scheme, or an empty recordset.
+
+        LEDGER RULE 8 LIVES HERE. A company with one scheme and no map must
+        behave exactly as it did before this module existed, and the way that
+        is guaranteed is that the ladder reaches this rung before it reaches
+        "nobody".
+        """
+        Config = self.env['hr.formula.config'].sudo()
+        domain = [('state', '=', 'active')]
+        if company_id:
+            domain += ['|', ('company_id', '=', False),
+                       ('company_id', '=', int(company_id))]
+        if cycle_type and cycle_type != 'any':
+            domain.append(('cycle_type', '=', cycle_type))
+        configs = Config.search(domain, limit=2)
+        return configs if len(configs) == 1 else Config.browse()
+
+    # ========================================================= the person
+    @api.model
+    def _person_rows_for(self, rows, day):
+        """PSCHEME A4 — of ONE person's rows, the row that counts on `day`
+        for each kind of run: the row in force on `day`; else their FIRST-EVER
+        pay scheme counts backwards — only while nothing of theirs has started
+        on or before `day`, and only for a row that starts on their first-ever
+        start date (so a joiner hired on the 15th is found by a pay run judged
+        on the 1st, with the advance they were hired with); else nothing.
+
+        Why "first-ever" across every kind (ledger PS4): read per kind of run,
+        a later row of a NEW kind (regular -> end of month on the 15th, or an
+        advance added later) would also "count backwards" and put the person in
+        two pay runs of one month — owner ruling R6 says one payslip per person
+        per period, always.
+
+        Returns `({cycle_type: row}, {cycle_type, …} that have rows but none
+        counting on `day`)`.
+        """
+        by_kind = defaultdict(list)
+        for row in rows:
+            by_kind[row.cycle_type or 'regular'].append(row)
+        first_day = min((r.date_from for r in rows), default=None)
+        started = first_day is not None and first_day <= day
+        counting, ended = {}, set()
+        for kind, kind_rows in by_kind.items():
+            kind_rows.sort(key=lambda r: (r.date_from, r.id))
+            in_force = [r for r in kind_rows if r.date_from <= day
+                        and (not r.date_to or r.date_to >= day)]
+            if in_force:
+                counting[kind] = in_force[-1]
+            elif not started and kind_rows[0].date_from == first_day:
+                counting[kind] = kind_rows[0]
+            else:
+                ended.add(kind)
+        return counting, ended
+
+    @api.model
+    def _person_schemes(self, employee_ids, on_date=None):
+        """`{employee_id: {'has_rows': True, 'rows': {cycle_type: row},
+        'ended': {cycle_type}}}` for every person with at least one active
+        row — ONE search for the whole roster, through the ORM (trap T4: the
+        ORM flushes pending writes before it searches). A person with no row
+        is simply absent, so a database that has never written a row answers
+        exactly as it did before this rung existed."""
+        if not employee_ids or 'pb.person.scheme' not in self.env \
+                or self.env.context.get(SKIP_PERSON):
+            return {}
+        day = fields.Date.to_date(on_date) if on_date else \
+            fields.Date.context_today(self)
+        rows = self.env['pb.person.scheme'].sudo().search([
+            ('employee_id', 'in', list(employee_ids)),
+            ('active', '=', True),
+        ], order='date_from, id')
+        grouped = defaultdict(list)
+        for row in rows:
+            grouped[row.employee_id.id].append(row)
+        out = {}
+        for employee_id, person_rows in grouped.items():
+            counting, ended = self._person_rows_for(person_rows, day)
+            out[employee_id] = {'has_rows': True, 'rows': counting,
+                                'ended': ended}
+        return out
+
+    @api.model
+    def _person_answer(self, config, date_from):
+        """The answer the person rung gives for one scheme of their own."""
+        return {
+            'config_id': config.id,
+            'config_name': config.name or '',
+            'rung': 'person',
+            'via': _("their own pay scheme, from %(date)s",
+                     date=format_date(self.env, date_from, date_format='d MMM y') if date_from
+                     else ''),
+            'date_from': fields.Date.to_string(date_from) if date_from
+            else False,
+        }
+
+    @api.model
+    def _rung_person(self, entry, cycle_type):
+        """Rung 2 (PSCHEME A3): authoritative once the person has ANY
+        active row — it answers their own row for the asked kind, or nobody;
+        it never falls through to the team (owner ruling R7: no advance from
+        the team for a person with a pay scheme of their own). The caller
+        lets `full_final` fall through before reaching here."""
+        rows = entry.get('rows') or {}
+        row = self._pick(rows, cycle_type)
+        if not row and cycle_type in MAIN_KINDS \
+                and self.env.context.get(MAIN_QUESTION):
+            other = [k for k in MAIN_KINDS if k != cycle_type][0]
+            row = rows.get(other)
+        if row and row.config_id.state == 'active':
+            return self._person_answer(row.config_id, row.date_from)
+        blank = self._blank()
+        if row:
+            blank['via'] = _("Their own pay scheme, %(scheme)s, is switched "
+                             "off.", scheme=row.config_id.name or '')
+        elif cycle_type == 'mid_cycle':
+            blank['via'] = _("They have their own pay scheme and no mid-month "
+                             "advance of their own.")
+        elif cycle_type in (entry.get('ended') or set()):
+            blank['via'] = _("Their own pay scheme has ended and no new one "
+                             "follows.")
+        else:
+            blank['via'] = _("They have their own pay scheme, but none for "
+                             "this kind of pay run.")
+        return blank
+
+    # =============================================================== resolve
+    @api.model
+    def resolve(self, employee, cycle_type='any', on_date=None):
+        """`{config_id, config_name, rung, via}` for one person.
+
+        Never raises and never guesses: an employee nobody's map covers comes
+        back with `rung='none'` and a sentence saying so.
+        """
+        if isinstance(employee, models.BaseModel):
+            employee_id = employee[:1].id
+        else:
+            employee_id = int(employee or 0)
+        if not employee_id:
+            return self._blank()
+        answers = self.resolve_many([employee_id], cycle_type, on_date)
+        return answers.get(employee_id) or self._blank()
+
+    @api.model
+    def _blank(self):
+        return {'config_id': 0, 'config_name': '', 'rung': 'none',
+                'via': _("No scheme covers this person yet.")}
+
+    # =============================================================== rung 1
+    @api.model
+    def _segment_schemes(self, employee_ids, on_date=None):
+        """`{employee_id: answer}` for the employments a segment names.
+
+        SOFT, like every other cross-module read in this file: a database
+        without `pb_workseg` never reaches the search, and one that has it but
+        has never written a segment gets an empty dict for the price of one
+        indexed search. Only a segment that NAMES a scheme answers here — a
+        stretch of days with no scheme on it is a fact about where somebody
+        worked, not a statement about who pays them, and the rungs below know
+        how to answer that.
+        """
+        if 'pb.work.segment' not in self.env or not employee_ids:
+            return {}
+        day = fields.Date.to_date(on_date) if on_date else \
+            fields.Date.context_today(self)
+        try:
+            rows = self.env['pb.work.segment'].sudo().search([
+                ('state', '=', 'confirmed'),
+                ('config_id', '!=', False),
+                ('date_from', '<=', day), ('date_to', '>=', day),
+                ('host_employee_id', 'in', list(employee_ids)),
+            ], order='date_from desc, id desc')
+        except Exception:       # noqa: BLE001 — a segment that cannot be read
+            # must never stop a payslip resolving; the rungs below still
+            # answer, exactly as they did before this rung existed.
+            _logger.warning('Scheme map: work segments could not be read',
+                            exc_info=True)
+            return {}
+        out = {}
+        for row in rows:
+            employee_id = row.host_employee_id.id
+            if employee_id in out:
+                continue
+            out[employee_id] = {
+                'config_id': row.config_id.id,
+                'config_name': row.config_id.name or '',
+                'rung': 'segment',
+                'via': _("from the days worked in %(company)s",
+                         company=row.host_company_id.name or ''),
+            }
+        return out
+
+    @api.model
+    def resolve_many(self, employee_ids, cycle_type='any', on_date=None):
+        """The same answer for thousands of people, in a handful of queries."""
+        ids = [int(e) for e in (employee_ids or []) if e][:MAX_EMPLOYEES]
+        if not ids:
+            return {}
+        roster = self._departments_for(employee_ids=ids)
+        if not roster:
+            return {}
+        company_ids = sorted({c for _d, c in roster.values() if c})
+        chains, _meta = self._chains(company_ids)
+        rows = self._map_rows(company_ids, on_date)
+        by_department = self._by_department(rows)
+        by_division = self._by_division(rows)
+        division_of = self._division_of_department(on_date)
+        rule_rows = [r for r in rows if r.domain and not r.department_id
+                     and not r.division_id]
+        # Every team a sentence could NAME: the person's own, and every team
+        # the map is attached to. Resolving only the person's own team made
+        # "from Bread's team map" read "from this team's team map" whenever the
+        # attachment was on the team ABOVE them — which is the normal case.
+        names = self._department_names(
+            {d for d, _c in roster.values() if d} | set(by_department))
+
+        # The rules, once each rather than once per person: an employee domain
+        # over 4,500 people is a search, and 4,500 searches is a minute.
+        rule_hits = []
+        for row in rule_rows:
+            try:
+                matched = self.env['hr.employee'].sudo().search(
+                    [('id', 'in', ids)] + row._employee_domain())
+            except Exception:   # noqa: BLE001 — a broken rule is not fatal
+                _logger.warning('Scheme map: rule %s could not be read', row.id)
+                continue
+            if matched:
+                rule_hits.append((row, set(matched.ids)))
+
+        # 1 — the segments. Read ONCE for the whole roster and only where the
+        # module that owns them is installed; an empty answer costs one
+        # search that returns nothing.
+        by_segment = self._segment_schemes(ids, on_date)
+        # 2 — the person's own pay scheme (PSCHEME). ONE search for the roster.
+        by_person = self._person_schemes(ids, on_date)
+
+        only_cache = {}
+        out = {}
+        for employee_id, (dept_id, company_id) in roster.items():
+            chain = chains.get(dept_id) or ([dept_id] if dept_id else [])
+
+            # 1 — a stretch of days somebody drew, naming its own scheme.
+            segment = by_segment.get(employee_id)
+            if segment:
+                out[employee_id] = segment
+                continue
+
+            # 2 — their own pay scheme (PSCHEME A3). A final settlement always
+            # falls through to the rest of the ladder.
+            person = by_person.get(employee_id)
+            if person and cycle_type != 'full_final':
+                out[employee_id] = self._rung_person(person, cycle_type)
+                continue
+
+            # 3 — the department map, deepest first.
+            found = self._rung_department(chain, by_department, names,
+                                          cycle_type)
+            if found:
+                out[employee_id] = found
+                continue
+
+            # 4 — the division the team belongs to.
+            found = self._rung_division(chain, division_of, by_division,
+                                        cycle_type)
+            if found:
+                out[employee_id] = found
+                continue
+
+            # 5 — an advanced rule.
+            hit = None
+            for row, matched in rule_hits:
+                if employee_id in matched:
+                    hit = row
+                    break
+            if hit:
+                out[employee_id] = {
+                    'config_id': hit.config_id.id,
+                    'config_name': hit.config_id.name or '',
+                    'rung': 'rule',
+                    'via': _("from a rule on the map"),
+                }
+                continue
+
+            # 6 — the company's only scheme. Rule 8.
+            found = self._rung_only(company_id, cycle_type, only_cache)
+            if found:
+                out[employee_id] = found
+                continue
+
+            # 7 — nobody, and it says so.
+            out[employee_id] = self._blank()
+        return out
+
+    # ============================================= the team rungs, shared
+    # NEWHIRE P1: rungs 2, 3 and 5 need only a team and a company, so the
+    # same three functions answer `resolve_many` (a real person) and
+    # `resolve_for_team` (somebody who does not exist yet). One body each.
+    @api.model
+    def _rung_department(self, chain, by_department, names, cycle_type):
+        """Rung 2 — the department map, deepest team first, or None."""
+        for candidate in reversed(chain):
+            found = self._pick(by_department.get(candidate), cycle_type)
+            if found:
+                return {
+                    'config_id': found.config_id.id,
+                    'config_name': found.config_id.name or '',
+                    'rung': 'department',
+                    'via': _("from %(team)s's team map",
+                             team=names.get(candidate) or _("this team")),
+                }
+        return None
+
+    @api.model
+    def _rung_division(self, chain, division_of, by_division, cycle_type):
+        """Rung 3 — the division the team (or a team above it) belongs to."""
+        division_id = 0
+        for candidate in reversed(chain):
+            if candidate in division_of:
+                division_id = division_of[candidate]
+                break
+        if not division_id:
+            return None
+        found = self._pick(by_division.get(division_id), cycle_type)
+        if not found:
+            return None
+        return {
+            'config_id': found.config_id.id,
+            'config_name': found.config_id.name or '',
+            'rung': 'division',
+            'via': _("from the %(division)s division",
+                     division=found.division_id.name or ''),
+        }
+
+    @api.model
+    def _rung_only(self, company_id, cycle_type, only_cache=None):
+        """Rung 5 — the company's only active scheme (ledger rule 8)."""
+        cache = only_cache if only_cache is not None else {}
+        key = (company_id, cycle_type)
+        if key not in cache:
+            cache[key] = self._only_scheme(company_id, cycle_type)
+        single = cache[key]
+        if not single:
+            return None
+        return {
+            'config_id': single.id,
+            'config_name': single.name or '',
+            'rung': 'only',
+            'via': _("the only scheme in this company"),
+        }
+
+    @api.model
+    def resolve_for_team(self, department_id, company_id=None,
+                         cycle_type='any', on_date=None):
+        """`{config_id, config_name, rung, via}` for somebody who would join
+        `department_id` in `company_id` — before any record exists.
+
+        The rungs that need only a team: the department map (2), the division
+        (3) and the company's only scheme (5). A work segment (1) and an
+        advanced rule (4) need a person, so a hypothetical hire never reaches
+        them; for an employee of the team who has neither, the answer equals
+        `resolve(employee)`. Never raises.
+        """
+        dept_id = int(department_id or 0)
+        return self.resolve_for_teams([dept_id], company_id, cycle_type,
+                                      on_date).get(dept_id) or self._blank()
+
+    @api.model
+    def resolve_for_teams(self, department_ids, company_id=None,
+                          cycle_type='any', on_date=None):
+        """`{department_id: {config_id, config_name, rung, via}}` — the answer
+        of `resolve_for_team` for several teams at once, with the map, the
+        team tree, the divisions and the only-scheme lookup read ONCE
+        (NEWHIRE P7: the Add employee screen sorts every team by country).
+        Same rungs, same order. Never raises."""
+        company_id = self._as_company_id(company_id)
+        dept_ids = [int(d or 0) for d in (department_ids or [])]
+        chains, _meta = self._chains([company_id])
+        rows = self._map_rows([company_id], on_date)
+        by_department = self._by_department(rows)
+        team_chains = {d: chains.get(d) or ([d] if d else []) for d in dept_ids}
+        every = set(by_department)
+        for chain in team_chains.values():
+            every |= set(chain)
+        names = self._department_names(every)
+        division_of = by_division = None
+        only_cache = {}
+        out = {}
+        for dept_id, chain in team_chains.items():
+            found = self._rung_department(chain, by_department, names, cycle_type)
+            if not found:
+                if division_of is None:
+                    division_of = self._division_of_department(on_date)
+                    by_division = self._by_division(rows)
+                found = self._rung_division(chain, division_of, by_division, cycle_type)
+            if not found:
+                found = self._rung_only(company_id, cycle_type, only_cache)
+            out[dept_id] = found or self._blank()
+        return out
+
+    # ===================================================== NEWHIRE P8
+    @api.model
+    def resolve_for_draft(self, department_id, values=None, company_id=None,
+                          cycle_type='any', on_date=None):
+        """`{config_id, config_name, rung, via}` the PAY RUN would give a person
+        who does not exist yet: the team rungs of `resolve_for_team` (2, 3),
+        then the map's advanced rules (4) judged on an IN-MEMORY employee made
+        from `values` (`payroll_country`, `job_id`, …), then the company's only
+        scheme (5). The order of `resolve_many` minus the work segment (a person
+        with no days yet). Rules are read exactly as `resolve_many` reads them
+        (no kind-of-run filter on a rule). Writes nothing; never raises."""
+        company_id = self._as_company_id(company_id)
+        dept_id = int(department_id or 0)
+        # PSCHEME A.3 — a draft that carries the pay scheme chosen for the
+        # person answers on the person rung first, by the same rules as a real
+        # person with those rows (ledger A3 / A5). Without `scheme_id` the
+        # draft is answered exactly as before.
+        own = self._draft_person(values, cycle_type, on_date)
+        if own is not None:
+            return own
+        try:
+            chains, _meta = self._chains([company_id])
+            rows = self._map_rows([company_id], on_date)
+            by_department = self._by_department(rows)
+            chain = chains.get(dept_id) or ([dept_id] if dept_id else [])
+            names = self._department_names(set(by_department) | set(chain))
+            found = self._rung_department(chain, by_department, names, cycle_type)
+            if not found:
+                found = self._rung_division(chain, self._division_of_department(on_date),
+                                            self._by_division(rows), cycle_type)
+            if not found:
+                found = self._rung_rule_draft(rows, dept_id, values, company_id)
+            if not found:
+                found = self._rung_only(company_id, cycle_type)
+        except Exception:       # noqa: BLE001 — a screen question, never fatal
+            _logger.warning('Scheme map: the draft person could not be resolved',
+                            exc_info=True)
+            found = None
+        return found or self._blank()
+
+    @api.model
+    def _draft_person(self, values, cycle_type='any', on_date=None):
+        """The person rung for somebody who does not exist yet, or None when
+        the draft carries no pay scheme of its own (`values['scheme_id']`,
+        optionally `values['advance_scheme_id']`). The main kind is the chosen
+        scheme's own kind. Never raises."""
+        values = dict(values or {})
+        try:
+            main_id = int(values.get('scheme_id') or 0)
+        except (TypeError, ValueError):
+            main_id = 0
+        if not main_id or cycle_type == 'full_final':
+            return None
+        Config = self.env['hr.formula.config'].sudo()
+        main = Config.browse(main_id).exists()
+        if not main:
+            return None
+        try:
+            advance_id = int(values.get('advance_scheme_id') or 0)
+        except (TypeError, ValueError):
+            advance_id = 0
+        advance = Config.browse(advance_id).exists() if advance_id else Config
+        start = fields.Date.to_date(values.get('date_from')) \
+            if values.get('date_from') else (
+                fields.Date.to_date(on_date) if on_date
+                else fields.Date.context_today(self))
+
+        class _Row:
+            # the shape `_pick` and `_rung_person` read off a stored row
+            def __init__(self, config):
+                self.config_id = config
+                self.date_from = start
+
+        rows = {main.cycle_type or 'regular': _Row(main)}
+        if advance and advance.cycle_type == 'mid_cycle' \
+                and 'mid_cycle' not in rows:
+            rows['mid_cycle'] = _Row(advance)
+        return self._rung_person({'has_rows': True, 'rows': rows,
+                                  'ended': set()}, cycle_type)
+
+    @api.model
+    def _rung_rule_draft(self, rows, dept_id, values, company_id):
+        """Rung 4 for a person who does not exist: the first advanced rule (in
+        `sequence` order, as `resolve_many`) whose employee domain an in-memory
+        record built from `values` satisfies."""
+        rule_rows = [r for r in rows if r.domain and not r.department_id
+                     and not r.division_id]
+        if not rule_rows:
+            return None
+        Employee = self.env['hr.employee'].sudo()
+        vals = {k: v for k, v in dict(values or {}).items()
+                if k in Employee._fields and v not in (None, '')}
+        vals['company_id'] = company_id
+        vals['active'] = True
+        if dept_id:
+            vals['department_id'] = dept_id
+        try:
+            person = Employee.new(vals)
+        except Exception:       # noqa: BLE001
+            _logger.debug('Scheme map: no in-memory person', exc_info=True)
+            return None
+        for row in rule_rows:
+            try:
+                hit = person.filtered_domain(row._employee_domain())
+            except Exception:   # noqa: BLE001 — a rule this cannot judge is skipped
+                continue
+            if hit:
+                return {
+                    'config_id': row.config_id.id,
+                    'config_name': row.config_id.name or '',
+                    'rung': 'rule',
+                    'via': _("from a rule on the map"),
+                }
+        return None
+
+    @api.model
+    def _country_schemes(self, company_id, country_code):
+        """The active schemes that can pay somebody working in `country_code`:
+        this company's or shared, never a mid-month advance (an advance is not
+        "who pays this person")."""
+        domain = [('state', '=', 'active'), ('country_code', '=', country_code),
+                  ('cycle_type', '!=', 'mid_cycle'),
+                  '|', ('company_id', '=', False),
+                  ('company_id', '=', int(company_id))]
+        return self.env['hr.formula.config'].sudo().search(domain, order='name, id')
+
+    @api.model
+    def suggest_by_country(self, company_id=None):
+        """NEWHIRE P8 B.1 — "Suggest who pays each team". Writes NOTHING.
+
+        Every team of the company that no map line of its own or of its
+        division pays yet, with a suggestion and the reason:
+          * the team's country = the Country of work of MORE THAN HALF of its
+            active people (a tie, nobody with a country or an empty team: no
+            suggestion);
+          * the suggestion = the only active scheme for that country; with
+            several, the one that paid more than half of the team's people in
+            their latest pay run; still unclear: "needs your choice".
+        Two rails on top, so a suggestion never changes what anybody is paid
+        today: a team where somebody is paid by ANOTHER scheme today (a rule
+        on the map) is offered unticked and says how many people would move;
+        a team with an old line on the map in the way (a line naming a scheme
+        that no longer pays, the map's one-line-per-kind-of-run check) cannot
+        be written from here and says so.
+        """
+        company_id = self._as_company_id(company_id)
+        started = time.time()
+        Dept = self.env['hr.department'].sudo()
+        teams = Dept.search([('company_id', 'in', [company_id, False]),
+                             ('active', '=', True)])
+        teams = teams.filtered(lambda t: not t.company_id or t.company_id.id == company_id)
+        answers = self.resolve_for_teams(teams.ids, company_id)
+        roster = self._departments_for(company_ids=[company_id])
+        people_of = defaultdict(list)
+        for employee_id, (dept_id, _c) in roster.items():
+            if dept_id:
+                people_of[dept_id].append(employee_id)
+        wanted = [t for t in teams if (answers.get(t.id) or {}).get('rung')
+                  not in ('department', 'division')]
+        everyone = [e for t in wanted for e in people_of.get(t.id, [])]
+        Employee = self.env['hr.employee'].sudo()
+        country_of = {e.id: e.payroll_country or '' for e in Employee.browse(everyone)}
+        today = self.resolve_many(everyone) if everyone else {}
+        labels = dict(self.env['hr.formula.config']._fields['country_code']
+                      ._description_selection(self.env))
+        latest = self._latest_paid(everyone)
+        Assign = self.env['hr.formula.scheme.assignment'].sudo().with_context(active_test=False)
+        scheme_cache = {}
+        rows = []
+        for team in sorted(wanted, key=lambda t: (-len(people_of.get(t.id, [])), t.name or '')):
+            ids = people_of.get(team.id, [])
+            row = {'department_id': team.id, 'department': team.complete_name or team.name or '',
+                   'people': len(ids), 'country_code': '', 'country': '',
+                   'config_id': 0, 'config': '', 'cycle_type': '', 'state': 'none',
+                   'tick': False, 'moves': 0, 'reason': '', 'split': ''}
+            rows.append(row)
+            if not ids:
+                row['reason'] = _("Nobody works in this team yet.")
+                continue
+            counts = defaultdict(int)
+            for e in ids:
+                counts[country_of.get(e) or ''] += 1
+            # `_()` needs this frame (a generator's own frame has no env)
+            no_country = _("no country")
+            row['split'] = ', '.join(
+                '%s %s' % (n, labels.get(c) or no_country)
+                for c, n in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0])))
+            top, n = max(counts.items(), key=lambda kv: (kv[1], kv[0] or '~'))
+            if not top or n * 2 <= len(ids):
+                row['state'] = 'choice'
+                row['reason'] = (_("Nobody here has a country of work yet.")
+                                 if not any(c for c in counts) else
+                                 _("No single country of work for most of these people (%(split)s).",
+                                   split=row['split']))
+                continue
+            row['country_code'], row['country'] = top, labels.get(top) or top
+            if top not in scheme_cache:
+                scheme_cache[top] = self._country_schemes(company_id, top)
+            schemes = scheme_cache[top]
+            config = self.env['hr.formula.config']
+            if not schemes:
+                row['state'] = 'choice'
+                row['reason'] = _("%(n)s of %(total)s work in %(country)s, and there is no "
+                                  "active pay scheme for %(country)s yet.",
+                                  n=n, total=len(ids), country=row['country'])
+                continue
+            if len(schemes) == 1:
+                config = schemes
+                why = _("%(n)s of %(total)s work in %(country)s, and %(scheme)s is the only "
+                        "pay scheme for %(country)s.", n=n, total=len(ids),
+                        country=row['country'], scheme=config.name or '')
+            else:
+                paid = defaultdict(int)
+                for e in ids:
+                    if latest.get(e) in schemes.ids:
+                        paid[latest[e]] += 1
+                best = max(paid.items(), key=lambda kv: (kv[1], -kv[0])) if paid else (0, 0)
+                if best[1] * 2 > len(ids):
+                    config = schemes.browse(best[0])
+                    why = _("%(n)s of %(total)s work in %(country)s, and %(scheme)s paid "
+                            "%(paid)s of them in their latest pay run.", n=n, total=len(ids),
+                            country=row['country'], scheme=config.name or '', paid=best[1])
+                else:
+                    row['state'] = 'choice'
+                    row['reason'] = _("%(n)s of %(total)s work in %(country)s, which has "
+                                      "%(count)s pay schemes, and their last pay runs do not "
+                                      "point to one of them.", n=n, total=len(ids),
+                                      country=row['country'], count=len(schemes))
+                    continue
+            row.update({'config_id': config.id, 'config': config.name or ''})
+            # the map's own write must not meet a line already there
+            cycle = False
+            for kind in ('any', config.cycle_type or 'any'):
+                clash = Assign.search_count([
+                    ('department_id', '=', team.id), ('active', '=', True),
+                    '|', ('cycle_type', '=', kind), ('config_id', '=', config.id)])
+                if not clash:
+                    cycle = kind
+                    break
+            if not cycle or Assign.search_count([('department_id', '=', team.id),
+                                                 ('config_id', '=', config.id)]):
+                old = Assign.search([('department_id', '=', team.id)], limit=1, order='id')
+                row['state'] = 'blocked'
+                row['reason'] = _("An older line on the map still names %(old)s for this team. "
+                                  "Take it off on the map first, then ask again.",
+                                  old=old.config_id.name or _("another scheme"))
+                continue
+            row['cycle_type'] = cycle
+            moved = [e for e in ids if (today.get(e) or {}).get('config_id')
+                     and today[e]['config_id'] != config.id]
+            row['moves'] = len(moved)
+            row['reason'] = why
+            row['sentence'] = why
+            if moved:
+                row['state'] = 'moves'
+                row['warn'] = _("%(n)s of them are paid by another pay scheme today and "
+                                "would move to %(scheme)s.", n=len(moved),
+                                scheme=config.name or '')
+            else:
+                row['state'] = 'suggest'
+                row['tick'] = True
+        counts = defaultdict(int)
+        for row in rows:
+            counts[row['state']] += 1
+        return {
+            'company_id': company_id,
+            'rows': rows[:MAX_DRAFT_ROWS],
+            'mapped': len(teams) - len(wanted),
+            'counts': dict(counts),
+            'ms': int((time.time() - started) * 1000),
+        }
+
+    @api.model
+    def _latest_paid(self, employee_ids):
+        """`{employee_id: config_id}` of each person's latest payslip in a pay
+        run (ids only)."""
+        if not employee_ids:
+            return {}
+        self.env.cr.execute("""
+            SELECT DISTINCT ON (s.employee_id) s.employee_id, s.formula_config_id
+              FROM hr_payslip s
+             WHERE s.employee_id = ANY(%s)
+               AND s.payslip_run_id IS NOT NULL
+               AND s.formula_config_id IS NOT NULL
+             ORDER BY s.employee_id, s.date_to DESC NULLS LAST, s.id DESC
+        """, ([int(e) for e in employee_ids],))
+        return dict(self.env.cr.fetchall())
+
+    # ============================================================== coverage
+    @api.model
+    def coverage(self, company_id=None, cycle_type='any', limit=MAX_NAMED):
+        """Who this company's map covers for this kind of run, and who it does not."""
+        company_id = self._as_company_id(company_id)
+        started = time.time()
+        roster = self._departments_for(company_ids=[company_id])
+        answers = self.resolve_many(list(roster), cycle_type)
+        by_config = defaultdict(int)
+        # Uncovered people PER TEAM, uncapped, so the board can say "all
+        # covered" or "12 not covered" beside each team rather than putting one
+        # number at the top and leaving every row to guess.
+        missing_by_department = defaultdict(int)
+        not_covered, covered = [], 0
+        dept_names = self._department_names({d for d, _c in roster.values()})
+        Employee = self.env['hr.employee'].sudo()
+        uncovered_ids = []
+        for employee_id, answer in answers.items():
+            if answer['config_id']:
+                covered += 1
+                by_config[answer['config_id']] += 1
+            else:
+                uncovered_ids.append(employee_id)
+                missing_by_department[roster.get(employee_id, (0, 0))[0]] += 1
+        named = uncovered_ids[:int(limit or MAX_NAMED)]
+        # PSCHEME P2a A.2 — a person with a pay scheme of their own who is
+        # not covered says WHY in their own words ("their own pay scheme has
+        # ended…"); the team sentence is only for people who follow a team.
+        own = self._person_schemes(named) if named else {}
+        # PSCHEME P4 B.5 — the third fix: a country with no usual pay scheme.
+        lined = set()
+        Board = self.env.get('pb.scheme.board')
+        if Board is not None and hasattr(Board, '_map_rules'):
+            lined = set(Board._map_rules(company_id)[0])
+        country_names = dict(Employee._fields['payroll_country']._description_selection(self.env))
+        for employee in Employee.browse(named):
+            dept_id = roster.get(employee.id, (0, 0))[0]
+            if employee.id in own:
+                reason = answers[employee.id].get('via') or _(
+                    "They have their own pay scheme, but none for this kind "
+                    "of pay run.")
+            elif dept_id:
+                reason = _("They have no pay scheme of their own, and their "
+                           "team has no usual pay scheme yet.")
+            else:
+                reason = _("They have no pay scheme of their own and are not "
+                           "in a team.")
+            not_covered.append({
+                'employee_id': employee.id,
+                'name': employee.name or '',
+                'department_id': dept_id,
+                'department': dept_names.get(dept_id, ''),
+                'own': employee.id in own,
+                'reason': reason,
+                'country': employee.payroll_country or '',
+                'country_fix': (_("Choose a usual pay scheme for %s",
+                                  country_names.get(employee.payroll_country, ''))
+                                if employee.payroll_country and employee.id not in own
+                                and employee.payroll_country not in lined else ''),
+            })
+        return {
+            'company_id': company_id,
+            'cycle_type': cycle_type,
+            'people': len(roster),
+            'covered': covered,
+            'not_covered_total': len(uncovered_ids),
+            'not_covered': not_covered,
+            'by_config': {str(k): v for k, v in by_config.items()},
+            'by_department': {str(k): v
+                              for k, v in missing_by_department.items()},
+            'ms': int((time.time() - started) * 1000),
+        }
+
+    @api.model
+    def get_exceptions(self, company_id=None, cycle_type='any',
+                       limit=MAX_NAMED):
+        """The people nobody pays, by name — the queue the canvas shows."""
+        answer = self.coverage(company_id, cycle_type, limit)
+        return {
+            'company_id': answer['company_id'],
+            'cycle_type': cycle_type,
+            'total': answer['not_covered_total'],
+            'people': answer['not_covered'],
+        }
+
+    # ================================================================= draft
+    @api.model
+    def _paid_history(self, company_id):
+        """Every payslip that named a scheme, recently. Ids only."""
+        cr = self.env.cr
+        since = fields.Date.subtract(fields.Date.context_today(self),
+                                     months=DRAFT_MONTHS)
+        cr.execute("""
+            SELECT s.employee_id, s.formula_config_id, fc.cycle_type,
+                   COALESCE(s.payslip_run_id, 0), COALESCE(r.date_end, s.date_to),
+                   COALESCE((
+                       SELECT b.import_filename
+                         FROM hr_payroll_import_batch b
+                        WHERE b.payslip_run_id = s.payslip_run_id
+                          AND b.formula_config_id = s.formula_config_id
+                          AND b.source_type = 'excel'
+                          AND b.import_filename IS NOT NULL
+                        ORDER BY b.id DESC
+                        LIMIT 1
+                   ), '')
+              FROM hr_payslip s
+              JOIN hr_formula_config fc ON fc.id = s.formula_config_id
+         LEFT JOIN hr_payslip_run r ON r.id = s.payslip_run_id
+             WHERE s.company_id = %s
+               AND s.formula_config_id IS NOT NULL
+               AND COALESCE(r.date_end, s.date_to) >= %s
+             LIMIT %s
+        """, (int(company_id), since, MAX_SLIPS))
+        return cr.fetchall()
+
+    @api.model
+    def draft(self, company_id=None):
+        """Propose the map that the last runs say is already true.
+
+        For every team, per kind of run: among the three most recent runs that
+        actually contain that team's people, the scheme that paid most of them.
+        The share of agreement rides along, so a proposal can say "902 of 902"
+        or "410 of 700, and the other 290 were paid under something else".
+
+        Writes NOTHING.
+        """
+        company_id = self._as_company_id(company_id)
+        started = time.time()
+        roster = self._departments_for(company_ids=[company_id])
+        chains, meta = self._chains([company_id])
+        history = self._paid_history(company_id)
+        if not history:
+            return {'company_id': company_id, 'rows': [], 'ms': 0,
+                    'reason': 'no_history'}
+
+        # A payslip belongs to every department up its person's chain, so a
+        # scheme attached at the top of a branch can be proposed from what the
+        # branch was actually paid.
+        # (department, cycle) -> run_id -> date_end
+        runs = defaultdict(dict)
+        # (department, cycle, run_id) -> {config_id: count}
+        tally = defaultdict(lambda: defaultdict(int))
+        # The same evidence as people rather than payslip rows.  A person can
+        # appear in several recent runs; the board's compact suggestion must
+        # still say "4 of 4 people", not "12 of 12 payslips".
+        paid_people = defaultdict(set)
+        spreadsheet_by_run = {}
+        for employee_id, config_id, cycle, run_id, date_end, filename in history:
+            dept_id = roster.get(employee_id, (0, 0))[0]
+            if not dept_id:
+                continue
+            if filename:
+                spreadsheet_by_run[(run_id, config_id)] = filename
+            for candidate in (chains.get(dept_id) or [dept_id]):
+                runs[(candidate, cycle)][run_id] = date_end
+                tally[(candidate, cycle, run_id)][config_id] += 1
+                paid_people[(candidate, cycle, run_id, config_id)].add(
+                    employee_id)
+
+        configs = {c.id: c for c in self.env['hr.formula.config'].sudo().browse(
+            sorted({row[1] for row in history})).exists()}
+        names = self._department_names(set(chains))
+        existing = self._by_department(self._map_rows([company_id]))
+
+        stats = {}
+        for (dept_id, cycle), seen in runs.items():
+            recent = sorted(seen.items(), key=lambda kv: (kv[1] or fields.Date
+                                                          .context_today(self),
+                                                          kv[0]),
+                            reverse=True)[:DRAFT_RUNS]
+            counts = defaultdict(int)
+            for run_id, _day in recent:
+                for config_id, n in tally[(dept_id, cycle, run_id)].items():
+                    counts[config_id] += n
+            total = sum(counts.values())
+            if not total:
+                continue
+            winner, agree = max(counts.items(), key=lambda kv: (kv[1], -kv[0]))
+            all_people, agreeing_people = set(), set()
+            for run_id, _day in recent:
+                for config_id in tally[(dept_id, cycle, run_id)]:
+                    people = paid_people[(dept_id, cycle, run_id, config_id)]
+                    all_people.update(people)
+                    if config_id == winner:
+                        agreeing_people.update(people)
+            stats[(dept_id, cycle)] = {
+                'config_id': winner, 'agree': agree, 'total': total,
+                'share': round(agree / float(total), 4),
+                'runs': len(recent),
+                'people_agree': len(agreeing_people),
+                'people_total': len(all_people),
+                'spreadsheets': list(dict.fromkeys(
+                    spreadsheet_by_run.get((run_id, winner), '')
+                    for run_id, _day in recent
+                    if spreadsheet_by_run.get((run_id, winner), '')
+                )),
+            }
+
+        cycles = sorted({cycle for _d, cycle in stats})
+        rows = []
+        for cycle in cycles:
+            tops = [d for d in chains
+                    if not meta.get(d, {}).get('parent_id')
+                    and (d, cycle) in stats]
+            for dept_id in sorted(tops, key=lambda d: -stats[(d, cycle)]['total']):
+                rows.extend(self._draft_rows(dept_id, cycle, stats, chains,
+                                             meta, names, configs, existing))
+        rows = rows[:MAX_DRAFT_ROWS]
+        return {
+            'company_id': company_id, 'rows': rows,
+            'ms': int((time.time() - started) * 1000),
+        }
+
+    @api.model
+    def _draft_rows(self, dept_id, cycle, stats, chains, meta, names, configs,
+                    existing, depth=0):
+        """One proposal for this team, and — when its people disagree — one for
+        each child team that disagrees with it."""
+        stat = stats.get((dept_id, cycle))
+        if not stat:
+            return []
+        rows = [self._draft_row(dept_id, cycle, stat, names, configs, existing)]
+        if stat['share'] >= DRAFT_CONFIDENT or depth >= 2:
+            return rows
+        children = [d for d, m in meta.items()
+                    if m.get('parent_id') == dept_id and (d, cycle) in stats]
+        for child in sorted(children, key=lambda d: -stats[(d, cycle)]['total']):
+            if stats[(child, cycle)]['config_id'] == stat['config_id']:
+                continue
+            rows.extend(self._draft_rows(child, cycle, stats, chains, meta,
+                                          names, configs, existing, depth + 1))
+        return rows
+
+    @api.model
+    def _draft_row(self, dept_id, cycle, stat, names, configs, existing):
+        config = configs.get(stat['config_id'])
+        team = names.get(dept_id) or _("this team")
+        kind = self.cycle_words(cycle)
+        # A headcount in a SENTENCE is read, not calculated: "2,349" is a number
+        # a person takes in at a glance and "2349" is a string they have to
+        # count the digits of. The row's own figures stay numbers — the screen
+        # draws a ring from them.
+        agree, total = '{:,}'.format(stat['agree']), '{:,}'.format(stat['total'])
+        if stat['agree'] == stat['total']:
+            sentence = _(
+                "Every one of %(team)s's %(total)s people on the last "
+                "%(runs)s %(kind)s runs was paid under %(scheme)s.",
+                team=team, total=total, runs=stat['runs'], kind=kind,
+                scheme=config.name if config else '')
+        else:
+            sentence = _(
+                "%(agree)s of %(team)s's %(total)s people on the last "
+                "%(runs)s %(kind)s runs were paid under %(scheme)s — the rest "
+                "were paid under something else.",
+                agree=agree, team=team, total=total,
+                runs=stat['runs'], kind=kind,
+                scheme=config.name if config else '')
+        already = (existing.get(dept_id) or {}).get(cycle)
+        return {
+            'department_id': dept_id,
+            'department': team,
+            'config_id': stat['config_id'],
+            'config': config.name if config else '',
+            'cycle_type': cycle,
+            'cycle_label': kind,
+            'confidence': stat['share'],
+            'agree': stat['agree'],
+            'total': stat['total'],
+            'people_agree': stat.get('people_agree', 0),
+            'people_total': stat.get('people_total', 0),
+            'runs': stat['runs'],
+            'spreadsheets': stat.get('spreadsheets') or [],
+            'confident': stat['share'] >= DRAFT_CONFIDENT,
+            'already_id': already.id if already else 0,
+            'already': (already.config_id.name or '') if already else '',
+            'sentence': sentence,
+        }
+
+    @api.model
+    def accept_draft(self, rows):
+        """Write the proposals somebody ticked. The only writer in this file."""
+        Assign = self.env['hr.formula.scheme.assignment']
+        made, replaced = 0, 0
+        for row in (rows or [])[:MAX_DRAFT_ROWS]:
+            config_id = int(row.get('config_id') or 0)
+            cycle = row.get('cycle_type') or 'any'
+            department_id = int(row.get('department_id') or 0)
+            division_id = int(row.get('division_id') or 0)
+            if not config_id or not (department_id or division_id):
+                continue
+            # The base assignment model still has its original database
+            # uniqueness rule on (department, scheme).  A team may therefore
+            # already have the same scheme through the older/general ``any``
+            # row even though this draft is the more precise ``regular`` row.
+            # Replace both the semantic clash (same segment + cycle) and that
+            # storage clash (same department + scheme) before creating.  The
+            # latter is department-only because the legacy constraint never
+            # covered divisions.
+            segment = ([('department_id', '=', department_id)]
+                       if department_id else
+                       [('division_id', '=', division_id)])
+            conflict = [('cycle_type', '=', cycle)]
+            if department_id:
+                conflict = ['|', ('cycle_type', '=', cycle),
+                            ('config_id', '=', config_id)]
+            base = [('active', '=', True)] + segment + conflict
+            clash = Assign.sudo().search(base)
+            if row.get('keep_existing') and (clash or (
+                    department_id and Assign.sudo().with_context(
+                        active_test=False).search_count([
+                            ('department_id', '=', department_id),
+                            ('config_id', '=', config_id)]))):
+                # NEWHIRE P8: "Suggest who pays each team" never changes a
+                # line that is already there, even one written after the
+                # suggestion was made (an approval can land days later).
+                continue
+            if clash:
+                clash.unlink()
+                replaced += len(clash)
+            Assign.sudo().create({
+                'config_id': config_id,
+                'department_id': department_id or False,
+                'division_id': division_id or False,
+                'cycle_type': cycle,
+                'source': 'accepted',
+                'confidence': float(row.get('confidence') or 0.0),
+                'note': (row.get('sentence') or '')[:250],
+            })
+            made += 1
+        return {'created': made, 'replaced': replaced}

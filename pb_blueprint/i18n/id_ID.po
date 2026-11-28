@@ -1,0 +1,96 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_blueprint
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: id_ID\n"
+"Plural-Forms: \n"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/edit_cards.xml:0
+msgid "+ Add a column for it"
+msgstr "+ Tambah kolom untuk ini"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/edit_cards.xml:0
+msgid "From this date, the columns below take their\n               value from the clocks and the late and overtime rules instead of the pay\n               data file. Pay periods before it are paid exactly as before."
+msgstr "Mulai tanggal ini, kolom di bawah mengambil nilainya dari mesin absensi serta aturan terlambat dan lembur, bukan dari file data gaji. Periode gaji sebelumnya dibayar persis seperti sebelumnya."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/edit_cards.xml:0
+msgid "Hours from the clocks"
+msgstr "Jam dari mesin absensi"
+
+#. module: pb_blueprint
+#. odoo-python
+#: code:addons/pb_blueprint/models/blueprint_edit.py:0
+msgid "Hours from the clocks are not available here."
+msgstr "Jam dari mesin absensi tidak tersedia di sini."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/edit_cards.js:0
+#: code:addons/pb_blueprint/static/src/xml/edit_cards.xml:0
+msgid "Hours from the clocks from"
+msgstr "Jam dari mesin absensi mulai"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/edit_cards.xml:0
+msgid "Lateness reaches pay once, through the paid days. Columns\n               marked “Shown, never paid” cannot be used in a formula."
+msgstr "Keterlambatan memengaruhi gaji sekali saja, lewat hari dibayar. Kolom bertanda “Ditampilkan, tidak dibayar” tidak bisa dipakai dalam rumus."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/edit_cards.xml:0
+msgid "Leave it empty to keep every month on the pay data file."
+msgstr "Biarkan kosong agar setiap bulan tetap memakai file data gaji."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/edit_cards.xml:0
+msgid "Must stay empty"
+msgstr "Harus kosong"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/blueprint.js:0
+msgid "On"
+msgstr "Nyala"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/edit_cards.xml:0
+#: code:addons/pb_blueprint/static/src/xml/sentence_editor.xml:0
+msgid "Paid"
+msgstr "Dibayar"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/edit_cards.xml:0
+msgid "Shown, never paid"
+msgstr "Ditampilkan, tidak dibayar"
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/js/blueprint.js:0
+#: code:addons/pb_blueprint/static/src/js/edit_cards.js:0
+msgid "That could not be saved."
+msgstr "Tidak dapat disimpan."
+
+#. module: pb_blueprint
+#. odoo-javascript
+#: code:addons/pb_blueprint/static/src/xml/edit_cards.xml:0
+msgid "— not used —"
+msgstr "— tidak dipakai —"

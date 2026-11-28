@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         RECRUIT P5 — scorecards, the scheduling link, Google Meet, the
+         transcript slot. The screens people use are the board and Hiring
+         set-up; these are the native forms behind them.
+         ================================================================== -->
+
+    <!-- Global company rules for the two new tables. -->
+    <record id="rule_scorecard_company" model="ir.rule">
+        <field name="name">Scorecard: company</field>
+        <field name="model_id" ref="model_pb_hiring_scorecard"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_scorecard_part_company" model="ir.rule">
+        <field name="name">Scorecard question: company</field>
+        <field name="model_id" ref="model_pb_hiring_scorecard_part"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- The recruiter's own scheduling link, in Preferences. -->
+    <record id="view_users_preferences_scheduling_link" model="ir.ui.view">
+        <field name="name">res.users.preferences.pb_scheduling_link</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form_simple_modif"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='preferences_page']/group" position="after">
+                <group string="Hiring" name="pb_hiring_scheduling">
+                    <field name="pb_scheduling_link" widget="url"
+                           placeholder="https://calendly.com/your-name/30min"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- The small dialog the board's toast opens ("Add it in Preferences"). -->
+    <record id="view_users_scheduling_link" model="ir.ui.view">
+        <field name="name">res.users.pb_scheduling_link.dialog</field>
+        <field name="model">res.users</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <form string="Your scheduling link">
+                <sheet>
+                    <p class="text-muted">
+                        Paste your own Calendly link (or any booking page).
+                        Moving a candidate into Recruiter review sends it to
+                        them in the "Let's chat" email.
+                    </p>
+                    <group>
+                        <field name="pb_scheduling_link" widget="url"
+                               placeholder="https://calendly.com/your-name/30min"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Save" special="save" class="btn-primary"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- The interview form: the scorecard, the video link, and the
+         recording/transcript for the hiring groups only. -->
+    <record id="view_pb_hiring_interview_form_p5" model="ir.ui.view">
+        <field name="name">pb.hiring.interview.form.p5</field>
+        <field name="model">pb.hiring.interview</field>
+        <field name="inherit_id" ref="pb_hiring.view_pb_hiring_interview_form"/>
+        <field name="arch" type="xml">
+            <field name="location" position="after">
+                <field name="videocall_url" widget="url"/>
+            </field>
+            <field name="step_id" position="after">
+                <field name="scorecard_id"/>
+            </field>
+            <xpath expr="//notebook" position="inside">
+                <page string="Recording and transcript" name="transcript"
+                      groups="pb_hiring.group_hiring_user,pb_hiring.group_hiring_manager,pb_hiring.group_hiring_admin">
+                    <group>
+                        <field name="transcript_url" widget="url"
+                               groups="pb_hiring.group_hiring_user,pb_hiring.group_hiring_manager,pb_hiring.group_hiring_admin"/>
+                        <field name="transcript_attachment_id"
+                               groups="pb_hiring.group_hiring_user,pb_hiring.group_hiring_manager,pb_hiring.group_hiring_admin"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

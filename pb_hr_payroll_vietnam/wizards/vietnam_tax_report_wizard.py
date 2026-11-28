@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
 
 class VietnamTaxReportWizard(models.TransientModel):
@@ -16,14 +17,9 @@ class VietnamTaxReportWizard(models.TransientModel):
         ('annual', 'Annual Tax Report'),
     ], string='Report Type', default='monthly', required=True)
 
-    def action_generate_report(self):
-        """Generate Vietnam tax report"""
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': _('Report Generated'),
-                'message': _('Vietnam tax report has been generated successfully'),
-                'type': 'success',
-            }
-        }
+    def action_generate_report(self, *args, **kwargs):
+        """WDGAP S2-A (S2F-4): RETIRED. This door used to say a file was
+        made (or data imported) and made none. It now says so and makes
+        no claim. (Vietnam tax report wizard)"""
+        raise UserError(_("This tax report is not available here, so nothing was made. The monthly and quarterly tax declaration is prepared on Compliance › Filings."))
+

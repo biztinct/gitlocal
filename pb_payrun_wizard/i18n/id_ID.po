@@ -1,0 +1,97 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_payrun_wizard
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: id_ID\n"
+"Plural-Forms: \n"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid ", paid days and overtime come from the clocks and the late and overtime rules. Leave those columns empty in the pay data file — a number typed there is shown beside the clock value and not used."
+msgstr ", hari dibayar dan lembur berasal dari mesin absensi serta aturan terlambat dan lembur. Biarkan kolom itu kosong di file data gaji — angka yang diketik di sana ditampilkan di samping nilai mesin absensi dan tidak dipakai."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Check again"
+msgstr "Periksa lagi"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Do not put lateness into any money column of the file — the late rules already take it off."
+msgstr "Jangan masukkan keterlambatan ke kolom uang mana pun di file — aturan terlambat sudah memotongnya."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Everyone's hours are ready."
+msgstr "Jam semua orang sudah siap."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "Hours from the clocks"
+msgstr "Jam dari mesin absensi"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "people need attention before this run can be worked out."
+msgstr "orang perlu diperiksa sebelum penggajian ini bisa dihitung."
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid "people ready"
+msgstr "orang siap"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payrun_wizard.js:0
+msgid "%s people are not covered by any pay scheme and are left out"
+msgstr "%s orang tidak tercakup skema gaji mana pun dan tidak diikutkan"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payrun_wizard.js:0
+msgid ""
+"%s people of these teams have their own pay scheme and are paid elsewhere"
+msgstr "%s orang dari tim ini punya skema gaji sendiri dan dibayar di tempat lain"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payrun_wizard.js:0
+msgid "1 person is not covered by any pay scheme and is left out"
+msgstr "1 orang tidak tercakup skema gaji mana pun dan tidak diikutkan"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/js/payrun_wizard.js:0
+msgid "1 person of these teams has their own pay scheme and is paid elsewhere"
+msgstr "1 orang dari tim ini punya skema gaji sendiri dan dibayar di tempat lain"
+
+#. module: pb_payrun_wizard
+#. odoo-javascript
+#: code:addons/pb_payrun_wizard/static/src/xml/payrun_wizard.xml:0
+msgid ""
+"No pay scheme covers these people, so this run will leave them out. Give a "
+"person a pay scheme of their own from their record, or set the team's usual "
+"pay scheme in Mapping."
+msgstr "Tidak ada skema gaji yang mencakup orang-orang ini, jadi penggajian ini tidak menyertakan mereka. Beri seseorang skema gaji sendiri dari datanya, atau tetapkan skema gaji biasa tim di Pemetaan."
+
+#. module: pb_payrun_wizard
+#. odoo-python
+#: code:addons/pb_payrun_wizard/models/pb_payrun_wizard.py:0
+msgid "paid by %(scheme)s, from %(date)s"
+msgstr "dibayar dengan %(scheme)s, mulai %(date)s"

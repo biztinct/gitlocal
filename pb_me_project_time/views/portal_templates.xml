@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ETP E3 — project time, the week on one screen. The page reuses
+       pb_me_portal's .pbme kit (tokens, hero, buttons, empty state); `.pbpt-*`
+       is this module's layer (static/src/scss/project_time.scss). Every word
+       a person reads is here or in the facade's plain sentences; the script
+       (static/src/interactions/project_time.js) changes numbers and classes
+       and reads its few words from `data-pbpt-word` below. -->
+
+  <!-- ============================================================= -->
+  <!--  Icons — Lucide paths. pb_me_portal's `ess_icon` registry is   -->
+  <!--  read-only for this phase (E12), so the glyphs this page needs -->
+  <!--  are drawn here. Call with t-value="'name'" (W87).             -->
+  <!-- ============================================================= -->
+  <template id="pbpt_icon" name="Project time icon">
+    <t t-set="isz" t-value="isz or 16"/>
+    <svg t-att-width="isz" t-att-height="isz" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round"
+         stroke-linejoin="round" class="pbpt-ic" aria-hidden="true" focusable="false">
+      <t t-if="icon == 'chevron-left'"><path d="m15 18-6-6 6-6"/></t>
+      <t t-elif="icon == 'chevron-right'"><path d="m9 18 6-6-6-6"/></t>
+      <t t-elif="icon == 'plus'"><path d="M5 12h14"/><path d="M12 5v14"/></t>
+      <t t-elif="icon == 'minus'"><path d="M5 12h14"/></t>
+      <t t-elif="icon == 'copy'"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></t>
+      <t t-elif="icon == 'ellipsis'"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></t>
+      <t t-elif="icon == 'x'"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></t>
+      <t t-elif="icon == 'search'"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></t>
+      <t t-elif="icon == 'trash'"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></t>
+      <t t-elif="icon == 'fill'"><path d="M17 12H3"/><path d="m11 18 6-6-6-6"/><path d="M21 5v14"/></t>
+      <t t-elif="icon == 'check'"><path d="M20 6 9 17l-5-5"/></t>
+      <t t-elif="icon == 'alert'"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></t>
+      <t t-elif="icon == 'folder'"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></t>
+      <t t-elif="icon == 'umbrella'"><path d="M22 12a10.06 10.06 1 0 0-20 0Z"/><path d="M12 12v8a2 2 0 0 0 4 0"/><path d="M12 2v1"/></t>
+      <t t-elif="icon == 'note'"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></t>
+      <t t-elif="icon == 'clock'"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></t>
+      <t t-elif="icon == 'lock'"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></t>
+      <t t-elif="icon == 'keyboard'"><path d="M10 8h.01"/><path d="M12 12h.01"/><path d="M14 8h.01"/><path d="M16 12h.01"/><path d="M18 8h.01"/><path d="M6 8h.01"/><path d="M7 16h10"/><path d="M8 12h.01"/><rect width="20" height="16" x="2" y="4" rx="2"/></t>
+      <t t-elif="icon == 'arrow-right'"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></t>
+      <t t-else=""><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></t>
+    </svg>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  Breadcrumbs                                                   -->
+  <!-- ============================================================= -->
+  <template id="portal_breadcrumbs_project_time" name="Project time breadcrumbs"
+            inherit_id="portal.portal_breadcrumbs" priority="38">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'project_time'" class="breadcrumb-item active">Project time</li>
+    </xpath>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  The tile on the employee home (D7)                            -->
+  <!-- ============================================================= -->
+  <!-- Drawn only on the employee home and only when the company has
+       project time on. pb_me_portal's registry (`/my/project-time`) gives it
+       the Time section, the clipboard glyph and its words. No count: "32 h"
+       is not a count. -->
+  <template id="portal_my_home_project_time" name="Project time home tile"
+            inherit_id="portal.portal_my_home" customize_show="True" priority="26">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-if="pbme_home and env['pb.me.project.time'].session_state() == 'ok'" t-call="portal.portal_docs_entry">
+        <t t-set="title">Project time</t>
+        <t t-set="text">Your hours by project, week by week</t>
+        <t t-set="url" t-value="'/my/project-time'"/>
+        <t t-set="config_card" t-value="True"/>
+      </t>
+    </xpath>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  The card on the employee home (D7)                            -->
+  <!-- ============================================================= -->
+  <!-- Quiet at zero: pb.me.home adds it only when the switch is on AND the
+       person logged project time in the last eight weeks. Seven thin bars
+       (grey under the day's target, indigo at it, amber over), the week's
+       hours against what is expected, and the door. -->
+  <template id="pbme_card_project_time" name="Employee home: project time card">
+    <t t-set="ptc" t-value="card['data']"/>
+    <t t-set="ptw" t-value="ptc['week']"/>
+    <t t-set="ptf" t-value="env['pb.me.project.time']"/>
+    <section class="pbme-b pbme-b-extra pbme-b-pt" data-pbme-slot="project_time" aria-labelledby="pbme-pt-h">
+      <div class="pbme-lab-row">
+        <h2 class="pbme-lab" id="pbme-pt-h"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'clipboard-list'"/><t t-set="isz" t-value="15"/></t>Project time this week</h2>
+        <span t-if="ptc['missing'] == 1" class="pbme-pill pbme-pill--amber">1 day empty</span>
+        <span t-elif="ptc['missing']" class="pbme-pill pbme-pill--amber"><t t-out="ptc['missing']"/> days empty</span>
+      </div>
+      <div class="pbpt-hc">
+        <p class="pbpt-hc-big">
+          <t t-if="ptw['target']"><b class="pbme-num" t-out="ptf.fmt_h(ptw['logged'])"/> of <t t-out="ptf.fmt_h(ptw['target'])"/> h</t>
+          <t t-else=""><b class="pbme-num" t-out="ptf.fmt_h(ptw['logged'])"/> h logged</t>
+        </p>
+        <ol class="pbpt-hc-bars" aria-hidden="true">
+          <li t-foreach="ptw['days']" t-as="d" t-att-class="'pbpt-hc-d is-%s%s%s' % (d['state'], ' is-today' if d['is_today'] else '', ' is-weekend' if d['is_weekend'] else '')">
+            <span class="pbpt-hc-bar"><i t-att-style="'--pbpt-fill: %g' % d['pct'] + '%'"/></span>
+            <span class="pbpt-hc-n" t-out="d['date']" t-options="{'widget': 'date', 'format': 'EEEEE'}"/>
+          </li>
+        </ol>
+      </div>
+      <div class="pbpt-hc-foot">
+        <p t-if="ptc.get('attendance')" class="pbpt-hc-also">Looking for when you clocked in and out? <a href="/my/work/timesheet">That is My Timesheet.</a></p>
+        <a class="pbme-btn pbme-btn--pri" t-att-href="ptc['url']">Open the week<t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'arrow-right'"/><t t-set="isz" t-value="15"/></t></a>
+      </div>
+    </section>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  The week ring (hero, top right)                               -->
+  <!-- ============================================================= -->
+  <!-- "32 of 40 h": the person's project hours against the hours their
+       working schedule expects this week (D4). Indigo while it fills,
+       full indigo at the target, amber over it. Time off is counted in the
+       day totals and said once under the ring, never as "over". -->
+  <template id="pbpt_ring" name="Project time: week ring">
+    <div class="pbpt-ringbox">
+      <div t-att-class="'pbpt-ring is-%s%s' % (wk['state'], '' if wk['pct'] else ' is-zero')" data-pbpt-ring=""
+           t-att-style="'--pbpt-pct: %g' % wk['pct']">
+        <svg class="pbpt-ring-svg" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+          <circle class="pbpt-ring-track" cx="60" cy="60" r="52"/>
+          <circle class="pbpt-ring-arc" cx="60" cy="60" r="52" pathLength="100"/>
+        </svg>
+        <span class="pbpt-ring-in" role="status" aria-live="polite">
+          <t t-if="wk['target']"><b data-pbpt-ring-logged="" t-out="fmt(wk['logged'])"/> <small>of <t t-out="fmt(wk['target'])"/> h</small></t>
+          <t t-else=""><b data-pbpt-ring-logged="" t-out="fmt(wk['logged'])"/> <small>h logged</small></t>
+        </span>
+      </div>
+      <p t-if="wk['leave_hours']" class="pbpt-ring-cap">plus <t t-out="fmt(wk['leave_hours'])"/> h time off</p>
+      <p t-elif="not wk['target']" class="pbpt-ring-cap">No working hours are set for you this week</p>
+    </div>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  One row                                                       -->
+  <!-- ============================================================= -->
+  <!-- Name on the left (sticky), seven cells, the row total. A cell is a
+       plain text input named h-<project>-<task>-<date> (the no-JS form posts
+       it); its note is n-… inside a <details> that opens without a script.
+       A leave row and a row on a project that is closed for new time are
+       read-only. -->
+  <template id="pbpt_row" name="Project time: one row">
+    <t t-set="is_leave" t-value="row['kind'] == 'leave'"/>
+    <tr t-att-class="'pbpt-r%s%s%s' % (' is-leave' if is_leave else '', ' is-locked' if not row['pickable'] else '', ' is-new' if focus == row['key'] else '')"
+        t-att-data-key="row['key']" t-att-data-project="row['project_id'] or 0"
+        t-att-data-task="row['task_id'] or 0" t-att-data-has-lines="'1' if row['has_lines'] else '0'">
+      <th scope="row" class="pbpt-name"><div class="pbpt-name-in">
+        <span t-att-class="'pbpt-name-ic%s' % (' is-internal' if row['internal'] else '')">
+          <t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'umbrella' if is_leave else 'folder'"/><t t-set="isz" t-value="15"/></t>
+        </span>
+        <span class="pbpt-name-txt">
+          <b class="pbpt-name-l" t-out="row['label']"/>
+          <span t-if="row['sub']" class="pbpt-name-s" t-out="row['sub']"/>
+          <span t-elif="is_leave" class="pbpt-name-s">Made from your leave — read only</span>
+          <span t-if="not is_leave and not row['pickable']" class="pbpt-name-s is-closed"><t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'lock'"/><t t-set="isz" t-value="11"/></t>Closed for new time</span>
+        </span>
+        <span class="pbpt-name-tot pbpt-phone-only"><b data-pbpt-row-total-phone="" t-out="fmt(row['total'])"/> h this week</span>
+        <details t-if="not is_leave and row['pickable']" class="pbpt-menu" data-pbpt-menu="">
+          <summary class="pbpt-menu-btn" tabindex="-1" title="Row options" aria-label="Row options"><t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'ellipsis'"/></t></summary>
+          <div class="pbpt-menu-pop">
+            <button type="submit" name="op" t-att-value="'fill:%s' % row['key']" class="pbpt-menu-i" t-att-data-pbpt-fill="row['key']">
+              <t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'fill'"/></t>
+              <span>Fill the week with <t t-out="fill_hours"/> h<small>Only empty working days</small></span>
+            </button>
+            <a t-if="not row['has_lines']" class="pbpt-menu-i" t-att-data-pbpt-remove="row['key']"
+               t-att-href="'/my/project-time?week=%s&amp;rows=%s' % (wk['monday'], ','.join(k for k in (rows_param or '').split(',') if k and k != row['key']))">
+              <t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'trash'"/></t>
+              <span>Remove this row<small>It has no hours this week</small></span>
+            </a>
+            <span t-else="" class="pbpt-menu-i is-off">
+              <t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'trash'"/></t>
+              <span>Remove this row<small>Clear its hours first</small></span>
+            </span>
+          </div>
+        </details>
+      </div></th>
+      <t t-foreach="row['cells']" t-as="c">
+        <t t-set="d" t-value="wk['days'][c_index]"/>
+        <t t-set="ckey" t-value="'%s|%s' % (row['key'], c['iso'])"/>
+        <td t-att-class="'pbpt-c%s%s%s%s' % (' is-today' if d['is_today'] else '', ' is-weekend' if d['is_weekend'] else '', ' is-fresh' if ckey in fresh else '', ' has-note' if c['note'] else '')"
+            t-att-data-i="str(c_index)" t-att-data-date="c['iso']">
+          <t t-if="c['locked']">
+            <span t-att-class="'pbpt-lock%s' % (' has-h' if c['hours'] else '')" t-att-title="c['note'] or None">
+              <b t-if="c['hours']" t-out="fmt(c['hours'])"/>
+              <span t-else="" class="pbpt-lock-none" aria-hidden="true"/>
+              <small t-if="is_leave and c['note']" class="pbpt-lock-n" t-out="c['note']"/>
+            </span>
+          </t>
+          <t t-else="">
+            <span class="pbpt-cell">
+              <button type="button" class="pbpt-step pbpt-jsonly" data-pbpt-step="-0.5" tabindex="-1" aria-label="Half an hour less"><t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'minus'"/><t t-set="isz" t-value="14"/></t></button>
+              <input type="text" inputmode="decimal" autocomplete="off" spellcheck="false" maxlength="8"
+                     class="pbpt-in" t-att-name="'h-%s-%s' % (row['key'], c['iso'])"
+                     t-att-value="fmt(c['hours']) if c['hours'] else ''"
+                     t-att-data-saved="fmt(c['hours']) if c['hours'] else ''"
+                     t-att-aria-label="'%s · %s%s' % (d['long'], row['label'], (' · ' + row['sub']) if row['sub'] else '')"/>
+              <button type="button" class="pbpt-step pbpt-jsonly" data-pbpt-step="0.5" tabindex="-1" aria-label="Half an hour more"><t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'plus'"/><t t-set="isz" t-value="14"/></t></button>
+            </span>
+            <details class="pbpt-note" data-pbpt-note="">
+              <summary class="pbpt-note-dot" tabindex="-1" title="Add a note" aria-label="Add a note"><t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'note'"/><t t-set="isz" t-value="16"/></t></summary>
+              <div class="pbpt-note-pop">
+                <label class="pbpt-note-l">Note for this day</label>
+                <input type="text" class="pbpt-note-in" maxlength="300" autocomplete="off"
+                       t-att-name="'n-%s-%s' % (row['key'], c['iso'])" t-att-value="c['note']"
+                       t-att-data-saved="c['note']" placeholder="What did you work on?"/>
+                <span class="pbpt-note-hint pbpt-jsonly"><kbd>Enter</kbd> saves the note, <kbd>Esc</kbd> closes</span>
+              </div>
+            </details>
+          </t>
+        </td>
+      </t>
+      <td class="pbpt-tot"><b t-att-class="'' if row['total'] else 'is-zero'" data-pbpt-row-total="" t-out="fmt(row['total'])"/></td>
+    </tr>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  The grid (also re-drawn alone after Add / Copy / Fill)        -->
+  <!-- ============================================================= -->
+  <template id="pbpt_grid" name="Project time: the grid">
+    <t t-set="wk" t-value="pt['week']"/>
+    <!-- phone: the day strip — one day open at a time -->
+    <nav class="pbpt-strip" aria-label="Days of the week">
+      <a t-foreach="wk['days']" t-as="d"
+         t-att-href="'/my/project-time?week=%s&amp;day=%s&amp;rows=%s' % (wk['monday'], d['iso'], rows_param or '')"
+         t-att-class="'pbpt-strip-d is-%s%s%s' % (d['state'], ' is-today' if d['is_today'] else '', ' is-weekend' if d['is_weekend'] else '')"
+         t-att-data-pbpt-tab="str(d['index'])" t-att-data-date="d['iso']"
+         t-att-aria-current="'true' if d['index'] == active_idx else None">
+        <span class="pbpt-strip-w" t-out="d['date']" t-options="{'widget': 'date', 'format': 'EEE'}"/>
+        <span class="pbpt-strip-n" t-out="d['dnum']"/>
+        <span class="pbpt-strip-bar" aria-hidden="true"><i t-att-style="'--pbpt-fill: %g' % d['pct'] + '%'"/></span>
+        <span class="pbpt-strip-v"><b t-att-data-pbpt-strip-total="d['iso']" t-out="fmt(d['total'])"/> h</span>
+      </a>
+    </nav>
+
+    <table class="pbpt-t" t-att-data-day="str(active_idx)">
+      <caption class="visually-hidden">Your hours by project, from Monday to Sunday</caption>
+      <thead>
+        <tr>
+          <th scope="col" class="pbpt-name pbpt-h-name">Project</th>
+          <th t-foreach="wk['days']" t-as="d" scope="col"
+              t-att-class="'pbpt-h pbpt-c%s%s' % (' is-today' if d['is_today'] else '', ' is-weekend' if d['is_weekend'] else '')"
+              t-att-data-i="str(d['index'])" t-att-title="d['long']">
+            <span class="pbpt-h-w" t-out="d['date']" t-options="{'widget': 'date', 'format': 'EEE'}"/>
+            <span class="pbpt-h-n" t-out="d['date']" t-options="{'widget': 'date', 'format': 'd MMM'}"/>
+          </th>
+          <th scope="col" class="pbpt-tot pbpt-h-tot">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <t t-foreach="pt['rows']" t-as="row"><t t-call="pb_me_project_time.pbpt_row"/></t>
+        <tr t-if="not has_project_rows" class="pbpt-emptyrow">
+          <td colspan="9">
+            <div class="pbpt-empty">
+              <span class="pbpt-empty-ic"><t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'clipboard-list'"/><t t-set="isz" t-value="24"/></t></span>
+              <t t-if="picker_empty">
+                <p class="pbpt-empty-h">No project lets you log time yet.</p>
+                <p class="pbpt-empty-d">Ask HR to open one.</p>
+                <a t-if="ask_hr" class="pbme-btn pbme-btn--ghost" href="/my/ask-hr">Ask HR</a>
+              </t>
+              <t t-else="">
+                <p class="pbpt-empty-h">Nothing logged this week yet.</p>
+                <p class="pbpt-empty-d">Add a project and type your hours — they save as you go.</p>
+                <a class="pbme-btn pbme-btn--primary" href="#pbpt-add" data-pbpt-open-pick=""><t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'plus'"/></t>Add a project</a>
+              </t>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="pbpt-sumrow">
+          <th scope="row" class="pbpt-name pbpt-sum-l">Total</th>
+          <td t-foreach="wk['days']" t-as="d"
+              t-att-class="'pbpt-sum pbpt-c is-%s%s%s' % (d['state'], ' is-today' if d['is_today'] else '', ' is-weekend' if d['is_weekend'] else '')"
+              t-att-data-i="str(d['index'])" t-att-data-pbpt-day="d['iso']" t-att-data-target="str(d['target'])"
+              t-att-data-leave="str(d['leave_hours'])">
+            <b t-att-class="'pbpt-sum-v%s' % ('' if d['total'] else ' is-zero')" data-pbpt-day-total="" t-out="fmt(d['total'])"/>
+            <span class="pbpt-meter" aria-hidden="true"><i t-att-style="'--pbpt-fill: %g' % d['pct'] + '%'"/></span>
+            <small t-if="d['target']" class="pbpt-sum-t">of <t t-out="fmt(d['target'])"/></small>
+            <small t-elif="d['leave']" class="pbpt-sum-t" t-out="d['leave'][0]['name']"/>
+            <small t-else="" class="pbpt-sum-t">day off</small>
+          </td>
+          <td class="pbpt-tot pbpt-sum-week"><b t-att-class="'' if wk['total'] else 'is-zero'" data-pbpt-week-total="" t-out="fmt(wk['total'])"/></td>
+        </tr>
+      </tfoot>
+    </table>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  The picker: "Add a project"                                   -->
+  <!-- ============================================================= -->
+  <!-- A <details> so it opens without a script. Inside: a plain GET form with
+       a grouped list (no script), and the searchable list the script uses
+       (type to filter, arrows, Enter). Projects of the person's company
+       first, the Internal project at the top; the time-off task never
+       appears. -->
+  <template id="pbpt_picker" name="Project time: add a project">
+    <details class="pbpt-pick" id="pbpt-add" data-pbpt-pick="">
+      <summary class="pbme-btn pbme-btn--primary pbpt-pick-btn"><t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'plus'"/></t>Add a project</summary>
+      <div class="pbpt-pick-pop" role="dialog" aria-label="Add a project">
+        <t t-if="picker_empty">
+          <p class="pbpt-pick-none">No project lets you log time yet. Ask HR to open one.</p>
+        </t>
+        <t t-else="">
+          <form class="pbpt-pick-nojs pbpt-nojs" method="get" action="/my/project-time">
+            <input type="hidden" name="week" t-att-value="wk['monday']"/>
+            <input type="hidden" name="rows" t-att-value="rows_param or ''"/>
+            <label class="pbpt-pick-l" for="pbpt-pick-select">Project or task</label>
+            <select id="pbpt-pick-select" name="add" class="pbpt-pick-select">
+              <t t-foreach="picker" t-as="g">
+                <optgroup t-att-label="g['company']">
+                  <t t-foreach="g['projects']" t-as="p">
+                    <option t-att-value="p['key']" t-out="p['name']"/>
+                    <option t-foreach="p['tasks']" t-as="tk" t-att-value="tk['key']" t-out="'%s · %s' % (p['name'], tk['name'])"/>
+                  </t>
+                </optgroup>
+              </t>
+            </select>
+            <button type="submit" class="pbme-btn pbme-btn--primary">Add to my week</button>
+          </form>
+          <div class="pbpt-pick-js pbpt-jsonly">
+            <div class="pbpt-pick-search">
+              <t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'search'"/></t>
+              <input type="search" class="pbpt-pick-q" data-pbpt-q="" autocomplete="off"
+                     placeholder="Search projects and tasks" aria-label="Search projects and tasks"
+                     aria-controls="pbpt-pick-list"/>
+            </div>
+            <ul class="pbpt-pick-list" id="pbpt-pick-list" role="listbox" aria-label="Projects and tasks">
+              <t t-foreach="picker" t-as="g">
+                <li class="pbpt-pick-g" role="presentation" t-out="g['company']"/>
+                <t t-foreach="g['projects']" t-as="p">
+                  <li role="option" aria-selected="false"
+                      t-att-class="'pbpt-pick-o is-project%s' % (' is-in' if p['key'] in in_week else '')"
+                      t-att-data-key="p['key']" t-att-data-project="p['id']" data-task="0"
+                      t-att-data-search="(p['name'] or '').lower()">
+                    <t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'folder'"/><t t-set="isz" t-value="14"/></t>
+                    <span class="pbpt-pick-t"><b t-out="p['name']"/><small t-if="p['tasks']">The whole project, no task</small></span>
+                    <span t-if="p['key'] in in_week" class="pbpt-pick-in">In your week</span>
+                  </li>
+                  <li t-foreach="p['tasks']" t-as="tk" role="option" aria-selected="false"
+                      t-att-class="'pbpt-pick-o is-task%s' % (' is-in' if tk['key'] in in_week else '')"
+                      t-att-data-key="tk['key']" t-att-data-project="p['id']" t-att-data-task="tk['id']"
+                      t-att-data-search="('%s %s' % (p['name'] or '', tk['name'] or '')).lower()">
+                    <span class="pbpt-pick-t"><span t-out="tk['name']"/><small t-out="p['name']"/></span>
+                    <span t-if="tk['key'] in in_week" class="pbpt-pick-in">In your week</span>
+                  </li>
+                </t>
+              </t>
+            </ul>
+            <p class="pbpt-pick-none" data-pbpt-pick-none="" hidden="hidden">Nothing matches. Try another word.</p>
+          </div>
+        </t>
+      </div>
+    </details>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  The page                                                      -->
+  <!-- ============================================================= -->
+  <template id="portal_my_project_time" name="Project time (ESS)">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbpt" data-pbpt=""
+           t-att-data-week="wk and wk['monday']" t-att-data-rows="rows_param or ''"
+           t-att-data-day="str(active_idx or 0)" t-att-data-state="pt_state">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Project time</t>
+          <t t-set="hero_sub">Your hours on each project, one week at a time.</t>
+          <t t-if="pt_state == 'ok'"><t t-set="hero_actions"><t t-call="pb_me_project_time.pbpt_ring"/></t></t>
+        </t>
+
+        <!-- switched off for the company (D3) -->
+        <div t-if="pt_state == 'off'" class="pbme-empty pbpt-off">
+          <div class="pbme-empty-ic"><t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'clipboard-list'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>Project time is switched off for your company</h3>
+          <p>When HR turns it on, you can enter your hours by project here, one week at a time.</p>
+          <a href="/my" class="pbme-btn pbme-btn--primary">Back to my home</a>
+        </div>
+
+        <!-- a company that counts project time in days (non-goal) -->
+        <div t-elif="pt_state == 'days'" class="pbme-empty pbpt-off">
+          <div class="pbme-empty-ic"><t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'clipboard-list'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>Project time is not available here yet</h3>
+          <p>Your company counts project time in days, which this page does not do yet.</p>
+          <a href="/my" class="pbme-btn pbme-btn--primary">Back to my home</a>
+        </div>
+
+        <t t-else="">
+          <div class="pbpt-bar">
+            <nav class="pbpt-weeknav" aria-label="Weeks">
+              <a class="pbpt-navbtn" t-att-href="'/my/project-time?week=%s' % wk['prev']" data-pbpt-nav="prev" title="Previous week" aria-label="Previous week"><t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'chevron-left'"/><t t-set="isz" t-value="18"/></t></a>
+              <div class="pbpt-weeklabel">
+                <b class="pbpt-weekrange"><span t-out="wk['monday_date']" t-options="{'widget': 'date', 'format': 'd MMM'}"/><span class="pbpt-dash" aria-hidden="true"/><span t-out="wk['sunday_date']" t-options="{'widget': 'date', 'format': 'd MMM y'}"/></b>
+                <span t-if="wk['is_current']" class="pbpt-weekwhen is-now">This week</span>
+                <span t-elif="wk['monday'] &lt; wk['this']" class="pbpt-weekwhen">An earlier week</span>
+                <span t-else="" class="pbpt-weekwhen">A week ahead</span>
+              </div>
+              <a class="pbpt-navbtn" t-att-href="'/my/project-time?week=%s' % wk['next']" data-pbpt-nav="next" title="Next week" aria-label="Next week"><t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'chevron-right'"/><t t-set="isz" t-value="18"/></t></a>
+              <a t-if="not wk['is_current']" class="pbme-btn pbme-btn--ghost pbpt-thisweek" t-att-href="'/my/project-time?week=%s' % wk['this']">Back to this week</a>
+            </nav>
+            <div class="pbpt-actions">
+              <button type="submit" form="pbpt-form" name="op" value="copy" data-pbpt-copy=""
+                      t-att-class="'pbme-btn pbme-btn--ghost pbpt-copy%s' % ('' if pt['can_copy_last_week'] else ' d-none')"
+                      title="Fills empty cells with last week's hours. Nothing you typed is overwritten.">
+                <t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'copy'"/></t>Copy last week
+              </button>
+              <t t-call="pb_me_project_time.pbpt_picker"/>
+            </div>
+          </div>
+
+          <div t-att-class="'pbpt-toast%s' % ('' if flash else ' d-none')" role="status" aria-live="polite" data-pbpt-toast="">
+            <span class="pbpt-toast-ic"><t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'check'"/></t></span>
+            <span data-pbpt-toast-text="" t-out="flash"/>
+          </div>
+
+          <div t-if="errors" class="pbpt-alert" role="alert">
+            <span class="pbpt-alert-ic"><t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="18"/></t></span>
+            <div>
+              <b>Some hours did not save.</b>
+              <ul class="pbpt-alert-list">
+                <li t-foreach="errors" t-as="e"><t t-if="e.get('day')"><t t-out="e['day']"/> · <t t-out="e.get('label')"/><t t-if="e.get('value')"> · “<t t-out="e['value']"/>”</t>: </t><t t-out="e['error']"/></li>
+              </ul>
+              <span>Fix those cells and save again. Everything else is saved.</span>
+            </div>
+          </div>
+
+          <form id="pbpt-form" class="pbpt-form" method="post" action="/my/project-time" novalidate="novalidate">
+            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+            <input type="hidden" name="week" t-att-value="wk['monday']"/>
+            <input type="hidden" name="rows" t-att-value="rows_param or ''" data-pbpt-rows=""/>
+            <input type="hidden" name="day" t-att-value="wk['days'][active_idx]['iso']" data-pbpt-dayfield=""/>
+            <!-- the form's default button (Enter in a cell without a script) -->
+            <button type="submit" name="op" value="save" class="visually-hidden" tabindex="-1">Save week</button>
+            <div class="pbpt-card" data-pbpt-grid="">
+              <t t-call="pb_me_project_time.pbpt_grid"/>
+            </div>
+            <div class="pbpt-under">
+              <p class="pbpt-msg" role="alert" aria-live="assertive" data-pbpt-msg="" hidden="hidden"/>
+              <div class="pbpt-savebar">
+                <button type="submit" name="op" value="save" class="pbme-btn pbme-btn--primary pbpt-nojs">Save week</button>
+                <span class="pbpt-autosave pbpt-jsonly" data-pbpt-status="">
+                  <t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'check'"/><t t-set="isz" t-value="14"/></t>
+                  <span>Every cell saves as you type</span>
+                </span>
+              </div>
+              <p class="pbpt-keys pbpt-jsonly">
+                <t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'keyboard'"/><t t-set="isz" t-value="14"/></t>
+                <span>Arrow keys move, <kbd>Enter</kbd> saves and goes down, <kbd>Tab</kbd> goes right, <kbd>Esc</kbd> undoes, <kbd>N</kbd> adds a note. Type 7.5 or 7:30.</span>
+              </p>
+            </div>
+          </form>
+
+          <p t-if="attendance" class="pbpt-also">
+            <t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'clock'"/><t t-set="isz" t-value="14"/></t>
+            <span>Looking for when you clocked in and out? <a href="/my/work/timesheet">That is My Timesheet.</a></span>
+          </p>
+
+          <!-- the script's few words (it holds none of its own) -->
+          <div class="d-none" aria-hidden="true">
+            <span data-pbpt-word="offline">That did not save. Check your connection and try again.</span>
+            <span data-pbpt-word="saving">Saving…</span>
+            <span data-pbpt-word="saved">Every cell saves as you type</span>
+            <span data-pbpt-word="removed">Row removed.</span>
+          </div>
+        </t>
+      </div>
+    </t>
+  </template>
+
+  <!-- ============================================================= -->
+  <!--  No employee record                                            -->
+  <!-- ============================================================= -->
+  <template id="pbpt_no_employee" name="Project time: no employee">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbpt">
+        <div class="pbme-empty">
+          <div class="pbme-empty-ic"><t t-call="pb_me_project_time.pbpt_icon"><t t-set="icon" t-value="'clipboard-list'"/><t t-set="isz" t-value="26"/></t></div>
+          <h3>Project time is not set up for you yet</h3>
+          <p>Your login is not linked to an employee record, so there is no week to fill in. Ask HR to link it.</p>
+          <a href="/my" class="pbme-btn pbme-btn--primary">Back to my home</a>
+        </div>
+      </div>
+    </t>
+  </template>
+
+</odoo>

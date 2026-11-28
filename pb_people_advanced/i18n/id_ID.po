@@ -1,0 +1,282 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_people_advanced
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-16 14:12+0000\n"
+"PO-Revision-Date: 2026-11-16 14:12+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: id_ID\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Cancel"
+msgstr "Batalkan"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Carried from %s"
+msgstr "Dibawa dari %s"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Done"
+msgstr "Selesai"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
+msgid "HR lead"
+msgstr "Kepala HR"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Pay lines carried over"
+msgstr "Pos gaji yang dibawa"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/js/onboard_wizard.js:0
+msgid "Person"
+msgstr "Orang"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Put back"
+msgstr "Kembalikan"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+#: model:ir.model.fields,field_description:pb_people_advanced.field_pb_newhire_proposal__name
+msgid "Reference"
+msgstr "Referensi"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Take off"
+msgstr "Hapus"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid ""
+"The new contract starts with the same pay lines as the one it renews. Change"
+" an amount, or take a line off, before you create it."
+msgstr "Kontrak baru dimulai dengan pos gaji yang sama seperti kontrak yang diperbarui. Ubah jumlah, atau hapus satu pos, sebelum membuatnya."
+
+#. module: pb_people_advanced
+#: model:ir.model.fields,field_description:pb_people_advanced.field_pb_newhire_proposal__note
+msgid "Why"
+msgstr "Alasan"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Fixed-term"
+msgstr "Waktu tertentu"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Kind of contract (Vietnam)"
+msgstr "Jenis kontrak (Vietnam)"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Open-ended"
+msgstr "Tanpa batas waktu"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Seasonal"
+msgstr "Musiman"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Not set"
+msgstr "Belum diatur"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/contract_wizard.xml:0
+msgid "Payroll treatment (Vietnam)"
+msgstr "Perlakuan penggajian (Vietnam)"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Permanent"
+msgstr "Tetap"
+
+#. module: pb_people_advanced
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+#: code:addons/pb_people_advanced/static/src/js/onboard_wizard.js:0
+msgid "Type the account number too, or leave the bank details empty."
+msgstr "Ketik juga nomor rekeningnya, atau kosongkan detail bank."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "The account number can only have digits (spaces and dashes are fine)."
+msgstr "Nomor rekening hanya boleh berisi angka (spasi dan tanda hubung boleh)."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "The account number must be 6 to 19 digits. This one has %s."
+msgstr "Nomor rekening harus 6 sampai 19 digit. Nomor ini memiliki %s digit."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "The bank details were not sent: %s Add them from the employee's side panel (Pay & tax › Bank)."
+msgstr "Detail bank tidak dikirim: %s Tambahkan dari panel samping karyawan (Gaji & pajak › Bank)."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "The bank details were not sent: bank changes are not set up on this site. Ask your administrator."
+msgstr "Detail bank tidak dikirim: perubahan bank belum diatur di situs ini. Tanyakan administrator Anda."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "the bank check refused them."
+msgstr "pemeriksaan bank menolaknya."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "The bank details were not sent. Add them from the employee's side panel (Pay & tax › Bank)."
+msgstr "Detail bank tidak dikirim. Tambahkan dari panel samping karyawan (Gaji & pajak › Bank)."
+
+#. module: pb_people_advanced
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+#: code:addons/pb_people_advanced/static/src/js/onboard_wizard.js:0
+msgid "Bank details sent for approval"
+msgstr "Detail bank dikirim untuk disetujui"
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "Bank details kept for HR to look at first: %s Open Compliance › Bank."
+msgstr "Detail bank disimpan agar HR memeriksanya dulu: %s Buka Kepatuhan › Bank."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "the bank check found a problem."
+msgstr "pemeriksaan bank menemukan masalah."
+
+#. module: pb_people_advanced
+#. odoo-python
+#: code:addons/pb_people_advanced/models/people_wizards.py:0
+msgid "The bank details go with this request. When it is approved, they are sent to a second person for approval."
+msgstr "Detail bank ikut dalam permintaan ini. Setelah disetujui, detail tersebut dikirim ke orang kedua untuk disetujui."
+
+#. module: pb_people_advanced
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Account holder"
+msgstr "Pemilik rekening"
+
+#. module: pb_people_advanced
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Account number"
+msgstr "Nomor rekening"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/js/onboard_wizard.js:0
+msgid "Only digits (spaces and dashes are fine)."
+msgstr "Hanya angka (spasi dan tanda hubung boleh)."
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/js/onboard_wizard.js:0
+msgid "6 to 19 digits. This one has %(n)s."
+msgstr "6 sampai 19 digit. Nomor ini memiliki %(n)s."
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/js/onboard_wizard.js:0
+msgid "Name on the account"
+msgstr "Nama pada rekening"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Tax and insurance details can be completed later on the employee record."
+msgstr "Detail pajak dan asuransi dapat dilengkapi nanti di data karyawan."
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Bank details"
+msgstr "Detail bank"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Optional"
+msgstr "Opsional"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "A second person approves them before anyone is paid into this account."
+msgstr "Orang kedua menyetujuinya sebelum ada pembayaran ke rekening ini."
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Pick or type a bank"
+msgstr "Pilih atau ketik bank"
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Bank changes are not set up on this site, so these details cannot be sent."
+msgstr "Perubahan bank belum diatur di situs ini, jadi detail ini tidak dapat dikirim."
+
+#. module: pb_people_advanced
+#. odoo-javascript
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Nothing is paid into this account until a second person approves it."
+msgstr "Tidak ada pembayaran ke rekening ini sampai orang kedua menyetujuinya."
+
+#. module: pb_people_advanced
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_people_advanced/models/newhire_approval.py:0
+#: code:addons/pb_people_advanced/static/src/xml/onboard_wizard.xml:0
+msgid "Bank"
+msgstr "Bank"

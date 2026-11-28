@@ -1,0 +1,131 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_form_studio_explorer
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-20 06:38+0000\n"
+"PO-Revision-Date: 2026-11-20 06:38+0000\n"
+"Last-Translator: \n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_form_studio_explorer
+#. odoo-python
+#: code:addons/pb_form_studio_explorer/models/explorer.py:0
+msgid "%(field)s, %(grain)s"
+msgstr "%(field)s, %(grain)s"
+
+#. module: pb_form_studio_explorer
+#. odoo-python
+#: code:addons/pb_form_studio_explorer/models/explorer.py:0
+msgid "(removed)"
+msgstr "(dihapus)"
+
+#. module: pb_form_studio_explorer
+#. odoo-python
+#: code:addons/pb_form_studio_explorer/models/explorer.py:0
+msgid "Contract · as on each payslip"
+msgstr "Kontrak · sesuai tiap slip gaji"
+
+#. module: pb_form_studio_explorer
+#. odoo-python
+#: code:addons/pb_form_studio_explorer/models/explorer.py:0
+msgid "Employee fields show each person's value as it is today. Contract fields show the value on the contract each payslip was made with. People in a country a field is not used in show as —."
+msgstr "Kolom karyawan menampilkan nilai tiap orang saat ini. Kolom kontrak menampilkan nilai pada kontrak yang dipakai untuk tiap slip gaji. Orang di negara yang tidak memakai kolom itu ditampilkan sebagai —."
+
+#. module: pb_form_studio_explorer
+#. odoo-python
+#: code:addons/pb_form_studio_explorer/models/explorer.py:0
+msgid "Employee · as it is today"
+msgstr "Karyawan · nilai saat ini"
+
+#. module: pb_form_studio_explorer
+#. odoo-javascript
+#: code:addons/pb_form_studio_explorer/static/src/xml/form_builder_wording.xml:0
+msgid "In reports"
+msgstr "Di laporan"
+
+#. module: pb_form_studio_explorer
+#. odoo-javascript
+#: code:addons/pb_form_studio_explorer/static/src/xml/form_builder_wording.xml:0
+msgid "Lists and reports."
+msgstr "Daftar dan laporan."
+
+#. module: pb_form_studio_explorer
+#. odoo-javascript
+#: code:addons/pb_form_studio_explorer/static/src/xml/form_builder_wording.xml:0
+msgid "Lists and reports: a column on the lists of these records, and a split and a filter in reports."
+msgstr "Daftar dan laporan: kolom di daftar data ini, serta untuk membagi dan menyaring laporan."
+
+#. module: pb_form_studio_explorer
+#. odoo-python
+#: code:addons/pb_form_studio_explorer/models/explorer.py:0
+msgid "No"
+msgstr "Tidak"
+
+#. module: pb_form_studio_explorer
+#. odoo-python
+#: code:addons/pb_form_studio_explorer/models/explorer.py:0
+msgid "Not filled in"
+msgstr "Belum diisi"
+
+#. module: pb_form_studio_explorer
+#. odoo-python
+#: code:addons/pb_form_studio_explorer/models/form_studio.py:0
+msgid "Private reports of other people: %s"
+msgstr "Laporan pribadi orang lain: %s"
+
+#. module: pb_form_studio_explorer
+#. odoo-python
+#: code:addons/pb_form_studio_explorer/models/explorer.py:0
+msgid "Q%(n)s %(year)s"
+msgstr "K%(n)s %(year)s"
+
+#. module: pb_form_studio_explorer
+#. odoo-python
+#: code:addons/pb_form_studio_explorer/models/form_studio.py:0
+msgid "Saved reports"
+msgstr "Laporan tersimpan"
+
+#. module: pb_form_studio_explorer
+#. odoo-python
+#: code:addons/pb_form_studio_explorer/models/form_studio.py:0
+msgid "Saved reports that use this field: %s. Deleting it takes it off them: they open without this split or filter and say so once."
+msgstr "Laporan tersimpan yang memakai kolom ini: %s. Menghapusnya akan melepasnya dari laporan itu: laporan dibuka tanpa pembagian atau saringan ini dan memberi tahu sekali."
+
+#. module: pb_form_studio_explorer
+#. odoo-python
+#: code:addons/pb_form_studio_explorer/models/explorer.py:0
+msgid "Yes"
+msgstr "Ya"
+
+#. module: pb_form_studio_explorer
+#. odoo-python
+#: code:addons/pb_form_studio_explorer/models/explorer.py:0
+msgid "Your own fields"
+msgstr "Kolom Anda sendiri"
+
+#. module: pb_form_studio_explorer
+#. odoo-python
+#: code:addons/pb_form_studio_explorer/models/explorer.py:0
+msgid "by month"
+msgstr "per bulan"
+
+#. module: pb_form_studio_explorer
+#. odoo-python
+#: code:addons/pb_form_studio_explorer/models/explorer.py:0
+msgid "by quarter"
+msgstr "per kuartal"
+
+#. module: pb_form_studio_explorer
+#. odoo-python
+#: code:addons/pb_form_studio_explorer/models/explorer.py:0
+msgid "by year"
+msgstr "per tahun"

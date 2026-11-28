@@ -1,0 +1,103 @@
+<odoo>
+  <template id="csrf"><input type="hidden" name="csrf_token" t-att-value="csrf"/></template>
+  <template id="icon">
+    <span t-att-data-joining-icon="icon" aria-hidden="true"/>
+  </template>
+  <template id="day_card">
+    <article class="pbjp-card"><span class="pbjp-tile"><t t-call="pb_joining.icon"><t t-set="icon" t-value="'sun'"/></t></span>
+      <h2 t-out="first_day"/><p t-foreach="day" t-as="line" t-out="line"/><p t-if="not day" t-out="tx['no_day']"/>
+      <p t-if="buddy" t-out="buddy"/></article>
+  </template>
+  <template id="phone" name="Before you join">
+    <t t-call="web.frontend_layout">
+      <t t-set="no_header" t-value="True"/><t t-set="no_footer" t-value="True"/>
+      <t t-set="additional_title" t-value="title"/>
+      <div id="wrap" class="pbjp" t-att-lang="page_lang.replace('_','-')" t-att-data-state="state">
+        <div class="pbjp-shell">
+          <header class="pbjp-bar"><button t-if="back and can_edit_section" form="pbjp-section-form" name="draft" value="1" formnovalidate="formnovalidate" class="pbjp-tile pbjp-back" t-att-aria-label="tx['back']"><t t-call="pb_joining.icon"><t t-set="icon" t-value="'back'"/></t></button><a t-elif="back" t-att-href="base" class="pbjp-tile" t-att-aria-label="tx['back']"><t t-call="pb_joining.icon"><t t-set="icon" t-value="'back'"/></t></a>
+            <img t-elif="logo" t-att-src="logo" alt="" width="28" height="28" class="pbjp-logo"/><span t-else="" class="pbjp-tile"><t t-call="pb_joining.icon"><t t-set="icon" t-value="'sun'"/></t></span>
+            <strong t-out="title if back else (company or title)"/><small t-if="saved" class="pbjp-chip good" t-out="tx['saved']"/>
+            <details t-if="state in ('welcome','hub') and len(languages)>1" class="pbjp-language"><summary t-att-aria-label="tx['language']" t-out="dict(languages).get(page_lang,tx['language'])"/>            <t t-if="state in ('welcome','hub')">
+              <form class="pbjp-langs" method="post" t-att-action="base+'/lang'" t-att-aria-label="tx['language']"><t t-call="pb_joining.csrf"/>
+                <button t-foreach="languages" t-as="choice" name="lang" t-att-value="choice[0]" t-att-aria-pressed="'true' if page_lang==choice[0] else 'false'" t-out="choice[1]"/></form>
+            </t>
+</details>
+          </header>
+          <main class="pbjp-main">
+            <div t-if="state in ('inactive','problem')" class="pbjp-hello"><t t-call="pb_joining.icon"><t t-set="icon" t-value="'lock'"/></t><h1 t-out="tx['inactive'] if state=='inactive' else problem"/><p t-if="state=='inactive'" t-out="tx['new_link']"/></div>
+            <t t-if="state=='code'"><section class="pbjp-hello"><span class="pbjp-chip"><t t-call="pb_joining.icon"><t t-set="icon" t-value="'lock'"/></t><t t-out="tx['check']"/></span>
+              <h1 t-out="tx['enter']"/><p t-out="intro"/></section>
+              <form class="pbjp-card" id="pbjp-code" method="post" t-att-action="base+'/code'"><t t-call="pb_joining.csrf"/>
+                <label for="pbjp-code-input" t-out="tx['enter']"/><input id="pbjp-code-input" name="code" required="required" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}"/>
+                <p t-if="code_error" class="pbjp-error" role="alert" t-out="code_error"/>
+                <button class="pbjp-btn primary" t-out="tx['continue']"/>
+              </form>
+              <form t-if="mail_on" method="post" t-att-action="base+'/code/new'"><t t-call="pb_joining.csrf"/>
+                <button class="pbjp-btn ghost" t-att-data-countdown="remaining" t-att-data-wait="tx['wait']" t-out="tx['new_code']"/></form>
+              <p t-else="" t-out="no_code"/><small t-out="only"/>
+            </t>
+            <t t-if="state=='welcome'"><section class="pbjp-hello"><span class="pbjp-chip"><t t-call="pb_joining.icon"><t t-set="icon" t-value="'lock'"/></t><t t-out="tx['opened']"/></span>
+              <h1 t-out="heading"/><p t-out="subtitle"/></section>
+              <article t-if="note" class="pbjp-card"><div class="pbjp-person"><span t-if="initials" class="pbjp-avatar" t-out="initials"/><span t-else="" class="pbjp-avatar"><t t-call="pb_joining.icon"><t t-set="icon" t-value="'user'"/></t></span><div><strong t-out="manager_title"/><p>“<t t-out="note"/>”</p></div></div></article>
+              <aside class="pbjp-note"><strong t-out="tx['ten']"/> <t t-out="tx['come_back']"/></aside>
+              <form class="pbjp-foot" method="post" t-att-action="base+'/start'"><t t-call="pb_joining.csrf"/><button class="pbjp-btn primary" t-out="tx['start']"/></form>
+            </t>
+            <t t-if="state=='hub'"><h1 t-out="tx['before']"/><div class="pbjp-progress pbjp-card">
+              <div class="pbjp-ring"><svg width="56" height="56" viewBox="0 0 56 56"><circle cx="28" cy="28" r="24" fill="none" stroke="#EDEAF8" stroke-width="4"/><circle cx="28" cy="28" r="24" fill="none" stroke="#5A4BB0" stroke-width="4" pathLength="100" t-att-stroke-dasharray="'%s 100' % progress" transform="rotate(-90 28 28)"/></svg><b><t t-out="progress"/>%</b></div>
+              <div><strong t-out="done_line"/><p t-out="timing"/></div></div>
+              <div t-if="returns" class="pbjp-note warn"><b t-out="tx['fix']"/><p t-out="returns[0]"/></div>
+              <div class="pbjp-list"><a t-foreach="sections" t-as="s" class="pbjp-row" t-att-id="'pbjp-row-'+s['key']" t-att-href="base+'/s/'+s['key']">
+                <span t-att-class="'pbjp-tile '+s['state']"><t t-call="pb_joining.icon"><t t-set="icon" t-value="'check' if s['state']=='done' else ('clock' if s['state']=='later' else s['icon'])"/></t></span>
+                <div><strong t-out="s['title']"/><small t-out="s['hint']"/></div><t t-call="pb_joining.icon"><t t-set="icon" t-value="'right'"/></t></a></div>
+              <t t-set="missing" t-value="[s['title'] for s in sections if s['state'] not in ('done','later')]"/>
+              <form class="pbjp-foot" method="post" t-att-action="base+'/send'"><t t-call="pb_joining.csrf"/>
+                <button class="pbjp-btn primary" t-att-disabled="'disabled' if missing else None" t-out="tx['again'] if sent_before else tx['send']"/>
+                <small t-if="missing"><t t-out="tx['missing']"/>: <t t-out="', '.join(missing)"/></small></form>
+            </t>
+            <t t-if="state=='section'"><h1 t-out="title"/><p t-if="intro" t-out="intro"/>
+              <aside t-if="key=='personal'" class="pbjp-note" t-out="tx['held_name']"/>
+              <t t-if="key=='day'" t-call="pb_joining.day_card"/>
+              <form method="post" enctype="multipart/form-data" t-att-action="base+'/s/'+key" class="pbjp-section" id="pbjp-section-form">
+                <t t-call="pb_joining.csrf"/><p t-if="problem" class="pbjp-error" role="alert" t-out="problem"/>
+                <fieldset t-if="laptop" class="pbjp-card"><legend t-out="laptop_tx['title']"/><p t-out="laptop_tx['lede']"/>
+                  <label t-foreach="[('kind','q_kind',['mac','windows','any']), ('keyboard','q_keyboard',['us','uk','vi','id','other']), ('screen','q_screen',['small','large','any'])]" t-as="q">
+                    <t t-out="laptop_tx[q[1]]"/><select t-att-name="q[0]"><option value=""/><option t-foreach="q[2]" t-as="opt" t-att-value="opt" t-out="laptop_tx[('kb_'+opt) if q[0]=='keyboard' else opt]"/></select>
+                  </label><label t-foreach="['mouse','headset','monitor','stand']" t-as="x" class="pbjp-tick"><input type="checkbox" name="extras" t-att-value="x"/><t t-out="laptop_tx[x]"/></label>
+                  <label><t t-out="laptop_tx['q_note']"/><input name="note" maxlength="2000"/></label></fieldset>
+                <fieldset t-foreach="items" t-as="item" class="pbjp-card" t-att-disabled="None if item['editable'] else 'disabled'">
+                  <legend t-if="len(items)>1" t-out="tx['optional'] if item['key']=='insurance' else item['label']"/>
+                  <p t-if="item.get('received')" class="pbjp-note" t-out="tx['held']"/>
+                  <p t-if="item['note']" class="pbjp-note warn" t-out="item['note']"/>
+                  <div t-if="item.get('upload')" class="pbjp-upload" t-att-data-key="item['key']" t-att-data-url="base+'/file'" t-att-data-error="tx['fail_file']" t-att-data-replace="tx['replace']"><small t-out="tx['need_pay'] if item['need']=='first_pay' else (tx['need_paper'] if item['need']=='joining' else tx['if_have'])"/>
+                    <label><t t-out="tx['camera'] if key=='id_number' else item['upload']['label']"/>
+                    <input type="file" t-att-name="'upload_'+item['key']" accept="image/jpeg,image/png,application/pdf" t-att-capture="'environment' if key=='id_number' else None"/></label>
+                    <label t-if="key=='id_number'"><t t-out="tx['reverse']"/><input type="file" t-att-name="'upload_'+item['key']" accept="image/jpeg,image/png,application/pdf"/></label>
+                    <p role="status" class="pbjp-upload-status" aria-live="polite"/><progress max="100" value="0" hidden="hidden"/>
+                    <label class="pbjp-replacements" t-att-hidden="None if item['files'] else 'hidden'"><t t-out="tx['replace']"/><select t-att-name="'replace_'+item['key']"><option value="0" t-out="tx['upload']"/><option t-foreach="item['files']" t-as="file" t-att-value="file['id']" t-out="file['name']"/></select></label></div>
+                  <t t-foreach="item['fields']" t-as="box"><label class="pbjp-field"><span t-out="box['label']"/>
+                    <select t-if="box['kind']=='select'" t-att-name="box['name']"><option value=""/><option t-foreach="box['options']" t-as="opt" t-att-value="opt['value']" t-att-selected="'selected' if opt['value']==box['value'] else None" t-out="opt['label']"/></select>
+                    <t t-else=""><span t-if="box['kept']" class="pbjp-secret"><small t-out="box['value']"/>
+                      <span t-if="item['editable']" class="pbjp-tick"><input type="checkbox" name="clear" t-att-value="box['name']"/><t t-out="tx['change']"/></span></span>
+                    <input t-att-type="'date' if box['kind']=='date' else ('tel' if box['kind']=='phone' else 'text')" t-att-name="box['name']" t-att-value="'' if box['kept'] else box['value']" t-att-placeholder="tx['change'] if box['kept'] else None" t-att-list="'pbjp-banks' if box['kind']=='bank' else None" autocomplete="off"/>
+                    <datalist t-if="box['kind']=='bank'" id="pbjp-banks"><option t-foreach="box['options']" t-as="opt" t-att-value="opt['value']" t-out="opt['label']"/></datalist></t>
+                    <small t-if="box['hint']" t-out="box['hint']"/></label>
+                    <button t-if="box['name']=='bank_format'" class="pbjp-btn ghost" name="format_only" value="1" formnovalidate="formnovalidate" t-out="tx['update_bank']"/>
+                    <label class="pbjp-tick" t-if="item['key'] in ('tax_number','insurance')"><input type="checkbox" name="none" t-att-value="box['name']" t-att-checked="'checked' if box['none'] else None"/><t t-out="tx['none']"/></label>
+                  </t>
+                  <t t-if="item.get('upload') or item.get('received_upload')"><label><t t-out="tx['issued']"/><input type="date" t-att-name="item['key']+'_issue_date'" t-att-value="item['issue_date'] or ''"/></label>
+                  <label t-if="(item.get('upload') or item.get('received_upload')).get('needs_expiry')"><t t-out="tx['until']"/><input type="date" t-att-name="item['key']+'_expiry_date'" t-att-value="item['expiry_date'] or ''"/></label>
+                  <label t-if="key=='id_number'" class="pbjp-tick"><input type="checkbox" t-att-name="item['key']+'_no_expiry'" value="1" t-att-checked="'checked' if item['no_expiry'] else None"/><t t-out="tx['no_end']"/></label></t>
+                </fieldset>
+                <div t-if="can_edit_section" class="pbjp-foot"><button class="pbjp-btn primary" t-out="tx['got'] if key=='day' else tx['save']"/>
+                  <button t-if="key=='bank'" class="pbjp-btn ghost" name="later" value="1" formnovalidate="formnovalidate" t-out="tx['later']"/></div>
+              </form>
+            </t>
+            <t t-if="state in ('sent','day_one')"><section class="pbjp-hello"><span t-if="state=='sent'" class="pbjp-chip good" t-out="tx['sent']"/><h1 t-out="heading"/>
+              <p t-out="tx['check_after'] if state=='sent' else signin"/></section><t t-call="pb_joining.day_card"/>
+              <a t-if="bank_later and state=='sent'" class="pbjp-note warn" t-att-href="base+'/s/bank'"><b t-out="tx['bank_later']"/><p t-out="tx['later_ask']"/></a></t>
+          </main>
+        </div>
+      </div>
+    </t>
+  </template>
+</odoo>

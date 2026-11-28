@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- WDGAP S6-C: "How claims are paid" — one choice per company. -->
+  <record id="pb_expense_pay_setup_view_form" model="ir.ui.view">
+    <field name="name">pb.expense.pay.setup.form</field>
+    <field name="model">pb.expense.pay.setup</field>
+    <field name="arch" type="xml">
+      <form string="How claims are paid">
+        <sheet>
+          <div class="oe_title">
+            <h2>How approved claims are paid back</h2>
+          </div>
+          <group>
+            <field name="company_id" readonly="1"/>
+            <field name="paid_by" widget="radio"/>
+          </group>
+          <div class="alert alert-info" role="status" invisible="paid_by != 'payrun'">
+            Each approved claim becomes a separate line on the person's next regular payslip, added to take-home with no tax. Finance no longer pays those receipts. Top-up and extra runs never take a claim. For pay schemes paid from a pay data file, the claims are listed on the pay run for you to include in the file.
+          </div>
+          <div class="alert alert-secondary" role="status" invisible="paid_by != 'finance'">
+            Finance pays approved claims back, as it does today. Nothing reaches a payslip.
+          </div>
+          <p class="text-muted" invisible="not changed_words"><field name="changed_words" readonly="1" nolabel="1"/></p>
+          <p class="text-muted" invisible="not waiting_words"><field name="waiting_words" readonly="1" nolabel="1"/></p>
+        </sheet>
+        <footer>
+          <button name="action_save" type="object" string="Save" class="btn-primary"/>
+          <button string="Cancel" special="cancel" class="btn-secondary"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_pb_expense_pay_setup" model="ir.actions.act_window">
+    <field name="name">How claims are paid</field>
+    <field name="res_model">pb.expense.pay.setup</field>
+    <field name="view_mode">form</field>
+    <field name="target">new</field>
+  </record>
+
+</odoo>

@@ -1,0 +1,123 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_attendance_policy
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: vi_VN\n"
+"Plural-Forms: \n"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Clock hours outside a shift"
+msgstr "Giờ chấm công ngoài ca"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Clock number shared with someone else"
+msgstr "Mã chấm công trùng với người khác"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Night overtime has no pay column"
+msgstr "Làm thêm ban đêm chưa có cột lương"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "No clock number"
+msgstr "Chưa có mã chấm công"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "No shifts this month"
+msgstr "Không có ca trong tháng này"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Only one clock-in on a shift"
+msgstr "Ca chỉ có một lần chấm công"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Overtime waiting for a decision"
+msgstr "Giờ làm thêm đang chờ quyết định"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Overtime without a rate"
+msgstr "Giờ làm thêm chưa có mức trả"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Punches on a day with no shift"
+msgstr "Có chấm công vào ngày không có ca"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Shift changed since it was worked out"
+msgstr "Ca đã thay đổi sau khi được tính"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Shift not over yet"
+msgstr "Ca chưa kết thúc"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Shift not under confirmed late rules"
+msgstr "Ca chưa áp dụng quy tắc đi muộn đã xác nhận"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Shift not worked out yet"
+msgstr "Ca chưa được tính"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payrun.py:0
+msgid "This pay period starts before and ends after the clock start date (%(day)s). Split it at that date."
+msgstr "Kỳ lương này bắt đầu trước và kết thúc sau ngày bắt đầu lấy giờ từ máy chấm công (%(day)s). Hãy tách kỳ tại ngày đó."
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "This pay run can't be worked out yet — %(n)s people need attention: %(what)s."
+msgstr "Chưa thể tính đợt trả lương này — %(n)s người cần xem lại: %(what)s."
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Time off on a day with clock-ins"
+msgstr "Nghỉ phép vào ngày có chấm công"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Time off type not set as paid or unpaid"
+msgstr "Loại nghỉ phép chưa chọn có lương hay không lương"
+
+#. module: pb_attendance_policy
+#. odoo-python
+#: code:addons/pb_attendance_policy/models/clock_payroll.py:0
+msgid "Time off waiting for approval"
+msgstr "Nghỉ phép đang chờ duyệt"

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+
+    <!-- ==================================================================
+         RECRUIT P7 — the agency's own two emails. English (P8 adds
+         languages). Sent with an explicit `email_to` and the hiring sender
+         (`pb.hiring._sender`); they read public fields and `ctx` only
+         (RC49): `pb_agency_name`, `pb_agency_portal_url`, `ctx['pb_signup_url']`,
+         `ctx['pb_portal_url']`, `ctx['pb_person']`. Nothing internal is in
+         either: no budget, no requester, no panel, no other candidate.
+         ================================================================== -->
+
+    <!-- ============ the invitation: a sign-in for somebody at the agency ============ -->
+    <record id="mail_template_agency_invite" model="mail.template">
+        <field name="name">Hiring: an agency is invited to its portal</field>
+        <field name="model_id" ref="pb_vendor_access.model_pb_vendor"/>
+        <field name="email_from">{{ (object.company_id or user.company_id).pb_hiring_sender or user.email_formatted }}</field>
+        <field name="subject">Your sign-in to the {{ (object.company_id or user.company_id).pb_hiring_brand or (object.company_id or user.company_id).name }} agency portal</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733; font-size:14px; line-height:1.55;">
+                <p>Hello <t t-out="ctx.get('pb_person') or ''"/>,</p>
+                <p>
+                    <t t-out="(object.company_id or user.company_id).pb_hiring_brand or (object.company_id or user.company_id).name or ''"/>
+                    has given <strong><t t-out="object.name or ''"/></strong> its own agency portal.
+                    There you see the roles we ask you to help with, put candidates
+                    forward with their CV, and follow how far each one gets.
+                </p>
+                <p style="margin:22px 0;">
+                    <a t-att-href="ctx.get('pb_signup_url') or ctx.get('pb_portal_url')" style="display:inline-block; padding:12px 22px; border-radius:10px; background:#4F46E5; color:#ffffff; text-decoration:none; font-weight:700;">Set your password and open the portal</a>
+                </p>
+                <p style="color:#64748B;">
+                    The link works for a few days. After that, open
+                    <a t-att-href="ctx.get('pb_portal_url')" style="color:#4F46E5;"><t t-out="ctx.get('pb_portal_url') or ''"/></a>
+                    and choose "Reset password" with this email address.
+                </p>
+                <p style="color:#64748B;">
+                    One rule to know: we cannot accept somebody who is already a
+                    candidate with us or who applied to us in the last six months.
+                    If that happens, the portal tells you the date and nothing is sent.
+                </p>
+                <t t-out="(object.company_id or user.company_id).name or ''"/>
+            </div>
+        </field>
+    </record>
+
+    <!-- ============ the agency is on a role ============ -->
+    <record id="mail_template_agency_assigned" model="mail.template">
+        <field name="name">Hiring: a role for an agency</field>
+        <field name="model_id" ref="model_pb_hiring_requisition"/>
+        <field name="email_from">{{ object.company_id.pb_hiring_sender or user.email_formatted }}</field>
+        <field name="subject">A role for {{ object.pb_agency_name }}: {{ object.title }}</field>
+        <field name="auto_delete" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733; font-size:14px; line-height:1.55;">
+                <p>
+                    <t t-out="object.company_id.pb_hiring_brand or object.company_id.name or ''"/>
+                    would like <strong><t t-out="object.pb_agency_name or ''"/></strong> to help find
+                    a <strong><t t-out="object.title or ''"/></strong><t t-if="object.country_id"> in <t t-out="object.country_id.name or ''"/></t>.
+                </p>
+                <p t-if="object.pb_target_close_date">We would like to close it by <strong><t t-out="object.pb_target_close_date or ''"/></strong>.</p>
+                <p style="margin:22px 0;">
+                    <a t-att-href="object.pb_agency_portal_url" style="display:inline-block; padding:12px 22px; border-radius:10px; background:#4F46E5; color:#ffffff; text-decoration:none; font-weight:700;">Open the role and put someone forward</a>
+                </p>
+                <t t-if="object.jd_current_id and object.jd_current_id.body">
+                    <hr style="border:none; border-top:1px solid #E2E8F0; margin:20px 0;"/>
+                    <div><t t-out="object.jd_current_id.body"/></div>
+                    <hr style="border:none; border-top:1px solid #E2E8F0; margin:20px 0;"/>
+                </t>
+                <p style="color:#64748B;">
+                    Put candidates forward on the portal, with their CV and their
+                    agreement. We cannot accept somebody who is already a candidate
+                    with us or who applied in the last six months; the portal tells
+                    you the date if so.
+                </p>
+                <t t-out="object.company_id.name or ''"/>
+            </div>
+        </field>
+    </record>
+
+</data>
+</odoo>

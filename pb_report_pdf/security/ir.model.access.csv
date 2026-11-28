@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_report_pdf_look_user,pb.report.pdf.look user,model_pb_report_pdf_look,base.group_user,1,1,1,1

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- An undo row belongs to the person who made the change (WFSETUP P2). -->
+    <record id="rule_setup_undo_own" model="ir.rule">
+        <field name="name">Workforce setup undo: own rows only</field>
+        <field name="model_id" ref="model_pb_workforce_setup_undo"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+    </record>
+    <!-- A go-live publish run belongs to the person who started it (WFSETUP P4). -->
+    <record id="rule_setup_run_own" model="ir.rule">
+        <field name="name">Workforce setup publish: own rows only</field>
+        <field name="model_id" ref="model_pb_workforce_setup_run"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+    </record>
+</odoo>

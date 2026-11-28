@@ -1,0 +1,43 @@
+/* WP-F · W104 — manage-snippets overlay. Reuses the shortcuts/palette scrim tokens. */
+.pbfs {
+    .pbfs-snipmgr-scrim {
+        position: fixed; inset: 0; z-index: 71; background: rgba(20, 16, 50, .32);
+        display: flex; align-items: flex-start; justify-content: center; padding-top: 9vh;
+        animation: pbfs-pal-scrim .12s ease;
+    }
+    .pbfs-snipmgr {
+        width: 780px; max-width: 94vw; max-height: 80vh; display: flex; flex-direction: column;
+        background: #fff; border-radius: 16px; box-shadow: 0 30px 80px rgba(20, 16, 50, .34);
+        overflow: hidden; animation: pbfs-pal-in .14s ease;
+    }
+
+    .snm-body { display: grid; grid-template-columns: 1.1fr 1fr; gap: 0; min-height: 0; flex: 1; }
+    .snm-list { border-right: 1px solid var(--line-soft); padding: 12px; overflow-y: auto; min-height: 0; }
+    .snm-new { width: 100%; justify-content: center; margin-bottom: 10px; }
+    .snm-empty { padding: 24px; text-align: center; color: var(--muted); font-size: 13px; }
+    .snm-row {
+        position: relative; padding: 9px 34px 9px 11px; border-radius: 10px; cursor: pointer;
+        border: 1px solid transparent; margin-bottom: 4px;
+    }
+    .snm-row:hover { background: var(--bg); }
+    .snm-row.active { background: var(--i-soft); border-color: var(--i-soft2); }
+    .snm-row-main { display: flex; align-items: baseline; gap: 8px; }
+    .snm-name { font-size: 13px; font-weight: 700; color: var(--ink); }
+    .snm-cat { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--i600); }
+    .snm-body-preview { display: block; margin-top: 3px; font-size: 11.5px; color: var(--muted); font-family: "SFMono-Regular", ui-monospace, monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .snm-del {
+        position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border: 0; border-radius: 6px;
+        background: transparent; color: var(--muted); cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+    }
+    .snm-del:hover { background: #FEE2E2; color: #B91C1C; }
+    .snm-del svg { width: 14px; height: 14px; }
+
+    .snm-edit { padding: 16px 18px; overflow-y: auto; min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+    .snm-edit.snm-hint { color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .snm-f { display: flex; flex-direction: column; gap: 5px; }
+    .snm-f > span { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+    .snm-bodyinput { font-family: "SFMono-Regular", ui-monospace, monospace; font-size: 13px; }
+    .snm-edit-foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+
+    @media (max-width: 720px) { .snm-body { grid-template-columns: 1fr; } .snm-list { border-right: 0; border-bottom: 1px solid var(--line-soft); } }
+}

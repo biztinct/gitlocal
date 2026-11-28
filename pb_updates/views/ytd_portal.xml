@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- UPDATES P5 (D20) — the tax summary shows the figures before Payobook:
+         one extra row, added to the year's totals above (controller
+         `pb_updates/controllers/ytd_portal.py`). Nothing changes for a person
+         without such figures: `ytd_opening` is then not in the page. -->
+    <template id="portal_my_taxsheet_ytd" inherit_id="pb_me_portal.portal_my_taxsheet"
+              name="Tax Sheet: figures before Payobook">
+        <xpath expr="//t[@t-if='not rows']" position="attributes">
+            <attribute name="t-if">not rows and not ytd_opening</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('pbme-tile-y')]" position="after">
+            <div class="pbme-tile-y" t-if="ytd_opening and c in ytd_opening">Includes before Payobook</div>
+        </xpath>
+        <xpath expr="//table[hasclass('pbme-taxtable')]/tbody" position="inside">
+            <tr t-if="ytd_opening" class="pbme-taxrow-opening">
+                <td><b t-esc="ytd_opening_title"/></td>
+                <t t-foreach="codes" t-as="c">
+                    <td class="pbme-num">
+                        <t t-if="c in ytd_opening" t-out="ytd_opening[c]" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                        <t t-else="">—</t>
+                    </td>
+                </t>
+            </tr>
+        </xpath>
+        <!-- UPDATES P5d (D29) — a mid-month advance is listed as before but
+             says why it is not in the year's totals; one that cannot be
+             matched to a month-end payslip is shown apart under the table.
+             `ytd_not_added` exists only for a person whose year has an advance. -->
+        <!-- UPDATES P5e (D33) — an advance whose month-end payslip is not
+             finished yet IS in the totals until it is: its pill carries a
+             clock (Lucide "clock") and an outlined look. -->
+        <xpath expr="//a[@t-att-href=&quot;row['url']&quot;]" position="after">
+            <span t-if="ytd_counted_for_now and row['id'] in ytd_counted_for_now" class="pbme-taxrow-adv pbme-taxrow-adv-now"><svg
+                  width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25"
+                  stroke-linecap="round" stroke-linejoin="round" class="pbme-taxrow-adv-ic" aria-hidden="true"><circle
+                  cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><t t-esc="ytd_not_added[row['id']]"/></span>
+            <span t-elif="ytd_not_added and row['id'] in ytd_not_added" class="pbme-taxrow-adv" t-esc="ytd_not_added[row['id']]"/>
+        </xpath>
+        <xpath expr="//div[hasclass('pbme-tablewrap')]" position="after">
+            <div t-if="ytd_not_added" class="pbme-card pbme-taxnote pbme-taxnote-adv">
+                <p class="d-flex align-items-start gap-2 mb-0">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round" class="pbme-ic flex-none mt-1" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
+                    </svg>
+                    <span t-esc="ytd_advance_note"/>
+                </p>
+                <t t-if="ytd_advance_apart">
+                    <p class="mt-2 mb-1"><b t-esc="ytd_advance_apart_title"/></p>
+                    <t t-foreach="codes" t-as="c">
+                        <p t-if="c in ytd_advance_apart" class="mb-0"><t t-esc="labels[c_index]"/>: <t t-out="ytd_advance_apart[c]" t-options='{"widget": "monetary", "display_currency": currency}'/></p>
+                    </t>
+                </t>
+            </div>
+        </xpath>
+        <xpath expr="//div[hasclass('pbme-tablewrap')]" position="after">
+            <div t-if="ytd_opening_apart" class="pbme-card pbme-taxnote">
+                <p><b t-esc="ytd_opening_also"/></p>
+                <p t-foreach="ytd_opening_apart" t-as="a"><t t-esc="a['label']"/>: <t t-out="a['amount']" t-options='{"widget": "monetary", "display_currency": currency}'/></p>
+            </div>
+        </xpath>
+    </template>
+</odoo>

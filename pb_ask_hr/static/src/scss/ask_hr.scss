@@ -1,0 +1,293 @@
+// =====================================================================
+//  Ask HR on My Payobook — .pbah-* (TIERS T3a)
+//
+//  A thin layer on pb_me_portal's .pbme kit (tokens, buttons, chips, empty
+//  state). Tokens only (--pbim-*), flat colours, no gradients, Inter. The
+//  conversation reads like a chat: the person's messages on the right in the
+//  brand tint, HR's on the left. Quiet-board palette for the status pill:
+//  grey at rest, colour only when the person has something to do.
+// =====================================================================
+
+.pbme.pbah {
+    max-width: 920px; margin-left: auto; margin-right: auto;
+
+    // ---------- shared ----------
+    .pbah-card {
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-lg); box-shadow: var(--pbim-sh); padding: 22px 24px;
+    }
+    .pbah-h1 { font-size: 25px; font-weight: 800; letter-spacing: -.01em; color: var(--pbim-ink); margin: 2px 0 0; line-height: 1.2; }
+    .pbah-input {
+        width: 100%; border: 1px solid var(--pbim-line); border-radius: 10px;
+        padding: 10px 12px; font: inherit; font-size: 14px; color: var(--pbim-text); background: var(--pbim-surface);
+        transition: border-color .15s, box-shadow .15s;
+        &::placeholder { color: var(--pbim-slate); opacity: .8; }
+        &:focus { outline: none; border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-ring); }
+    }
+    .pbah-textarea { resize: vertical; min-height: 84px; line-height: 1.55; }
+    .pbah-kbd { font-size: 12px; color: var(--pbim-muted); }
+    @media (hover: none) { .pbah-kbd { display: none; } }
+
+    // ---------- status pill ----------
+    .pbah-pill {
+        display: inline-flex; align-items: center; gap: 6px; flex: none; white-space: nowrap;
+        padding: 5px 11px; border-radius: 999px; border: 1px solid transparent;
+        font-size: 12px; font-weight: 700;
+        background: var(--pbim-slate-soft); color: var(--pbim-slate);
+        transition: background-color .3s, color .3s, border-color .3s;
+    }
+    .pbah-pill-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .5; }
+    // with HR: a quiet amber dot on white — something is moving, not yours
+    .pbah-pill--new, .pbah-pill--with_hr {
+        background: var(--pbim-surface); border-color: var(--pbim-line); color: var(--pbim-text);
+        .pbah-pill-dot { background: var(--pbim-amber); opacity: 1; }
+    }
+    // answered: the one coloured state — it is the person's turn
+    .pbah-pill--answered {
+        background: var(--pbim-primary); color: #fff;
+        .pbah-pill-dot { background: #fff; opacity: 1; }
+    }
+    .pbah-pill.is-fresh { animation: pbah-pop 520ms cubic-bezier(.2, .9, .3, 1.2) 120ms both; }
+
+    // ---------- toast ----------
+    .pbah-toast {
+        position: fixed; z-index: 1060; left: 50%; bottom: 24px; transform: translateX(-50%);
+        display: flex; align-items: center; gap: 10px; max-width: calc(100vw - 32px);
+        padding: 11px 18px 11px 12px; border-radius: 14px;
+        background: var(--pbim-ink); color: #fff; box-shadow: var(--pbim-sh-lg);
+        font-size: 13.5px; font-weight: 600;
+        animation: pbah-toast-in 320ms cubic-bezier(.2, .7, .3, 1) both,
+                   pbah-toast-out 400ms ease-in 4.6s forwards;
+    }
+    .pbah-toast-ic {
+        display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
+        background: var(--pbim-green); color: #fff; flex: none;
+    }
+
+    // ---------- alert (a reason + the next step) ----------
+    .pbah-alert {
+        display: flex; align-items: flex-start; gap: 10px; margin: 0 0 16px;
+        padding: 11px 14px; border-radius: 12px;
+        background: var(--pbim-rose-soft); color: var(--pbim-ink);
+        font-size: 13.5px; font-weight: 600; line-height: 1.45;
+        animation: pbah-in 260ms ease-out both;
+    }
+    .pbah-alert-ic { color: var(--pbim-rose); display: inline-grid; padding-top: 1px; }
+
+    // ---------- list ----------
+    .pbah-strip {
+        display: flex; flex-wrap: wrap; align-items: baseline; margin: 0 2px 12px;
+        font-size: 14px; color: var(--pbim-muted);
+        b { color: var(--pbim-ink); font-weight: 800; font-variant-numeric: tabular-nums; margin-right: 4px; }
+        .pbah-stat + .pbah-stat::before { content: "\00b7"; margin: 0 10px; color: var(--pbim-slate); }
+        .pbah-stat.is-act { color: var(--pbim-primary-strong); font-weight: 700; b { color: var(--pbim-primary); } }
+    }
+    .pbah-list {
+        list-style: none; margin: 0; padding: 4px;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r); box-shadow: var(--pbim-sh);
+        animation: pbah-in 300ms cubic-bezier(.2, .7, .3, 1) both;
+    }
+    .pbah-li + .pbah-li { border-top: 1px solid var(--pbim-line-2); }
+    .pbah-row {
+        display: flex; align-items: center; gap: 12px; padding: 12px;
+        border-radius: 10px; color: var(--pbim-text); text-decoration: none;
+        transition: background-color .15s;
+        &:hover { background: var(--pbim-bg); color: var(--pbim-text); text-decoration: none; }
+        &:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: -2px; }
+    }
+    .pbah-row-ic {
+        width: 36px; height: 36px; border-radius: 10px; flex: none; display: inline-grid; place-items: center;
+        background: var(--pbim-slate-soft); color: var(--pbim-slate);
+    }
+    .pbah-row.is-unread .pbah-row-ic { background: var(--pbim-soft); color: var(--pbim-primary); }
+    .pbah-row-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+    .pbah-row-title {
+        display: flex; align-items: center; gap: 7px; min-width: 0;
+        font-size: 14px; font-weight: 700; color: var(--pbim-ink);
+        > span:not(.visually-hidden) { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    }
+    .pbah-unread { width: 8px; height: 8px; border-radius: 50%; background: var(--pbim-primary); flex: none; }
+    .pbah-row-meta { font-size: 12px; color: var(--pbim-muted); }
+    .pbah-row-num::before { content: "\00b7"; margin: 0 6px; }
+    .pbah-row-side { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex: none; }
+    .pbah-ago { font-size: 11.5px; color: var(--pbim-muted); white-space: nowrap; }
+
+    // ---------- new question ----------
+    .pbah-new { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 18px; align-items: start; margin-top: 6px; }
+    .pbah-lead { font-size: 16px; color: var(--pbim-text); margin: 8px 0 20px; line-height: 1.5; max-width: 52ch; }
+    .pbah-field { display: block; margin: 0 0 18px; padding: 0; border: 0; min-width: 0; }
+    .pbah-label {
+        display: block; margin: 0 0 8px; padding: 0;
+        font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--pbim-muted);
+    }
+    .pbah-opt { font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--pbim-slate); margin-left: 4px; }
+    .pbah-cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+    .pbah-cat { position: relative; display: block; margin: 0; cursor: pointer; }
+    // the radio stays in the page (keyboard + screen readers) but out of sight
+    .pbah-cat-input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+    .pbah-cat-in {
+        display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px;
+        border: 1px solid var(--pbim-line); background: var(--pbim-surface);
+        font-size: 13.5px; font-weight: 700; color: var(--pbim-text);
+        transition: border-color .15s, background-color .15s, color .15s, box-shadow .15s, transform .15s;
+    }
+    .pbah-cat-ic {
+        width: 30px; height: 30px; border-radius: 9px; flex: none; display: inline-grid; place-items: center;
+        background: var(--pbim-slate-soft); color: var(--pbim-slate); transition: background-color .15s, color .15s;
+    }
+    .pbah-cat:hover .pbah-cat-in { border-color: var(--pbim-primary-light); }
+    .pbah-cat-input:checked + .pbah-cat-in {
+        border-color: var(--pbim-primary); background: var(--pbim-soft); color: var(--pbim-primary-dark);
+        box-shadow: 0 0 0 1px var(--pbim-primary) inset;
+        .pbah-cat-ic { background: var(--pbim-primary); color: #fff; }
+    }
+    .pbah-cat-input:focus-visible + .pbah-cat-in { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+    .pbah-cat:active .pbah-cat-in { transform: scale(.98); }
+
+    // file picker
+    .pbah-picker { min-width: 0; }
+    .pbah-drop {
+        position: relative; display: flex; align-items: center; gap: 12px; margin: 0; cursor: pointer;
+        padding: 12px 14px; border-radius: 12px; border: 1px dashed var(--pbim-primary-light);
+        background: var(--pbim-bg); color: var(--pbim-text); transition: border-color .15s, background-color .15s;
+        &:hover { border-color: var(--pbim-primary); background: var(--pbim-soft); }
+        &:focus-within { outline: 2px solid var(--pbim-primary); outline-offset: 2px; }
+    }
+    .pbah-drop-input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+    .pbah-drop-ic { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; background: var(--pbim-surface); color: var(--pbim-primary); flex: none; }
+    .pbah-drop-t { display: flex; flex-direction: column; font-size: 12px; color: var(--pbim-muted); b { font-size: 13.5px; color: var(--pbim-ink); } }
+    .pbah-chosen { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; &:empty { display: none; } }
+    .pbah-chosen li {
+        display: inline-flex; align-items: center; gap: 6px; max-width: 100%;
+        padding: 5px 10px; border-radius: 999px; background: var(--pbim-soft); color: var(--pbim-primary-dark);
+        font-size: 12px; font-weight: 700; animation: pbah-in 200ms ease-out both;
+        span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        small { font-weight: 600; color: var(--pbim-muted); }
+    }
+    .pbah-warn { margin: 6px 0 0; font-size: 12.5px; font-weight: 700; color: var(--pbim-rose); }
+    .pbah-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+    .pbah-send.is-sending { opacity: .7; pointer-events: none; }
+
+    // what happens next
+    .pbah-next { padding: 20px; position: sticky; top: 90px; }
+    .pbah-next-h { font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--pbim-muted); margin: 0 0 14px; }
+    .pbah-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+    .pbah-step {
+        display: flex; gap: 12px; font-size: 13px; color: var(--pbim-muted); line-height: 1.45;
+        b { display: block; color: var(--pbim-ink); font-size: 13.5px; }
+    }
+    .pbah-step-n {
+        width: 24px; height: 24px; border-radius: 50%; flex: none; display: inline-grid; place-items: center;
+        background: var(--pbim-soft); color: var(--pbim-primary); font-size: 12px; font-weight: 800;
+    }
+
+    // ---------- the conversation ----------
+    .pbah-head {
+        display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+        padding: 6px 4px 18px; border-bottom: 1px solid var(--pbim-line); margin-bottom: 22px;
+        .pbme-eyebrow { font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--pbim-primary-strong); }
+    }
+    .pbah-head-main { min-width: 0; }
+    .pbah-head-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 10px 0 0; font-size: 13px; color: var(--pbim-muted); }
+    .pbah-chip {
+        display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px;
+        background: var(--pbim-slate-soft); color: var(--pbim-slate); font-size: 12px; font-weight: 700;
+    }
+    .pbah-thread { list-style: none; margin: 0 0 18px; padding: 0; display: flex; flex-direction: column; gap: 16px; }
+    .pbah-msg { display: flex; align-items: flex-end; gap: 10px; max-width: 100%; animation: pbah-in 280ms cubic-bezier(.2, .7, .3, 1) both; }
+    .pbah-msg.is-me { flex-direction: row-reverse; }
+    // unquote: libsass evaluates a bare min() itself and fails on mixed units
+    .pbah-msg-in { display: flex; flex-direction: column; gap: 5px; max-width: unquote("min(78%, 620px)"); min-width: 0; }
+    .pbah-msg.is-me .pbah-msg-in { align-items: flex-end; }
+    .pbah-av {
+        width: 32px; height: 32px; border-radius: 50%; flex: none; display: inline-grid; place-items: center;
+        background: var(--pbim-teal-soft); color: var(--pbim-teal); font-size: 12px; font-weight: 800; letter-spacing: .02em;
+    }
+    .pbah-by { display: flex; align-items: baseline; gap: 7px; padding: 0 4px; font-size: 12px; color: var(--pbim-muted); b { color: var(--pbim-ink); font-weight: 700; } }
+    .pbah-by-role { font-size: 10.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--pbim-teal); }
+    .pbah-time { white-space: nowrap; }
+    .pbah-bubble {
+        padding: 11px 15px; border-radius: 16px; font-size: 14px; line-height: 1.55; color: var(--pbim-text);
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line); border-bottom-left-radius: 5px;
+        overflow-wrap: anywhere;
+        p { margin: 0 0 8px; } p:last-child { margin-bottom: 0; }
+        a { color: var(--pbim-primary-strong); }
+    }
+    .pbah-msg.is-me .pbah-bubble {
+        background: var(--pbim-soft); border-color: var(--pbim-primary-light); color: var(--pbim-ink);
+        border-bottom-left-radius: 16px; border-bottom-right-radius: 5px;
+    }
+    .pbah-files { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pbah-file {
+        display: inline-flex; align-items: center; gap: 6px; max-width: 260px;
+        padding: 6px 11px; border-radius: 10px; border: 1px solid var(--pbim-line); background: var(--pbim-surface);
+        font-size: 12.5px; font-weight: 700; color: var(--pbim-primary-strong); text-decoration: none;
+        &:hover { border-color: var(--pbim-primary-light); background: var(--pbim-bg); text-decoration: none; }
+        .pbah-file-n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    }
+    .pbah-note {
+        align-self: center; display: inline-flex; align-items: center; gap: 8px; max-width: 100%;
+        padding: 7px 14px; border-radius: 999px; background: var(--pbim-bg);
+        font-size: 12.5px; color: var(--pbim-muted); text-align: center; scroll-margin-bottom: 220px;
+    }
+    .pbah-note-ic { display: inline-grid; color: var(--pbim-slate); &.is-wait { color: var(--pbim-amber); } &.is-act { color: var(--pbim-primary); } }
+
+    .pbah-composer { padding: 14px; margin-bottom: 12px; }
+    .pbah-composer .pbah-textarea { border: 0; padding: 6px 4px; min-height: 64px; box-shadow: none; &:focus { box-shadow: none; } }
+    .pbah-composer:focus-within { border-color: var(--pbim-primary-light); box-shadow: 0 0 0 3px var(--pbim-ring), var(--pbim-sh); }
+    .pbah-composer-bar {
+        display: flex; align-items: flex-start; flex-wrap: wrap; gap: 10px; padding-top: 10px; border-top: 1px solid var(--pbim-line-2);
+        .pbah-picker { flex: 1 1 260px; }
+        .pbah-drop { padding: 7px 10px; border-style: solid; border-color: transparent; background: transparent; &:hover { background: var(--pbim-bg); border-color: transparent; } }
+        .pbah-drop-ic { width: 28px; height: 28px; background: var(--pbim-bg); }
+        .pbah-kbd { align-self: center; }
+        .pbah-send { align-self: center; }
+    }
+    .pbah-solved {
+        display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 16px;
+        padding: 4px 6px; font-size: 13px; color: var(--pbim-muted);
+        &.is-act { padding: 16px 18px; border-color: var(--pbim-primary-light); background: var(--pbim-soft); }
+    }
+    .pbah-solved-t { display: flex; flex-direction: column; gap: 2px; b { color: var(--pbim-ink); font-size: 14px; } }
+    .pbah-closed { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 18px; .pbah-alert { flex-basis: 100%; margin: 0; } }
+    .pbah-closed-t { display: flex; flex-direction: column; gap: 3px; font-size: 13.5px; color: var(--pbim-muted); b { font-size: 15px; color: var(--pbim-ink); } }
+    .pbah-shared { font-size: 13px; color: var(--pbim-muted); text-align: center; margin: 4px 0 0; }
+    .pbah-back {
+        display: inline-flex; align-items: center; gap: 6px; margin: 22px 4px 0;
+        font-size: 13px; font-weight: 700; color: var(--pbim-primary-strong); text-decoration: none;
+        &:hover { text-decoration: underline; text-underline-offset: 3px; }
+    }
+
+    // ---------- phone ----------
+    @media (max-width: 768px) {
+        .pbah-new { grid-template-columns: 1fr; }
+        .pbah-next { position: static; }
+        .pbah-card { padding: 18px; }
+        .pbah-head { flex-direction: column; }
+        .pbah-msg-in { max-width: 86%; }
+        // the pill and the time move under the title instead of beside it
+        .pbah-row { flex-wrap: wrap; }
+        .pbah-row-body { flex-basis: calc(100% - 52px); }
+        .pbah-row-side { flex-direction: row; align-items: center; gap: 10px; margin-left: 48px; }
+        .pbah-composer-bar .pbah-send { flex: 1 1 100%; min-height: 44px; }
+        .pbah-solved .pbme-btn, .pbah-closed .pbme-btn { flex: 1 1 100%; min-height: 44px; }
+    }
+}
+
+@keyframes pbah-in { from { opacity: 0; transform: translateY(6px); } }
+@keyframes pbah-pop {
+    0% { transform: scale(.86); box-shadow: 0 0 0 0 var(--pbim-ring); }
+    60% { transform: scale(1.04); box-shadow: 0 0 0 6px var(--pbim-ring); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 transparent; }
+}
+@keyframes pbah-toast-in { from { opacity: 0; transform: translate(-50%, 12px); } }
+@keyframes pbah-toast-out { to { opacity: 0; transform: translate(-50%, 8px); visibility: hidden; } }
+
+@media (prefers-reduced-motion: reduce) {
+    .pbme.pbah {
+        .pbah-msg, .pbah-list, .pbah-alert, .pbah-chosen li, .pbah-pill.is-fresh { animation: none; }
+        .pbah-toast { animation: pbah-toast-out 1ms linear 5s forwards; }
+        .pbah-row, .pbah-cat-in, .pbah-input, .pbah-pill { transition: none; }
+    }
+}

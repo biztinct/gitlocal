@@ -5,7 +5,7 @@ from odoo import fields, models
 
 class HrPayslipLineAnalytics(models.Model):
     """Extend hr.payslip.line with fields for pivot analytics"""
-    _inherit = 'hr.payslip.line'
+    _inherit = ['hr.payslip.line']
 
     # Related field for direct pivot access to category type
     category_type = fields.Selection(

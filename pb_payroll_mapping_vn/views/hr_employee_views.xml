@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+      One page, on the employee record, holding every Vietnam payroll fact the
+      pay run reads off the person. It is a PAGE rather than a group tucked into
+      an existing tab because these are the answers somebody used to type into a
+      spreadsheet: they need a place you can point at and say "keep this right
+      and the payroll is right".
+    -->
+    <record id="view_employee_form_vn_payroll_facts" model="ir.ui.view">
+        <field name="name">hr.employee.form.vn.payroll.facts</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="priority">110</field>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Payroll facts" name="pb_vn_payroll_facts">
+                    <div class="alert alert-info" role="status">
+                        These answers are read straight into the pay run. They
+                        do not need to be repeated in the monthly pay data file.
+                    </div>
+                    <group>
+                        <group string="Status">
+                            <field name="pb_vn_is_local"/>
+                            <field name="pb_vn_tax_resident"/>
+                            <field name="pb_vn_tax_commitment"/>
+                        </group>
+                        <group string="Contributions">
+                            <field name="pb_vn_in_insurance"/>
+                            <field name="pb_vn_union_member"/>
+                        </group>
+                        <group string="Health cover" colspan="2">
+                            <field name="pb_vn_enrol_family_health"/>
+                            <field name="pb_vn_enrol_private_health"/>
+                            <field name="pb_vn_enrol_dep_health"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

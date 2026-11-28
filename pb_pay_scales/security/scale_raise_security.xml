@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Who reads a scale rise (WDGAP S8-D).
+
+         The pay team reads the ones of the companies they work in. Anybody
+         else reads only the ones a route asked them to decide (a Finance
+         approver with no pay role is the everyday case) or the ones they
+         prepared. A seat is a read, never a write (ledger AM60). -->
+    <record id="rule_scale_raise_seat" model="ir.rule">
+        <field name="name">Scale rise: the ones I was asked to decide</field>
+        <field name="model_id" ref="model_pb_pay_scale_raise"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|',
+            ('seat_user_ids', 'in', [user.id]),
+            ('user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_scale_raise_team" model="ir.rule">
+        <field name="name">Scale rise: the pay team, their companies</field>
+        <field name="model_id" ref="model_pb_pay_scale_raise"/>
+        <field name="groups" eval="[(4, ref('pb_pay.group_pay_viewer')),
+                                    (4, ref('pb_pay.group_pay_manager'))]"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_scale_raise_line_seat" model="ir.rule">
+        <field name="name">Scale rise person: the ones I was asked to decide</field>
+        <field name="model_id" ref="model_pb_pay_scale_raise_line"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|',
+            ('raise_id.seat_user_ids', 'in', [user.id]),
+            ('raise_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_scale_raise_line_team" model="ir.rule">
+        <field name="name">Scale rise person: the pay team, their companies</field>
+        <field name="model_id" ref="model_pb_pay_scale_raise_line"/>
+        <field name="groups" eval="[(4, ref('pb_pay.group_pay_viewer')),
+                                    (4, ref('pb_pay.group_pay_manager'))]"/>
+        <field name="domain_force">[('raise_id.company_id', 'in', company_ids)]</field>
+    </record>
+
+</odoo>

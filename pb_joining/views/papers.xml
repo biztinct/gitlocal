@@ -1,0 +1,40 @@
+<odoo>
+  <record id="cat_permanent_id" model="pb.employee.document.category">
+    <field name="name">Identity card — no end date</field><field name="code">ID_PERMANENT</field><field name="sequence">21</field>
+  </record>
+  <record id="report_sign" model="ir.actions.report">
+    <field name="name">Signing confirmation</field><field name="model">pb.joining.sign</field>
+    <field name="report_type">qweb-pdf</field><field name="report_name">pb_joining.sign_page</field>
+    <field name="group_ids" eval="[(4, ref('base.group_system'))]"/>
+  </record>
+  <template id="sign_page">
+    <html><head><meta charset="utf-8"/></head><body><main><div t-foreach="pages" t-as="p" style="font-family:Arial,Helvetica,sans-serif;color:#1E1B2E;padding:28px"><div>
+      <p style="font-size:26px;color:#5A4BB0;font-weight:bold">Signing confirmation</p><p style="font-size:20px;font-weight:bold" t-out="p['name']"/>
+      <p>Signed by <b t-out="p['who']"/></p><p t-out="p['when']"/><img t-att-src="p['ink']" style="max-width:380px;max-height:145px" alt="Signature"/>
+      <p>Signed on a phone through the joining link sent to <t t-out="p['contact']"/>.</p>
+      <p>Document SHA-256</p><code t-out="p['hash']"/>
+    </div></div></main></body></html>
+  </template>
+  <template id="phone_papers" inherit_id="pb_joining.phone">
+    <xpath expr="//main" position="inside">
+      <t t-if="state=='sign_list'"><h1 t-out="title"/><article t-foreach="papers" t-as="p" class="pbjp-card"><h2 t-out="p['name']"/>
+        <p t-if="p['note']" class="pbjp-note warn" t-out="p['note']"/>
+        <span t-if="p['signed']" class="pbjp-chip good"><t t-out="tx['signed']"/> · <t t-out="p['when']"/></span>
+        <a t-else="" class="pbjp-btn" t-att-href="base+'/paper/'+str(p['id'])" t-out="tx['read_sign']"/></article>
+        <div class="pbjp-foot"><a class="pbjp-btn primary" t-att-href="base" t-out="tx['next']"/></div>
+      </t>
+      <t t-if="state=='sign_paper'"><h1 t-out="title"/>
+        <form class="pbjp-card pbjp-sign" method="post" t-att-action="base+'/paper/'+str(paper)+'/sign'">
+          <t t-call="pb_joining.csrf"/>
+          <a class="pbjp-btn" t-att-href="base+'/paper/'+str(paper)+'/pdf'" target="_blank" rel="noopener noreferrer" data-open-paper="1" t-out="tx['open_paper']"/>
+          <label class="pbjp-tick"><input name="agree" type="checkbox" value="1" required="required" t-att-disabled="None if paper_open else 'disabled'"/><t t-out="agree"/></label>
+          <label t-out="tx['draw']"/><canvas width="800" height="320" t-att-aria-label="tx['draw']"/>
+          <div><button type="button" class="pbjp-btn ghost" data-clear="1" t-out="tx['clear']"/><button type="button" class="pbjp-btn ghost" data-reuse="1" t-att-data-ink="reuse_ink" hidden="hidden" t-out="tx['reuse']"/></div>
+          <input type="hidden" name="signature"/><label><t t-out="tx['signer']"/><input type="text" name="signer" maxlength="200" required="required" t-att-value="signer"/></label>
+          <noscript><p t-out="tx['no_script']"/></noscript>
+          <div class="pbjp-foot"><button class="pbjp-btn primary" type="submit" disabled="disabled" t-out="tx['sign']"/></div>
+        </form>
+      </t>
+    </xpath>
+  </template>
+</odoo>

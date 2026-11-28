@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Part of Payobook. See LICENSE file for full copyright and licensing details.
+
+     The employee pages (`/my…`) are a workplace, not the public website
+     (owner ask 2026-11-04). On them the website header — its menu (Home, Jobs,
+     Contact us), search, phone number and call-to-action — and the whole
+     website footer are not rendered. A slim top bar takes the header's place:
+     the tenant's own logo (linking back to /my), the language switch and the
+     account menu.
+
+     `no_header` / `no_footer` are web.frontend_layout's own switches (its
+     `<header t-if="not no_header">` and `<footer t-if="not no_footer">`), so
+     this holds for every header template a tenant picks, desktop and mobile.
+     Set BEFORE the header node, in the same template, so both see it.
+     website._pbme_bare_page() is exception-safe: the page cannot 500 on it. -->
+<odoo>
+    <template id="pbme_chrome" inherit_id="website.layout" priority="60"
+              name="Employee pages: own top bar, no website header or footer">
+        <xpath expr="//header" position="before">
+            <t t-set="pbme_bare" t-value="website and website._pbme_bare_page()"/>
+            <t t-set="no_header" t-value="no_header or pbme_bare"/>
+            <t t-set="no_footer" t-value="no_footer or pbme_bare"/>
+            <t t-if="pbme_bare" t-call="pb_me_portal_website.pbme_topbar"/>
+        </xpath>
+    </template>
+
+    <template id="pbme_topbar" name="Employee pages: top bar">
+        <t t-set="pbme_logo" t-value="website._pbme_logo_url()"/>
+        <t t-set="pbme_company" t-value="website.company_id.sudo()"/>
+        <header class="o_pbme_topbar">
+            <div class="container o_pbme_topbar_in">
+                <a href="/my" class="o_pbme_brand" t-att-title="pbme_company.name">
+                    <img t-if="pbme_logo" t-att-src="pbme_logo" t-att-alt="pbme_company.name"/>
+                    <span t-else="" class="o_pbme_brand_name" t-esc="pbme_company.name"/>
+                </a>
+                <ul class="navbar-nav flex-row align-items-center gap-2">
+                    <t t-call="website.placeholder_header_language_selector"
+                        _btn_class="'nav-link'"
+                        _dropdown_menu_class.f="dropdown-menu-end"/>
+                    <t t-call="portal.user_dropdown"
+                        _user_name="True"
+                        _user_name_class.f="d-none d-sm-inline"
+                        _icon="True"
+                        _icon_wrap_class.f="d-inline d-sm-none"
+                        _item_class.f="dropdown"
+                        _link_class.f="nav-link border-0"
+                        _dropdown_menu_class.f="dropdown-menu-end"/>
+                </ul>
+            </div>
+        </header>
+    </template>
+</odoo>

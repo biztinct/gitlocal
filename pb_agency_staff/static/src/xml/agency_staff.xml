@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       People › Agency staff. Comments ruled with `=`. No `t-as` named
+       lt/gt/lte/gte/and/or/not/in: rows `rw`, options `op`, files `fl`,
+       managers `mg`. Every sentence on one line (PRD-3).
+       ==================================================================== -->
+  <t t-name="pb_agency_staff.PbAgencyStaff">
+    <div class="pbim pbim-page pbag" t-att-class="{ 'pbag--embedded': props.embedded }">
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Reading the list…</span></div>
+      <div t-else="" class="pbim-wrap">
+
+        <div t-if="!state.allowed" class="pbim-panel pbag-locked">
+          <div class="pbag-locked-ic"><t t-out="icon('lock', 30)"/></div>
+          <h2>Agency staff are looked after by HR</h2>
+          <p t-esc="state.why"/>
+        </div>
+
+        <t t-else="">
+          <div class="pbag-head">
+            <div class="pbag-head-id">
+              <h1 class="pbim-h1" t-if="!props.embedded">Agency staff</h1>
+              <p class="pbim-sub">People an agency supplies. They are not employees: never in a pay run, never on a payslip, never in your headcount.</p>
+            </div>
+            <div class="pbag-head-actions">
+              <button class="pbim-btn ghost" t-on-click="refresh" title="Read the list again" aria-label="Read the list again"><t t-out="icon('refresh', 15)"/></button>
+              <button class="pbim-btn primary" t-on-click="openNew"><t t-out="icon('userPlus', 15)"/> Add someone</button>
+            </div>
+          </div>
+
+          <div t-if="!state.total" class="pbag-start">
+            <div class="pbag-start-ic"><t t-out="icon('building', 30)"/></div>
+            <div>
+              <h2>Who is working here through an agency?</h2>
+              <p>Keep a light record for each of them: the agency, the site and team, their manager here, their dates and their papers. They are shown beside your headcount, not in it.</p>
+              <button class="pbim-btn primary" t-on-click="openNew"><t t-out="icon('userPlus', 15)"/> Add someone</button>
+            </div>
+          </div>
+
+          <t t-else="">
+            <t t-call="pb_import_kit.QuietGlance">
+              <t t-set="qGlance" t-value="glance"/>
+              <t t-set="qGlanceOn" t-value="glanceOn"/>
+            </t>
+            <PbFilterLayout kit="kit" coach="'agency-filters'" searchPlaceholder="searchLabel">
+              <div t-if="state.listError" class="pbim-empty pbag-empty">
+                <h3>The list could not load</h3>
+                <button class="pbim-btn primary" t-on-click="retry"><t t-out="icon('refresh', 14)"/> Try again</button>
+              </div>
+              <div t-elif="state.rows.length" class="pbim-tablewrap">
+                <table class="pbim-table pbag-table">
+                  <thead><tr><th>Name</th><th>Agency</th><th>Team and site</th><th>Dates</th><th>Status</th></tr></thead>
+                  <tbody>
+                    <tr t-foreach="state.rows" t-as="rw" t-key="rw.id" class="pbag-row" tabindex="0" t-on-click="() => this.openWorker(rw.id)" t-on-keydown="(ev) => ev.key === 'Enter' and this.openWorker(rw.id)">
+                      <td><span class="pbag-who"><span class="pbag-av"><t t-out="icon('user', 15)"/></span><span class="pbag-who-tx"><b t-esc="rw.name"/><small t-esc="rw.role or '—'"/></span></span></td>
+                      <td t-esc="rw.agency or '—'"/>
+                      <td><span t-esc="rw.team or '—'"/><small class="pbag-sub" t-if="rw.site" t-esc="rw.site"/></td>
+                      <td><span t-esc="rw.start or '—'"/> <t t-if="rw.end">→ <t t-esc="rw.end"/></t></td>
+                      <td><span class="pbim-badge pbag-badge" t-att-class="'is-' + rw.status + (rw.ending ? ' is-ending' : '')" t-esc="rw.status_label"/></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div t-elif="!state.listLoaded" class="pbag-skel"/>
+              <div t-else="" class="pbim-empty pbag-empty">
+                <h3>Nobody matches these filters</h3>
+                <button class="pbim-btn ghost" t-on-click="() => kit.toggleFilters({})">Show everyone</button>
+              </div>
+              <div t-if="state.rows.length and !state.listError" class="pbag-foot">
+                Showing <b t-esc="fmtInt(state.rows.length)"/> of <b t-esc="fmtInt(state.listTotal)"/>
+                <button t-if="hasMore" class="pbim-btn ghost pbim-btn-sm" t-on-click="loadMore">Show <t t-esc="nextPage"/> more</button>
+              </div>
+            </PbFilterLayout>
+          </t>
+        </t>
+      </div>
+
+      <!-- ============================ the drawer ============================ -->
+      <div t-if="state.drawer" class="pbag-scrim" t-on-click="close">
+        <aside class="pbag-drawer" t-on-click.stop="">
+          <t t-set="w" t-value="state.drawer.w"/>
+          <t t-set="o" t-value="state.options or {}"/>
+          <div class="pbag-dhead">
+            <span class="pbag-av lg"><t t-out="icon('user', 20)"/></span>
+            <div class="pbag-dhead-tx">
+              <h2 t-if="w.id" t-esc="w.name"/>
+              <h2 t-else="">Add someone from an agency</h2>
+              <small>Not an employee · never in a pay run</small>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="close" aria-label="Close"><t t-out="icon('x', 16)"/></button>
+          </div>
+          <div class="pbag-form">
+            <label>Name<input class="pbag-in" type="text" t-att-value="w.name" t-on-input="(ev) => this.onField('name', ev)"/></label>
+            <label>Agency
+              <select class="pbag-in" t-on-change="(ev) => this.onField('vendor_id', ev, true)">
+                <option value="0" t-att-selected="!w.vendor_id">Not set</option>
+                <option t-foreach="o.agencies or []" t-as="op" t-key="op.id" t-att-value="op.id" t-att-selected="w.vendor_id === op.id" t-esc="op.label"/>
+              </select>
+            </label>
+            <label>Role<input class="pbag-in" type="text" t-att-value="w.job_title" t-on-input="(ev) => this.onField('job_title', ev)"/></label>
+            <label>Company
+              <select class="pbag-in" t-on-change="(ev) => this.onField('company_id', ev, true)">
+                <option t-foreach="o.companies or []" t-as="op" t-key="op.id" t-att-value="op.id" t-att-selected="w.company_id === op.id" t-esc="op.label"/>
+              </select>
+            </label>
+            <label>Team
+              <select class="pbag-in" t-on-change="(ev) => this.onField('department_id', ev, true)">
+                <option value="0" t-att-selected="!w.department_id">Not set</option>
+                <option t-foreach="o.teams or []" t-as="op" t-key="op.id" t-att-value="op.id" t-att-selected="w.department_id === op.id" t-esc="op.label"/>
+              </select>
+            </label>
+            <label>Site
+              <select class="pbag-in" t-on-change="(ev) => this.onField('work_location_id', ev, true)">
+                <option value="0" t-att-selected="!w.work_location_id">Not set</option>
+                <option t-foreach="o.sites or []" t-as="op" t-key="op.id" t-att-value="op.id" t-att-selected="w.work_location_id === op.id" t-esc="op.label"/>
+              </select>
+            </label>
+            <label class="pbag-combo">Manager here
+              <input class="pbag-in" type="search" placeholder="Type a name…" t-att-value="state.drawer.mgr.term" t-on-input="onMgr" t-on-blur="blurMgr"/>
+              <div t-if="state.drawer.mgr.open and state.drawer.mgr.rows.length" class="pbag-combo-list">
+                <button t-foreach="state.drawer.mgr.rows" t-as="mg" t-key="mg.id" t-on-mousedown.prevent="() => this.pickMgr(mg)"><b t-esc="mg.label"/><small t-esc="mg.sub"/></button>
+              </div>
+            </label>
+            <div class="pbag-two">
+              <label>Starts<input class="pbag-in" type="date" t-att-value="w.date_start" t-on-change="(ev) => this.onField('date_start', ev)"/></label>
+              <label>Ends<input class="pbag-in" type="date" t-att-value="w.date_end" t-on-change="(ev) => this.onField('date_end', ev)"/></label>
+            </div>
+            <div class="pbag-two">
+              <label>Phone<input class="pbag-in" type="text" t-att-value="w.phone" t-on-input="(ev) => this.onField('phone', ev)"/></label>
+              <label>Email<input class="pbag-in" type="email" t-att-value="w.email" t-on-input="(ev) => this.onField('email', ev)"/></label>
+            </div>
+            <label>Notes<textarea class="pbag-in" rows="3" t-att-value="w.notes" t-on-input="(ev) => this.onField('notes', ev)"/></label>
+
+            <div t-if="w.id" class="pbag-files">
+              <h4>Papers</h4>
+              <div t-foreach="w.files" t-as="fl" t-key="fl.id" class="pbag-file">
+                <t t-out="icon('fileText', 15)"/> <a t-att-href="fl.url" t-esc="fl.name"/>
+                <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.removeFile(fl.id)" aria-label="Remove"><t t-out="icon('trash', 13)"/></button>
+              </div>
+              <p t-if="!w.files.length" class="pbag-muted">No papers yet: an agency agreement, an ID copy, a site pass.</p>
+              <label class="pbim-btn ghost pbim-btn-sm pbag-upload"><t t-out="icon('upload', 13)"/> Add a file (PDF, PNG or JPG)<input type="file" accept=".pdf,.png,.jpg,.jpeg" t-on-change="onFile"/></label>
+            </div>
+            <p t-else="" class="pbag-muted">Save first, then add their papers.</p>
+          </div>
+          <div class="pbag-dfoot">
+            <button t-if="w.id and state.canDelete" class="pbim-btn ghost danger" t-on-click="remove"><t t-out="icon('trash', 14)"/> Delete</button>
+            <button t-if="w.id and w.status !== 'ended'" class="pbim-btn ghost" t-on-click="endToday"><t t-out="icon('logOut', 14)"/> Last day is today</button>
+            <button class="pbim-btn primary" t-att-disabled="state.drawer.busy or !w.name" t-on-click="save"><t t-out="icon('save', 14)"/> Save</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </t>
+
+  <!-- The agency's drawer in Vendors: the people it supplies. -->
+  <t t-name="pb_agency_staff.PbVendorsBoard" t-inherit="pb_vendor_access.PbVendorsBoard" t-inherit-mode="extension">
+    <xpath expr="//h4[hasclass('pbva-drawer-t')]" position="before">
+      <t t-if="state.drawer.agency_staff and state.drawer.agency_staff.length">
+        <h4 class="pbva-drawer-t">Their people here</h4>
+        <div class="pbag-vlist">
+          <div t-foreach="state.drawer.agency_staff" t-as="ag_w" t-key="ag_w.id" class="pbag-vrow">
+            <b t-esc="ag_w.name"/>
+            <small><t t-esc="ag_w.role or '—'"/><t t-if="ag_w.team"> · <t t-esc="ag_w.team"/></t></small>
+            <span class="pbim-badge pbag-badge" t-att-class="'is-' + ag_w.status" t-esc="ag_w.status_label"/>
+          </div>
+        </div>
+      </t>
+    </xpath>
+  </t>
+
+</templates>

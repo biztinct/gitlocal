@@ -1,0 +1,1068 @@
+# Translation of Payobook.
+# * pb_time_pay
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid "%(hours)s h given as time off in lieu instead of pay."
+msgstr "%(hours)s jam diberikan sebagai cuti pengganti, bukan dibayar."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid "%(hours)s h of overtime on %(day)s, given as time off instead of pay."
+msgstr ""
+"%(hours)s jam lembur pada %(day)s, diberikan sebagai cuti pengganti, bukan "
+"dibayar."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid ""
+"%(name)s is already %(state)s, so whether it is paid or given as time off "
+"can no longer change."
+msgstr ""
+"%(name)s sudah %(state)s, jadi pilihan dibayar atau cuti pengganti tidak "
+"bisa diubah lagi."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "%s could not be done:"
+msgstr "%s tidak dapat dilakukan:"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "%s h"
+msgstr "%s jam"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/close.py:0
+msgid "%s late or early minute row(s) to confirm or excuse"
+msgstr "%s baris terlambat atau pulang awal untuk dikonfirmasi atau dimaafkan"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/ot_desk_time_off.js:0
+msgid "%s overtime request(s) approved as time off in lieu."
+msgstr "%s pengajuan lembur disetujui sebagai cuti pengganti."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "%s overtime requests sent for approval."
+msgstr "%s pengajuan lembur dikirim untuk disetujui."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "%s rows confirmed for pay."
+msgstr "%s baris dikonfirmasi untuk penggajian."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "%s rows excused."
+msgstr "%s baris dimaafkan."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "1 overtime request sent for approval."
+msgstr "1 pengajuan lembur dikirim untuk disetujui."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "1 row confirmed for pay."
+msgstr "1 baris dikonfirmasi untuk penggajian."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "1 row excused."
+msgstr "1 baris dimaafkan."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Accept"
+msgstr "Terima"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid ""
+"Accepted hours become time off in lieu when the overtime is approved, hour "
+"for hour, and are not also paid."
+msgstr ""
+"Jam yang diterima menjadi cuti pengganti saat lembur disetujui, jam demi "
+"jam, dan tidak dibayar lagi."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+msgid ""
+"Accepting overtime and confirming late minutes is for attendance managers "
+"and payroll managers."
+msgstr ""
+"Menerima lembur dan mengonfirmasi menit terlambat hanya untuk manajer "
+"kehadiran dan manajer penggajian."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "All"
+msgstr "Semua"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/ot_desk_time_off.js:0
+msgid ""
+"Approve and give the same number of hours as time off in lieu, instead of "
+"paying them"
+msgstr ""
+"Setujui dan berikan jumlah jam yang sama sebagai cuti pengganti, bukan "
+"dibayar"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/ot_desk_time_off.xml:0
+msgid "Approve as time off"
+msgstr "Setujui sebagai cuti pengganti"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Bonus hours"
+msgstr "Jam bonus"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Cancel"
+msgstr "Batal"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "Changed since decided"
+msgstr "Berubah sejak diputuskan"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid "Changing pay or time off"
+msgstr "Mengubah dibayar atau cuti pengganti"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid "Clock punches"
+msgstr "Data absensi"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__company_id
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__basis
+msgid "Compared with"
+msgstr "Dibandingkan dengan"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+#: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__basis__shift
+msgid "Compared with the shift"
+msgstr "Dibandingkan dengan shift"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+#: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__basis__hours
+msgid "Compared with working hours"
+msgstr "Dibandingkan dengan jam kerja"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Confirm"
+msgstr "Konfirmasi"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+#: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__state__confirmed
+msgid "Confirmed"
+msgstr "Dikonfirmasi"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid ""
+"Confirmed minutes and approved overtime do not reach these payslips by "
+"themselves."
+msgstr ""
+"Menit yang dikonfirmasi dan lembur yang disetujui tidak otomatis masuk ke "
+"slip gaji ini."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid ""
+"Counted from the expected time once past the grace minutes (%(late)s min "
+"late, %(early)s min early)."
+msgstr ""
+"Dihitung dari waktu yang diharapkan setelah melewati menit toleransi "
+"(terlambat %(late)s menit, pulang awal %(early)s menit)."
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__create_uid
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__create_uid
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__create_date
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__create_date
+msgid "Created on"
+msgstr "Dibuat pada"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__date
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__date
+msgid "Day"
+msgstr "Hari"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Day locked"
+msgstr "Hari dikunci"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__decided_by_id
+msgid "Decided by"
+msgstr "Diputuskan oleh"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__decided_on
+msgid "Decided on"
+msgstr "Diputuskan pada"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/late_entry.py:0
+msgid "Deciding late minutes"
+msgstr "Memutuskan menit terlambat"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__state
+msgid "Decision"
+msgstr "Keputusan"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Dismiss"
+msgstr "Tutup"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_attendance_weekentry__display_name
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_formula_config__display_name
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_leave_type__display_name
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_overtime_request__display_name
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_payslip__display_name
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_close__display_name
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_ess_workforce__display_name
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_ot_desk__display_name
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__display_name
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__display_name
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_pay__display_name
+msgid "Display Name"
+msgstr "Nama Tampilan"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+#: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__kind__early
+#: code:addons/pb_time_pay/models/ess_workforce.py:0
+msgid "Early leave"
+msgstr "Pulang awal"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Early minutes"
+msgstr "Menit pulang awal"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__employee_id
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__employee_id
+msgid "Employee"
+msgstr "Karyawan"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Excuse"
+msgstr "Maafkan"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "Excuse %s rows"
+msgstr "Maafkan %s baris"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "Excuse these minutes"
+msgstr "Maafkan menit ini"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+#: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__state__excused
+#. odoo-python
+#: code:addons/pb_time_pay/models/ess_workforce.py:0
+msgid "Excused"
+msgstr "Dimaafkan"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid ""
+"Excused minutes never reach pay. The decision and your note are kept with "
+"the day."
+msgstr ""
+"Menit yang dimaafkan tidak pernah masuk penggajian. Keputusan dan catatan "
+"Anda disimpan bersama harinya."
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__expected_at
+msgid "Expected"
+msgstr "Diharapkan"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Expected · punched"
+msgstr "Diharapkan · absen"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid "From"
+msgstr "Dari"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+#: model:ir.model.fields.selection,name:pb_time_pay.selection__hr_overtime_request__pb_comp_choice__time_off
+msgid "Give time off"
+msgstr "Beri cuti pengganti"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.view_overtime_request_form_time_pay
+msgid "Give time off instead"
+msgstr "Beri cuti pengganti saja"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_overtime_time_pay
+msgid "Given as time off"
+msgstr "Diberikan sebagai cuti pengganti"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Hide the figures"
+msgstr "Sembunyikan angka"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Hours"
+msgstr "Jam"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_attendance_weekentry__id
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_formula_config__id
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_leave_type__id
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_overtime_request__id
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_payslip__id
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_close__id
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_ess_workforce__id
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_ot_desk__id
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__id
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__id
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_pay__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_time_pay
+#: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__pay_state__held
+msgid "In a payslip"
+msgstr "Dalam slip gaji"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__kind
+msgid "Kind"
+msgstr "Jenis"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__kind
+msgid "Kind of overtime"
+msgstr "Jenis lembur"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__write_uid
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__write_uid
+msgid "Last Updated by"
+msgstr "Terakhir Diperbarui oleh"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__write_date
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__write_date
+msgid "Last Updated on"
+msgstr "Terakhir Diperbarui pada"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/close.py:0
+msgid "Late and early minutes all decided"
+msgstr "Semua menit terlambat dan pulang awal sudah diputuskan"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_payslip__pb_late_ids
+msgid "Late and early minutes taken"
+msgstr "Menit terlambat dan pulang awal yang diambil"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+#: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__kind__late
+#: code:addons/pb_time_pay/models/ess_workforce.py:0
+msgid "Late arrival"
+msgstr "Terlambat"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Late arrivals and early leaving"
+msgstr "Terlambat dan pulang awal"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Late minutes"
+msgstr "Menit terlambat"
+
+#. module: pb_time_pay
+#: model:ir.model,name:pb_time_pay.model_pb_time_late
+msgid "Late or early minutes, decided"
+msgstr "Menit terlambat atau pulang awal, sudah diputuskan"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "Late or early to decide"
+msgstr "Terlambat atau pulang awal untuk diputuskan"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "Marked as not overtime."
+msgstr "Ditandai bukan lembur."
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__user_id
+msgid "Marked by"
+msgstr "Ditandai oleh"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__minutes
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "Minutes"
+msgstr "Menit"
+
+#. module: pb_time_pay
+#: model:ir.model.constraint,message:pb_time_pay.constraint_pb_time_late_minutes_positive
+msgid "Minutes cannot be negative."
+msgstr "Menit tidak boleh negatif."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "Minutes confirmed"
+msgstr "Menit dikonfirmasi"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Night"
+msgstr "Malam"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/ot_desk.py:0
+#: code:addons/pb_time_pay/models/time_pay.py:0
+msgid "No longer exists."
+msgstr "Sudah tidak ada."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "No overtime suggested this week."
+msgstr "Tidak ada saran lembur minggu ini."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Nobody was late or left early this week."
+msgstr "Tidak ada yang terlambat atau pulang awal minggu ini."
+
+#. module: pb_time_pay
+#: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__pay_state__free
+msgid "Not in a payslip yet"
+msgstr "Belum masuk slip gaji"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Not overtime"
+msgstr "Bukan lembur"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__note
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__note
+msgid "Note"
+msgstr "Catatan"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Note (optional)"
+msgstr "Catatan (opsional)"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Only confirmed minutes reach pay."
+msgstr "Hanya menit yang dikonfirmasi yang masuk penggajian."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid "Only somebody who may decide %s can choose between pay and time off."
+msgstr ""
+"Hanya orang yang boleh memutuskan %s yang dapat memilih antara dibayar dan "
+"cuti pengganti."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid ""
+"Only suggestions. Accepting one sends an ordinary overtime request on the "
+"usual approval route."
+msgstr ""
+"Hanya saran. Menerima saran akan mengirim pengajuan lembur biasa melalui "
+"alur persetujuan yang biasa."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Overtime suggested from clock punches"
+msgstr "Lembur yang disarankan dari data absensi"
+
+#. module: pb_time_pay
+#: model:ir.model,name:pb_time_pay.model_pb_time_ot_dismiss
+msgid "Overtime suggestion marked as not overtime"
+msgstr "Saran lembur yang ditandai bukan lembur"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "Overtime suggestions"
+msgstr "Saran lembur"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+#: model:ir.model.fields.selection,name:pb_time_pay.selection__pb_time_late__pay_state__paid
+msgid "Paid"
+msgstr "Dibayar"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Paid from a pay data file"
+msgstr "Dibayar dari file data gaji"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_overtime_request__pb_comp_label
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.view_overtime_request_form_time_pay
+msgid "Paid or time off"
+msgstr "Dibayar atau cuti pengganti"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__pay_state
+msgid "Pay"
+msgstr "Gaji"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+#: model:ir.model.fields.selection,name:pb_time_pay.selection__hr_overtime_request__pb_comp_choice__pay
+msgid "Pay it"
+msgstr "Bayar"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.view_overtime_request_form_time_pay
+msgid "Pay it instead"
+msgstr "Bayar saja"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,help:pb_time_pay.field_hr_overtime_request__pb_comp_choice
+msgid ""
+"Pay it: the hours are paid as overtime. Give time off: the same number of "
+"hours become time off in lieu and are not also paid."
+msgstr ""
+"Bayar: jam dibayar sebagai lembur. Beri cuti pengganti: jumlah jam yang sama"
+" menjadi cuti pengganti dan tidak dibayar lagi."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Person"
+msgstr "Orang"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Person · day"
+msgstr "Orang · hari"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Public holiday"
+msgstr "Hari libur nasional"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__actual_at
+msgid "Punched"
+msgstr "Absen"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Rest day"
+msgstr "Hari istirahat"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "Show the figures for %s"
+msgstr "Tampilkan angka untuk %s"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid ""
+"Showing the first %(shown)s of %(total)s. Narrow the department or the "
+"search to see the rest."
+msgstr ""
+"Menampilkan %(shown)s pertama dari %(total)s. Persempit departemen atau "
+"pencarian untuk melihat sisanya."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid ""
+"Shown for information: no pay scheme has a late minutes pay item yet, so "
+"these minutes do not hold the week."
+msgstr ""
+"Hanya sebagai informasi: belum ada skema gaji dengan komponen menit "
+"terlambat, jadi menit ini tidak menahan minggu ini."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "Something went wrong."
+msgstr "Terjadi kesalahan."
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_overtime_request__pb_from_punches
+msgid "Suggested from clock punches"
+msgstr "Disarankan dari data absensi"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+msgid ""
+"Suggested from clock punches: worked %(worked)s h, expected %(expected)s h "
+"(%(basis)s)."
+msgstr ""
+"Disarankan dari data absensi: bekerja %(worked)s jam, diharapkan "
+"%(expected)s jam (%(basis)s)."
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_ot_dismiss__hours
+msgid "Suggested hours"
+msgstr "Jam yang disarankan"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_pb_time_late__payslip_id
+msgid "Taken by payslip"
+msgstr "Diambil oleh slip gaji"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+msgid ""
+"The \"Time off in lieu\" kind of leave is switched off for %s. Switch it "
+"back on before giving time off."
+msgstr ""
+"Jenis cuti \"Cuti pengganti lembur\" dinonaktifkan untuk %s. Aktifkan "
+"kembali sebelum memberikan cuti pengganti."
+
+#. module: pb_time_pay
+#: model:ir.model.fields,help:pb_time_pay.field_hr_leave_type__pb_toil_kind
+msgid ""
+"The kind of leave that overtime given as time off goes into. Made the first "
+"time a manager gives time off; one per company."
+msgstr ""
+"Jenis cuti tempat lembur yang diberikan sebagai cuti pengganti. Dibuat saat "
+"manajer pertama kali memberikan cuti pengganti; satu per perusahaan."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid ""
+"The suggestion stops showing. Nothing is paid and no overtime request is "
+"made."
+msgstr ""
+"Saran tidak ditampilkan lagi. Tidak ada yang dibayar dan tidak ada pengajuan"
+" lembur yang dibuat."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid ""
+"The time off for %s could not be given (it needs another approval in Time "
+"Off), so this overtime was not approved. Pay it instead, or ask HR."
+msgstr ""
+"Cuti pengganti untuk %s tidak dapat diberikan (perlu persetujuan lain di "
+"Cuti), jadi lembur ini tidak disetujui. Pilih dibayar, atau tanyakan ke HR."
+
+#. module: pb_time_pay
+#: model:ir.model.constraint,message:pb_time_pay.constraint_pb_time_late_one_per_day_kind
+msgid "There is already a decision for these minutes."
+msgstr "Sudah ada keputusan untuk menit ini."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/late_entry.py:0
+msgid ""
+"These minutes of %(name)s on %(day)s are already paid in payslip %(slip)s, "
+"so the decision stays."
+msgstr ""
+"Menit %(name)s pada %(day)s ini sudah dibayar di slip gaji %(slip)s, jadi "
+"keputusannya tetap."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "They are shown here for you to include in the file."
+msgstr "Semuanya ditampilkan di sini agar Anda masukkan ke dalam file."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid ""
+"This overtime is already approved, so whether it is paid or given as time "
+"off can no longer change."
+msgstr ""
+"Lembur ini sudah disetujui, jadi pilihan dibayar atau cuti pengganti tidak "
+"bisa diubah lagi."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+msgid "This row is no longer on the board."
+msgstr "Baris ini sudah tidak ada di papan."
+
+#. module: pb_time_pay
+#: model:ir.model.constraint,message:pb_time_pay.constraint_pb_time_ot_dismiss_one_per_day_kind
+msgid "This suggestion is already marked as not overtime."
+msgstr "Saran ini sudah ditandai bukan lembur."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+msgid "This suggestion is no longer on the board."
+msgstr "Saran ini sudah tidak ada di papan."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Time into pay"
+msgstr "Waktu ke penggajian"
+
+#. module: pb_time_pay
+#: model:ir.model,name:pb_time_pay.model_pb_time_pay
+msgid "Time into pay: suggestions and late minutes"
+msgstr "Waktu ke penggajian: saran dan menit terlambat"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/ot_desk_time_off.xml:0
+msgid "Time off"
+msgstr "Cuti pengganti"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_overtime_request__pb_toil_allocation_id
+msgid "Time off given"
+msgstr "Cuti pengganti yang diberikan"
+
+#. module: pb_time_pay
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_leave_type__pb_toil_kind
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_overtime_time_pay
+msgid "Time off in lieu"
+msgstr "Cuti pengganti lembur"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid "Time off in lieu for overtime on %s"
+msgstr "Cuti pengganti untuk lembur pada %s"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid "Time off when approved"
+msgstr "Cuti pengganti saat disetujui"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "To decide"
+msgstr "Perlu diputuskan"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+msgid "Unknown choice."
+msgstr "Pilihan tidak dikenal."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+msgid "Unknown decision."
+msgstr "Keputusan tidak dikenal."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Weekday"
+msgstr "Hari kerja"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid ""
+"What the clock punches say about this week. Nothing here is paid until a "
+"manager decides."
+msgstr ""
+"Apa yang ditunjukkan data absensi tentang minggu ini. Tidak ada yang dibayar"
+" sampai manajer memutuskan."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+#: model:ir.model.fields,field_description:pb_time_pay.field_hr_overtime_request__pb_comp_choice
+msgid "When approved"
+msgstr "Saat disetujui"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/overtime_request.py:0
+msgid ""
+"Whether overtime is paid or given as time off changes only through the "
+"overtime screens."
+msgstr ""
+"Pilihan lembur dibayar atau cuti pengganti hanya bisa diubah melalui layar "
+"lembur."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Why"
+msgstr "Alasan"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+msgid "You cannot accept overtime for yourself."
+msgstr "Anda tidak dapat menerima lembur untuk diri sendiri."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/late_entry.py:0
+msgid "You cannot confirm or excuse your own late minutes."
+msgstr ""
+"Anda tidak dapat mengonfirmasi atau memaafkan menit terlambat Anda sendiri."
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/time_pay.py:0
+msgid "You cannot decide about your own overtime."
+msgstr "Anda tidak dapat memutuskan lembur Anda sendiri."
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/xml/time_pay_close.xml:0
+msgid "Yours"
+msgstr "Milik Anda"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_overtime_time_pay
+msgid "h"
+msgstr "jam"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "was %s"
+msgstr "sebelumnya %s"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "worked %(worked)s h, expected %(expected)s h"
+msgstr "bekerja %(worked)s jam, diharapkan %(expected)s jam"
+
+#. module: pb_time_pay
+#. odoo-javascript
+#: code:addons/pb_time_pay/static/src/js/time_pay_close.js:0
+msgid "worked %s h"
+msgstr "bekerja %s jam"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_overtime_time_pay
+msgid "<b>Late and early minutes</b>"
+msgstr "<b>Menit terlambat dan pulang awal</b>"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "<span>My Overtime</span>"
+msgstr "<span>Lembur saya</span>"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "Late and early minutes"
+msgstr "Menit terlambat dan pulang awal"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "My Work"
+msgstr "Pekerjaan saya"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "No late or early minutes"
+msgstr "Tidak ada menit terlambat atau pulang awal"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "Nothing counted"
+msgstr "Tidak ada yang dihitung"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "Something looks wrong? Talk to your manager — they can change a decision until it is paid."
+msgstr "Ada yang tidak benar? Bicarakan dengan atasan Anda — mereka dapat mengubah keputusan sampai dibayarkan."
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "Date"
+msgstr "Tanggal"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "What"
+msgstr "Jenis"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "Status"
+msgstr "Status"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_overtime_time_pay
+msgid "What your manager confirmed from your clock times"
+msgstr "Yang dikonfirmasi atasan Anda dari jam absensi Anda"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "What your manager confirmed from your clock times. Only counted minutes reach your pay."
+msgstr "Yang dikonfirmasi atasan Anda dari jam absensi Anda. Hanya menit yang dihitung yang memengaruhi gaji Anda."
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "When your manager confirms minutes from your clock times, they show up here."
+msgstr "Saat atasan Anda mengonfirmasi menit dari jam absensi Anda, menit itu muncul di sini."
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_late
+msgid "min counted"
+msgstr "menit dihitung"
+
+#. module: pb_time_pay
+#: model_terms:ir.ui.view,arch_db:pb_time_pay.portal_my_work_overtime_time_pay
+msgid "minutes counted this month"
+msgstr "menit dihitung bulan ini"
+
+#. module: pb_time_pay
+#. odoo-python
+#: code:addons/pb_time_pay/models/ess_workforce.py:0
+msgid "Counted"
+msgstr "Dihitung"

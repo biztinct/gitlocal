@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- WDGAP S2-B1 — tax certificates on My Payobook. The page reuses
+       pb_me_portal's .pbme kit (ess_hero, ess_icon, buttons); `.pbtc-*` is
+       this module's thin layer. Every sentence on one line (ledger PRD-3);
+       no %-formatting inside t-att-* (PRB-W5). Loop name: rows `rw`. -->
+
+  <template id="portal_breadcrumbs_tax_certificates" name="Tax certificates breadcrumbs"
+            inherit_id="portal.portal_breadcrumbs" priority="41">
+    <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+      <li t-if="page_name == 'tax_certificates'" class="breadcrumb-item active">Tax certificates</li>
+    </xpath>
+  </template>
+
+  <template id="portal_my_home_tax_certificates" name="Tax certificates home tile"
+            inherit_id="portal.portal_my_home" customize_show="True" priority="24">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+      <t t-if="pbme_home" t-call="portal.portal_docs_entry">
+        <t t-set="title">Tax certificates</t>
+        <t t-set="text">Your year-end tax certificates</t>
+        <t t-set="url" t-value="'/my/tax-certificates'"/>
+        <t t-set="config_card" t-value="True"/>
+      </t>
+    </xpath>
+  </template>
+
+  <template id="portal_my_tax_certificates" name="Tax certificates">
+    <t t-call="portal.portal_layout">
+      <div class="pbme pbtc">
+        <t t-call="pb_me_portal.ess_hero">
+          <t t-set="hero_title">Tax certificates</t>
+          <t t-set="hero_sub">Your year-end tax certificates, as your employer released them. Only you can see and download yours.</t>
+        </t>
+        <section class="pbme-card pbtc-list">
+          <div t-if="not rows" class="pbtc-empty">
+            <span class="pbtc-empty-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'file-text'"/><t t-set="isz" t-value="22"/></t></span>
+            <p>None yet. When payroll releases your year-end tax certificate, it appears here.</p>
+          </div>
+          <ul t-else="" class="pbtc-rows">
+            <li t-foreach="rows" t-as="rw" class="pbtc-row">
+              <span class="pbtc-row-ic"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'file-text'"/><t t-set="isz" t-value="18"/></t></span>
+              <div class="pbtc-row-main">
+                <div class="pbtc-row-t"><t t-esc="rw['title']"/><span t-if="rw['new']" class="pbtc-pill">New</span></div>
+                <div class="pbtc-row-s"><span>Tax year</span> <t t-esc="rw['year']"/><span class="pbtc-dot" aria-hidden="true"/><t t-esc="rw['company']"/></div>
+                <div t-if="rw['note']" class="pbtc-row-note"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'alert'"/><t t-set="isz" t-value="13"/></t><span t-esc="rw['note']"/></div>
+              </div>
+              <a class="pbme-btn pbme-btn--primary pbtc-dl" t-att-href="rw['url']"><t t-call="pb_me_portal.ess_icon"><t t-set="icon" t-value="'download'"/><t t-set="isz" t-value="15"/></t>PDF</a>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </t>
+  </template>
+
+</odoo>

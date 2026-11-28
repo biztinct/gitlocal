@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- One insertion point, every screen.
+
+         Anchored on MainComponentsContainer, NOT on ActionContainer:
+         pb_sidebar already REPLACES ActionContainer with its own layout wrapper
+         (pb_sidebar/static/src/xml/webclient_patch.xml), and two modules
+         xpath-ing the same node is how a patch quietly stops applying after an
+         unrelated upgrade. This node is core and untouched. -->
+    <t t-name="web.WebClient" t-inherit="web.WebClient" t-inherit-mode="extension">
+        <xpath expr="//MainComponentsContainer" position="after">
+            <CoachHost/>
+            <LiveHost/>
+        </xpath>
+    </t>
+
+</templates>

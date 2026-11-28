@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pb_contracts.PbContracts">
+    <div class="pbim con pbim-page ppl-people ppl-contracts" t-att-class="{ 'ppl-people--embedded': props.embedded }">
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading contracts…</span></div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <div class="ppl-head" data-coach="ct-head">
+          <!-- The identity block, and only the identity block (W17): inside
+               the People hub the command bar already says People > Contracts.
+               New contract and every number below are untouched. -->
+          <div class="ppl-head-id" t-if="!props.embedded">
+            <HubBackChip t-if="back" back="back" tone="'light'"/>
+            <h1 class="pbim-h1">Contracts</h1>
+            <p class="pbim-sub">Active, expiring and historical contracts across your workforce.</p>
+          </div>
+          <button class="pbim-btn primary" t-on-click="newContract"><t t-out="ic('plus',16)"/> New contract</button>
+        </div>
+
+        <!-- the numbers: one quiet line (QUIET_BOARD_ROLLOUT) -->
+        <div data-coach="ct-kpis">
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="glanceOn"/>
+          </t>
+        </div>
+
+        <!-- where every contract is: a contract is at exactly ONE step, so
+             the counts add up. The counts follow the filters (ruling R1);
+             pressing a step ticks it in the panel, pressing it again clears it. -->
+        <t t-call="pb_import_kit.QuietSteps">
+          <t t-set="qSteps" t-value="steps"/>
+          <t t-set="qStepsLabel" t-value="'Where every contract is'"/>
+          <t t-set="qStepPick" t-value="(k) =&gt; this.pickStep(k)"/>
+        </t>
+
+        <!-- The shared filter panel (pb_filter_kit, FILTER W1): views, search,
+             the left panel with counts, chips. The kit draws
+             data-coach="ct-filters" on its toolbar (the coach prop below).
+             The roster is its slot. -->
+        <PbFilterLayout kit="kit" coach="'ct-filters'" searchPlaceholder="searchLabel">
+        <div t-if="state.listError" class="pbim-panel ppl-empty">
+          <div class="ppl-empty-ic"><t t-out="ic('alert',22)"/></div>
+          <b>The contract list could not load</b>
+          <span>The connection may have dropped. Your filters are kept.</span>
+          <button class="pbim-btn outline pbim-btn-sm" t-on-click="retry"><t t-out="ic('refresh',14)"/> Try again</button>
+        </div>
+        <div t-elif="state.contracts.length" class="ppl-roster" data-coach="ct-roster">
+          <!-- FILLIN P2 B3 — the review list's one bulk action. It names the
+               count; the confirm names the people. -->
+          <div t-if="fillinView and state.canCheck and state.listTotal" class="ct-fill-bar">
+            <span class="ct-fill-bar-ic" t-out="ic('sparkles',16)"/>
+            <div class="ct-fill-bar-tx">
+              <b>Answers Payobook filled in by itself</b>
+              <span>From the usual answers of the scheme that pays each person. Confirm the ones that are right; change the rest.</span>
+            </div>
+            <button class="pbim-btn outline pbim-btn-sm" t-on-click="allLookRight">
+              <t t-out="ic('checkCheck',14)"/> <t t-esc="allLookRightLabel"/>
+            </button>
+          </div>
+          <div t-foreach="state.contracts" t-as="c" t-key="c.id" class="ppl-card"
+               t-att-class="{ 'ct-has-fill': fillinView and fillinCount(c) }"
+               t-on-click="() => this.openContract(c.id)">
+            <div class="ppl-av" t-attf-style="background-image:url({{ c.avatar }})"/>
+            <div class="ppl-id">
+              <div class="nm" t-esc="c.employee"/>
+              <div class="jb"><t t-esc="c.name"/><t t-if="c.structure"> · <t t-esc="c.structure"/></t></div>
+            </div>
+            <div class="ppl-period">
+              <span t-esc="c.date_start or '—'"/>
+              <span class="ar">→</span>
+              <span t-esc="c.date_end or 'indefinite'"/>
+            </div>
+            <div class="ppl-meta">
+              <span t-attf-class="pbim-badge {{ stateCls(c.state) }}"><span class="d"/><t t-esc="c.state_label"/></span>
+              <span t-if="c.days_to_expiry !== null and c.days_to_expiry >= 0 and c.days_to_expiry &lt;= 30" class="ppl-exp"><t t-out="ic('alert',12)"/> <t t-esc="c.days_to_expiry"/>d</span>
+              <span t-if="fillinCount(c)" class="ct-fill-chip"
+                    title="Payobook filled these in from the scheme's usual answers. Open the contract to check or change them.">
+                <t t-out="ic('sparkles',12)"/> <t t-esc="fillinChip(c)"/>
+              </span>
+            </div>
+            <div class="ppl-wage">
+              <span class="v money" t-esc="c.wage ? money(c.wage, c.currency) : '—'"/>
+              <span class="k">monthly</span>
+            </div>
+            <!-- FILLIN P2 B2 — on the To check list the answers are spelled
+                 out, with the two things a person does with them. -->
+            <div t-if="fillinView and fillinCount(c)" class="ct-fill" t-on-click.stop="">
+              <div class="ct-fill-ans">
+                <span t-foreach="fillinAnswers(c)" t-as="a" t-key="a_index" class="ct-fill-a">
+                  <span class="l" t-esc="a.label"/>
+                  <b t-esc="a.value_text"/>
+                </span>
+              </div>
+              <div class="ct-fill-acts">
+                <button class="pbim-btn ghost pbim-btn-sm" t-on-click="() => this.changeAnswers(c)">
+                  <t t-out="ic('pencil',13)"/> Change
+                </button>
+                <button t-if="state.canCheck" class="pbim-btn outline pbim-btn-sm"
+                        t-att-disabled="state.checking === c.id" t-on-click="() => this.looksRight(c)">
+                  <t t-out="ic('check',13)"/> Looks right
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div t-elif="!state.listLoaded" class="ppl-roster ppl-skeleton" aria-label="Loading contracts">
+          <div t-foreach="[1,2,3,4,5]" t-as="i" t-key="i" class="ppl-card ppl-card--ghost"/>
+        </div>
+        <div t-elif="!state.total" class="pbim-panel ppl-empty">
+          <div class="ppl-empty-ic"><t t-out="ic('fileText',22)"/></div>
+          <b>No contracts yet</b>
+          <span>A contract is the agreement payroll is worked out from. Add the first one.</span>
+          <button class="pbim-btn primary pbim-btn-sm" t-on-click="newContract"><t t-out="ic('plus',14)"/> New contract</button>
+        </div>
+        <!-- FILLIN P2 — the review list, empty: good news, said as such. -->
+        <div t-elif="fillinView and !kit.search" class="pbim-panel ppl-empty ct-fill-done">
+          <div class="ppl-empty-ic"><t t-out="ic('checkCircle',22)"/></div>
+          <b>Nothing to check</b>
+          <span>Every answer Payobook filled in by itself has been confirmed or changed by a person.</span>
+          <button class="pbim-btn outline pbim-btn-sm" t-on-click="() => kit.toggleFilters({})">Show all contracts</button>
+        </div>
+        <div t-else="" class="pbim-panel ppl-empty">
+          <div class="ppl-empty-ic"><t t-out="ic('search',22)"/></div>
+          <b>No contracts match these filters</b>
+          <span t-if="!kit.search">Remove a filter above, or start again from every contract.</span>
+          <span t-else="">Nothing matches “<t t-esc="kit.search"/>”. Check the spelling, or search by person, reference or structure.</span>
+          <button class="pbim-btn outline pbim-btn-sm" t-on-click="() => kit.toggleFilters({})">Show all contracts</button>
+        </div>
+
+        <div t-if="state.contracts.length" class="ppl-foot">
+          Showing <b t-esc="fmtInt(state.contracts.length)"/> of <b t-esc="fmtInt(state.listTotal)"/>
+          <button t-if="hasMore" class="pbim-btn outline pbim-btn-sm ppl-more" t-att-disabled="state.loadingMore" t-on-click="loadMore">
+            <t t-if="state.loadingMore">Loading…</t>
+            <t t-else="">Show <t t-esc="nextPage"/> more</t>
+          </button>
+          <span class="ppl-foot-sep">·</span>
+          <button class="ppl-link" t-on-click="openAll">Open full contract list →</button>
+        </div>
+        </PbFilterLayout>
+      </div>
+
+      <!-- The contract drawer, mounted only when it registered itself into the
+           soft "pb_contracts_drawer" registry. t-key on the id forces a
+           remount, and therefore a fresh slide-in, when switching records. -->
+      <t t-if="state.drawerContractId and drawerCmp"
+         t-component="drawerCmp" t-props="drawerProps" t-key="state.drawerContractId"/>
+    </div>
+  </t>
+
+</templates>

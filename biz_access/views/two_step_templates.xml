@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The two-step setup page (controllers/two_step.py, WDGAP QF5 A5). It
+         wears the sign-in page's own layout, like the first-password page:
+         it is the next step of signing in. No inline style or script (the
+         portal pages' content security policy): classes only, styled in
+         static/src/scss/sign_in_rules.scss. -->
+    <template id="two_step_page" name="Set up two-step sign-in">
+        <t t-call="web.login_layout">
+            <form class="oe_login_form pbva-twostep" role="form" method="post"
+                  action="/web/two-step" autocomplete="off">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="redirect" t-att-value="redirect"/>
+                <h4 class="mb-2 pbva-twostep-h">
+                    <svg class="pbva-twostep-ic" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+                        <path d="m9 12 2 2 4-4"/>
+                    </svg>
+                    Set up two-step sign-in
+                </h4>
+                <p class="text-muted mb-2">Your company asks you to use two-step sign-in. After your password, you type a 6-digit code from an authenticator app on your phone. It takes about a minute, once.</p>
+                <p class="text-muted small mb-3" t-esc="signin"/>
+
+                <ol class="pbva-twostep-steps">
+                    <li>Install an authenticator app on your phone, for example Google Authenticator or Microsoft Authenticator.</li>
+                    <li>In the app, add an account and scan this picture.</li>
+                </ol>
+                <div class="pbva-twostep-qr">
+                    <img t-att-src="qr_url" alt="Picture to scan with the authenticator app"
+                         width="190" height="190"/>
+                </div>
+                <div t-if="setup_key" class="small text-muted mb-3">
+                    <p class="mb-1">Cannot scan it? Type this setup key in the app instead:</p>
+                    <code class="pbva-twostep-key" t-esc="setup_key"/>
+                </div>
+                <div t-else="" class="small text-muted mb-3">
+                    <p class="mb-1">Cannot scan it? Open this page again to see the setup key.</p>
+                    <a t-att-href="again_url">Show the setup key</a>
+                </div>
+
+                <div class="mb-3">
+                    <label for="code" class="form-label">The 6-digit code the app shows</label>
+                    <input type="text" name="code" id="code" class="form-control pbva-twostep-code"
+                           required="required" inputmode="numeric" pattern="[0-9 ]{6,7}"
+                           maxlength="7" autocomplete="one-time-code" autofocus="autofocus"/>
+                </div>
+                <div t-if="needs_password" class="mb-3">
+                    <label for="password" class="form-label">Your password</label>
+                    <input type="password" name="password" id="password" class="form-control"
+                           required="required" maxlength="4096" autocomplete="current-password"/>
+                    <div class="form-text">The one you just signed in with, to check it is you.</div>
+                </div>
+                <p class="alert alert-danger" t-if="error" role="alert" t-esc="error"/>
+                <div class="d-grid gap-2 mt-3">
+                    <button type="submit" class="btn btn-primary">Turn it on and continue</button>
+                    <a class="btn btn-link btn-sm" href="/web/session/logout">Sign out</a>
+                </div>
+            </form>
+        </t>
+    </template>
+</odoo>

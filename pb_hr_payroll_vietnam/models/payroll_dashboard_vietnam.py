@@ -6,7 +6,8 @@ from odoo.tools.safe_eval import safe_eval
 
 
 class PayrollDashboardVietnam(models.Model):
-    _inherit = 'payroll.dashboard'
+    _name = 'payroll.dashboard'
+    _inherit = ['payroll.dashboard']
 
     def action_open_import_batch(self):
         """Open payroll import batches in kanban (with create) then fall back to tree/form.
@@ -50,7 +51,7 @@ class PayrollDashboardVietnam(models.Model):
         })
 
         action.update({
-            'view_mode': 'kanban,tree,form',
+            'view_mode': 'kanban,list,form',
             'views': views,
             'target': 'current',
             'context': ctx,

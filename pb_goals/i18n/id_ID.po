@@ -1,0 +1,120 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-11-12 22:00+1100\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ===================================================================
+#  WORKFLOW-2 P5b — Indonesian
+# ===================================================================
+#. module: pb_goals
+#: model:mail.template,name:pb_goals.mail_goals_change_returned
+msgid "Goals: a change was sent back"
+msgstr "Sasaran: perubahan dikembalikan"
+
+#. module: pb_goals
+#: model:mail.template,subject:pb_goals.mail_goals_change_returned
+msgid "Your goal change was sent back — {{ object.summary }}"
+msgstr "Perubahan sasaran Anda dikembalikan — {{ object.summary }}"
+
+#. module: pb_goals
+#: model:mail.template,body_html:pb_goals.mail_goals_change_returned
+msgid ""
+"<div style=\"margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;\">\n"
+"                <p>Hello <t t-out=\"object.employee_id.name or ''\"/>,</p>\n"
+"                <p>\n"
+"                    The change you asked for on your goals was sent back to\n"
+"                    you before a decision, so your goals stay as they are for\n"
+"                    now.\n"
+"                </p>\n"
+"                <div style=\"border-left:3px solid #5A4BB0; padding:8px 14px; margin:14px 0; background:#F4F2FB;\">\n"
+"                    <strong><t t-out=\"object.summary or ''\"/></strong>\n"
+"                    <br/><t t-out=\"object._pb_sent_back_note() or 'No reason was given.'\"/>\n"
+"                </div>\n"
+"                <p>\n"
+"                    Change what is asked and send it again.\n"
+"                </p>\n"
+"                <p>\n"
+"                    <a t-attf-href=\"/my/goals\" style=\"display:inline-block; padding:10px 18px; background:#5A4BB0; color:#ffffff; border-radius:8px; text-decoration:none;\">\n"
+"                        Open my goals\n"
+"                    </a>\n"
+"                </p>\n"
+"                <br/>\n"
+"                The HR team\n"
+"            </div>\n"
+"        "
+msgstr ""
+"<div style=\"margin:0; padding:0; font-family:Inter,Helvetica,Arial,sans-serif; color:#1B1733;\">\n"
+"                <p>Halo <t t-out=\"object.employee_id.name or ''\"/>,</p>\n"
+"                <p>\n"
+"                    Perubahan sasaran yang Anda minta dikembalikan kepada Anda\n"
+"                    sebelum ada keputusan, jadi sasaran Anda tetap seperti\n"
+"                    semula untuk saat ini.\n"
+"                </p>\n"
+"                <div style=\"border-left:3px solid #5A4BB0; padding:8px 14px; margin:14px 0; background:#F4F2FB;\">\n"
+"                    <strong><t t-out=\"object.summary or ''\"/></strong>\n"
+"                    <br/><t t-out=\"object._pb_sent_back_note() or 'Tidak ada alasan yang diberikan.'\"/>\n"
+"                </div>\n"
+"                <p>\n"
+"                    Ubah sesuai yang diminta lalu kirim lagi.\n"
+"                </p>\n"
+"                <p>\n"
+"                    <a t-attf-href=\"/my/goals\" style=\"display:inline-block; padding:10px 18px; background:#5A4BB0; color:#ffffff; border-radius:8px; text-decoration:none;\">\n"
+"                        Buka sasaran saya\n"
+"                    </a>\n"
+"                </p>\n"
+"                <br/>\n"
+"                Tim HR\n"
+"            </div>\n"
+"        "
+
+#. module: pb_goals
+#. odoo-python
+#: code:addons/pb_goals/models/pay_score.py:0
+msgid "%(low)s to %(high)s"
+msgstr "%(low)s sampai %(high)s"
+
+#. module: pb_goals
+#. odoo-python
+#: code:addons/pb_goals/models/close.py:0
+msgid ""
+"Each score also becomes the person's latest performance score, which the "
+"next pay review starts from. Reopening the year does not take that back."
+msgstr ""
+"Setiap nilai juga menjadi nilai kinerja terbaru orang tersebut, yang menjadi"
+" titik awal tinjauan gaji berikutnya. Membuka kembali tahun ini tidak "
+"membatalkannya."
+
+#. module: pb_goals
+#. odoo-python
+#: code:addons/pb_goals/models/pay_score.py:0
+msgid ""
+"Their latest performance score is now %(value)s out of 5, from the goals "
+"year %(year)s."
+msgstr ""
+"Nilai kinerja terbaru mereka sekarang %(value)s dari 5, dari tahun sasaran "
+"%(year)s."
+
+
+# ===================================================================
+#  NEWHIRE P6 (2026-11-25): shipped joining-checklist / equipment names.
+#  Written onto stored rows by migrations/<version>/post-migrate.py
+#  (pb_lifecycle.models.seed_translations) where the English is unchanged.
+# ===================================================================
+#. module: pb_goals
+#: model:pb.journey.template.step,name:pb_goals.step_rize_goals
+msgid "Open their goals for the year"
+msgstr "Buka sasaran tahun ini"
+
+#. module: pb_goals
+#: model:pb.journey.template.step,description:pb_goals.step_rize_goals
+msgid "Runs itself the day after they join: a goal sheet is opened for them in whichever goal year is open, with a fortnight to write it, and they get an email saying so. If no goal year is open yet, the step simply says so."
+msgstr "Berjalan otomatis sehari setelah mereka bergabung: lembar sasaran dibuka untuk mereka di tahun sasaran yang sedang dibuka, dengan waktu dua minggu untuk mengisinya, dan mereka menerima email pemberitahuan. Jika belum ada tahun sasaran yang dibuka, langkah ini cukup menyebutkannya."

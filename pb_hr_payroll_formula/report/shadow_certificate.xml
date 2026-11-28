@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Migration Confidence certificate (F6 · T6.7) -->
+    <record id="action_report_shadow_certificate" model="ir.actions.report">
+        <field name="name">Migration Confidence Certificate</field>
+        <field name="model">hr.formula.shadow.run</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pb_hr_payroll_formula.shadow_certificate</field>
+        <field name="report_file">pb_hr_payroll_formula.shadow_certificate</field>
+        <field name="binding_model_id" ref="model_hr_formula_shadow_run"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="shadow_certificate">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="run">
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-family: Arial, sans-serif; color:#1E1B3A;">
+                        <div style="text-align:center; margin: 24px 0 8px;">
+                            <div style="font-size:12px; letter-spacing:2px; text-transform:uppercase; color:#6B7280;">Migration Confidence Certificate</div>
+                            <h1 style="font-size:28px; margin:6px 0;" t-esc="run.name"/>
+                            <div style="color:#6B7280;" t-field="run.config_id"/>
+                        </div>
+
+                        <div style="text-align:center; margin: 26px 0;">
+                            <span t-attf-style="font-size:56px; font-weight:800; color:{{ '#059669' if run.confidence >= 0.999 else ('#5A4BB0' if run.confidence >= 0.98 else '#B45309') }};">
+                                <t t-esc="round(run.confidence * 100, 1)"/>%
+                            </span>
+                            <div style="color:#6B7280; font-size:13px;">of <t t-esc="run.values_total"/> recomputed values matched the historical payroll within tolerance</div>
+                        </div>
+
+                        <table style="width:100%; border-collapse:collapse; margin: 18px 0;">
+                            <tr>
+                                <td style="padding:10px; border:1px solid #E6E8F0; text-align:center;"><b style="font-size:20px;" t-esc="run.employees_total"/><br/><span style="color:#6B7280; font-size:11px;">EMPLOYEES</span></td>
+                                <td style="padding:10px; border:1px solid #E6E8F0; text-align:center;"><b style="font-size:20px;" t-esc="run.values_matched"/><br/><span style="color:#6B7280; font-size:11px;">CELLS MATCHED</span></td>
+                                <td style="padding:10px; border:1px solid #E6E8F0; text-align:center;"><b style="font-size:20px;" t-esc="run.values_total - run.values_matched"/><br/><span style="color:#6B7280; font-size:11px;">CELLS OFF</span></td>
+                                <td style="padding:10px; border:1px solid #E6E8F0; text-align:center;"><b style="font-size:20px;" t-esc="len(run.cluster_ids)"/><br/><span style="color:#6B7280; font-size:11px;">CLUSTERS</span></td>
+                            </tr>
+                        </table>
+
+                        <h3 style="font-size:14px; margin-top:22px;">Periods verified</h3>
+                        <ul>
+                            <t t-foreach="run.period_ids" t-as="p">
+                                <li><b t-esc="p.period_label"/> — <t t-esc="p.employee_count"/> employees</li>
+                            </t>
+                        </ul>
+
+                        <t t-if="run.cluster_ids">
+                            <h3 style="font-size:14px; margin-top:22px;">Discrepancy clusters &amp; resolutions</h3>
+                            <table style="width:100%; border-collapse:collapse; font-size:12px;">
+                                <thead>
+                                    <tr style="background:#FAFBFE;">
+                                        <th style="padding:7px; border:1px solid #E6E8F0; text-align:left;">Component</th>
+                                        <th style="padding:7px; border:1px solid #E6E8F0; text-align:left;">Period</th>
+                                        <th style="padding:7px; border:1px solid #E6E8F0; text-align:right;">Employees</th>
+                                        <th style="padding:7px; border:1px solid #E6E8F0; text-align:left;">Likely cause</th>
+                                        <th style="padding:7px; border:1px solid #E6E8F0; text-align:left;">Resolution</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="run.cluster_ids" t-as="c">
+                                        <td style="padding:7px; border:1px solid #E6E8F0;"><b t-esc="c.component_code"/></td>
+                                        <td style="padding:7px; border:1px solid #E6E8F0;" t-esc="c.period_label"/>
+                                        <td style="padding:7px; border:1px solid #E6E8F0; text-align:right;" t-esc="c.lines_affected"/>
+                                        <td style="padding:7px; border:1px solid #E6E8F0;" t-esc="c.cause_label or '—'"/>
+                                        <td style="padding:7px; border:1px solid #E6E8F0; text-transform:capitalize;" t-esc="c.resolution"/>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </t>
+
+                        <div style="margin-top:36px; display:flex; justify-content:space-between; color:#6B7280; font-size:12px;">
+                            <div>Issued by <b t-field="run.write_uid"/></div>
+                            <div>Payobook Formula Engine · Shadow Parallel Run</div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Theme presets — deliberately NOT noupdate: shipped presets are product
+         data and improve with upgrades. Admin-created themes live on biz.theme
+         and are never touched by module updates. -->
+
+    <record id="preset_default" model="biz.theme.preset">
+        <field name="sequence">1</field>
+        <field name="key">default</field>
+        <field name="name">Default (Compiled Brand)</field>
+        <field name="description">The brand shipped with the app — no runtime overrides.</field>
+        <field name="token_values" eval="{}"/>
+        <field name="preview_colors" eval="['#5A4BB0', '#0891B2', '#FAFAFA', '#0F8A63', '#B7791F']"/>
+    </record>
+
+    <record id="preset_minimal_white" model="biz.theme.preset">
+        <field name="sequence">2</field>
+        <field name="key">minimal_white</field>
+        <field name="name">Minimal White</field>
+        <field name="description">Near-monochrome, hairline borders, zero shadows.</field>
+        <field name="token_values" eval="{
+            'vu-brand-primary': '#18181B',
+            'vu-brand-primary-dark': '#000000',
+            'vu-brand-secondary': '#52525B',
+            'vu-link-color': '#18181B',
+            'vu-surface-app': '#FFFFFF',
+            'vu-surface-panel': '#FAFAFA',
+            'vu-surface-card': '#FFFFFF',
+            'vu-surface-muted': '#F4F4F5',
+            'vu-surface-hover': '#F4F4F5',
+            'vu-text-primary': '#18181B',
+            'vu-text-secondary': '#52525B',
+            'vu-border-soft': '#E4E4E7',
+            'vu-border-strong': '#D4D4D8',
+            'vu-navbar-bg': '#18181B',
+            'vu-sidebar-bg': '#111113',
+            'vu-tab-active': '#18181B',
+            'vu-radius-sm': '6px',
+            'vu-radius-md': '6px',
+            'vu-radius-lg': '10px',
+            'vu-shadow-depth': '0',
+            'vu-font-body': &quot;Inter, 'Segoe UI', Arial, sans-serif&quot;,
+        }"/>
+        <field name="preview_colors" eval="['#18181B', '#52525B', '#FFFFFF', '#E4E4E7', '#F4F4F5']"/>
+    </record>
+
+    <record id="preset_linear" model="biz.theme.preset">
+        <field name="sequence">3</field>
+        <field name="key">linear</field>
+        <field name="name">Linear-inspired</field>
+        <field name="description">Indigo primary on cool grays, crisp borders, compact.</field>
+        <field name="token_values" eval="{
+            'vu-brand-primary': '#5E6AD2',
+            'vu-brand-primary-dark': '#4F5ABF',
+            'vu-brand-secondary': '#8B92E8',
+            'vu-link-color': '#5E6AD2',
+            'vu-surface-app': '#FBFBFC',
+            'vu-surface-panel': '#F4F5F8',
+            'vu-surface-card': '#FFFFFF',
+            'vu-surface-muted': '#EEEFF3',
+            'vu-surface-hover': '#EDEEF7',
+            'vu-text-primary': '#282A30',
+            'vu-text-secondary': '#6B6F76',
+            'vu-border-soft': '#E4E5EA',
+            'vu-border-strong': '#D5D7DE',
+            'vu-navbar-bg': '#222326',
+            'vu-sidebar-bg': '#17181B',
+            'vu-tab-active': '#5E6AD2',
+            'vu-table-row-py': '3px',
+            'vu-font-body': &quot;Inter, 'Segoe UI', Arial, sans-serif&quot;,
+        }"/>
+        <field name="preview_colors" eval="['#5E6AD2', '#222326', '#FBFBFC', '#E4E5EA', '#EDEEF7']"/>
+    </record>
+
+    <record id="preset_notion" model="biz.theme.preset">
+        <field name="sequence">4</field>
+        <field name="key">notion</field>
+        <field name="name">Notion-inspired</field>
+        <field name="description">Warm whites, ink text, generous whitespace.</field>
+        <field name="token_values" eval="{
+            'vu-brand-primary': '#2F3437',
+            'vu-brand-primary-dark': '#191B1C',
+            'vu-brand-secondary': '#787774',
+            'vu-link-color': '#0B6E99',
+            'vu-surface-app': '#FFFEFC',
+            'vu-surface-panel': '#F7F6F3',
+            'vu-surface-card': '#FFFFFF',
+            'vu-surface-muted': '#F1F0EC',
+            'vu-surface-hover': '#EFEEEA',
+            'vu-text-primary': '#37352F',
+            'vu-text-secondary': '#787774',
+            'vu-border-soft': '#E9E9E7',
+            'vu-border-strong': '#D3D1CB',
+            'vu-navbar-bg': '#2F3437',
+            'vu-sidebar-bg': '#252525',
+            'vu-tab-active': '#37352F',
+            'vu-radius-sm': '4px',
+            'vu-radius-md': '6px',
+            'vu-font-size-base': '0.875rem',
+            'vu-table-row-py': '6px',
+        }"/>
+        <field name="preview_colors" eval="['#2F3437', '#0B6E99', '#FFFEFC', '#E9E9E7', '#F7F6F3']"/>
+    </record>
+
+    <record id="preset_slack" model="biz.theme.preset">
+        <field name="sequence">5</field>
+        <field name="key">slack</field>
+        <field name="name">Slack-inspired</field>
+        <field name="description">Aubergine chrome, green confirm actions, lively accents.</field>
+        <field name="token_values" eval="{
+            'vu-brand-primary': '#611F69',
+            'vu-brand-primary-dark': '#4A154B',
+            'vu-brand-secondary': '#9B59A5',
+            'vu-link-color': '#1264A3',
+            'vu-surface-app': '#FFFFFF',
+            'vu-surface-panel': '#F8F8F8',
+            'vu-surface-card': '#FFFFFF',
+            'vu-surface-muted': '#F4EDE4',
+            'vu-surface-hover': '#F8F1FA',
+            'vu-status-success': '#007A5A',
+            'vu-navbar-bg': '#350D36',
+            'vu-sidebar-bg': '#3F0E40',
+            'vu-tab-active': '#611F69',
+            'vu-btn-primary-bg': '#007A5A',
+            'vu-btn-primary-hover': '#148567',
+        }"/>
+        <field name="preview_colors" eval="['#611F69', '#3F0E40', '#007A5A', '#1264A3', '#F8F8F8']"/>
+    </record>
+
+    <record id="preset_corporate_blue" model="biz.theme.preset">
+        <field name="sequence">6</field>
+        <field name="key">corporate_blue</field>
+        <field name="name">Corporate Blue</field>
+        <field name="description">Conservative enterprise blue, denser tables, square corners.</field>
+        <field name="token_values" eval="{
+            'vu-brand-primary': '#0B5CAB',
+            'vu-brand-primary-dark': '#084C8D',
+            'vu-brand-secondary': '#5B8DC9',
+            'vu-link-color': '#0B5CAB',
+            'vu-surface-app': '#F3F6F9',
+            'vu-surface-panel': '#EDF1F5',
+            'vu-surface-card': '#FFFFFF',
+            'vu-surface-muted': '#E4EAF0',
+            'vu-surface-hover': '#E1ECF7',
+            'vu-text-primary': '#1B2733',
+            'vu-text-secondary': '#42526E',
+            'vu-border-soft': '#D6DDE4',
+            'vu-border-strong': '#B8C4CE',
+            'vu-navbar-bg': '#0B5CAB',
+            'vu-sidebar-bg': '#0E3A66',
+            'vu-radius-sm': '4px',
+            'vu-radius-md': '4px',
+            'vu-radius-lg': '6px',
+            'vu-table-row-py': '3px',
+        }"/>
+        <field name="preview_colors" eval="['#0B5CAB', '#0E3A66', '#F3F6F9', '#D6DDE4', '#E1ECF7']"/>
+    </record>
+
+    <record id="preset_elegant_green" model="biz.theme.preset">
+        <field name="sequence">7</field>
+        <field name="key">elegant_green</field>
+        <field name="name">Elegant Green</field>
+        <field name="description">Medical green on sage-tinted surfaces.</field>
+        <field name="token_values" eval="{
+            'vu-brand-primary': '#1B7A53',
+            'vu-brand-primary-dark': '#14603F',
+            'vu-brand-secondary': '#5CA588',
+            'vu-link-color': '#1B7A53',
+            'vu-surface-app': '#F4F8F6',
+            'vu-surface-panel': '#ECF3EF',
+            'vu-surface-card': '#FFFFFF',
+            'vu-surface-muted': '#E4EFE9',
+            'vu-surface-hover': '#E2EFE8',
+            'vu-border-soft': '#D9E5DE',
+            'vu-border-strong': '#C0D4C9',
+            'vu-navbar-bg': '#1B7A53',
+            'vu-sidebar-bg': '#0F3D2A',
+            'vu-tab-active': '#1B7A53',
+        }"/>
+        <field name="preview_colors" eval="['#1B7A53', '#0F3D2A', '#F4F8F6', '#D9E5DE', '#E2EFE8']"/>
+    </record>
+
+    <record id="preset_high_contrast" model="biz.theme.preset">
+        <field name="sequence">8</field>
+        <field name="key">high_contrast</field>
+        <field name="name">High Contrast (WCAG AAA)</field>
+        <field name="description">Maximum legibility — 7:1 text contrast, strong borders, visible focus, no motion.</field>
+        <field name="token_values" eval="{
+            'vu-brand-primary': '#003E92',
+            'vu-brand-primary-dark': '#002B66',
+            'vu-brand-secondary': '#1A5DAD',
+            'vu-link-color': '#003E92',
+            'vu-surface-app': '#FFFFFF',
+            'vu-surface-panel': '#FFFFFF',
+            'vu-surface-card': '#FFFFFF',
+            'vu-surface-muted': '#F2F2F2',
+            'vu-surface-hover': '#E0E0E0',
+            'vu-text-primary': '#1A1A1A',
+            'vu-text-secondary': '#333333',
+            'vu-border-soft': '#666666',
+            'vu-border-strong': '#1A1A1A',
+            'vu-status-success': '#14532D',
+            'vu-status-info': '#1E3A8A',
+            'vu-status-warning': '#7C2D12',
+            'vu-status-danger': '#7F1D1D',
+            'vu-navbar-bg': '#002B66',
+            'vu-sidebar-bg': '#001F4D',
+            'vu-focus-ring': '#003E92',
+            'vu-radius-sm': '4px',
+            'vu-radius-md': '4px',
+            'vu-font-size-base': '0.875rem',
+            'vu-table-row-py': '6px',
+            'vu-motion-scale': '0',
+            'vu-shadow-depth': '0',
+        }"/>
+        <field name="preview_colors" eval="['#003E92', '#1A1A1A', '#FFFFFF', '#666666', '#F2F2F2']"/>
+    </record>
+
+</odoo>

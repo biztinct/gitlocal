@@ -1,0 +1,237 @@
+{
+  "purpose": "Provider identification in job-board cards. Trademarks belong to their owners; logos do not imply partner approval.",
+  "assets": [
+    {
+      "provider": "linkedin",
+      "file": "linkedin.webp",
+      "source_url": "https://www.linkedin.com/favicon.ico",
+      "provider_homepage": "https://www.linkedin.com",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "jobstreet",
+      "file": "jobstreet.webp",
+      "source_url": "https://id.jobstreet.com/favicon.ico",
+      "provider_homepage": "https://id.jobstreet.com",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "naukri",
+      "file": "naukri.webp",
+      "source_url": "https://www.naukri.com/favicon.ico",
+      "provider_homepage": "https://www.naukri.com",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "foundit",
+      "file": "foundit.webp",
+      "source_url": "https://www.foundit.in/favicon.ico",
+      "provider_homepage": "https://www.foundit.in",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "foundit_id",
+      "file": "foundit_id.webp",
+      "source_url": "https://www.foundit.id/home/favicon.ico",
+      "provider_homepage": "https://www.foundit.id",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "apna",
+      "file": "apna.webp",
+      "source_url": "https://apna.co/apna-time-icon.png",
+      "provider_homepage": "https://apna.co",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "shine",
+      "file": "shine.svg",
+      "source_url": "https://staticcand.shine.com/c/s1/images/candidate/nova/home/shine-logo.svg",
+      "provider_homepage": "https://www.shine.com",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "hirist",
+      "file": "hirist.webp",
+      "source_url": "https://hirist-assets.s3.ap-south-1.amazonaws.com/favicon.png",
+      "provider_homepage": "https://www.hirist.tech",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "iimjobs",
+      "file": "iimjobs.webp",
+      "source_url": "https://static.iimjobs.com/resources/img/iimjobs/favicon.ico",
+      "provider_homepage": "https://www.iimjobs.com",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "instahyre",
+      "file": "instahyre.webp",
+      "source_url": "https://www.instahyre.com/favicon.ico",
+      "provider_homepage": "https://www.instahyre.com",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "timesjobs",
+      "file": "timesjobs.webp",
+      "source_url": "https://www.google.com/s2/favicons?domain=timesjobs.com&sz=128",
+      "provider_homepage": "https://www.timesjobs.com",
+      "retrieved": "2026-10-28",
+      "note": "Provider website icon cached by Google; bundled locally."
+    },
+    {
+      "provider": "internshala",
+      "file": "internshala.webp",
+      "source_url": "https://internshala.com/favicon.ico?v=6",
+      "provider_homepage": "https://internshala.com",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "vietnamworks",
+      "file": "vietnamworks.webp",
+      "source_url": "https://www.vietnamworks.com/favicon.ico?v=2320",
+      "provider_homepage": "https://www.vietnamworks.com",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "topcv",
+      "file": "topcv.webp",
+      "source_url": "https://www.google.com/s2/favicons?domain=topcv.vn&sz=128",
+      "provider_homepage": "https://www.topcv.vn",
+      "retrieved": "2026-10-28",
+      "note": "Provider website icon cached by Google; bundled locally."
+    },
+    {
+      "provider": "itviec",
+      "file": "itviec.webp",
+      "source_url": "https://itviec.com/assets/apple-touch-icon-152x152-2a912e49fe02bb0dec133bfe1758ac3f6a961403ef88622e92c07dc8c4b106dc.png",
+      "provider_homepage": "https://itviec.com",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "careerviet",
+      "file": "careerviet.webp",
+      "source_url": "https://careerviet.vn/images/graphics/cb_167x167.png",
+      "provider_homepage": "https://careerviet.vn",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "vieclam24h",
+      "file": "vieclam24h.webp",
+      "source_url": "https://vieclam24h.vn/img/favicon.png",
+      "provider_homepage": "https://vieclam24h.vn",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "topdev",
+      "file": "topdev.webp",
+      "source_url": "https://topdev.vn/assets/promote_app/app_icon.png",
+      "provider_homepage": "https://topdev.vn",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "glints",
+      "file": "glints.webp",
+      "source_url": "https://glints.com/favicon.ico",
+      "provider_homepage": "https://glints.com",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "kalibrr",
+      "file": "kalibrr.webp",
+      "source_url": "https://www.kalibrr.com/favicon.ico",
+      "provider_homepage": "https://www.kalibrr.com",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "dealls",
+      "file": "dealls.webp",
+      "source_url": "https://dealls.com/favicon-192.png",
+      "provider_homepage": "https://dealls.com",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "kitalulus",
+      "file": "kitalulus.webp",
+      "source_url": "https://www.kitalulus.com/kitalulus-favicon.png",
+      "provider_homepage": "https://www.kitalulus.com",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "karir",
+      "file": "karir.webp",
+      "source_url": "https://karir.com/images/Principle/Logo/Karir/default.png",
+      "provider_homepage": "https://karir.com",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "indeed",
+      "file": "indeed.webp",
+      "source_url": "https://www.indeed.com/favicon.ico",
+      "provider_homepage": "https://www.indeed.com",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "careerjet",
+      "file": "careerjet.webp",
+      "source_url": "https://www.careerjet.co.in/favicon.ico",
+      "provider_homepage": "https://www.careerjet.co.in",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "jooble",
+      "file": "jooble.webp",
+      "source_url": "https://jooble.org/favicon.ico",
+      "provider_homepage": "https://jooble.org",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "google_jobs",
+      "file": "google_jobs.webp",
+      "source_url": "https://www.google.com/favicon.ico",
+      "provider_homepage": "https://www.google.com",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "logicmelon",
+      "file": "logicmelon.webp",
+      "source_url": "https://logicmelon.com/wp-content/uploads/2019/07/cropped-LM_site_icon-1-192x192.png",
+      "provider_homepage": "https://logicmelon.com",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    },
+    {
+      "provider": "broadbean",
+      "file": "broadbean.webp",
+      "source_url": "https://www.broadbean.com/wp-content/uploads/2024/06/cropped-Untitled-design-2024-06-10T135939.538-192x192.png",
+      "provider_homepage": "https://www.broadbean.com",
+      "retrieved": "2026-10-28",
+      "note": "Provider website brand asset; bundled locally."
+    }
+  ]
+}

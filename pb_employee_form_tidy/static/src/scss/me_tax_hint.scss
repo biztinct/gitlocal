@@ -1,0 +1,5 @@
+// TIDY-E item 4 — My Payobook › Tax details: the hint under the tax number box
+// sat 30px below it (the box group's bottom margin, the form's row gap and the hint's top
+// margin, pb_me_portal / pb_me_details). Pull the hint up to the box.
+// Reached from outside: no edit of pb_me_tax / pb_me_portal.
+.pbme.pbmd.pbtx .pbme-form-grid + .pbmd-fine { margin-top: -24px; }

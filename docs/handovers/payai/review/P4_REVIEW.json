@@ -1,0 +1,565 @@
+{
+ "confirmed": [
+  {
+   "id": "po-1",
+   "title": "om_hr_payroll vi_VN.po (touched in P4): 17 older code entries have no odoo-python marker, so those messages stay English for Vietnamese users",
+   "file": "om_hr_payroll/i18n/vi_VN.po",
+   "line": 1200,
+   "severity": "minor",
+   "detail": "This does not come from the P4 hunk and will not crash an upgrade. P4 added one entry, the email-all refusal, and that entry is correct: module line first, odoo-python marker, occurrence code:addons/om_hr_payroll/models/hr_payslip.py:0, and the msgid matches the _() call at hr_payslip.py:1855 exactly. But the lens asks about every entry in each touched file, and this file has 15 older entries with a .py code occurrence and no '#. odoo-python' line. They use the old format, e.g. '#: code:addons/om_hr_payroll/models/hr_payslip.py:102' plus '#, python-format'. CodeTranslations._load_python_translations only keeps rows whose comments contain 'odoo-python', so these rows are dropped without any message. The vi.po fallback holds the same msgids, also without the marker, so nothing fills the gap. The 15 are: 'Refund: ', 'Global Leaves', '%s (copy)', 'You cannot delete a payslip which is not draft or cancelled!', 'You must set a contract to create a payslip line.', 'Normal Working Days paid at 100%', \"Payslip 'Date From' must be earlier 'Date To'.\", 'You must select employee(s) to generate payslip(s).', 'You cannot create a recursive salary structure.', both 'Error! You cannot create recursive hierarchy of Salary Rule…' strings, the three 'Wrong … defined for salary rule %s (%s).' strings, and 'Form content is missing, this report cannot be printed.'. Two more, 'Name' and 'Status' (controllers/portal.py), have model occurrences only, with no code occurrence and no marker, so the portal _() calls also stay English. Nothing else turned up in any P4 .po. All five touched files (pb_payai_actions 515 entries, pb_payrun_wizard +14, pb_audit +2, om_hr_payroll +1, pb_payroll_ai_insights +1 plus 3 unwrapped) pass Odoo 19's PoFileReader with no 'malformed po' logs. Every new or changed entry has the right module line first, the right marker for its file type, and an occurrence path that exists at 6327ca99b. Every code msgid matches the _/_lt/env._/_t literal in that exact file, checked through the parsed source, so implicit concatenation and curly quotes are handled. Every %(x)s / %s set and count, newline count and edge space is the same in msgid and msgstr. No msgid repeats, and no entry is fuzzy or empty. All 13 view-term and 22 field string/help/selection model entries match the view XML and field definitions. The 3 PA11 unwrapped entries parse to the same msgid and msgstr as at ba5fcc50d, so no wording changed. No pb_approval_config, pb_learn or .pot file changed in P4. Coverage is complete: every P0–P3 _/_t string in pb_payrun_wizard, pb_audit, om_hr_payroll, pb_payroll_ai_insights, pb_hub, biz_approval_workflow, pb_payruns and pb_approval_config has a marked Vietnamese entry. In pb_payai_actions the only untranslated strings are the 12 model-only Action summaries, which are English on purpose. The commit message says 13, but there are 12.",
+   "repro": "git show 6327ca99b:om_hr_payroll/i18n/vi_VN.po | grep -n -B4 'msgid \"Refund: \"' shows '#. module: om_hr_payroll' / '#: code:addons/om_hr_payroll/models/hr_payslip.py:102' / '#, python-format' with no '#. odoo-python'. Then in an Odoo 19 shell on a DB with vi_VN: odoo.tools.translate.code_translations.get_python_translations('om_hr_payroll','vi_VN').get('Refund: ') returns None, so a refund payslip made by a Vietnamese user is named 'Refund: …'. The same happens for the other 16 msgids above.",
+   "fix": "Optional, and better kept out of this ship commit so the P4 diff stays small: in a later om_hr_payroll touch, add '#. odoo-python' straight after the '#. module: om_hr_payroll' line of those 15 entries (never before it), and add '#: code:addons/om_hr_payroll/controllers/portal.py:0' plus the marker to 'Name' and 'Status'. Then rerun the PoFileReader gate on the file. Nothing in the P4 entries needs to change before deploy.",
+   "reasons": [
+    "CONFIRMED: The finding holds. At 6327ca99b, om_hr_payroll/i18n/vi_VN.po contains only one '#. odoo-python' line, on the new P4 entry. Older entries with a code occurrence lack the marker. For example, lines 1200-1203 read '#. module: om_hr_payroll' / '#: code:addons/om_hr_payroll/models/hr_payslip.py:102' / '#, python-format' / msgid \"Refund: \". 'python-format' is a flag, not an extracted comment. In Odoo 19",
+    "CONFIRMED: I confirmed the finding. At 6327ca99b, the Vietnamese file for the original payroll module (om_hr_payroll) has 16 translated entries that point at Python code. Only one of them, the P4 email-all refusal, carries the '#. odoo-python' marker. I ran the same parsing logic as Odoo 19's PoFileReader on the file, using polib, which Odoo uses itself. I then applied the filter from CodeTranslations._load_",
+    "CONFIRMED: The finding holds as written. It is minor and was already there before P4; P4 did not cause it.\n\n1. **Odoo 19 drops entries without the marker.** I checked the local Odoo 19 source (/Users/adity/odoo19/odoo, commit c50a4e05), in odoo/tools/translate.py at lines 1896-1898. The loader for Python-code translations keeps a row only when `row.get('value') and 'odoo-python' in row['comments']`. `#, pyth"
+   ]
+  },
+  {
+   "id": "vi-1",
+   "title": "Vietnamese yes/no and how-questions start an action (chưa, thế nào, ra sao, khi nào, bao nhiêu)",
+   "file": "pb_payai_actions/payai/registry.py",
+   "line": 282,
+   "severity": "major",
+   "detail": "_QUESTION_VI only catches questions that START with làm sao/tại sao/thế nào/khi nào or contain là gì/như thế nào/làm sao/tại sao/vì sao/bằng cách nào. Vietnamese usually puts the question word at the END: 'chưa' (yet?), bare 'thế nào', 'ra sao', 'khi nào', 'bao nhiêu', 'bao lâu', 'ngày nào', 'có được không'. These pass, and because the phrase table runs before the model and the knowledge path, the question becomes an order with the question word left in a slot. Checked by running registry.match at 6327ca99b under an odoo stub.",
+   "repro": "registry.match(...) at 6327ca99b gives: 'gửi phiếu lương tháng 6 chưa' (have June payslips gone out yet?) -> ('send_payslips', {'run': 'tháng 6 chưa'}); 'chạy lương tháng 6 chưa' -> run_payroll June; 'gửi duyệt bảng lương tháng 6 chưa' -> submit_run; 'tính lương thế nào' (how is pay calculated?) -> run_payroll with period 'thế nào', so the plan is for the current month (October); 'tính lương tháng 6 bao nhiêu' -> run_payroll; 'chạy lương khi nào' -> run_payroll; 'duyệt bảng lương thế nào' -> approve_item. The same sentences with 'như thế nào' return None, so only the short forms leak.",
+   "fix": "Add a question tail to _QUESTION_VI (folded): r'\\b(?:chua|the\\s+nao|ra\\s+sao|khi\\s+nao|bao\\s+gio|bao\\s+nhieu|bao\\s+lau|ngay\\s+nao|o\\s+dau)\\s*\\??$'. Status looks that end in 'thế nào' / 'ra sao' / 'sao rồi' must still reach run_status, so make the tail block only act/decide tiers (amber/red) in match(), or test run_status's VI phrases before the question gate. Add tests for each repro sentence.",
+   "reasons": [
+    "CONFIRMED: I confirmed the finding at 6327ca99b. I unpacked pb_payai_actions from that commit, stubbed the odoo imports it needs (fields, exceptions, LazyTranslate, and pb_payroll_ai_insights.models.ai_redaction), and called registry.match. Every sentence in the repro gives the result the finding claims:\n- 'gửi phiếu lương tháng 6 chưa' -> ('send_payslips', {'run': 'tháng 6 chưa'})\n- 'chạy lương tháng 6 chưa",
+    "CONFIRMED: I reproduced this at 6327ca99b. I extracted pb_payai_actions with git archive, stubbed odoo and odoo.addons.pb_payroll_ai_insights, and ran registry.match and looks_like_question in python3. Every repro in the finding gives exactly the result it claims:\n- 'gửi phiếu lương tháng 6 chưa' (also with a trailing '?') -> ('send_payslips', {'run': 'tháng 6 chưa'})\n- 'chạy lương tháng 6 chưa' -> run_payro",
+    "CONFIRMED: The finding holds. I checked the code exactly as shipped (6327ca99b) by running it under a stand-in for the framework. Every sentence in the finding gives the wrong result it describes:\n- 'gửi phiếu lương tháng 6 chưa' → send_payslips {run: 'tháng 6 chưa'}\n- 'chạy lương tháng 6 chưa' and the same with '?' → run_payroll {period: 'tháng 6 chưa'}\n- 'gửi duyệt bảng lương tháng 6 chưa' → submit_run\n- '"
+   ]
+  },
+  {
+   "id": "vi-2",
+   "title": "'thang sáu' (only the month word has its mark) is read as NEXT month, not June",
+   "file": "pb_payai_actions/payai/resolve.py",
+   "line": 200,
+   "severity": "major",
+   "detail": "_vi_period decides June vs next month with re.search(r'tháng\\s+sáu', marked), which needs BOTH words marked. People often put marks on only some words. When the deciding word 'sáu' has its mark but 'thang' does not, the text is still read as 'tháng sau' (next month). Text with no marks at all ('thang sau') also silently becomes next month instead of asking which was meant. An NFD-decomposed slot (for example from the model path, which is not NFC-normalised before resolve) also misses the check.",
+   "repro": "With today = 13 Oct 2026: parse_period('thang sáu') -> 1 Nov 2026; parse_period('thàng sáu') -> Nov; registry.match('chạy lương thang sáu') -> run_payroll {'period': 'thang sáu'}, which resolves to November 2026. parse_period(unicodedata.normalize('NFD','tháng sáu')) -> Nov. Only 'tháng sáu' fully marked gives June.",
+   "fix": "Decide on the mark of the word after the month word only: NFC-normalise `raw`, align it with `low` using fold_keep, and test whether the original word at rel.span(1) contains 'á' (sáu) rather than 'a'. When there are no marks at all ('thang sau'), return an ambiguous result (chips: June / next month) instead of silently choosing next month.",
+   "reasons": [
+    "CONFIRMED: Confirmed at the ship commit 6327ca99b. In pb_payai_actions/payai/resolve.py, `_vi_period` (around lines 200–203) folds the text, matches `thang (nay|truoc|roi|toi|sau)` on that folded text, and only treats it as June when the marked text matches `re.search(r'tháng\\s+sáu', marked)`. That test needs both words fully marked, in composed (NFC) form. I ran `parse_period` from the commit with Odoo stub",
+    "CONFIRMED: I reproduced this on the code at commit 6327ca99b. I copied fold, _month_bounds and _vi_period from pb_payai_actions/payai/resolve.py and ran them in python3 with today set to 13 Oct 2026. Results: 'tháng sáu' and 'Tháng Sáu' give June 2026. 'thang sáu', 'thàng sáu', 'chạy lương thang sáu' and 'thang sau' all give 1–30 Nov 2026 (next month). The NFD form of 'tháng sáu' also gives November. The cau",
+    "CONFIRMED: I reproduced this against the code in 6327ca99b. I pulled out `fold`, `_vi_period` and `parse_period` and ran them with today set to 13 Oct 2026:\n- 'tháng sáu' gives June 2026. This is the only form that works.\n- 'thang sáu', 'thàng sáu' and 'chạy lương thang sáu' all give 1–30 Nov 2026.\n- An NFD-decomposed 'tháng sáu' also gives November.\n- 'thang sau' (no marks) silently gives November.\n\nWhy it "
+   ]
+  },
+  {
+   "id": "vi-3",
+   "title": "English 'go to <Vietnamese screen>' is refused as a delete request",
+   "file": "pb_payai_actions/payai/phrases_vi.py",
+   "line": 95,
+   "severity": "major",
+   "detail": "never_destructive's Vietnamese verb list includes 'gỡ', which folds to 'go'. The folded pattern is tried on all text, English included, at priority 15, ahead of open_screen (priority 90). Any mixed sentence that starts with the English 'go' and contains lương/phiếu/hồ sơ/nhân viên/hợp đồng gets the 'deleting is never done through PayAI' refusal instead of opening the screen.",
+   "repro": "registry.match('go to bảng lương') -> ('never_destructive', {'what': 'to bảng lương'}); likewise 'go to phiếu lương', 'go to the Phiếu lương screen', 'go to Hồ sơ nhân viên', and with no marks at all 'go to luong'.",
+   "fix": "Do not fold 'gỡ': try that verb on the marked text only, or require 'gỡ bỏ' / 'gỡ <x> khỏi'. Or skip the folded variant of never_destructive when the text starts with an English verb. Add a test that 'go to bảng lương' returns open_screen.",
+   "reasons": [
+    "CONFIRMED: The defect is real and I reproduced it on the code at 6327ca99b. In phrases_vi.py, the never_destructive pattern includes the verb `gỡ`. When registry.py loads the Vietnamese phrases, it builds a second copy of each one through `strip_marks(p)`, and that copy turns `gỡ` into `go`. registry.match() then tries both copies, the marked one and the folded one, on every message, English included (the fo",
+    "CONFIRMED: I reproduced this on the shipped code (6327ca99b). I copied pb_payai_actions/payai/*.py into the scratchpad and stubbed the Odoo imports. Then I ran the real registry.match.\n\nPriority order: never_destructive comes before open_screen (15 vs 90). match() tries each action's Vietnamese patterns on every message, English ones included. It tries them twice: once on the marked text, then on a folded co",
+    "CONFIRMED: I reproduced this at 6327ca99b. I ran registry.match from the extracted module with Odoo stubbed out. 'go to bảng lương', 'go to phiếu lương', 'go to the Phiếu lương screen', 'go to Hồ sơ nhân viên' and 'go to luong' all return ('never_destructive', {'what': 'to ...'}). 'go to payslips' and 'open bảng lương' correctly return open_screen.\n\nHow it happens:\n- payai_action in registry.py compiles ever"
+   ]
+  },
+  {
+   "id": "vi-4",
+   "title": "Common Vietnamese names are thrown away as filler words (Chi, Anh, Nhân, Minh, Đặng, Đỗ, Thắng)",
+   "file": "pb_payai_actions/payai/resolve.py",
+   "line": 618,
+   "severity": "major",
+   "detail": "P4 added Vietnamese forms of address to PERSON_STOP: 'chi' (chị), 'anh', 'ba' (bà), 'co' (cô), 'nhan'/'vien' (nhân viên). These are matched after folding, so they also remove the very common given names Chi, Anh, Nhân/Nhàn. ITEM_STOP (actions_red.py:70) adds 'minh', 'dang', 'do', 'thang', which remove Minh, the surnames Đặng and Đỗ, and the name Thắng from approval matching. The name drops out and matching runs on the remaining words. The person then gets 'Who is this for?', a crowd of chips, or a different person's request taken as the match ('assumed'). The English path shares these resolvers, so it is affected too.",
+   "repro": "resolve_person for 'đổi phụ cấp ăn trưa của Chi thành 500.000' (person slot 'Chi') -> words [] -> 'Who is this for? Name the person.' The English 'Change the lunch allowance of Chi to 500,000' does the same. 'Lan Anh' -> searches 'Lan' only. tokens('tăng ca của Minh', ITEM_STOP) -> ['tang','ca'], so 'duyệt tăng ca của Minh' matches ANY overtime request; with one waiting (somebody else's), _resolve_item returns it as 'assumed'. 'nghỉ phép của Thắng' -> ['nghi','phep'].",
+   "fix": "Drop forms of address only when they sit directly before another word ('chị Linh', 'anh An'): strip a leading honorific, never a bare or final one. Remove 'minh', 'dang', 'do', 'thang' from ITEM_STOP; 'tôi/mình' as pronouns are better cut by position (after 'của'/'cho' at the end) than as tokens. Add tests with employees named Chi, Lan Anh and Minh.",
+   "reasons": [
+    "CONFIRMED: The finding holds. I checked it against the ship commit 6327ca99b.\n\n**Person names.** In pb_payai_actions/payai/resolve.py:618, PERSON_STOP now contains 'anh', 'chi', 'em', 'ong', 'ba', 'co', 'nhan', 'vien' and 'ban'. resolve_person (line 625) drops every word whose folded form is in that list, wherever the word sits. Folding strips accents and turns đ into d, so chị and Chi are the same word to i",
+    "CONFIRMED: I reproduced this against the code at commit 6327ca99b. In resolve.py, P4 added 'anh', 'chi', 'em', 'ong', 'ba', 'co', 'nhan', 'vien' and 'ban' to PERSON_STOP. resolve_person drops any word whose folded form is in that set, wherever the word sits. In actions_red.py, ITEM_STOP gained 'minh', 'dang', 'do' and 'thang', and match_cards removes them through tokens(rest, ITEM_STOP).\n\nI ran the exact fol",
+    "CONFIRMED: The defect is real and I reproduced it. In the shipped code (6327ca99b), P4 added 'anh', 'chi', 'em', 'ong', 'ba', 'co', 'nhan', 'vien' and 'ban' to PERSON_STOP in pb_payai_actions/payai/resolve.py. resolve_person drops every word whose folded form is in that set, wherever the word sits. Nothing keeps a bare or final honorific, and nothing checks the name before the drop.\n\nWhat a copy of that logi"
+   ]
+  },
+  {
+   "id": "vi-5",
+   "title": "Spoken 'Đã gửi đi' (has it been sent?) counts as a go-ahead, because đã folds to dạ",
+   "file": "pb_payai_actions/payai/runner.py",
+   "line": 68,
+   "severity": "major",
+   "detail": "GO_AHEAD_VI is matched on fold(text), and its optional lead word 'da' is meant to be 'dạ' (polite yes). Folding turns 'đã' (already / has it…) into the same 'da'. Past-tense statements and questions with the '?' dropped, which is normal in voice transcripts, therefore count as a go-ahead. When the company's voice go-ahead setting is on, go_ahead() calls confirm(ctx, task.id, 'voice') on the latest Amber plan, for example Send payslips, which cannot be undone.",
+   "repro": "go_ahead_words('Đã gửi đi') -> True; 'đã xác nhận' -> True; 'đã thực hiện' -> True; 'đã tiến hành' -> True. Repro: payai_voice_go_ahead on, a Send payslips plan card waiting; the user says 'Đã gửi đi' (asking whether it went) -> the payslips are sent.",
+   "fix": "Match the yes-word on the NFC marked text (dạ|vâng|ừ|ok|được|đồng ý), and fold only the action part. Or reject a sentence whose first word is the marked 'đã'. Add the four repro sentences as negative tests.",
+   "reasons": [
+    "CONFIRMED: The finding holds at 6327ca99b. In runner.py lines 68-76, GO_AHEAD_VI runs against fold(text). resolve.fold (lines 98-101) strips every combining mark and maps đ to d, so 'đã' and 'dạ' both become 'da', which is the regex's optional lead word. Running the exact regex and fold gave True for 'Đã gửi đi', 'đã xác nhận', 'đã thực hiện' and 'đã tiến hành'. Only 'Đã gửi đi?' gave False, because the rege",
+    "CONFIRMED: The mechanism is real and I reproduced it. At 6327ca99b, runner.py:73-76 tests GO_AHEAD_VI against fold(text). resolve.fold (resolve.py:98-101) uses NFKD, drops combining marks and maps đ to d. So 'đã' and 'dạ' both become 'da', and 'da' is one of the optional lead words in GO_AHEAD_VI (runner.py:67). I ran the exact regex and fold in python3:\n- 'Đã gửi đi' -> 'da gui di' -> True\n- 'đã xác nhận' -",
+    "CONFIRMED: The defect is real, and I reproduced it against the code at 6327ca99b.\n\n- In resolve.py, fold() removes the accent marks and turns đ into d, so both 'đã' and 'dạ' become 'da'.\n- go_ahead_words() runs GO_AHEAD_VI on fold(text), and that pattern allows an optional lead word 'da' (meant to be the polite yes 'dạ').\n- With the same regex and fold code, 'Đã gửi đi', 'đã xác nhận', 'đã thực hiện' and 'đã"
+   ]
+  },
+  {
+   "id": "vi-6",
+   "title": "Effective date loses its day: '15.11.2026', '15-11-2026', 'ngày 15 tháng sau' become 1 November",
+   "file": "pb_payai_actions/payai/resolve.py",
+   "line": 714,
+   "severity": "major",
+   "detail": "parse_day's day-first branch only knows 'D tháng M' (digits) and 'D/M[/Y]'. Dot and dash dates (common in Vietnam), 'ngày D tháng sau/này' and 'ngày D tháng <word>' fall through to parse_period. That reads only the month and returns the 1st, with origin 'said', so the card shows it as what the person said. The pay data change then starts on the wrong day.",
+   "repro": "parse_day: '15.11.2026' -> 2026-11-01; '15-11-2026' -> 2026-11-01; 'ngày 15 tháng sau' -> 2026-11-01; 'ngày 15 tháng mười một' -> 2026-11-01. registry.match('đổi phụ cấp của Linh thành 500.000 từ ngày 15.11.2026') -> from='ngày 15.11.2026', which resolves to 1 Nov. Also '31/2' is clamped to 28 Feb without a word.",
+   "fix": "Accept [./-] as separators in the D/M/Y regex. For 'ngày D' followed by any month expression, parse the month with _vi_period and then apply D. Ask instead of clamping when D does not exist in that month.",
+   "reasons": [
+    "CONFIRMED: The finding is real. I ran parse_day from pb_payai_actions/payai/resolve.py, taken from ship commit 6327ca99b, with the date fixed at 2026-10-13 and only the system imports replaced by stand-ins. Results: '15.11.2026', '15-11-2026', 'ngày 15.11.2026', 'ngày 15 tháng sau' and 'ngày 15 tháng mười một' all come back as 2026-11-01, marked as what the person said, with the label '1 November 2026'. '15/",
+    "CONFIRMED: I reproduced this at commit 6327ca99b. I ran resolve.py from that commit locally, with the Odoo imports stubbed and today fixed at 2026-10-13. parse_day gave these results:\n- '15.11.2026', '15-11-2026', 'ngày 15.11.2026', 'ngày 15 tháng sau' and 'ngày 15 tháng mười một' all came back as (2026-11-01, 'said', '1 November 2026').\n- The controls worked: '15/11/2026' and 'ngày 15 tháng 11' both gave 15",
+    "CONFIRMED: I reproduced this by running parse_day from commit 6327ca99b with stubbed odoo imports and today set to 2026-10-13. These inputs all return 2026-11-01 with origin 'said' and the label '1 November 2026': '15.11.2026', '15-11-2026', 'ngày 15.11.2026', 'ngày 15 tháng sau' and 'ngày 15 tháng mười một'. '31/2' returns 28 Feb 2026 without a word. '15/11/2026' and 'ngày 15 tháng 11' correctly return 15 N"
+   ]
+  },
+  {
+   "id": "vi-7",
+   "title": "'tăng … thêm 500.000' (raise BY) is read as 'set TO 500.000'",
+   "file": "pb_payai_actions/payai/phrases_vi.py",
+   "line": 80,
+   "severity": "major",
+   "detail": "The second update_pay_data pattern lets the field text absorb any non-digit words (`[^0-9₫$]*?`) and makes the link word optional. 'thêm' (more / by) therefore ends up inside the field name, and the amount becomes the new absolute value. 'cho' also stays inside the person slot.",
+   "repro": "registry.match('tăng cho Linh phụ cấp thêm 500.000') -> ('update_pay_data', {'person': 'cho Linh', 'field': 'phụ cấp thêm', 'value': '500.000'}). The plan sets the allowance to 500.000 instead of current + 500.000.",
+   "fix": "Refuse to match (let the model or the clarify step handle it) when 'thêm', 'cộng thêm' or 'bớt' appears before the value. Or add a delta slot and show 'from X to X+500.000'. Exclude 'thêm|bớt|đi' from the field text.",
+   "reasons": [
+    "CONFIRMED: The defect is real. I checked it against the ship commit 6327ca99b. I took registry.py, phrases_vi.py and resolve.py from that commit and ran registry.match() with stub stand-ins for the odoo imports, registering only the Vietnamese update_pay_data patterns. Results:\n- 'tăng cho Linh phụ cấp thêm 500.000' gives ('update_pay_data', {'person': 'cho Linh', 'field': 'phụ cấp thêm', 'value': '500.000'}",
+    "CONFIRMED: I reproduced it at 6327ca99b. I extracted pb_payai_actions, stubbed the few framework imports and ran payai.registry.match locally. 'tăng cho Linh phụ cấp thêm 500.000' returns ('update_pay_data', {'person': 'cho Linh', 'field': 'phụ cấp thêm', 'value': '500.000'}), exactly as the finding says. The unaccented 'tang cho Linh phu cap them 500.000' gives the same result. So do 'cho Linh phụ cấp thêm ",
+    "CONFIRMED: Reproduced at ship commit 6327ca99b. I extracted pb_payai_actions, stubbed odoo and ran registry.match. 'tăng cho Linh phụ cấp thêm 500.000' -> ('update_pay_data', {'person': 'cho Linh', 'field': 'phụ cấp thêm', 'value': '500.000'}). The same happens without marks ('tang cho Linh phu cap them ...' -> field 'phu cap them'), with 'từ tháng 11' added, and with 'tăng phụ cấp thêm cho Linh lên 500.000'"
+   ]
+  },
+  {
+   "id": "vi-8",
+   "title": "Short orders and filler words land in the item or run slot and make matching fail ('duyệt đi', 'duyệt giúp tôi', 'duyệt lại', 'từ chối duyệt …')",
+   "file": "pb_payai_actions/payai/registry.py",
+   "line": 306,
+   "severity": "minor",
+   "detail": "normalise_vi undoes the polite-tail cut whenever only one word would be left (the guard for 'trợ giúp'). So 'duyệt đi', 'duyệt nhé', 'duyệt giúp tôi', 'duyệt luôn' keep the tail as the item, and the item search looks for 'di'/'giup'/'luon' and finds nothing. That gives 'I could not find …' instead of the single waiting request. Neither ITEM_STOP nor RUN_STOP contains 'duyet', 'phe', 'lai' or 'chua', and the submit pattern lets 'cho chị Hoa' / 'sang trạng thái chờ' into the run text.",
+   "repro": "match('duyệt đi') -> item 'đi'; 'duyệt giúp tôi' -> item 'giúp tôi'; 'duyệt lại bảng lương tháng 6' -> query ['lai','bang','luong']; 'từ chối duyệt bảng lương tháng 6' -> query includes 'duyet'; 'xem trạng thái duyệt bảng lương tháng 6' -> run_status query ['duyet'] -> 'none matching \"duyet\"'; 'gửi bảng lương tháng 6 cho chị Hoa duyệt' -> run 'bảng lương tháng 6 cho chị Hoa'.",
+   "fix": "Keep the 'trợ giúp' exception narrow (only when the remaining word is 'trợ'), and always cut known tails after an order verb. Add 'duyet', 'phe', 'lai', 'chua', 'het', 'luon' to ITEM_STOP and RUN_STOP. In submit_run, cut a trailing 'cho <person>' before 'duyệt'.",
+   "reasons": [
+    "CONFIRMED: I reproduced this by running the matcher from the ship commit (6327ca99b), with small stand-ins for the parts that need the live server. normalise_vi('duyệt đi') still returns 'duyệt đi'. The polite-ending cut is undone because only one word would be left and the remaining text does not start with 'lam' or 'giup'. So match() returns approve_item with item 'đi'. The same happens for 'duyệt nhé' (it",
+    "CONFIRMED: I confirmed this by running the matcher from commit 6327ca99b locally in python3, with small stand-ins for the odoo imports.\n\n**What the matcher captured:**\n- `match('duyệt đi')` gives `approve_item` with item `'đi'`. The other short orders do the same: `'duyệt nhé'` gives item `'nhé'`, `'duyệt giúp tôi'` gives `'giúp tôi'`, and `'duyệt luôn'` gives `'luôn'`.\n- In each case `normalise_vi` returns ",
+    "CONFIRMED: Reproduced against the code as of commit 6327ca99b. I unpacked pb_payai_actions from that commit with git archive, replaced the odoo imports with small stand-ins, and ran registry.match and normalise_vi on each example. In runner.handle, registry.match runs before the AI model is asked, so the matcher's result is what the person gets. Results:\n- 'duyệt đi' -> approve_item, item 'đi', search words "
+   ]
+  },
+  {
+   "id": "vi-9",
+   "title": "Folded verbs collide with place names, names and other verbs (Bắc/Bạc → bác, Huy → hủy, trả lời / trả lương → trả lại)",
+   "file": "pb_payai_actions/payai/phrases_vi.py",
+   "line": 90,
+   "severity": "minor",
+   "detail": "Every Vietnamese pattern is also tried with all marks folded away, on marked input too. Distinct marked words that fold to an order verb therefore trigger it. These are red or refusal actions, so typing is still required, but the person gets the wrong card.",
+   "repro": "match('Bắc Ninh tháng 6') -> reject_item {'item': 'Ninh tháng 6'}; 'Bạc Liêu tháng 6' -> reject_item; 'bác sĩ Linh' -> reject_item; 'Huy chạy lương tháng 6 chưa' -> never_destructive; 'trả lương về cho nhân viên' -> send_back_item {'item': 'lương'}; 'trả lời lại cho Linh' -> send_back_item {'item': 'lời'}; 'trả lại tiền thừa cho Linh' (refund) -> send_back_item.",
+   "fix": "Use the folded pattern only when the input has no Vietnamese marks at all (an accentless typist). When marks are present, the marked pattern is the truth. For 'trả X lại/về', require X to contain an approval or pay-run word.",
+   "reasons": [
+    "CONFIRMED: I reproduced every case in the finding by running `registry.match` from the ship commit 6327ca99b, with only the Odoo imports stubbed out. All of them come out as the finding says: 'Bắc Ninh tháng 6' and 'Bạc Liêu tháng 6' give reject_item (item 'Ninh tháng 6' and 'Liêu tháng 6'). 'bác sĩ Linh' gives reject_item. 'Huy chạy lương tháng 6 chưa' gives never_destructive. 'trả lương về cho nhân viên' g",
+    "CONFIRMED: Reproduced at 6327ca99b. I extracted pb_payai_actions, put stand-ins in place of the odoo imports, loaded every action module and ran registry.match on the repro inputs.\n\nResults: 'Bắc Ninh tháng 6' -> reject_item {'item': 'Ninh tháng 6'}; 'Bạc Liêu tháng 6' -> reject_item; 'bác sĩ Linh' -> reject_item; 'Huy chạy lương tháng 6 chưa' -> never_destructive {'what': 'chạy lương tháng 6 chưa'}; 'trả lư",
+    "CONFIRMED: This is a real defect, and I reproduced it against the code as shipped in 6327ca99b. I ran the real payai package with the Odoo imports stubbed out, and registry.match gave:\n- 'Bắc Ninh tháng 6' -> reject_item {'item': 'Ninh tháng 6'}\n- 'Bạc Liêu tháng 6' -> reject_item {'item': 'Liêu tháng 6'}\n- 'bác sĩ Linh' -> reject_item\n- 'Huy chạy lương tháng 6 chưa' -> never_destructive\n- 'trả lương về cho "
+   ]
+  },
+  {
+   "id": "vi-10",
+   "title": "Year words ignored ('năm sau', 'năm ngoái', 'năm trước', 'năm tới'); 'tháng sau nữa' / 'hai tháng trước' off by one",
+   "file": "pb_payai_actions/payai/resolve.py",
+   "line": 215,
+   "severity": "minor",
+   "detail": "_vi_period only reads a literal 20xx year or removes 'năm nay'. Relative-year words fall into the default-year rule (this year, or last year when the month is more than one ahead). Relative-month counts are ignored.",
+   "repro": "Today 13 Oct 2026: parse_period('tháng 1 năm sau') -> Jan 2026 (meant Jan 2027); 'tháng 2 năm sau' -> Feb 2026; 'tháng sáu năm ngoái' -> June 2026 (meant June 2025); 'tháng sau nữa' -> Nov (meant Dec); 'hai tháng trước' / 'tháng trước nữa' -> Sep (meant Aug). The leftover 'nam sau' / 'nam ngoai' then also breaks run narrowing.",
+   "fix": "Handle năm (nay|sau|tới|trước|ngoái) relative to today, and 'nữa' / '<n> tháng trước|sau' as offsets. Add tests.",
+   "reasons": [
+    "CONFIRMED: I confirmed the finding. I ran `parse_period` from resolve.py at 6327ca99b with Odoo imports stubbed and today set to 13 Oct 2026. Every case in the repro gives the wrong month:\n- 'tháng 1 năm sau' gives Jan 2026, leftover '  nam sau'\n- 'tháng 2 năm sau' gives Feb 2026\n- 'tháng sáu năm ngoái' gives June 2026, leftover 'nam ngoai'\n- 'tháng 6 năm trước' gives June 2026\n- 'tháng 1 năm tới' gives Jan ",
+    "CONFIRMED: I reproduced this locally with the parser code taken from commit 6327ca99b. I copied it unchanged, from MAX_CHIPS through parse_period, and set today to 2026-10-13.\n\n| Typed | Result | Meant | Words left over |\n|---|---|---|---|\n| 'tháng 1 năm sau' | Jan 2026 | Jan 2027 | '  nam sau' |\n| 'tháng 2 năm sau' | Feb 2026 | Feb 2027 | — |\n| 'tháng 1 năm tới' | Jan 2026 | Jan 2027 | '  nam toi' |\n| 'thán",
+    "CONFIRMED: I reproduced this against the shipped code. I ran parse_period from `git show 6327ca99b:pb_payai_actions/payai/resolve.py` with the system imports stubbed out and today set to 2026-10-13:\n- 'tháng 1 năm sau' gives Jan 2026, leftover 'nam sau'.\n- 'tháng 2 năm sau' gives Feb 2026.\n- 'tháng 1 năm tới' gives Jan 2026, leftover 'nam toi'.\n- 'tháng sáu năm ngoái' gives June 2026, leftover 'nam ngoai'.\n-"
+   ]
+  },
+  {
+   "id": "vi-11",
+   "title": "A send-back or reject reason containing 'tại sao' / 'là gì' / 'như thế nào' makes the whole order count as a question",
+   "file": "pb_payai_actions/payai/registry.py",
+   "line": 282,
+   "severity": "minor",
+   "detail": "_QUESTION_VI uses `.*\\b(?:la gi|nghia la gi|nhu the nao|lam sao|tai sao|vi sao|bang cach nao)`, which matches anywhere, including inside the reason after 'vì'. looks_like_question also gates ask_model. The order is dropped silently and answered as a knowledge question.",
+   "repro": "registry.match('trả lại bảng lương tháng 6 vì không rõ tại sao tăng') -> None (and ask_model returns None too); likewise 'từ chối bảng lương tháng 6 vì không biết làm sao giải thích'.",
+   "fix": "Run the anywhere-alternatives only on the text before the first reason marker (vì / lý do / ghi chú / : / —). Or only treat a sentence as a question when it does not start with an order verb from PHRASES_VI.",
+   "reasons": [
+    "CONFIRMED: I checked this against the code at ship commit 6327ca99b and the problem is real. The pattern that spots Vietnamese questions (_QUESTION_VI in pb_payai_actions/payai/registry.py, around lines 280–284) has a branch that looks anywhere in the sentence for `.*\\b(?:la gi|nghia la gi|nhu the nao|lam sao|tai sao|vi sao|bang cach nao)\\b`. I lifted the code from that commit and ran it. looks_like_question",
+    "CONFIRMED: Confirmed by running the code from the ship commit. I extracted pb_payai_actions at 6327ca99b, stubbed the odoo imports and loaded the real payai package (all 13 Actions registered). Then I called registry.looks_like_question and registry.match on the inputs from the finding:\n- 'trả lại bảng lương tháng 6 vì không rõ tại sao tăng' gives True and None\n- 'từ chối bảng lương tháng 6 vì không biết làm",
+    "CONFIRMED: Confirmed at commit 6327ca99b. _QUESTION_VI in pb_payai_actions/payai/registry.py contains the branch `.*\\b(?:la gi|nghia la gi|nhu the nao|lam sao|tai sao|vi sao|bang cach nao)\\b`. That branch finds these words anywhere in the folded text, so it also catches them inside a reason. Both registry.match (line 347) and runner.ask_model (line 188) call looks_like_question first and give up when it says"
+   ]
+  },
+  {
+   "id": "vi-12",
+   "title": "'lương tháng 13' and 'cho tôi' fall back silently to the current month",
+   "file": "pb_payai_actions/payai/resolve.py",
+   "line": 205,
+   "severity": "minor",
+   "detail": "Month 13 is skipped as invalid and no other period is found, so resolve_period defaults to today's month. The 13th-month (Tết) pay run becomes a plan for the regular October payroll. 'cho tôi' (for me) is not in _TAIL_VI, so it is taken as the period (or the scheme) and is likewise ignored or not found.",
+   "repro": "match('chạy lương tháng 13') -> run_payroll {'period': 'tháng 13'} -> resolve_period gives October 2026 'default'. match('chạy lương cho tôi') -> period 'cho tôi' -> October; match('chạy lương tháng 6 cho tôi') -> scheme 'tôi'.",
+   "fix": "When the period text is not empty but no period is parsed, return missing or ask instead of defaulting. Add 'cho (tôi|mình|em)' to _TAIL_VI.",
+   "reasons": [
+    "CONFIRMED: I reproduced this at the ship commit by running registry.match and resolve_period from 6327ca99b with stubbed odoo imports and today set to 2026-10-13. 'chạy lương tháng 13' and 'chay luong thang 13' both match run_payroll with period 'tháng 13'/'thang 13'. In _vi_period, line 205 (`if not 1 <= month <= 12: continue`) skips month 13 and nothing else matches, so resolve_period returns October 2026 ",
+    "CONFIRMED: I reproduced this locally with the code at 6327ca99b, using small stand-ins for the server imports and today set to 13 Oct 2026. The phrases and the period reader are the real ones.\n\n- **\"chạy lương tháng 13\"**: matches run_payroll with {'period': 'tháng 13'}. The month-number check skips 13, and parse_period returns None.\n- **\"chạy lương cho tôi\"**: gives {'period': 'cho tôi'}. The phrase pattern",
+    "REFUTED: Only part of this is real, and none of it is silent. Checked at 6327ca99b. (1) \"chạy lương tháng 13\": the regex gives period \"tháng 13\". _vi_period skips month 13, so parse_period returns None and resolve_period falls back to October 2026 with origin 'default'. That much reproduces. But the result is a plan card, not an action. The Period row is shown through slot_row with a 'default' origin chip,"
+   ]
+  },
+  {
+   "id": "vi-13",
+   "title": "The typed-word check folds text differently on the card and on the server",
+   "file": "pb_payai_actions/static/src/js/chat_patch.js",
+   "line": 113,
+   "severity": "minor",
+   "detail": "Both sides require an exact whole-word match against the action's own words: no substring or longer phrase is accepted, and no other action's word is accepted. The folding differs, though. The server uses NFKD, removes every combining mark, lower-cases, and splits on Python whitespace. The client uses NFD, removes only U+0300–036F, upper-cases, and splits on JS \\s (which includes U+FEFF). So the Confirm button and the server can disagree.",
+   "repro": "'ＤＵＹỆＴ' (full-width letters): server word_ok -> True, card button stays disabled. 'từ chốı' (dotless ı): JS toUpperCase -> 'TU CHOI', button enabled; server fold -> 'tu chocı'... not equal -> 'That is not the word'. 'DUYỆT﻿': client trims it, Python split keeps it -> server rejects.",
+   "fix": "Make one rule on both sides: NFKC, then strip \\p{M} (JS: /\\p{M}/gu after NFKD), map đ→d, lower-case, collapse /\\s+/. Or let the client send the raw word and use the server's verdict only to enable the button.",
+   "reasons": [
+    "CONFIRMED: The finding is real and I reproduced it at 6327ca99b.\n\n**The two checks.**\n- On the card, `normWord` in `pb_payai_actions/static/src/js/chat_patch.js` (lines 111-115) does this: NFD, strip only U+0300-036F, đ/Đ to d, trim, split on JS `\\s+`, then toUpperCase. Its comment says it works \"as on the server\".\n- On the server, `word_ok` and `_norm_word` in `pb_payai_actions/payai/runner.py` (around line",
+    "CONFIRMED: The finding holds: the card and the server fold the typed word differently. I ran both functions exactly as they are at commit 6327ca99b. On the card side that is `normWord` in pb_payai_actions/static/src/js/chat_patch.js (lines 113-116), run in node. On the server side it is `runner._norm_word`, which uses `resolve.fold` (NFKD, drops every combining mark, lower-case, `.split()`), run in python3. ",
+    "CONFIRMED: The finding holds. I checked it against the code as shipped in 6327ca99b and ran both rules side by side.\n\n**The two rules differ:**\n- **Card:** `normWord` in `pb_payai_actions/static/src/js/chat_patch.js` (around line 113) uses NFD and strips only U+0300–036F. It then maps đ to d, trims, collapses `\\s+` and upper-cases.\n- **Server:** `word_ok` and `_norm_word` in `payai/runner.py` call `resolve.f"
+   ]
+  },
+  {
+   "id": "copy-1",
+   "title": "VI names the access screen \"Truy cập và ủy quyền\", but the screen is called \"Quyền truy cập & bàn giao\"",
+   "file": "pb_payai_actions/i18n/vi_VN.po",
+   "line": 1277,
+   "severity": "minor",
+   "detail": "Three PayAI msgstrs send a Vietnamese user to a screen name that appears nowhere else in the app: the door \"Mở Truy cập và ủy quyền\" (line 1277), the screen-off refusal \"... trong Cài đặt › Truy cập và ủy quyền\" (line 2303) and the no-right refusal (line 116). The same wording is in pb_payrun_wizard/i18n/vi_VN.po:621, also added in P4. The real screen is biz_access \"Access & delegation\", which is \"Quyền truy cập & bàn giao\" in biz_access/i18n/vi_VN.po:1656, and the Delegation model is \"Bàn giao quyền\". A Vietnamese admin who searches ⌘K or Settings for \"Truy cập và ủy quyền\" finds nothing. The English source \"Access and delegations\" also differs from the screen's \"Access & delegation\". That was there before P4, but P4 carried it into Vietnamese.",
+   "repro": "As a vi_VN user without the run-payroll right, ask PayAI \"chạy lương tháng 6 cho Bán lẻ\". The refusal says \"hãy nhờ quản trị viên cấp trong Cài đặt › Truy cập và ủy quyền\". Then open ⌘K and type \"Truy cập và ủy quyền\": no result. Type \"bàn giao\": you get \"Quyền truy cập & bàn giao\".",
+   "fix": "Use the screen's own name in all four msgstrs: \"Mở Quyền truy cập & bàn giao\" and \"Cài đặt › Quyền truy cập & bàn giao\". Optionally align the English source to \"Access & delegation\".",
+   "reasons": [
+    "CONFIRMED: The finding holds at commit 6327ca99b. In pb_payai_actions/i18n/vi_VN.po, line 116 (the no-right refusal from gate.py), line 1277 (\"Open Access and delegations\" -> \"Mở Truy cập và ủy quyền\", the door button in runner.py:325) and line 2303 (the screen-off refusal) all say \"Truy cập và ủy quyền\". pb_payrun_wizard/i18n/vi_VN.po:621 says the same. The real screen is a Settings category and card labell",
+    "CONFIRMED: Confirmed at 6327ca99b. pb_payai_actions/i18n/vi_VN.po is a new file in P4 (it is not in ba5fcc50d). It has \"Truy cập và ủy quyền\" at line 116 (the gate.py no-right refusal), line 1277 (\"Mở Truy cập và ủy quyền\", from runner.py) and line 2303 (the screen-off refusal). P4 commit f1616bb5f/f663d00a3 added the same wording at pb_payrun_wizard/i18n/vi_VN.po:621. The screen itself is the biz_access cli",
+    "CONFIRMED: The finding holds at 6327ca99b. pb_payai_actions/i18n/vi_VN.po lines 116, 1277 and 2303, and pb_payrun_wizard/i18n/vi_VN.po line 621, translate \"Settings › Access and delegations\" as \"Cài đặt › Truy cập và ủy quyền\". All four were added in P4 commit f1616bb5f (`git log -S`). The Vietnamese name of the real screen is \"Quyền truy cập & bàn giao\". That name comes from biz_access/i18n/vi_VN.po:1656, w"
+   ]
+  },
+  {
+   "id": "copy-2",
+   "title": "PayAI says \"Rút lại\" for withdraw; the Approvals inbox it points to says \"Thu hồi\"",
+   "file": "pb_payai_actions/i18n/vi_VN.po",
+   "line": 2175,
+   "severity": "minor",
+   "detail": "pb_approval_config/i18n/vi_VN.po has \"Withdraw it\" → \"Thu hồi\", \"Withdrawn\" → \"Đã thu hồi\" and \"Withdrawn by the person who sent it in\" → \"Do người gửi thu hồi\". PayAI uses \"Rút lại\" every time: the Withdraw button (2811), \"Đã rút lại\", \"Rút lại yêu cầu?\", the tier line \"có thể rút lại trong 10 phút\", \"Rút lại sẽ đưa nó về dạng nháp\", and the expiry note at 2175: \"Bạn vẫn có thể rút lại trong mục Phê duyệt\". After ten minutes the user is told to find \"rút lại\" in Approvals, but the button there is \"Thu hồi\". The handover says to reuse the established term and never invent a second one.",
+   "repro": "As a vi_VN user, send a run for approval through PayAI and wait more than 10 minutes. The card says \"Bạn vẫn có thể rút lại trong mục Phê duyệt\". Open Phê duyệt: the button reads \"Thu hồi\" and there is no \"Rút lại\".",
+   "fix": "Replace \"Rút lại/rút lại\" with \"Thu hồi/thu hồi\" in every PayAI msgstr: Withdraw, Withdrawn, Withdrawn through PayAI, Withdraw the request?, the tier lines, \"Too late to withdraw here\", the expiry and undo notes, and \"There is no request to withdraw\".",
+   "reasons": [
+    "CONFIRMED: I checked the files at the ship commit and the finding holds. In the PayAI Vietnamese file, every \"withdraw\" phrase uses \"rút lại\". Line 2811 turns \"Withdraw\" into \"Rút lại\". The others are \"Đã rút lại\", \"Rút lại yêu cầu?\", \"Đã rút lại qua PayAI\", the 10-minute line at 1651, \"Đã quá hạn rút lại ở đây\", and \"Không có yêu cầu nào để rút lại\". At line 2175, \"Ten minutes have passed. You can still wit",
+    "CONFIRMED: Confirmed at commit 6327ca99b. In pb_payai_actions/i18n/vi_VN.po, line 2175 translates \"Ten minutes have passed. You can still withdraw it from your approvals while nobody has decided.\" as \"...Bạn vẫn có thể rút lại trong mục Phê duyệt...\". PayAI uses \"rút lại\" 13 times in total, including Withdraw → \"Rút lại\" (2811), Withdrawn → \"Đã rút lại\" (2823), \"Rút lại yêu cầu?\" (2817) and the tier line \"có",
+    "CONFIRMED: The finding holds. I checked the files as they were at commit 6327ca99b. In pb_approval_config/i18n/vi_VN.po, the Approvals inbox button \"Withdraw it\" (inbox.xml lines 486, 519 and 529) is translated as \"Thu hồi\". Its related labels are \"Đã thu hồi\", \"Do người gửi thu hồi\", \"Không thu hồi được.\" and \"đã thu hồi\". In pb_payai_actions/i18n/vi_VN.po, PayAI uses \"rút lại\" every time (lines 1001, 1651,"
+   ]
+  },
+  {
+   "id": "copy-5",
+   "title": "\"... thay vào đó\" tacked onto door buttons is a word-for-word translation of \"instead\"",
+   "file": "pb_payai_actions/i18n/vi_VN.po",
+   "line": 1289,
+   "severity": "minor",
+   "detail": "Six door labels end in \"thay vào đó\": \"Mở Tờ khai thay vào đó\" (1289), \"Mở Chi trả & gửi phiếu thay vào đó\" (1301), \"Mở trong Hồ sơ thay vào đó\" (1336), \"Mở trên màn hình thay vào đó\" (1342), \"Mở mục Phê duyệt của tôi thay vào đó\" (1360) and \"Mở đợt lương thay vào đó\" (1380). A Vietnamese button never ends with \"thay vào đó\". It reads as a translation and makes the buttons long (36 characters for the approvals one), so they wrap to two lines in a 300px drawer.",
+   "repro": "As a vi_VN user, ask PayAI \"gửi phiếu lương tháng 6\" for a run that is not approved, or ask anything that is refused with a door. The button reads \"Mở Chi trả & gửi phiếu thay vào đó\".",
+   "fix": "Drop the tail (\"Mở Tờ khai\", \"Mở trong Hồ sơ\", \"Mở mục Phê duyệt\") or use \"Chuyển sang <screen>\". The refusal sentence already says why the user is being sent there.",
+   "reasons": [
+    "CONFIRMED: I checked this at commit 6327ca99b and the claim holds. The Vietnamese translation file has all six entries at the stated lines: 1289, 1301, 1336, 1342, 1360 and 1380. Each one translates \"Open X instead\" word for word as \"Mở X thay vào đó\".\n\nThese really are buttons:\n- The labels are passed to screen_action(...) in actions_amber.py at lines 492, 875, 996, 1256 and 1630.\n- In actions_red.py line 5",
+    "CONFIRMED: Confirmed at commit 6327ca99b. pb_payai_actions/i18n/vi_VN.po has all six door labels at the stated lines, each ending in \"thay vào đó\": 1289 \"Mở Tờ khai thay vào đó\", 1301 \"Mở Chi trả & gửi phiếu thay vào đó\", 1336 \"Mở trong Hồ sơ thay vào đó\", 1342 \"Mở trên màn hình thay vào đó\", 1360 \"Mở mục Phê duyệt của tôi thay vào đó\" and 1380 \"Mở đợt lương thay vào đó\". Each is a direct translation of the ",
+    "CONFIRMED: The defect is real as shipped. At 6327ca99b, pb_payai_actions/i18n/vi_VN.po lines 1289, 1301, 1336, 1342, 1360 and 1380 all translate \"Open ... instead\" with a \"thay vào đó\" tail. These strings are button labels. actions_amber.py passes them to screen_action() as the door or prefill button: \"Open in the screen instead\" at line 492 and \"Open the run instead\" at line 875. No ledger rule, test or oth"
+   ]
+  },
+  {
+   "id": "copy-6",
+   "title": "Sample requests say \"bảng lương\", but every card answers with \"đợt lương\"",
+   "file": "pb_payai_actions/i18n/vi_VN.po",
+   "line": 307,
+   "severity": "minor",
+   "detail": "The sample-request chips and Learn tips use \"bảng lương\" for a pay run: \"Duyệt bảng lương tháng 6 Bán lẻ\" (307), \"Xoá bảng lương tháng 5\" (551), \"Tải Excel bảng lương tháng 5 Bán lẻ\" (676), \"Từ chối bảng lương thưởng ...\" (1792), \"Trả lại bảng lương ...\" (1968), \"Gửi duyệt bảng lương tháng 6\" (1980), \"Xem bảng lương tháng 6\" (2058) and \"Tình hình bảng lương tháng này\" (2092). The cards, notes, doors and the Pay hub tabs (\"Các đợt lương\", \"Đợt lương\") all say \"đợt lương\" (69 uses). The parser should keep understanding \"bảng lương\", but the chips teach a word the user will not see on any card or tab. Related: \"this payroll\" → \"kỳ lương này\" (3057) is the fallback for the scheme name, so a nameless scheme produces \"Tôi sẽ chạy lương tháng 6 năm 2026 cho kỳ lương này\" (\"run June payroll for this pay period\"). It should be \"chương trình lương này\".",
+   "repro": "As a vi_VN user, open PayAI and tap the example \"Xem bảng lương tháng 6\". The card that comes back is titled with \"Đợt lương ...\", and its door reads \"Mở đợt lương\".",
+   "fix": "Change the example msgstrs to \"đợt lương\" (for example \"Duyệt đợt lương tháng 6 Bán lẻ\" and \"Xem đợt lương tháng 6\"), keep \"bảng lương\" in phrases_vi.py, and change the \"this payroll\" msgstr to \"chương trình lương này\".",
+   "reasons": [
+    "CONFIRMED: I checked the finding against the ship commit (6327ca99b), and it holds.\n\nIn pb_payai_actions/i18n/vi_VN.po, every example request uses \"bảng lương\":\n- line 307 \"Duyệt bảng lương tháng 6 Bán lẻ\"\n- lines 551, 676, 1792, 1968 and 1980\n- line 2058 \"Xem bảng lương tháng 6\"\n- line 2092 \"Tình hình bảng lương tháng này\"\n- line 2717 \"Bảng lương tháng 5 Bán lẻ đang ở đâu?\", one more the finding missed\n\nThe",
+    "CONFIRMED: I checked this against the code at commit 6327ca99b and the finding holds. In the file pb_payai_actions/i18n/vi_VN.po, \"bảng lương\" appears only in the 8 example lines the finding lists (lines 307, 551, 676, 1792, 1968, 1980, 2058, 2092). One of them is \"Show the June run\" → \"Xem bảng lương tháng 6\", from the examples list in actions_green.py. The card and door words in the same file say \"đợt lươn",
+    "REFUTED: The facts check out, but what shipped matches the spec, so this is not a defect. In the shipped .po, the eight sample-request msgstrs do use \"bảng lương\", and cards and tabs use \"đợt lương\" (54 msgstr hits). However, P4_HANDOVER.md lines 10-11 name \"bảng lương\" as an established screen term to reuse, next to \"kỳ lương\". Its own example requests (lines 35-36) are written exactly this way: \"gửi duyệ"
+   ]
+  },
+  {
+   "id": "copy-7",
+   "title": "A batch of literal or awkward Vietnamese renderings",
+   "file": "pb_payai_actions/i18n/vi_VN.po",
+   "line": 1129,
+   "severity": "minor",
+   "detail": "These read as translations rather than native copy. (a) \"Duyệt không làm ai được trả lương.\" (1129) is clumsy; better \"Duyệt chưa phải là trả lương.\" (b) \"... cho đến khi khoản chi được giải ngân\" (2847): \"giải ngân\" is loan and disbursement jargon, while the app says \"chi trả\". (c) \"có thể đảo lại\" (1633) for \"can be reverted\"; better \"có thể hoàn tác/đổi lại\". (d) \"Already gone\" → \"Đã không còn\" (241); better \"Không còn nữa\" or \"Đã bị xoá\". (e) \"Quyết định · quyết định của bạn ở bước ...\" (539) repeats the word. (f) The plan-card chip \"assumed\" → \"suy đoán\" (2907) means speculation or guesswork; better \"tôi hiểu là\" or \"tự chọn\". (g) Discard on the settings form → \"Bỏ qua\" (572), which means skip; the web client uses \"Huỷ bỏ\". (h) 16 msgstrs use the pronoun \"nó\" for a request or run (\"Nó sẽ đến %s trước.\", \"Hiện nó đang chờ duyệt.\", \"Nó đến người duyệt ...\"); a named subject (\"Yêu cầu\", \"Đợt lương\") reads natively. (i) The tile label \"stage\" → \"trạng thái\", where pb_payruns uses \"Stage\" → \"Giai đoạn\".",
+   "repro": "As a vi_VN approver, ask \"duyệt bảng lương tháng 6 Bán lẻ\". The plan card shows \"Quyết định · quyết định của bạn ở bước ...\" and \"... khoản chi được giải ngân\". Ask \"gửi duyệt bảng lương tháng 6\" and the card says \"Nó sẽ đến những người duyệt ...\".",
+   "fix": "Rewrite the listed msgstrs as suggested in the detail. Replace \"nó\" with the noun (\"Yêu cầu sẽ đến %s trước.\", \"Đợt lương đang chờ duyệt.\"), use \"Huỷ bỏ\" for Discard, and \"Giai đoạn\" for stage.",
+   "reasons": [
+    "CONFIRMED: At ship commit 6327ca99b, every quoted string in pb_payai_actions/i18n/vi_VN.po is present exactly as the finding describes:\n- 241: \"Already gone\" → \"Đã không còn\"\n- 539: \"Quyết định · quyết định của bạn ở bước %(step)s\", with the word repeated\n- 572: \"Discard\" → \"Bỏ qua\"\n- 1129: \"Duyệt không làm ai được trả lương.\"\n- 1633: \"có thể đảo lại\"\n- 2847: \"...khoản chi được giải ngân\"\n- 2907: \"assumed\" →",
+    "CONFIRMED: I checked this against pb_payai_actions/i18n/vi_VN.po as it stands at commit 6327ca99b. Every msgstr the finding cites is there, word for word:\n- line 241: \"Đã không còn\"\n- line 539: \"Quyết định · quyết định của bạn ở bước %(step)s ...\"\n- line 572: Discard → \"Bỏ qua\"\n- line 1129: \"Duyệt không làm ai được trả lương.\"\n- line 1633: \"có thể đảo lại\"\n- line 2847: \"giải ngân\"\n- line 2907: assumed → \"suy",
+    "REFUTED: At commit 6327ca99b all the quoted strings are in pb_payai_actions/i18n/vi_VN.po as described. But nearly every point is a matter of taste, not a defect you can reproduce. Every string is correct Vietnamese, easy to understand, and gives the right meaning.\n\n(a) \"Duyệt không làm ai được trả lương\" is correct and accurate.\n\n(b) The claim that \"giải ngân\" is loan jargon is wrong for this app. \"Giải n"
+   ]
+  },
+  {
+   "id": "copy-10",
+   "title": "Existing translation in a neighbouring module: the ⌘K entry for PayAI's \"Pay & Deliver\" door reads \"Thanh toán và giao hàng\" (\"payment and goods delivery\")",
+   "file": "pb_payhub/i18n/vi_VN.po",
+   "line": 72,
+   "severity": "minor",
+   "detail": "PayAI's door and copy say \"Chi trả & gửi phiếu\", matching the Pay Runs board button in pb_payruns. The ⌘K entries for the same screen (pb_payhub pay_hub_palette.js:73 and pb_hub hub_palette_entries.js:129) translate \"Pay & Deliver\" as \"Thanh toán và giao hàng\", which is e-commerce shipping wording, and the tab itself is \"Chi trả\". A user told to \"Mở Chi trả & gửi phiếu\" who searches ⌘K for it finds \"Thanh toán và giao hàng\". Similarly, \"Pay Runs\" → \"kỳ lương\" (lowercase, and the word PayAI uses for \"Period\") in pb_payruns and pb_hub is the screen's title, while PayAI and the Pay hub tabs say \"Các đợt lương\". These lines are not in the P4 diff, but they break the screen names that PayAI's Vietnamese copy relies on.",
+   "repro": "As a vi_VN user, press ⌘K and type \"Chi trả & gửi phiếu\": the entry shown is \"Thanh toán và giao hàng\". Open the Pay Runs board from the menu: the title reads \"kỳ lương\".",
+   "fix": "In pb_payhub/i18n/vi_VN.po and pb_hub/i18n/vi_VN.po, set \"Pay & Deliver\" → \"Chi trả & gửi phiếu\". In pb_payruns and pb_hub, set \"Pay Runs\" → \"Các đợt lương\". Ship these with or alongside P4.",
+   "reasons": [
+    "CONFIRMED: I checked the files at the ship commit (6327ca99b), and every claim holds.\n\n- **⌘K entries for \"Pay & Deliver\":** In pb_payhub/i18n/vi_VN.po (lines 72-73), \"Pay & Deliver\" is translated \"Thanh toán và giao hàng\". That string is the ⌘K entry in pay_hub_palette.js line 73. pb_hub/i18n/vi_VN.po (lines 338-339) has the same translation, used by the ⌘K entry in hub_palette_entries.js.\n- **The Pay Runs ",
+    "CONFIRMED: I checked this against the files at commit 6327ca99b. The main claim holds; one part of it is weaker.\n\n**Pay & Deliver (holds):**\n- In both quick-search translation files, \"Pay & Deliver\" is translated as \"Thanh toán và giao hàng\". That is pb_payhub/i18n/vi_VN.po:72-73 (source pay_hub_palette.js:73) and pb_hub/i18n/vi_VN.po:338-339 (source hub_palette_entries.js:121).\n- The Pay Runs board's own bu",
+    "CONFIRMED: I checked the files as they are at commit 6327ca99b, and every fact in the finding holds. pb_payhub/i18n/vi_VN.po:72-73 (pay_hub_palette.js:73, the ⌘K row \"payhub_deliver\") and pb_hub/i18n/vi_VN.po:338-339 (hub_palette_entries.js:121) both translate \"Pay & Deliver\" as \"Thanh toán và giao hàng\". pb_payruns/i18n/vi_VN.po:304-305 (the board button) says \"Chi trả & gửi phiếu\". The Pay hub tab \"Deliver"
+   ]
+  },
+  {
+   "id": "link-1",
+   "title": "The approvals deep link never fires on the Home hub: currentAction is an async getter (a Promise), so pb_focus is never read",
+   "file": "pb_approval_config/static/src/js/inbox.js",
+   "line": 128,
+   "severity": "blocker",
+   "detail": "PayAI doors open the inbox through openHub({tag:'pb_home_hub', lens:'approvals', focus:'request:<id>'}). HubShell.lensProps passes only {embedded:true, ...def.props} to a lens (and `arrival` only when the lens says wantsArrival; the approvals lens in pb_home_hub does not). So props.action is undefined and _arrivalContext() falls back to `this.actionService.currentAction`. In Odoo 19 that getter returns `_getCurrentAction()`, which is declared `async function _getCurrentAction()` (checked in /Users/adity/odoo19/odoo/addons/web/static/src/webclient/actions/action_service.js:335/1879, in the health19 copy, and in the copy vendored in this repo). It returns a Promise, so `current.context` is undefined, arrival is null, focusRequest(null) is null, and neither the scope switch nor openFocused runs. Even if the getter were awaited it would still be the wrong action: controllerStack only becomes nextStack in the new controller's onMounted (action_service.js:~1024/1034), after the lens's setup and onWillStart have run, so it would return the PREVIOUS screen's action. In practice the P4 feature 'the door opens the request itself' does nothing. Only the standalone-action path (props.action.context) can work, and PayAI never uses it. Test 6 only checks inbox.js with a regex (test_payai_p4.py:296-298). No JS test or tour checks the arrival, and the report lists 'browser walk of the deep link' as still open. That is why this was missed.",
+   "repro": "On a clone with 6327ca99b and a user who holds an open seat on a pending request: ask PayAI 'Approve the June Retail run'. On the plan card press 'Open my approvals instead'. Home opens on the Approvals tab on 'My turn' with no drawer open. In the console, `odoo.__WOWL_DEBUG__.root.env.services.action.currentAction` prints `Promise {<pending>}`, and `.context` is undefined. The same happens with the not-yours card ('Open my approvals' with scope org): the scope stays 'Mine' and no drawer opens.",
+   "fix": "Hand the hub's arrival to the lens explicitly. In pb_home_hub, set `wantsArrival: true` on the approvals lens, add an optional `arrival` prop to PbInbox and read `this.props.arrival.focus` (fall back to props.action.context.pb_focus for the standalone action). Remove the actionService.currentAction fallback. Key the consumed-once WeakSet on the arrival object. Add a JS unit test (or a short tour) that mounts PbHomeHub with context {pb_lens:'approvals', pb_focus:'request:<id>'} and asserts the drawer opens. The regex test alone cannot catch this.",
+   "reasons": [
+    "CONFIRMED: I checked the code at commit 6327ca99b. The finding is right, and I could not prove it wrong.\n\n1. PayAI opens the approvals inbox through the Home hub. In pb_payai_actions/payai/actions_red.py, approvals_hub() returns {tag:'pb_home_hub', lens:'approvals', focus:'request:<id>', context:{pb_focus:...}}. chat_patch.js:632-636 hands that to openHub().\n\n2. The hub does not pass the link on to the inbox",
+    "CONFIRMED: I confirmed this at 6327ca99b. PayAI's approvals door (approvals_hub in pb_payai_actions/payai/actions_red.py) opens {tag:'pb_home_hub', lens:'approvals', focus:'request:<id>'}. The hub reads pb_focus into its own arrival (hub_shell.js:120/140/190). But lensProps (hub_shell.js:359-374) hands a lens only {embedded:true, ...def.props}, and adds `arrival` only when the lens says wantsArrival. The app",
+    "CONFIRMED: I checked this against the shipped code at 6327ca99b and it is a real defect, not a false alarm.\n\n1. **How PayAI opens the inbox.** The PayAI doors build `{tag:'pb_home_hub', lens:'approvals', focus:'request:<id>'}` (actions_red.py:45-59). chat_patch.js:632-636 passes that to `openHub`, which puts `pb_focus` into the Home hub's own action context.\n\n2. **What the approvals lens receives.** `HubShel"
+   ]
+  },
+  {
+   "id": "link-3",
+   "title": "The door on a finished decision lands on 'All I can see' with a drawer for a request that is not in that list",
+   "file": "pb_approval_config/static/src/js/inbox.js",
+   "line": 137,
+   "severity": "minor",
+   "detail": "openFocused switches to tab 'all' whenever the id is not in 'My turn', then sets openId without checking that the id is in that list either. The result card after a decision (actions_red.py:575 `_inbox_door(ctx, request_id=after['id'])`) and the conflict card point at requests that are often approved, applied, rejected or sent back. list_requests puts 'all' = pending/blocked, 'done' = approved/applied/rejected/cancelled and 'returned' = returned. So the person lands on 'All I can see', which does not list the request (it may say 'Nothing is in flight'), with the drawer floating over it. Closing the drawer leaves them on the wrong pile.",
+   "repro": "With link-1 fixed: approve the final step of a request through PayAI (type APPROVE). On the 'Approved' result card press 'Open my approvals'. The inbox shows the 'All I can see' tab without that request, and the drawer for the approved request is open over it. Expected: the 'Finished' tab, where the request is listed.",
+   "fix": "Have the server tell the client where the request lives: add `tab` to the focus (for example 'request:<id>:<scope>:<tab>', or derive it from request.state in approvals_hub/_inbox_door), or let openFocused try mine → all → returned → done and stop at the first list that contains the id. Open the drawer only once the id is found, or show a plain 'This request is no longer in your approvals' note.",
+   "reasons": [
+    "CONFIRMED: Confirmed at 6327ca99b. inbox.js openFocused (lines 133-141) checks only whether the id is in the current list ('mine'). If it is not, it sets tab='all', reloads, and then sets state.openId = requestId without checking anything else. The template (inbox.xml:202-209) renders RequestDrawer whenever openId is set, whatever the list holds. inbox_facade.list_requests puts 'all' = state in (pending, blo",
+    "CONFIRMED: I confirmed this from the code at commit 6327ca99b.\n\n**The inbox screen** (inbox.js, around lines 133-140): `openFocused` checks only `this.cards`, which is the \"My turn\" list. If the request is not there, it sets `state.tab = 'all'`, reloads, and then sets `state.openId` without checking that the request is in that list either.\n\n**The server** (`inbox_facade.list_requests`) sorts requests by stat",
+    "CONFIRMED: The defect is real at 6327ca99b. In pb_approval_config/static/src/js/inbox.js, openFocused() (around lines 133-140) checks only whether the id is in the \"mine\" cards. If it is not, it sets tab='all', reloads, and then sets openId without checking that the id is in that list.\n\nIn inbox_facade.list_requests, tab 'all' only covers state pending or blocked. 'done' covers approved, applied, rejected an"
+   ]
+  },
+  {
+   "id": "link-4",
+   "title": "A stale or unreadable request id shows the raw permission text in the drawer, not a plain sentence",
+   "file": "pb_approval_config/models/inbox_facade.py",
+   "line": 398,
+   "severity": "minor",
+   "detail": "get_request calls _readable() first. For scope 'me' that runs `request.check_access('read')` before get_request's own `if not request.exists(): raise UserError('That request no longer exists.')`, so the friendly sentence is never reached. On Odoo 19, check_access on a deleted record fails inside the rule check (filtered_domain on a missing record raises MissingError 'Record does not exist or has been deleted. (Record: biz.approval.request(42,), User: 7)'). On a request the person cannot read it raises ir.rule's 'Uh-oh! Looks like you have stumbled upon some top-secret records... freshly baked cookies' text with model names. The drawer prints error.data.message as-is. The deep link makes this reachable from old PayAI cards in the chat history, and from a crafted pb_focus.",
+   "repro": "With link-1 fixed: open a PayAI card from yesterday that has an 'Open my approvals' door for request 42, delete or cancel-and-purge request 42 (or log in as a user without read access to it), then press the door. The inbox switches to 'All I can see' and the drawer shows the technical record or rule message, not 'That request no longer exists.'",
+   "fix": "In get_request (or _readable), call `request = request.exists()` first and raise the plain UserError when it is empty. Catch AccessError around check_access and re-raise it as a plain UserError ('You cannot open this request.'). In inbox.js, if the drawer load fails on a focused arrival, close it and show a notification, so the inbox is not left behind a dead drawer.",
+   "reasons": [
+    "CONFIRMED: The finding holds at the ship commit. In 6327ca99b:pb_approval_config/models/inbox_facade.py, `_readable` (lines 392-407) calls `request.check_access('read')` for scope 'me'. It does the same for wider scopes when the scoped search finds nothing, which is always the case for a deleted id. `get_request` (410-414) only reaches `if not request.exists(): raise UserError(\"That request no longer exists.",
+    "CONFIRMED: I reproduced this on a local Odoo 19 copy of the test database (am_probe_link4, a scratch copy I created, upgraded and then dropped; nothing committed). I called pb.approval.inbox.get_request(999999, scope) as two test users: one in group_approval_user and one in group_approval_config. Results:\n- scope 'me' (both users) and 'team': MissingError \"Record does not exist or has been deleted. / (Record",
+    "CONFIRMED: Confirmed against the code at 6327ca99b and the local Odoo 19 source (/Users/adity/odoo19/odoo/odoo/orm). get_request (inbox_facade.py:410-414) calls _readable first. For scope 'me', _readable runs `request.check_access('read')` at line 398 and never checks exists(). For 'team'/'org', a missing id is not found by the search, so it falls through to the same check_access at line 405. The plain messa"
+   ]
+  },
+  {
+   "id": "link-6",
+   "title": "Learn step wording reads as if Draft or the deletion lasts only 10 minutes",
+   "file": "docs/tutorial_poc/author/data.js",
+   "line": 3101,
+   "severity": "minor",
+   "detail": "New L2 step: '<b>Withdraw</b> on the card brings it back to Draft for 10 minutes, while nobody has decided.' Tip: '...and Undo deletes the draft run for 10 minutes.' The Vietnamese is the same ('đưa nó về Nháp trong 10 phút', 'Hoàn tác xoá đợt lương nháp trong 10 phút'). What PayAI actually does: Withdraw/Undo is OFFERED for 10 minutes (undo_block UNDO_MINUTES=10). The run stays Draft and the deletion is permanent. The card itself says 'can be withdrawn for 10 minutes' and 'can be undone for 10 minutes'. The lesson should match the card. The same text is in pb_learn/static/content/learn_content.json.",
+   "repro": "Open Learn → Runs lesson (L2), step 10 'Or ask PayAI, and read its plan first', in EN and VI. Read the body and the tip: 'brings it back to Draft for 10 minutes' / 'deletes the draft run for 10 minutes'.",
+   "fix": "Reword both languages in data.js, for example 'For 10 minutes, while nobody has decided, <b>Withdraw</b> on the card makes it a draft again.' and 'for 10 minutes, Undo deletes the draft run.' (VI: 'Trong 10 phút, khi chưa ai quyết định, nút <b>Rút lại</b>…' / 'trong 10 phút, Hoàn tác xoá đợt lương nháp'). Regenerate learn_content.json, throwing away the generator's unrelated vi_VN.po and fixture.js rewrites as before (PA54).",
+   "reasons": [
+    "CONFIRMED: I confirmed this at the ship commit 6327ca99b. In docs/tutorial_poc/author/data.js, lines 3101 to 3104 say exactly what the finding quotes, in English and Vietnamese. The step says \"Withdraw on the card brings it back to Draft for 10 minutes, while nobody has decided\". The tip says \"Undo deletes the draft run for 10 minutes\". The same Withdraw sentence is also in pb_learn/static/content/learn_cont",
+    "CONFIRMED: The finding holds. The wording is exactly as quoted at commit 6327ca99b, and it misdescribes what the app does.\n\n- **Where the wording is:** docs/tutorial_poc/author/data.js:3101-3104 says, in English, \"Withdraw on the card brings it back to Draft for 10 minutes, while nobody has decided\" and \"Undo deletes the draft run for 10 minutes\". The Vietnamese says the same: \"đưa nó về Nháp trong 10 phút\" ",
+    "CONFIRMED: The finding is real but minor, and it is about wording only.\n\n**What ships:** At 6327ca99b, data.js lines 3101–3104 contain the quoted text. The same text is in pb_learn/static/content/learn_content.json: \"Withdraw on the card brings it back to Draft for 10 minutes, while nobody has decided\" and \"Undo deletes the draft run for 10 minutes\".\n\n**What the code does:** In pb_payai_actions/payai/actions"
+   ]
+  },
+  {
+   "id": "test-1",
+   "title": "Deep-link test 6 only checks that words appear in inbox.js; the inbox lens never sees pb_focus on Odoo 19",
+   "file": "pb_payai_actions/tests/test_payai_p4.py",
+   "line": 300,
+   "severity": "major",
+   "detail": "test_06 lifts the regex out of inbox.js and checks that the strings '_consumedFocus' and 'currentAction' are present. It never runs PbInbox, and the real path does not work. The doors open {'tag': 'pb_home_hub', 'lens': 'approvals'} (actions_red.py:45). The hub shell mounts PbInbox with props {embedded: true} only (pb_hub/static/src/js/hub_shell.js lensProps; the approvals lens has no wantsArrival or props). So `this.props.action` is undefined and `_arrivalContext()` (inbox.js:125-130) falls back to `this.actionService.currentAction`. In Odoo 19 that getter returns a Promise: `async function _getCurrentAction()` at web/static/src/webclient/actions/action_service.js:335, exposed at :1879. `current.context` is therefore undefined, focus is null, no scope switch happens and no drawer opens. Even if the getter were synchronous, controllerStack is only committed in the controller's onMounted (action_service.js:1034), after the lens's setup has run, so it would return the previous screen's action. `_getCurrentAction` also JSON.parses a fresh object on every call, so the WeakSet 'consume once' guard could never match. The report's 'node run of focusRequest' exercises only the pure regex helper. P4 walk items 9 and 10 ('the inbox opens WITH that request's drawer open') would fail.",
+   "repro": "Read pb_hub/static/src/js/hub_shell.js `get lensProps()`: it returns {embedded:true} for the approvals lens. Read /Users/adity/odoo19/odoo/addons/web/static/src/webclient/actions/action_service.js:335 (`async function _getCurrentAction`). In a browser on payobook as a vi_VN approver: PayAI 'duyệt bảng lương tháng 6 …' then press 'Mở mục Phê duyệt của tôi thay vào đó'. The Approvals lens opens on My turn with no drawer. Meanwhile `test_06` stays green with any inbox.js that keeps the identifiers `_consumedFocus` and `currentAction` in a comment.",
+   "fix": "Add a hoot/QUnit test (pb_approval_config/static/tests) that mounts PbInbox inside pb_home_hub's hub shell via openHub({tag:'pb_home_hub', lens:'approvals', focus:'request:42'}) with a mocked inbox RPC. Assert state.openId === 42, state.scope, state.tab === 'all' for a not-listed id, and no reopen after a lens switch away and back. To make it pass, deliver pb_focus to the lens synchronously: mark the approvals lens `wantsArrival` (or pass the hub's props.action.context) and read `props.arrival`. Do not read actionService.currentAction. Replace the two assertIn string checks.",
+   "reasons": [
+    "CONFIRMED: I checked the code at the ship commit 6327ca99b and the finding holds. (1) The doors open {'tag':'pb_home_hub','lens':'approvals'} with context pb_focus (actions_red.py approvals_hub). (2) The approvals lens in pb_home_hub/static/src/js/home_hub.js:136 is declared as `{ key: \"approvals\", ..., Component: PbInbox, groups: APPROVAL_GATE }`. It has no `wantsArrival` and no `props`, while Pulse does ha",
+    "CONFIRMED: I confirmed this at commit 6327ca99b.\n\n1. The door goes to the Home hub, not to a standalone inbox. `approvals_hub()` returns `{'tag': 'pb_home_hub', 'lens': 'approvals', 'focus': ..., 'context': {'pb_focus': ...}}` (actions_red.py:46-57).\n\n2. The inbox gets no action from the hub. In pb_home_hub/home_hub.js:136 the approvals lens is `{key:'approvals', Component: PbInbox, groups: APPROVAL_GATE}`. ",
+    "CONFIRMED: I confirmed the defect by reading the code at commit 6327ca99b. Nothing in the code prevents it.\n\n1. PayAI sends the right data. chat_patch.js:632-636 calls openHub with tag 'pb_home_hub', lens 'approvals' and focus/context pb_focus. hub_nav.js:63-65 puts pb_focus into additionalContext. So pb_focus reaches the hub shell's own props.action.context.\n\n2. The hub shell does not hand it on. hub_shell."
+   ]
+  },
+  {
+   "id": "test-2",
+   "title": "Client halves (normWord/wordMatches, focusRequest, openHub context) are not run by any suite",
+   "file": "pb_payai_actions/static/src/js/chat_patch.js",
+   "line": 113,
+   "severity": "major",
+   "detail": "Neither pb_payai_actions nor pb_approval_config has static/tests at 6327ca99b, and the report concedes the JS was checked only in local node runs (deviation 4). The typed-word button lights only when wordMatches() is true. If client folding regresses, 'duyet' never enables Do it and never reaches the server word_ok that test 3 covers. Nothing pins client/server parity either. The server folds with NFKD + combining-strip + lower; the client uses NFD + strip U+0300-036F + upper. A compatibility form (for example full-width 'ＤＵＹỆＴ') passes word_ok but not wordMatches. _payaiRunDoor forwarding `focus`/`context` into openHub is also untested.",
+   "repro": "Change chat_patch.js normWord to drop `.normalize(\"NFD\").replace(/[̀-ͯ]/g, \"\")`, or edit inbox.js focusRequest to return null. Run the server suite (`--test-tags payai`): all 14 TestPayaiP4* methods still pass. test_06 fails only if the literal `const m = /…/.exec(` line changes.",
+   "fix": "Add hoot unit tests: normWord('Duyệt')===normWord('DUYỆT')===normWord('duyet'), wordMatches('send  back', {words:['SEND BACK','TRẢ LẠI']}), wordMatches('duyệt đi', …)===false, and a table shared with runner.word_ok (one JSON fixture both suites read). Add a PayaiTypedConfirm render test asserting the button disabled/enabled state. Add a _payaiRunDoor test asserting doAction receives additionalContext.pb_focus.",
+   "reasons": [
+    "CONFIRMED: I could not disprove the core claim. At 6327ca99b, neither pb_payai_actions nor pb_approval_config has any JS test files (no static/tests, no hoot, no tour). Both have only Python tests. No server test reads chat_patch.js. A grep of every test file for chat_patch, normWord and focusRequest finds nothing. The only P4 test that touches inbox.js is test_06. It lifts the `const m = /…/.exec(` regex te",
+    "CONFIRMED: Confirmed against the code at 6327ca99b. (1) Neither pb_payai_actions nor pb_approval_config has static/tests. Their only tests are Python ones under tests/. No test file anywhere mentions normWord, wordMatches or chat_patch. The only JS that test_payai_p4 touches is (a) a scan for _t(\"...\") strings, used for the translation checks, and (b) test_06, which lifts just the `const m = /…/.exec(` regex",
+    "REFUTED: I'm rejecting this as a shipped defect. The facts are right, but they describe a known test gap, not a bug.\n\nWhat checks out: at 6327ca99b neither pb_payai_actions nor pb_approval_config has a static/tests folder, and no test file runs the client functions (normWord, wordMatches, focusRequest, the openHub forwarding).\n\nWhy it is still not a defect:\n1. The shipped code is correct. normWord folds ca"
+   ]
+  },
+  {
+   "id": "test-3",
+   "title": "Test 1 structure scan covers only pb_payai_actions; the new entries in the other four catalogues are only parsed",
+   "file": "pb_payai_actions/tests/test_payai_p4.py",
+   "line": 136,
+   "severity": "minor",
+   "detail": "PoFileReader (odoo/tools/translate.py:857) crashes on a missing `module:` line, so parsing does enforce module-first everywhere. A missing `#. odoo-python` marker or a non-code occurrence does not crash, though: the entry is silently not loaded as a code translation and the screen stays English. The marker/occurrence scan runs only over pb_payai_actions/i18n/vi_VN.po. In the other modules, test_01b checks markers indirectly via _catalogue() for just 3 of the 14 pb_payrun_wizard strings, 1 of the 2 pb_audit strings ('PayAI' source label unchecked) and om_hr_payroll's 1. pb_payroll_ai_insights' new card-field label and the 3 unwrapped PA11 entries are not checked at all.",
+   "repro": "In pb_payrun_wizard/i18n/vi_VN.po, delete the `#. odoo-python` line from the 'Pick a period first' (or any period-refusal) entry other than the three listed prefixes. Do the same for pb_audit's 'PayAI' entry. test_01 and test_01b both stay green, and the Vietnamese user sees English.",
+   "fix": "Run the same per-block assertions (module first, odoo-python/odoo-javascript marker on every `#: code:` entry, occurrence path under the right module) over every catalogue in P4_CATALOGUES. Alternatively, iterate PoFileReader rows and assert that every row with type=='code' has a marker in row['comments'], scoped to the msgids added in P4.",
+   "reasons": [
+    "CONFIRMED: The finding holds at 6327ca99b. In pb_payai_actions/tests/test_payai_p4.py, test_01 runs PoFileReader over all five P4_CATALOGUES, but the per-block check (module line first, odoo-python/odoo-javascript marker, occurrence under the right module) reads only pb_payai_actions/i18n/vi_VN.po. The spec's test 1 (P4_HANDOVER.md line 67) asks for that check on \"every new/changed vi_VN.po\". test_01b uses _",
+    "CONFIRMED: Confirmed at 6327ca99b. In test_payai_p4.py, test_01 only parses the other four catalogues (pb_payrun_wizard, pb_audit, om_hr_payroll, pb_payroll_ai_insights) with PoFileReader. The per-block checks (module line first, odoo-python/odoo-javascript marker, occurrence path) run only on pb_payai_actions/i18n/vi_VN.po. test_01b looks at the other modules for just 3 pb_payrun_wizard prefixes, 1 pb_audit",
+    "CONFIRMED: The finding is real, but it is a gap in the test, not a bug in what ships. In test_payai_p4.py at 6327ca99b, test_01 runs PoFileReader over all five P4_CATALOGUES, which only proves each file parses. The per-entry scan checks four things: module line first, a odoo-python/odoo-javascript marker on every code entry, at least one occurrence, and an occurrence path under the right module. It reads onl"
+   ]
+  },
+  {
+   "id": "test-4",
+   "title": "Coverage test 01b and Odoo-scan test 10 miss self.env._() calls, OWL template text and model terms",
+   "file": "pb_payai_actions/tests/test_payai_p4.py",
+   "line": 53,
+   "severity": "minor",
+   "detail": "_payai_literals only collects `ast.Name` calls `_lt`/`_`. `self.env._(...)` is an ast.Attribute, used in models/hr_payslip_run.py:30-31, payai_conversation.py:110/169 and pb_audit_console.py:29. It also skips static/src/xml text (cards.xml has the translated 'left' and other text) and field string=/help= in models/*.py. test_10 builds its catalogue from _catalogue(), which keeps only code rows, so none of the 101 `#: model` rows (settings field labels, help, selection labels) are checked for 'Odoo' in msgid or msgstr. These strings are translated today, but a new one with no Vietnamese, or a Vietnamese help containing 'Odoo', would pass both tests.",
+   "repro": "Add `raise AccessError(self.env._('Brand new sentence'))` to payai_conversation.py: test_01b stays green with no VI entry. Change a `#: model:ir.model.fields,help:…payai…` msgstr to contain 'Odoo': test_10 stays green.",
+   "fix": "In _payai_literals, also match ast.Attribute calls whose attr == '_' (env._). Parse static/src/xml text nodes and literal title/placeholder attributes the way Odoo's extractor does, or compare against a fresh export of the module's terms. In test_10, scan every PoFileReader row (code and model) for 'odoo' in src and value, plus fields string/help in models/*.py.",
+   "reasons": [
+    "CONFIRMED: The finding is correct at the ship commit 6327ca99b. In pb_payai_actions/tests/test_payai_p4.py, `_payai_literals` only matches calls where `node.func` is an `ast.Name` with id `_lt` or `_`. Calls written as `self.env._(...)` are `ast.Attribute` and are never collected. Those calls exist at the stated places: hr_payslip_run.py:30-31, payai_conversation.py:110 and 169, and pb_audit_console.py:29. T",
+    "CONFIRMED: The finding holds. I checked it against the code as it stands at commit 6327ca99b.\n\n1. **Test 01b misses `self.env._()` calls.** `_payai_literals` only counts a call when the thing being called is a bare name, `_lt` or `_` (`isinstance(node.func, ast.Name)`). `self.env._(...)` is an attribute call, so it never matches. I ran the same matching logic in python3 on a sample with `raise AccessError(se",
+    "CONFIRMED: I checked this against the code at commit 6327ca99b and the finding holds. It is a gap in the tests, not a problem users will see today.\n\n1) The string collector `_payai_literals` (test_payai_p4.py:53-80) only picks up `_lt(...)` and `_(...)` calls where the function is a plain name (`ast.Name`). Calls written as `self.env._(...)` are a different shape (`ast.Attribute`), so they are skipped. These"
+   ]
+  },
+  {
+   "id": "test-5",
+   "title": "Vietnamese dates (parse_day) and the VI pay-value card are never asserted",
+   "file": "pb_payai_actions/tests/test_payai_p4.py",
+   "line": 270,
+   "severity": "minor",
+   "detail": "P4 added day-first date parsing to resolve.parse_day: 'ngày 1 tháng 11', '1/11/2026', 'hôm nay'/'ngay'. The '\\d/\\d' branch applies to every user, English included. No test calls parse_day. test_04 only checks the raw slot text {'from': 'tháng 11'}. test_05 calls parse_amount directly on that slot text but never runs the update_pay_data resolver path (actions_amber.py:1154, which only calls parse_amount when the field is numeric). So nothing asserts the Vietnamese card shows value '500.000' and effective date '1 tháng 11 năm 2026', or that the stored param is 500000.",
+   "repro": "Swap the two groups in resolve.py:716 (`int(m.group(2))` and `int(m.group(1))`, i.e. month-first), or delete the P4 'ngay …/d/m' block entirely. The whole P4 suite passes. Change `num(amount)` at actions_amber.py:1157 to `str(amount)`: still green.",
+   "fix": "Add parse_day cases: 'ngày 1 tháng 11 năm 2026' → date(2026,11,1); '1/11/2026' → 1 Nov; 'tháng 11' → 1 Nov; 'hôm nay' → today. Pin the English behaviour of '11/1' explicitly. Add a vi_VN end-to-end test: 'đổi phụ cấp ăn trưa của <fixture person> thành 500.000 từ tháng 11' gives a plan whose value slot value_label == '500.000', a params value == 500000 and a from slot label 'tháng 11 năm …'.",
+   "reasons": [
+    "CONFIRMED: I checked this at ship commit 6327ca99b and the coverage gap is real.\n\n1. **parse_day is never tested.** Its only caller is the update_pay_data day-slot resolver (actions_amber.py:1161). No test in pb_payai_actions/tests calls parse_day, and no test sends a request with a \"from …\" date to the pay-data path. The English update_pay_data tests (P2 test_07 and test_07b, and P4 W1/W2) all say \"Give Pay",
+    "CONFIRMED: I confirmed this against commit 6327ca99b. The only caller of parse_day is actions_amber.py:1161. No test in test_payai_p1..p4 calls parse_day, and none sends a date like 'ngày 1 tháng 11', '1/11' or 'hôm nay' through the update_pay_data plan. test_04 checks only the raw slot text {'from': 'tháng 11'}. test_05 (line 270) calls parse_amount directly on the extracted slot text and never builds a car",
+    "CONFIRMED: The finding is correct: the new Vietnamese date and amount handling has no test. At 6327ca99b, no test file in pb_payai_actions/tests calls resolve.parse_day. The only update_pay_data plans that run end to end are English (test_payai_p2 test_07 and test_07b, 'Give Payai Linh Nguyen a Payai Meal allowance of 500,000'). They carry no 'from' date, so parse_day only ever sees the empty string and retu"
+   ]
+  },
+  {
+   "id": "test-7",
+   "title": "Test 2's English-word scan only catches whole-value matches, and the language is forced through context so the user.lang fallback is never tested",
+   "file": "pb_payai_actions/tests/test_payai_p4.py",
+   "line": 401,
+   "severity": "minor",
+   "detail": "For single-word entries ('Period', 'Scheme', 'Cancel', 'December') the scan looks for the quoted JSON value '\"December\"'. An English month inside a sentence (for example a note 'No run for December 2031 yet') or a label like 'Pay period' passes. The blob also excludes chips, hint, footer and audit_line. _send_vi/_confirm_vi always pass with_context(lang=VI), so `set_lang(self.env.lang or self.env.user.lang)` is only ever exercised on its first operand. The handover's 'verify with a vi_VN user' does not show that cards follow user.lang when the context carries none (for example a call made without a lang context, or a lang in the context that differs from the user's).",
+   "repro": "Make resolve.month_label ignore Vietnamese for note text only (for example a note built with calendar.month_name). The note assertion catches that one case, but any other English sentence fragment in subtitle, chips or hint passes. Changing runner.handle to `set_lang(engine.env.lang)` passes every P4 test.",
+   "fix": "Scan with word-boundary regexes over all card text fields: title, subtitle, slots, notes, actions, chips, hint, audit_line. Add one call with with_user(vi_user) and no lang context, asserting the Vietnamese title 'Chạy lương'.",
+   "reasons": [
+    "CONFIRMED: I checked the finding against the code at commit 6327ca99b, and it holds.\n\n1. **The English-word scan only catches exact matches.** In test_p4_02 (pb_payai_actions/tests/test_payai_p4.py, around line 401), single words are searched for in quotes, as a whole value (`'\"%s\"' % word if ' ' not in word else word`). So \"Period\", \"Scheme\", \"Cancel\" and \"December\" are found only when one of them is an ent",
+    "CONFIRMED: The finding is correct. I checked the test file as it stands at commit 6327ca99b (pb_payai_actions/tests/test_payai_p4.py). It is a minor gap in test coverage, not a product bug.\n\n(1) Lines 401-404 build the blob only from title, subtitle, slots, notes and actions. Chips, hint, footer and audit_line are left out. For each word with no space in it, the test only looks for the quoted form `'\"%s\"' % ",
+    "REFUTED: This is a wish to make the test stronger, not a defect in what ships. The product code is correct, and the test does what the handover asks for.\n\n(1) The handover's test 2 asks for \"a vi_VN user … plan card in Vietnamese (title, slot labels, notes, buttons)\". Test 2 checks almost every visible field against exact Vietnamese values, which is stronger than any English-word scan:\n- title is exactly '"
+   ]
+  },
+  {
+   "id": "crit-1",
+   "title": "Deploy notes order an upgrade of om_hr_payroll and three other modules on every database. That upgrade is not needed, and it would also upgrade about 112 other modules on each database",
+   "file": "docs/handovers/payai/P4_REPORT.md",
+   "line": 156,
+   "severity": "major",
+   "detail": "The DEPLOY NOTES (P4_REPORT.md lines 156-165) and the closeout table say the four catalogue modules (pb_payrun_wizard, pb_audit, om_hr_payroll, pb_payroll_ai_insights) need `-u` plus the PO gate on every database where they are installed. All of their new entries but one are code strings (`#. odoo-python` / `#. odoo-javascript`). Odoo 19 reads those straight from the .po file on disk while it runs (CodeTranslations._get_code_translations in odoo/tools/translate.py:1882), so a restart is enough and no database needs upgrading. The only model entry is the pb_payroll_ai_insights field label 'PayAI card' on payroll.ai.message.card, a technical field. An upgrade also pulls in every installed module that depends on the one being upgraded (ir_module.button_upgrade, ir_module.py:704-734). Downstream counts from the manifests at 6327ca99b: om_hr_payroll 112 modules, pb_payrun_wizard 39, pb_payroll_ai_insights 34, pb_learn 35, pb_approval_config 28. pb_demo is in several of these chains. So the payobook sequence and the 'other DBs' instruction mean an upgrade of nearly the whole payroll stack on each database. That goes against the standing payobook-first rule (other databases only in a batch the owner asks for). On abm it switches the 56 scheduled jobs back on (abm-tenant-retired memory). On rize and payobook_template it would also load every change still waiting for those databases. Without the om_hr_payroll bump, the payobook upgrade list stays at roughly 40 modules instead of 112.",
+   "repro": "Run the documented command on payobook or rize: `-u pb_payai_actions,pb_approval_config,pb_learn,pb_payrun_wizard,pb_audit,om_hr_payroll,pb_payroll_ai_insights`. The upgrade log shows om_hr_payroll's ~112 dependents marked 'to upgrade' and loaded. On abm, `SELECT count(*) FROM ir_cron WHERE active` jumps back up afterwards.",
+   "fix": "Drop om_hr_payroll, pb_audit and pb_payrun_wizard from every `-u` list; a restart serves their new Vietnamese strings. Revert those three manifest bumps, or note them as files only. Upgrade pb_payroll_ai_insights only on payobook, and only if the 'PayAI card' label matters. Rewrite the 'Other DBs' line so other databases need nothing beyond the restart. Keep `-u` for pb_payai_actions (its settings labels are model terms), pb_approval_config and pb_learn on payobook only.",
+   "reasons": [
+    "CONFIRMED: I checked the finding against the ship commit, and its main claim holds.\n\n1. **The deploy notes really do order the wide upgrade.** The DEPLOY NOTES in P4_REPORT.md (commit 43b927ac4, roughly lines 147-162) say three things:\n   - pb_payrun_wizard, pb_audit, om_hr_payroll and pb_payroll_ai_insights get \"`-u` + PO gate on each DB it is installed on\".\n   - The payobook sequence runs `-u pb_payai_acti",
+    "CONFIRMED: I checked this against the shipped code and it holds up. One part is overstated.\n\n1. **The new Vietnamese entries:** I compared ba5fcc50d with 6327ca99b. In pb_payrun_wizard, pb_audit and om_hr_payroll, every new entry is a code string: 13 + 1 + 1 `odoo-python` and 1 + 1 `odoo-javascript`. om_hr_payroll gets exactly one new entry, a code string in hr_payslip.py. In pb_payroll_ai_insights, three en",
+    "REFUTED: The facts in the finding check out, but they do not add up to a defect in the shipped deploy notes.\n\nWhat is true:\n- At 6327ca99b, the four modules' new vi_VN.po entries are all code strings, except one model field label ('PayAI card' in pb_payroll_ai_insights).\n- In Odoo 19, CodeTranslations._get_code_translations (odoo/tools/translate.py:1882) reads code strings from the .po files on disk while "
+   ]
+  },
+  {
+   "id": "crit-2",
+   "title": "Closeout says the Vietnamese strings, the Approvals deep link and the Learn steps stay 'pending' on rize, payobook_template, abm and tenants. All three go live there at the first restart",
+   "file": "docs/handovers/payai/PAYAI_CLOSEOUT.md",
+   "line": 52,
+   "severity": "major",
+   "detail": "There is one addons directory. The code-string .po entries are read from disk at runtime, the browser fetches pb_learn/static/content/learn_content.json directly (content_loader.js:35, CONTENT_URL), and inbox.js lands in every database's asset bundle. So the payobook deploy plus restart puts all of P4's shared-module changes live on every database, whatever the upgrade state. Two consequences. (a) Learn has no per-module gate on a step (step keys: act, anchor, body, consequence, guard, key, kicker, lines, modes, moment_*, nav, screen, timeout, tip, title, value, visual). The new Runs-lesson step ('Or ask PayAI, and read its plan first … press Do it … Withdraw') and the Approvals-lesson tip ('Ask \"Approve the June Retail run\" … type APPROVE') therefore show on rize, payobook_template and tenants. There pb_payai_actions is not installed, or every PayAI switch is off. Learners are taught a Do it / typed-word flow that does not exist on their database. That is not the 'harmless without pb_payai_actions' the closeout table claims. (b) The plan to run the PO gate on each database at its own `-u` comes too late: a broken .po would already be served everywhere from the restart. The gate has to pass on the staged tree before rsync.",
+   "repro": "Deploy 6327ca99b to payobook only, as documented, and restart. Log into rize as a payroll user and open Learn › the Runs lesson: its last step is 'Or ask PayAI, and read its plan first'. In the PayAI pill there, 'Send the June run for approval' gives no plan card and no Do it button. Also on rize with Vietnamese set, a pay run wizard refusal now shows in Vietnamese without any upgrade.",
+   "fix": "Correct the closeout and DEPLOY NOTES tables: code strings, inbox.js and the Learn content are live on every database at restart. Either hold the Learn content out of this ship until PayAI exists on the other databases, or add a step-level module gate to Learn (e.g. a `guard` that checks pb_payai_actions is installed and its tier switch is on) and use it for the two P4 steps. Make the PO gate a precondition before rsync.",
+   "reasons": [
+    "CONFIRMED: The main claim holds when checked against the code at the ship and docs commits.\n\n(1) The close-out says the Vietnamese strings, the Approvals deep link and the Learn content stay \"pending\" on rize, payobook_template, abm and tenants, and calls them \"harmless without pb_payai_actions\" (PAYAI_CLOSEOUT.md in 43b927ac4, the \"What is live where\" table, lines ~55-56). P4_REPORT DEPLOY NOTES says \"payob",
+    "CONFIRMED: Confirmed at 43b927ac4 and 6327ca99b. PAYAI_CLOSEOUT.md lines 55–56 say the Vietnamese catalogues, the inbox.js deep link and the Learn \"Ask PayAI\" content stay \"pending\" on rize, payobook_template, abm and tenants, and call the last two \"harmless without pb_payai_actions\". Both claims are wrong.\n\n1. Code translations come from disk at runtime. In Odoo 19, odoo/tools/translate.py has CodeTranslati",
+    "CONFIRMED: The main claim holds at the ship commits. The closeout's \"What is live where\" table marks the Learn content and the approvals deep link as \"pending (harmless without pb_payai_actions)\" on rize, payobook_template, abm and tenants. That is wrong.\n\n1. Learn content needs no upgrade, gate or restart. pb_learn/static/src/content/content_loader.js:35 fetches /pb_learn/static/content/learn_content.json s"
+   ]
+  },
+  {
+   "id": "crit-3",
+   "title": "English regression: slash dates are now always read day first, so an English user's '11/1' silently becomes 11 January (in the past)",
+   "file": "pb_payai_actions/payai/resolve.py",
+   "line": 714,
+   "severity": "minor",
+   "detail": "P4 added a day-first `(\\d{1,2})/(\\d{1,2})(?:/(20\\d\\d))?` branch to parse_day ahead of the English branches, for every language. Before P4, a bare 'from 11/1' found no date, and PayAI asked for the effective date. Now it resolves with origin 'said' to day 11, month 1. The year comes from _vi_period's past-leaning guess (month <= today.month+1 gives this year), so in October 2026 it is 11 January 2026, ten months back. en_US is not overridden anywhere in the repo (no res.lang date_format change), so English users see dates on screen as MM/DD/YYYY. A date copied from their own screen is read the other way round. The plan card does show the date before Do it, but the 'said' origin presents it as the person's own words, and a backdated pay change is easy to miss. The P4 report says 'English unchanged'.",
+   "repro": "As an English user in October 2026: 'Change Linh's lunch allowance to 500,000 from 11/1'. The plan card shows Effective '11 January 2026' as said. At ba5fcc50d the same sentence asked for the date.",
+   "fix": "Use the day-first slash branch only when the asker's language is Vietnamese (i18n.is_vi()), or read slash dates in the user's res.lang date_format order. For a date without a year in an effective-date slot, lean forward (next occurrence), not back.",
+   "reasons": [
+    "CONFIRMED: The finding holds at 6327ca99b. In resolve.py, parse_day (around line 714) now tries a day-first slash pattern `\\b(\\d{1,2})/(\\d{1,2})(?:/(20\\d\\d))?\\b` before any English branch, with no language check. For '11/1' it builds 'thang 1' and passes it to _vi_period. With today = 2026-10-13, month 1 is not more than today.month+1, so the year is 2026. The result is 11 January 2026, origin 'said', label ",
+    "CONFIRMED: Reproduced. I ran resolve.py from both commits in python3, with odoo stubbed and today set to 2026-10-13. At ship commit 6327ca99b, parse_day('11/1') returns (2026-01-11, 'said', '11 January 2026'). At ba5fcc50d it returned (None, 'said', ''), and the caller (actions_amber.py:1161) turned that into the question \"I could not read \"11/1\" as a date.\" The new day-first slash branch (resolve.py ~714) h",
+    "CONFIRMED: The defect is real and I can reproduce it by reading the code at 6327ca99b, though its harm is smaller than the finding says.\n\n**What happens.** In pb_payai_actions/payai/resolve.py, parse_day (around line 712) runs `re.search(r'\\b(\\d{1,2})/(\\d{1,2})(?:/(20\\d\\d))?\\b', low)` for every language. Nothing checks i18n.is_vi() or the user's res.lang order. For \"11/1\" it calls `_vi_period('', 'thang 1 ',"
+   ]
+  }
+ ],
+ "unverified": [],
+ "refuted": [
+  {
+   "id": "copy-3",
+   "title": "Approve and send-for-approval use \"Duyệt\" / \"Gửi duyệt\", while the screens say \"Phê duyệt\" / \"Gửi để phê duyệt\"",
+   "why": [
+    "REFUTED: At 6327ca99b the finding's claims about existing terms are mostly wrong, and its failure case works as designed. (1) \"Send for approval\" → \"Gửi duyệt\" is not a term PayAI invented. Six existing modules translate \"Send for approval\" as \"Gửi duyệt\": pb_payrun_ledgers, pb_pay, pb_comp_ben, pb_ess_workforce, pb_offboarding (plus pb_pay twice). The handover itself lists \"gửi duyệt bảng lương tháng 8\" a"
+   ]
+  },
+  {
+   "id": "copy-4",
+   "title": "Settings toggles \"PayAI được xem / được chuẩn bị / được quyết định / được làm\" read as passive voice",
+   "why": [
+    "REFUTED: The quoted lines are real at 6327ca99b: line 1473 is \"PayAI được làm\", 1492 is \"PayAI được quyết định (duyệt, trả lại, từ chối)\", 1499 is \"PayAI được xem (mở màn hình, xem số liệu)\", and the refusal at 1479 points to \"Cài đặt › PayAI được làm\". But the claimed defect does not hold, for two reasons.\n\n1. The spec asks for this exact wording. P4_HANDOVER.md line 91 says the label must read \"PayAI đượ"
+   ]
+  },
+  {
+   "id": "copy-8",
+   "title": "English: status words are pasted mid-sentence with capitals, and one refusal says only payroll staff can approve",
+   "why": [
+    "REFUTED: The finding's main claim and its repro are wrong at 6327ca99b. Its second claim is real but small.\n\n1. Capital letters mid-sentence: false. STATE_WORDS (resolve.py:335) does hold capitalised labels, but every call site that puts the state inside a sentence lowercases it with state_label(...).lower(). The call sites are actions_amber.py:515 (\"%(name)s is %(state)s.\"), :664 (\"...cannot be undone her"
+   ]
+  },
+  {
+   "id": "copy-9",
+   "title": "English plain-language problems in the P4 copy (pay-value refusal, Learn tips)",
+   "why": [
+    "REFUTED: This is a wording preference, not a defect I can reproduce, and some of its claims are wrong. At 6327ca99b the strings do exist, but at actions_amber.py:1198-1205, not line 1141. (1) \"Records\" is the screen's own name. The card's button is \"Open People › Records\", and using the screen's words is exactly what the owner's plain-English rule asks for. \"Pay value\" is also the word that screen and the "
+   ]
+  },
+  {
+   "id": "link-2",
+   "title": "The focus scope is forced again on every re-mount, overriding the scope the person picked",
+   "why": [
+    "REFUTED: The code reading is right, but the bug cannot happen at the ship commit. The finding admits this itself (\"once link-1 is fixed\"). In inbox.js at 6327ca99b, setup() sets state.scope = focus.scope with no _consumedFocus guard (lines 101-105), and HubShell re-mounts the lens on every tab switch (t-key 'lens-' + state.lens). However, focus is always null for an embedded inbox at this commit. When PbIn"
+   ]
+  },
+  {
+   "id": "link-5",
+   "title": "W2 sentence contradicts itself: Records has nothing you may change, then 'open Records to see what you can change'",
+   "why": [
+    "REFUTED: The text is real. At 6327ca99b, actions_amber.py around line 1195 and both vi_VN.po entries say: \"Nothing on %s can be changed from here yet: Records has no pay value on it that you may change. Open People › Records to see what you can change.\" But the two sentences do not contradict each other, so this is not a defect.\n\n1. The first sentence is limited to one scheme (\"on it\" means on that scheme)"
+   ]
+  },
+  {
+   "id": "test-6",
+   "title": "W2 test asserts only whichever branch the fixture's access happens to take; the PA31 neutral sentence and the Vietnamese wording are untested",
+   "why": [
+    "REFUTED: The finding has the branches the wrong way round. At 6327ca99b, the fixture user in test_w2 has base.group_user, hr.group_hr_user, group_payroll_base_officer and om_hr_payroll.group_hr_payroll_user. In pb_hr_payroll_formula/security/ir.model.access.csv, read access to hr.formula.config is granted only to group_formula_user (read) and group_formula_manager (full). formula_security.xml says group_fo"
+   ]
+  },
+  {
+   "id": "test-8",
+   "title": "PA11 tests still read the catalogue with a single-line regex, not PoFileReader; P4 changed the data to suit the weak reader",
+   "why": [
+    "REFUTED: The finding gets the facts right but blames P4 for something that is not a P4 defect. Checked at 6327ca99b:\n\n(1) Phase 4 did not touch either test file. `git diff ba5fcc50d 6327ca99b -- pb_payroll_ai_insights/tests` is empty. The single-line regex helpers (`_po_map` in test_data_access.py and its copy in test_egress.py) come from the earlier commit a02b5c096. The ledger records PA11 as pre-existin"
+   ]
+  },
+  {
+   "id": "test-9",
+   "title": "Learn test 8 checks only the generated JSON and finds anchors by substring",
+   "why": [
+    "REFUTED: At 6327ca99b the claim does not hold up as a real defect.\n\n(1) data.js: docs/tutorial_poc/author/data.js is authoring source under docs/. It is not part of any module and is never deployed. The file that ships and that Learn actually serves is pb_learn/static/content/learn_content.json. That is also the file pb_learn's own content loader reads (tests/common.py, load_content -> CONTENT_PATH). So te"
+   ]
+  }
+ ]
+}

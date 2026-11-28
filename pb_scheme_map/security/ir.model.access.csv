@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_person_scheme_formula_user,pb.person.scheme.formula.user,model_pb_person_scheme,pb_hr_payroll_formula.group_formula_user,1,0,0,0
+access_pb_person_scheme_payroll_user,pb.person.scheme.payroll.user,model_pb_person_scheme,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_pb_person_scheme_hr_user,pb.person.scheme.hr.user,model_pb_person_scheme,hr.group_hr_user,1,0,0,0
+access_pb_person_scheme_fill_formula_user,pb.person.scheme.fill.formula.user,model_pb_person_scheme_fill,pb_hr_payroll_formula.group_formula_user,1,0,0,0
+access_pb_person_scheme_fill_payroll_user,pb.person.scheme.fill.payroll.user,model_pb_person_scheme_fill,om_hr_payroll.group_hr_payroll_user,1,0,0,0
+access_pb_person_scheme_fill_hr_user,pb.person.scheme.fill.hr.user,model_pb_person_scheme_fill,hr.group_hr_user,1,0,0,0

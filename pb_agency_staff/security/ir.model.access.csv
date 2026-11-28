@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_agency_worker_hr,pb.agency.worker hr officer,model_pb_agency_worker,hr.group_hr_user,1,1,1,0
+access_pb_agency_worker_hr_manager,pb.agency.worker hr manager,model_pb_agency_worker,hr.group_hr_manager,1,1,1,1

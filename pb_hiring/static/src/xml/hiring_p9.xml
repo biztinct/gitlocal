@@ -1,0 +1,292 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       NAV P3a — the Hiring hub's APPLICANTS and OFFERS registers.
+
+       Home tabs of the board (state.tab), drawn inside its home view, so the
+       candidate drawer, the move menu, the outcome popover and every joining
+       dialog (all t-called at the board root) work unchanged.
+
+       Loop variables: rc (role), rcr (recruiter), fam, chp, col, cd, rr,
+       lc (list column), cdr (list row), orow (offer row), ov (offer verb).
+       None is an OWL operator word (R1). Section comments use `=` rules and
+       never a doubled hyphen (R35).
+       ==================================================================== -->
+
+  <!-- ============================== APPLICANTS ============================== -->
+  <t t-name="pb_hiring.P9Applicants">
+    <div class="pbhr-p9" data-coach="hi-applicants">
+
+      <!-- the hero line: a sentence, every figure a filter -->
+      <div class="pbhr-p9-hero">
+        <t t-call="pb_import_kit.QuietGlance">
+          <t t-set="qGlance" t-value="appsGlance"/>
+          <t t-set="qGlanceOn" t-value="appsGlanceOn"/>
+        </t>
+        <div class="pbhr-p9-views" role="group" aria-label="Board or list">
+          <button type="button" class="pbhr-p9-view" t-att-class="{ on: state.appsF.view !== 'list' }" t-att-aria-pressed="state.appsF.view !== 'list' ? 'true' : 'false'" title="One column per stage" t-on-click="() =&gt; this.setAppsView('board')">
+            <t t-out="ic('columns',14)"/> Board
+          </button>
+          <button type="button" class="pbhr-p9-view" t-att-class="{ on: state.appsF.view === 'list' }" t-att-aria-pressed="state.appsF.view === 'list' ? 'true' : 'false'" title="One line per person, sorted by any column" t-on-click="() =&gt; this.setAppsView('list')">
+            <t t-out="ic('layoutList',14)"/> List
+          </button>
+        </div>
+      </div>
+
+      <!-- FILTER W3: the shared filter panel (pb_filter_kit) is this
+           register's filters now: role, recruiter, where they are, what needs
+           attention and the rest, each with a count over everybody on the
+           reader's roles. The board or the list is its slot, a page at a time;
+           the kit draws data-coach="hi-filters" on its search bar. -->
+      <PbFilterLayout kit="kit" coach="'hi-filters'" searchPlaceholder="appsSearchHint">
+
+      <!-- reading for the first time -->
+      <t t-if="!state.apps.loaded">
+        <div class="pbhr-board pbhr-p9-board is-skel">
+          <div t-foreach="[1,2,3,4,5]" t-as="sk" t-key="sk" class="pbhr-col is-skel">
+            <div class="pbhr-col-h"><span class="pbhr-skel-line"/></div>
+            <div t-foreach="[1,2,3]" t-as="sk2" t-key="sk2" class="pbhr-kc is-skel"><span class="pbhr-skel-line"/><span class="pbhr-skel-line short"/></div>
+          </div>
+        </div>
+      </t>
+
+      <!-- not on any role -->
+      <div t-elif="!state.apps.allowed or (!regCards.length and !anyAppsFilter and !kit.total)" class="pbim-panel pbhr-empty">
+        <div class="pbhr-empty-ic"><t t-out="ic('userPlus',30)"/></div>
+        <h2>Nobody has applied to your roles yet</h2>
+        <p>Publish a role to its channels, or add a candidate from the role's own board. Everybody who applies to any of your roles lands here. Not on any role yet? Ask a recruiter to share one with you.</p>
+        <button type="button" class="pbim-btn ghost" t-on-click="() =&gt; this.setTab('roles')">
+          <t t-out="ic('layoutGrid',15)"/> Go to the roles
+        </button>
+      </div>
+
+      <!-- filtered away -->
+      <div t-elif="!regCards.length" class="pbim-panel pbhr-empty">
+        <div class="pbhr-empty-ic"><t t-out="ic('search',30)"/></div>
+        <h2>Nobody matches these filters</h2>
+        <p t-if="kit.chips.length">Remove a filter above, or start again from everybody across your roles.</p>
+        <p t-else="">Nobody matches “<t t-esc="kit.search"/>”. Check the spelling, or search by role or email.</p>
+        <button type="button" class="pbim-btn ghost" t-on-click="clearAppsFilters">
+          <t t-out="ic('x',14)"/> Show everyone
+        </button>
+      </div>
+
+      <t t-else="">
+        <!-- ===================== the pipeline ===================== -->
+        <div t-if="state.appsF.view !== 'list'" class="pbhr-board pbhr-p9-board" data-coach="hi-applicants-board" t-ref="regboard" t-att-class="{ 'is-readonly': !canMove, 'is-dim': state.cand, 'is-busy': kit.busy }">
+          <div t-foreach="regColumns" t-as="col" t-key="col.key" class="pbhr-col" t-att-class="{ 'is-done': col.family === 'done', 'is-folded': regFolded(col) }" t-att-data-key="col.key" t-on-click="() =&gt; this.regFolded(col) &amp;&amp; this.toggleRegFold(col)">
+            <div class="pbhr-col-h">
+              <span class="pbhr-col-name" t-att-data-tooltip="col.meaning"><t t-esc="col.name"/></span>
+              <span class="pbhr-col-n" t-key="col.key + '-' + col.count"><t t-esc="col.count"/></span>
+              <button t-if="!col.count and state.appsColOpen[col.key]" type="button" class="pbhr-col-fold" title="Fold this empty column away" t-on-click.stop="() =&gt; this.toggleRegFold(col)"><t t-out="ic('chevronLeft',14)"/></button>
+            </div>
+            <div class="pbhr-col-days"><t t-esc="daysHere(col)"/></div>
+            <t t-foreach="col.cards.slice(0, col.limit)" t-as="cd" t-key="cd.id">
+              <t t-call="pb_hiring.KCard"/>
+            </t>
+            <button t-if="col.cards.length &gt; col.limit" type="button" class="pbhr-col-more" t-on-click.stop="() =&gt; this.regShowMore(col)">
+              <t t-esc="regMoreLabel(col)"/>
+            </button>
+            <button t-elif="col.unread and appsHasMore" type="button" class="pbhr-col-more pbhr-col-unread" t-att-disabled="state.kitMore" t-on-click.stop="loadMoreKit" title="Read the next page of the list">
+              <t t-esc="regUnreadLabel(col)"/>
+            </button>
+            <div t-if="!col.count" class="pbhr-col-empty" t-esc="anyAppsFilter ? tr('Nobody here matches.') : (col.meaning or tr('Nobody is here yet.'))"/>
+          </div>
+
+          <!-- the Closed rail, folded to its lines -->
+          <div class="pbhr-col pbhr-rail" data-key="__closed">
+            <div class="pbhr-col-h">
+              <span class="pbhr-col-name">Closed</span>
+              <span class="pbhr-col-n" t-key="'rail-' + regRailTotal"><t t-esc="regRailTotal"/></span>
+            </div>
+            <button t-foreach="regRailRows" t-as="rr" t-key="rr.key" type="button" class="pbhr-rail-row" t-att-class="{ on: state.appsRailOpen === rr.key }" t-att-title="rr.meaning" t-on-click="() =&gt; this.toggleRegRail(rr.key)">
+              <span t-esc="rr.name"/><b t-esc="rr.count"/>
+            </button>
+            <div t-if="state.appsRailOpen" class="pbhr-rail-list">
+              <t t-foreach="closedCards.filter((c) =&gt; c.stage_key === state.appsRailOpen)" t-as="cd" t-key="cd.id">
+                <t t-call="pb_hiring.KCard"/>
+              </t>
+              <div t-if="!closedCards.filter((c) =&gt; c.stage_key === state.appsRailOpen).length" class="pbhr-col-empty">Nobody here.</div>
+            </div>
+            <div class="pbhr-rail-hint">Press a line to see who is in it. Open anyone to bring them back.</div>
+          </div>
+        </div>
+
+        <!-- ===================== the list ===================== -->
+        <div t-else="" class="pbim-panel pbhr-p9-tablewrap" data-coach="hi-applicants-board">
+          <table class="pbhr-p9-table" t-att-class="{ 'is-busy': kit.busy }">
+            <thead>
+              <tr>
+                <th class="pbhr-p9-tick" aria-label="Tick"/>
+                <th t-foreach="regListCols" t-as="lc" t-key="lc.key" t-att-class="{ num: lc.num }" t-att-aria-sort="sortAria(lc.key)">
+                  <button t-if="canSortApps(lc.key)" type="button" class="pbhr-p9-sort" t-on-click="() =&gt; this.sortApps(lc.key)">
+                    <t t-esc="lc.label"/>
+                    <t t-if="sortMark(lc.key)"><t t-out="ic(sortMark(lc.key),12)"/></t>
+                  </button>
+                  <span t-else="" class="pbhr-p9-sort is-flat" t-esc="lc.label"/>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr t-foreach="regListRows" t-as="cdr" t-key="cdr.id" class="pbhr-p9-tr" t-att-class="{ 'is-sel': isSel(cdr.id), 'is-open': state.cand and state.cand.id === cdr.id, 'is-out': !cdr.active }" tabindex="0" t-on-click="(ev) =&gt; this.onRegRowClick(ev, cdr)" t-on-keydown="(ev) =&gt; ev.key === 'Enter' and this.openCand(cdr.id)">
+                <td class="pbhr-p9-tick">
+                  <button t-if="cdr.can_move" type="button" class="pbhr-kc-check" t-att-class="{ on: isSel(cdr.id) }" t-att-aria-pressed="isSel(cdr.id) ? 'true' : 'false'" title="Tick to move several at once" t-on-click.stop="(ev) =&gt; this.toggleSel(cdr, ev)"><t t-out="ic('check',11)"/></button>
+                </td>
+                <td>
+                  <span class="pbhr-p9-who">
+                    <span class="pbhr-cand-av" t-att-class="'pbhr-av--' + (cdr.id % 6)" t-esc="initials(cdr.name)"/>
+                    <b t-esc="cdr.name"/>
+                  </span>
+                </td>
+                <td><span class="pbhr-p9-rolechip" t-esc="cdr.role"/></td>
+                <td><span class="pbhr-p9-stage" t-att-class="'fam-' + cdr.family" t-esc="cdr.stage"/></td>
+                <td class="num" t-att-class="{ 'is-rose': cdr.days_in_stage &gt; 14 and cdr.family === 'open' }" t-esc="daysWord(cdr.days_in_stage)"/>
+                <td><t t-if="cdr.next_interview_at"><t t-esc="whenShort(cdr.next_interview_at)"/></t></td>
+                <td t-att-class="{ 'is-rose': (cdr.opinions or {}).late }" t-esc="opinionsWords(cdr)"/>
+                <td t-att-class="{ 'is-amber': cdr.waiting }" t-esc="cdr.waiting"/>
+                <td t-esc="appliedWord(cdr)"/>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pbhr-listfoot">
+          <span t-esc="showingWords(regCards.length, state.apps.total)"/>
+          <button t-if="appsHasMore" type="button" class="pbim-btn outline pbim-btn-sm" t-att-disabled="state.kitMore" t-on-click="loadMoreKit" t-esc="moreWords(regCards.length, state.apps.total, 120)"/>
+        </div>
+
+        <!-- the floating selection bar: the role board's own -->
+        <div t-if="state.sel.length" class="pbhr-selbar" role="toolbar" aria-label="Selected candidates">
+          <b t-esc="selLabel"/>
+          <button type="button" class="pbim-btn ghost" t-on-click="openMoveMenuSel"><t t-out="ic('arrowRight',14)"/> Move to <t t-out="ic('chevronDown',12)"/></button>
+          <button t-if="state.canRecruit" type="button" class="pbim-btn ghost" t-on-click="openShareSel"><t t-out="ic('share2',14)"/> Share with…</button>
+          <button type="button" class="pbim-btn ghost" t-on-click="startMessageSel"><t t-out="ic('mail',14)"/> Send an email</button>
+          <button type="button" class="pbim-btn ghost pbhr-no" t-on-click="bulkNotThisTime"><t t-out="ic('xCircle',14)"/> Not this time</button>
+          <button type="button" class="pbim-btn ghost" t-on-click="clearSel">Clear</button>
+          <span class="pbhr-selbar-keys">Esc clears</span>
+        </div>
+      </t>
+      </PbFilterLayout>
+    </div>
+  </t>
+
+  <!-- ================================ OFFERS ================================ -->
+  <t t-name="pb_hiring.P9Offers">
+    <div class="pbhr-p9" data-coach="hi-offers">
+
+      <!-- the hero: where every offer is, left to right -->
+      <div class="pbhr-p9-steps" data-coach="hi-offers-steps">
+        <t t-call="pb_import_kit.QuietSteps">
+          <t t-set="qSteps" t-value="offerSteps"/>
+          <t t-set="qStepsLabel" t-value="tr('Where every offer is')"/>
+          <t t-set="qStepPick" t-value="(k) =&gt; this.pickOfferStep(k)"/>
+        </t>
+      </div>
+
+      <!-- FILTER W3: the shared filter panel; the old role / recruiter
+           selects and flag chips are its sections and views now. -->
+      <PbFilterLayout kit="kit" coach="'hi-filters'" searchPlaceholder="offersSearchHint">
+
+      <div t-if="!state.offers.loaded" class="pbim-panel pbhr-p9-tablewrap is-skel">
+        <div t-foreach="[1,2,3,4]" t-as="sk" t-key="sk" class="pbhr-p9-skelrow"><span class="pbhr-skel-line"/><span class="pbhr-skel-line short"/></div>
+      </div>
+
+      <!-- no offers at all -->
+      <div t-elif="!offRows.length and !anyOffersFilter" class="pbim-panel pbhr-empty">
+        <div class="pbhr-empty-ic"><t t-out="ic('send',30)"/></div>
+        <h2>No offers yet</h2>
+        <p>Offers are made from a role's Offer &amp; joining panel, once the panel has picked somebody. Every offer then shows up here, with its papers, its check and its joining date.</p>
+        <button type="button" class="pbim-btn primary" t-on-click="() =&gt; this.setTab('roles')">
+          <t t-out="ic('layoutGrid',15)"/> Go to the overview
+        </button>
+      </div>
+
+      <!-- filtered away -->
+      <div t-elif="!offRows.length" class="pbim-panel pbhr-empty">
+        <div class="pbhr-empty-ic"><t t-out="ic('search',30)"/></div>
+        <h2>No offer matches these filters</h2>
+        <p t-if="kit.chips.length">Remove a filter above, or start again from every offer.</p>
+        <p t-else="">No offer matches “<t t-esc="kit.search"/>”. Check the spelling, or search by candidate or role.</p>
+        <button type="button" class="pbim-btn ghost" t-on-click="clearOffersFilters">
+          <t t-out="ic('x',14)"/> Show all offers
+        </button>
+      </div>
+
+      <t t-else="">
+        <div class="pbim-panel pbhr-p9-tablewrap">
+          <table class="pbhr-p9-table pbhr-p9-offers" t-att-class="{ 'is-busy': kit.busy }">
+            <thead>
+              <tr>
+                <th>Candidate</th>
+                <th>Role</th>
+                <th>Where it is</th>
+                <th>Documents</th>
+                <th>Check</th>
+                <th>Joining</th>
+                <th>Signed</th>
+                <th>Recruiter</th>
+                <th t-if="state.offers.showMoney" class="num">A month</th>
+                <th class="pbhr-p9-more" aria-label="Actions"/>
+              </tr>
+            </thead>
+            <tbody>
+              <tr t-foreach="offRows" t-as="orow" t-key="orow.id" class="pbhr-p9-tr" data-coach="hi-offer-row" t-att-class="{ 'is-mine': orow.waiting_mine, 'is-menu': state.offMenu === orow.id }" tabindex="0" t-on-click="() =&gt; this.openCand(orow.applicant_id)" t-on-keydown="(ev) =&gt; ev.key === 'Enter' and this.openCand(orow.applicant_id)">
+                <td>
+                  <span class="pbhr-p9-who">
+                    <span class="pbhr-cand-av" t-att-class="'pbhr-av--' + (orow.applicant_id % 6)" t-esc="initials(orow.candidate)"/>
+                    <span class="pbhr-p9-who-tx"><b t-esc="orow.candidate"/><small t-esc="orow.name"/></span>
+                  </span>
+                </td>
+                <td><span class="pbhr-p9-rolechip" t-esc="orow.role_title or orow.role"/></td>
+                <td>
+                  <span class="pbhr-p9-pill" t-att-class="'is-' + stepTone(orow)" t-esc="orow.state_label"/>
+                  <span t-if="orow.waiting_mine" class="pbhr-p9-pill is-mine"><t t-out="ic('userCheck',11)"/> waiting on you</span>
+                </td>
+                <td>
+                  <span t-if="orow.docreq" class="pbhr-p9-fact" t-att-class="{ 'is-amber': orow.docreq.overdue, 'is-green': orow.docreq.state === 'complete' }">
+                    <t t-out="ic('paperclip',12)"/> <t t-esc="docsWords(orow)"/>
+                    <small t-if="orow.docreq.overdue"> · past the date</small>
+                  </span>
+                  <span t-else="" class="pbhr-p9-none">Not asked yet</span>
+                </td>
+                <td>
+                  <span t-if="orow.bgv" class="pbhr-p9-fact" t-att-class="checkTone(orow) ? 'is-' + checkTone(orow) : ''">
+                    <t t-out="ic('shieldCheck',12)"/> <t t-esc="checkWords(orow)"/>
+                  </span>
+                  <span t-else="" class="pbhr-p9-none">—</span>
+                </td>
+                <td>
+                  <span t-if="joiningWords(orow)" class="pbhr-p9-fact" t-att-class="joiningTone(orow) ? 'is-' + joiningTone(orow) : ''">
+                    <t t-esc="joiningWords(orow)"/>
+                  </span>
+                  <small t-if="['accepted', 'signed'].includes(orow.state) and orow.expected_words" class="pbhr-p9-sub" t-esc="orow.expected_words"/>
+                  <button t-if="orow.state === 'joined' and joinersDoor" type="button" class="pbhr-p9-door" t-on-click.stop="() =&gt; this.openJoiners(orow)">
+                    <t t-out="ic('arrowRight',12)"/> Handed to People › Joiners
+                  </button>
+                </td>
+                <td class="pbhr-p9-nowrap" t-esc="dayOnly(orow.signed_on)"/>
+                <td t-esc="orow.recruiter"/>
+                <td t-if="state.offers.showMoney" class="num" t-esc="offerMoney(orow)"/>
+                <td class="pbhr-p9-more">
+                  <button type="button" class="pbhr-p9-menu-btn" t-att-aria-expanded="state.offMenu === orow.id ? 'true' : 'false'" title="What you can do with this offer" t-on-click="(ev) =&gt; this.toggleOffMenu(ev, orow)"><t t-out="ic('moreVertical',15)"/></button>
+                  <div t-if="state.offMenu === orow.id" class="pbhr-p9-menu" role="menu" t-att-style="state.offMenuAt" t-on-click.stop="() =&gt; {}">
+                    <button t-foreach="offerVerbs(orow)" t-as="ov" t-key="ov.key" type="button" role="menuitem" class="pbhr-p9-menu-i" t-att-class="ov.tone ? 'is-' + ov.tone : ''" t-on-click="() =&gt; this.runOfferVerb(orow, ov.key)">
+                      <t t-out="ic(ov.icon,14)"/> <t t-esc="ov.label"/>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pbhr-listfoot">
+          <span t-esc="showingWords(offRows.length, state.offers.total)"/>
+          <button t-if="offersHasMore" type="button" class="pbim-btn outline pbim-btn-sm" t-att-disabled="state.kitMore" t-on-click="loadMoreKit" t-esc="moreWords(offRows.length, state.offers.total, 60)"/>
+        </div>
+      </t>
+      </PbFilterLayout>
+    </div>
+  </t>
+
+</templates>

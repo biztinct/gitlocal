@@ -1,0 +1,18 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_hrbp_rule_user,HR partner rule read,model_pb_hrbp_rule,pb_lifecycle.group_lifecycle_user,1,0,0,0
+access_pb_hrbp_rule_manager,HR partner rule manager,model_pb_hrbp_rule,pb_lifecycle.group_lifecycle_manager,1,1,1,0
+access_pb_hrbp_rule_admin,HR partner rule admin,model_pb_hrbp_rule,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_hrbp_rule_system,HR partner rule system,model_pb_hrbp_rule,base.group_system,1,1,1,1
+access_pb_orientation_batch_user,Welcome session read,model_pb_orientation_batch,pb_lifecycle.group_lifecycle_user,1,0,0,0
+access_pb_orientation_batch_manager,Welcome session manager,model_pb_orientation_batch,pb_lifecycle.group_lifecycle_manager,1,1,1,0
+access_pb_orientation_batch_admin,Welcome session admin,model_pb_orientation_batch,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_orientation_batch_staff,Welcome session read for staff,model_pb_orientation_batch,base.group_user,1,0,0,0
+access_pb_orientation_batch_system,Welcome session system,model_pb_orientation_batch,base.group_system,1,1,1,1
+access_pb_newhire_pulse_user,New joiner check read,model_pb_newhire_pulse,pb_lifecycle.group_lifecycle_user,1,0,0,0
+access_pb_newhire_pulse_manager,New joiner check manager,model_pb_newhire_pulse,pb_lifecycle.group_lifecycle_manager,1,1,1,0
+access_pb_newhire_pulse_admin,New joiner check admin,model_pb_newhire_pulse,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_newhire_pulse_system,New joiner check system,model_pb_newhire_pulse,base.group_system,1,1,1,1
+access_pb_buddy_nomination_user,Buddy nomination read,model_pb_buddy_nomination,pb_lifecycle.group_lifecycle_user,1,0,0,0
+access_pb_buddy_nomination_manager,Buddy nomination manager,model_pb_buddy_nomination,pb_lifecycle.group_lifecycle_manager,1,1,1,0
+access_pb_buddy_nomination_admin,Buddy nomination admin,model_pb_buddy_nomination,pb_lifecycle.group_lifecycle_admin,1,1,1,1
+access_pb_buddy_nomination_system,Buddy nomination system,model_pb_buddy_nomination,base.group_system,1,1,1,1

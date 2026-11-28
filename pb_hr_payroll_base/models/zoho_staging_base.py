@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 
 class ZohoStagingData(models.Model):
     """Extend base Zoho staging data with multi-country support"""
-    _inherit = 'zoho.staging.data'
+    _inherit = ['zoho.staging.data']
     
     # === MULTI-COUNTRY ENHANCEMENTS ===
     

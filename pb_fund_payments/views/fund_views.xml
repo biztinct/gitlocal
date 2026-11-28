@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The Fund & tax payments board (a lens of the Payroll hub, and its own
+         page from the palette). -->
+    <record id="action_pb_fund_payments_board" model="ir.actions.client">
+        <field name="name">Fund and tax payments</field>
+        <field name="tag">pb_fund_payments_board</field>
+    </record>
+
+    <!-- ================================================================
+         Native views: an off-menu fallback for administrators, opened from
+         an approval request ("open the record"). The board is the screen.
+         Nothing here can type a figure: the model refuses any write that
+         does not come from the board's own methods.
+         ================================================================ -->
+    <record id="view_pb_fund_payment_list" model="ir.ui.view">
+        <field name="name">pb.fund.payment.list</field>
+        <field name="model">pb.fund.payment</field>
+        <field name="arch" type="xml">
+            <list string="Fund and tax payments" create="0" edit="0" delete="0">
+                <field name="payee_id"/>
+                <field name="month"/>
+                <field name="amount_owed"/>
+                <field name="paid_amount"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="due_date"/>
+                <field name="state" widget="badge"
+                       decoration-warning="state in ('waiting', 'approved')"
+                       decoration-success="state == 'paid'"
+                       decoration-info="state == 'to_pay'"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_fund_payment_form" model="ir.ui.view">
+        <field name="name">pb.fund.payment.form</field>
+        <field name="model">pb.fund.payment</field>
+        <field name="arch" type="xml">
+            <form string="Fund or tax payment" create="0" edit="0" delete="0">
+                <header>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="to_pay,waiting,approved,paid"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="What is owed">
+                            <field name="payee_id"/>
+                            <field name="month"/>
+                            <field name="amount_employee"/>
+                            <field name="amount_employer"/>
+                            <field name="amount_owed"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="head_count"/>
+                            <field name="due_date"/>
+                            <field name="figures_changed" invisible="not figures_changed"/>
+                            <field name="live_diff" invisible="not figures_changed"/>
+                        </group>
+                        <group string="What was paid">
+                            <field name="paid_on"/>
+                            <field name="paid_amount"/>
+                            <field name="payment_reference"/>
+                            <field name="evidence_attachment_id"/>
+                            <field name="difference_note" invisible="not difference_note"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_lines" type="object" class="oe_stat_button"
+                                icon="fa-list" string="Payslip lines"/>
+                    </div>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- The payslip lines behind a figure (the board's drill to a list). -->
+    <record id="view_pb_fund_payment_line_list" model="ir.ui.view">
+        <field name="name">hr.payslip.line.fund.payment.list</field>
+        <field name="model">hr.payslip.line</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <list string="Payslip lines" create="0" edit="0" delete="0">
+                <field name="employee_id"/>
+                <field name="slip_id"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="total" sum="Total"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pb_fund_payment" model="ir.actions.act_window">
+        <field name="name">Fund and tax payments</field>
+        <field name="res_model">pb.fund.payment</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

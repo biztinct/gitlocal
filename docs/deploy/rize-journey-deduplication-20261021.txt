@@ -1,0 +1,56 @@
+Journey source-field deduplication — 2026-10-21 UTC
+
+Code commit: 858f70f031394eb2c27b0f91a8710eed2f967afc
+Module: pb_formula_studio 19.0.1.207.0
+
+Cause and fix
+Journey gave native import/read-back fields and application payroll sources
+different row identifiers even when they referred to the same record field.
+Direct Employee and Contract fields now share one row by model/field identity.
+Bank sources share their corresponding bank-role row. Existing record write
+directions are preserved; a bank import gains a read direction only when an
+active application source exists. Related paths, calculations and unresolved
+sources remain distinct. Matching is never based on the display label alone.
+No employee data, payroll calculations or saved mappings were changed.
+
+Live source-card counts before -> after (duplicates eliminated)
+Vietnam:   175 -> 125 (50)
+India:     158 -> 115 (43)
+Singapore: 144 -> 103 (41)
+Indonesia: 176 -> 131 (45)
+Total duplicate rows eliminated: 179. Final duplicate record-field count: 0.
+The selected-workbook Journey's fed/input counts and all Excel bindings remained
+unchanged. Excel bindings: VN 135, IN 114, SG 101, ID 130.
+
+Deployment
+Payobook19v2, /odoo/odoo-server/addons only; per-module copy of pb_formula_studio.
+Upgraded where installed on p0clone, payobook, payobook_template and rize.
+Latest combined committed source checked immediately before deployment.
+All 151 custom-module hashes and installed versions matched after deployment.
+Concurrent uncommitted learning/navigation work preserved and excluded.
+Shared notes checked; START 04:31 / DONE 04:34 UTC; shared flock held.
+p0clone rehearsal and tests preceded the other databases.
+Downtime: 148 seconds. Service active; no deployment jobs remained.
+Exact active cron IDs restored (counts payobook 37, template 0, p0clone 26, rize 69).
+Public login pages warmed and returned HTTP 200 on all three hostnames.
+ABM excluded and untouched.
+
+Backups and evidence
+Permanent Rize: /odoo/archives/rize-journey-dedupe-20261021T043157Z
+Nonproduction: /odoo/backups/journey-dedupe-20261021T043157Z
+Nonproduction retention metadata: seven days, preserve latest usable backup.
+Server receipt/logs: /tmp/rize-journey-release-858f70f03
+Local inventory/audit/test logs: /tmp/rize-journey-dedupe-20261021
+
+Validation
+65 local mapping/Journey tests passed; 65 deployed p0clone tests passed,
+both with zero test failures or errors. Local startup reported unrelated
+pb_training dependency work in progress; deployed tests used the combined
+committed module tree. Python syntax and git diff checks passed.
+Read-only Rize ORM audit covered all four schemas and asserted unchanged
+coverage/Excel counts, valid link endpoints, and zero duplicate record fields.
+Chrome end-to-end: opened Indonesia Mapping > Journey; verified exactly one
+Employee Name, Badge ID and Contract Start Date source row; selected Employee
+Name and visually confirmed its single source row and two-way record edge.
+No production payroll was computed or posted.
+Screenshot was inspected in memory only; no screenshot/PNG files were saved.

@@ -164,7 +164,7 @@
         <field name="name">payroll.dashboard.tree.base</field>
         <field name="model">payroll.dashboard</field>
         <field name="arch" type="xml">
-            <tree string="Payroll Dashboards">
+            <list string="Payroll Dashboards">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="country"/>
@@ -173,7 +173,7 @@
                 <field name="pending_payslips"/>
                 <field name="currency_id"/>
                 <field name="active"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -191,7 +191,7 @@
                 <field name="total_payroll"/>
                 <field name="currency_id"/>
                 <templates>
-                    <t t-name="kanban-box">
+                    <t t-name="card">
                         <div class="oe_kanban_global_click">
                             <div class="oe_kanban_card o_kanban_dashboard">
                                 <div class="oe_kanban_content">
@@ -232,7 +232,7 @@
     <record id="action_payroll_dashboard_base" model="ir.actions.act_window">
         <field name="name">Payroll Dashboards</field>
         <field name="res_model">payroll.dashboard</field>
-        <field name="view_mode">kanban,tree,form</field>
+        <field name="view_mode">kanban,list,form</field>
         <field name="view_id" ref="view_payroll_dashboard_kanban_base"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

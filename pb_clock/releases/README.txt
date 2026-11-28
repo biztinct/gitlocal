@@ -1,0 +1,1 @@
+Build the Windows package with tools/attendance_connector/build_package.py and place PayobookAttendanceConnector.zip here during deployment. The download is served only through the authenticated /clock-bridge/download route. Do not store customer data or tokens here.

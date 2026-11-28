@@ -1,0 +1,41 @@
+// TIDY-E — small touches on the People list button and the employee form's
+// Country of Work line. Payobook tokens via the theme's CSS variables.
+.o_pb_cow_fill .o_pb_cow_count {
+    margin-left: 6px;
+    padding: 0 7px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--pb-amber-50, #FFF7E6);
+    color: var(--pb-amber-700, #8A5A00);
+}
+
+.o_pb_cow_line {
+    flex-wrap: wrap;
+    .o_field_widget select,
+    .o_field_widget input {
+        min-width: 9rem;
+    }
+}
+
+.o_pb_cow_hint {
+    margin: 2px 0 0 1.6rem;
+    font-size: 12px;
+    color: var(--bs-secondary-color, #6B7280);
+}
+
+// One more button in the People list header: let the row wrap on a phone
+// instead of pushing "Select" off the left edge.
+@media (max-width: 575.98px) {
+    .ppl-people .ppl-head {
+        flex-wrap: wrap;
+    }
+    .ppl-people .ppl-head-actions {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        row-gap: 8px;
+    }
+}

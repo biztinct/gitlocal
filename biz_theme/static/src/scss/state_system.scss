@@ -1,0 +1,221 @@
+// =============================================================================
+// STATE SYSTEM — Core state-driven mechanism for adaptive forms
+// =============================================================================
+// The form view receives a class like .vu-state--draft, .vu-state--confirmed
+// via the vu_form_state.js patch. This file maps those classes to colors and
+// controls visibility, emphasis, and accent theming per workflow state.
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// State-to-color mapping via CSS custom properties
+// ---------------------------------------------------------------------------
+.vu-state--draft {
+    --vu-state-color: var(--vu-state-draft);
+    --vu-state-bg: var(--vu-state-draft-bg);
+}
+
+.vu-state--confirmed {
+    --vu-state-color: var(--vu-state-confirmed);
+    --vu-state-bg: var(--vu-state-confirmed-bg);
+}
+
+.vu-state--assigned {
+    --vu-state-color: var(--vu-state-assigned);
+    --vu-state-bg: var(--vu-state-assigned-bg);
+}
+
+.vu-state--in_progress {
+    --vu-state-color: var(--vu-state-active);
+    --vu-state-bg: var(--vu-state-active-bg);
+}
+
+.vu-state--completed,
+.vu-state--completed_pending_invoice {
+    --vu-state-color: var(--vu-state-completed);
+    --vu-state-bg: var(--vu-state-completed-bg);
+}
+
+.vu-state--cancelled {
+    --vu-state-color: var(--vu-state-cancelled);
+    --vu-state-bg: var(--vu-state-cancelled-bg);
+}
+
+.vu-state--closed {
+    --vu-state-color: var(--vu-state-closed);
+    --vu-state-bg: var(--vu-state-closed-bg);
+}
+
+// ---------------------------------------------------------------------------
+// State-driven visibility helpers
+// Add these classes to elements that should only appear in specific states.
+// ---------------------------------------------------------------------------
+.vu-show-on-draft,
+.vu-show-on-confirmed,
+.vu-show-on-assigned,
+.vu-show-on-active,
+.vu-show-on-completed,
+.vu-show-on-cancelled,
+.vu-show-on-closed {
+    display: none !important;
+}
+
+.vu-state--draft .vu-show-on-draft { display: revert !important; }
+.vu-state--confirmed .vu-show-on-confirmed { display: revert !important; }
+.vu-state--assigned .vu-show-on-assigned { display: revert !important; }
+.vu-state--in_progress .vu-show-on-active { display: revert !important; }
+
+.vu-state--completed .vu-show-on-completed,
+.vu-state--completed_pending_invoice .vu-show-on-completed { display: revert !important; }
+
+.vu-state--cancelled .vu-show-on-cancelled { display: revert !important; }
+.vu-state--closed .vu-show-on-closed { display: revert !important; }
+
+// Hide helpers — inverse of above
+.vu-state--draft .vu-hide-on-draft { display: none !important; }
+.vu-state--confirmed .vu-hide-on-confirmed { display: none !important; }
+.vu-state--assigned .vu-hide-on-assigned { display: none !important; }
+.vu-state--in_progress .vu-hide-on-active { display: none !important; }
+
+.vu-state--completed .vu-hide-on-completed,
+.vu-state--completed_pending_invoice .vu-hide-on-completed { display: none !important; }
+
+.vu-state--cancelled .vu-hide-on-cancelled { display: none !important; }
+.vu-state--closed .vu-hide-on-closed { display: none !important; }
+
+// ---------------------------------------------------------------------------
+// State accent utilities
+// ---------------------------------------------------------------------------
+
+// Left accent border that inherits state color
+.vu-state-accent {
+    border-left: 4px solid var(--vu-state-color, var(--vu-brand-primary));
+}
+
+// State-colored badge
+.vu-state-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 10px;
+    border-radius: 50px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    background: var(--vu-state-bg);
+    color: var(--vu-state-color);
+    border: 1.5px solid var(--vu-state-color);
+}
+
+// State dot indicator (small colored circle)
+.vu-state-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--vu-state-color);
+    flex-shrink: 0;
+
+    &.vu-state-dot--pulse {
+        animation: vu-state-pulse 2s ease-in-out infinite;
+    }
+}
+
+@keyframes vu-state-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+// ---------------------------------------------------------------------------
+// Collapsible cards — collapse/expand detail sections per state
+// ---------------------------------------------------------------------------
+.vu-collapsible {
+    max-height: 2000px;
+    overflow: hidden;
+    transition: max-height 300ms ease, padding 200ms ease, opacity 200ms ease;
+}
+
+.vu-collapsible.vu-collapsed {
+    max-height: 0;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    opacity: 0;
+    border-color: transparent;
+    box-shadow: none;
+}
+
+// Summary line — visible when its sibling card is collapsed
+.vu-collapse-summary {
+    display: none;
+    align-items: center;
+    gap: var(--vu-space-sm);
+    font-size: var(--vu-font-size-sm);
+    color: var(--vu-text-secondary);
+    padding: var(--vu-space-sm) var(--vu-space-md);
+    background: var(--vu-surface-muted);
+    border-radius: var(--vu-radius-sm);
+    cursor: pointer;
+    transition: background var(--vu-transition-fast);
+
+    &:hover {
+        background: var(--vu-surface-hover);
+    }
+
+    .fa {
+        font-size: 0.7em;
+        transition: transform var(--vu-transition-fast);
+    }
+
+    &:hover .fa {
+        transform: translateX(2px);
+    }
+}
+
+.vu-collapsed + .vu-collapse-summary {
+    display: flex;
+}
+
+// ---------------------------------------------------------------------------
+// State-driven form regions
+// Emphasize or de-emphasize entire regions based on workflow state.
+// ---------------------------------------------------------------------------
+.vu-region--primary {
+    position: relative;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        border: 2px solid var(--vu-state-color, transparent);
+        border-radius: calc(var(--vu-radius-md) + 2px);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity var(--vu-transition-base);
+    }
+}
+
+// When a region is the active focus for the current state
+.vu-region--active::before {
+    opacity: 0.3;
+}
+
+.vu-region--muted {
+    opacity: 0.6;
+    pointer-events: none;
+    filter: grayscale(0.2);
+}
+
+// ---------------------------------------------------------------------------
+// In-Progress state: orange accent, prominent timer, active service mode
+// ---------------------------------------------------------------------------
+.o_form_view.vu-state--in_progress {
+    .vu-progress-rail .vu-step.active .vu-step-circle {
+        background: var(--vu-state-active);
+        box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.15);
+    }
+
+    .vu-action-card--primary {
+        border-color: rgba(234, 88, 12, 0.3);
+        background: rgba(234, 88, 12, 0.04);
+    }
+}

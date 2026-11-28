@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================================================================
+         ONE JOB, ONCE A MORNING.
+
+         `numbercall` and `doall` were REMOVED from ir.cron in Odoo 19 —
+         including either aborts the whole module load — and `nextcall` takes
+         no eval expression in a data file, so the first run is simply the
+         next tick after installation.
+
+         It is one job and not three because the three things it does are the
+         same question asked in order: what has changed overnight, what does
+         a schedule owe today, and who has to be told. A person reading the
+         log wants one line with the numbers in it, not three lines to add up.
+
+         The switch `pb_training.reminders` silences the CHASING without
+         disabling this row, so a business that has turned it off can still
+         see the job is there and the log still reports what it would have
+         sent — a thing that is off and does not say so is reported as broken
+         (R54).
+         ================================================================== -->
+
+    <record id="cron_training_daily" model="ir.cron">
+        <field name="name">Training: bring the assignments up to date, run the schedules and chase what is late</field>
+        <field name="model_id" ref="model_pb_training_automation"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_daily()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <!-- ==================================================================
+         E3 — THE REPORT PACK, CHECKED DAILY AND SENT ONCE A PERIOD.
+
+         A DAILY JOB AND NEVER A WEEKLY OR MONTHLY `interval_type`. A monthly
+         cron that misses its tick misses the MONTH — the server was down, a
+         restore was running, somebody deployed at midnight — and nothing
+         anywhere says so. This asks every morning "have I sent the pack for
+         the period that has just ended", which cannot miss one: the first
+         tick after the turn sends it, every tick after that does nothing,
+         and a period the job slept through goes out the next morning with
+         the right dates on it.
+
+         THE ROW IS ACTIVE AND THE FEATURE IS OFF. `pb_training.report_pack`
+         ships 0, so the job runs, builds the numbers and LOGS what it would
+         have sent to whom. A thing that is off and does not say so is
+         reported as broken (R54); a cron row that is switched off instead
+         cannot say anything at all.
+         ================================================================== -->
+    <record id="cron_training_pack" model="ir.cron">
+        <field name="name">Training: send the weekly or monthly training pack when its period has ended</field>
+        <field name="model_id" ref="model_pb_training_pack"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_pack()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

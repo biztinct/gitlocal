@@ -1,0 +1,621 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-23 22:15+0000\n"
+"PO-Revision-Date: 2026-11-23 22:15+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid "%(doc)s · v%(n)s · %(date)s"
+msgstr "%(doc)s · v%(n)s · %(date)s"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "%(when)s · by %(who)s"
+msgstr "%(when)s · bởi %(who)s"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "%s paragraphs are left out for this contract"
+msgstr "%s đoạn không có trong hợp đồng này"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "%s things are missing"
+msgstr "Còn thiếu %s thông tin"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "1 paragraph is left out for this contract"
+msgstr "1 đoạn không có trong hợp đồng này"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "1 thing is missing"
+msgstr "Còn thiếu 1 thông tin"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid "A field that no longer exists"
+msgstr "Một trường không còn tồn tại"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/doc_studio.py:0
+msgid "Authorised signatory"
+msgstr "Người được ủy quyền ký"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Change it"
+msgstr "Sửa"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "Change it on the full contract form or the employee's record"
+msgstr "Sửa trên biểu mẫu hợp đồng đầy đủ hoặc hồ sơ nhân viên"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Change the wording"
+msgstr "Sửa nội dung"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Check again"
+msgstr "Kiểm tra lại"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Close (Esc)"
+msgstr "Đóng (Esc)"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Contract document"
+msgstr "Văn bản hợp đồng"
+
+#. module: pb_doc_contracts
+#: model:ir.model.fields,field_description:pb_doc_contracts.field_pb_employee_document__pbdc_version
+msgid "Contract document version"
+msgstr "Phiên bản tài liệu hợp đồng"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/doc_studio.py:0
+msgid "Contract length"
+msgstr "Thời hạn hợp đồng"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Contract reference"
+msgstr "Số hợp đồng"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Date of birth"
+msgstr "Ngày sinh"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Date of birth (22/11/2026 style)"
+msgstr "Ngày sinh (dạng 22/11/2026)"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Department on the contract"
+msgstr "Bộ phận ghi trên hợp đồng"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Document"
+msgstr "Tài liệu"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Download PDF"
+msgstr "Tải PDF"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Download this version"
+msgstr "Tải phiên bản này"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Draw the contract again"
+msgstr "Hiển thị lại hợp đồng"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Employer representative"
+msgstr "Người đại diện người sử dụng lao động"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Employer representative's title"
+msgstr "Chức vụ người đại diện"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+#: model:ir.model.fields.selection,name:pb_doc_contracts.selection__pb_letter_template__letter_type__employment_contract
+#: model:pb.letter.template,name:pb_doc_contracts.contract_template_generic
+msgid "Employment contract"
+msgstr "Hợp đồng lao động"
+
+#. module: pb_doc_contracts
+#: model:pb.letter.template,name:pb_doc_contracts.contract_template_id
+msgid "Employment contract — Indonesia"
+msgstr "Hợp đồng lao động — Indonesia"
+
+#. module: pb_doc_contracts
+#: model:pb.letter.template,name:pb_doc_contracts.contract_template_vn
+msgid "Employment contract — Vietnam"
+msgstr "Hợp đồng lao động — Việt Nam"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/doc_studio.py:0
+#: model:ir.model.fields.selection,name:pb_doc_contracts.selection__pb_letter_template__pbds_kind__employment
+#: model:ir.model.fields.selection,name:pb_doc_contracts.selection__pb_letter_template__pbds_kind_set__employment
+msgid "Employment contracts"
+msgstr "Hợp đồng lao động"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "End date (22/11/2026 style)"
+msgstr "Ngày kết thúc (dạng 22/11/2026)"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "End date, or \"no end date\""
+msgstr "Ngày kết thúc, hoặc \"không có ngày kết thúc\""
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Every field has a value"
+msgstr "Mọi trường đều đã có giá trị"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "Filed in %(who)s's documents as version %(n)s."
+msgstr "Đã lưu vào tài liệu của %(who)s, phiên bản %(n)s."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid ""
+"Files the PDF in %s's documents as version %s. Earlier versions are kept."
+msgstr ""
+"Lưu tệp PDF vào tài liệu của %s, phiên bản %s. Các phiên bản trước vẫn được "
+"giữ."
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Fixed term (has an end date)"
+msgstr "Có thời hạn (có ngày kết thúc)"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "Go to this field in the contract panel"
+msgstr "Đến trường này trong bảng hợp đồng"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Have your own lawyer check it before you use it."
+msgstr "Hãy nhờ luật sư của bạn kiểm tra trước khi sử dụng."
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Home address"
+msgstr "Địa chỉ nhà"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Hours per week"
+msgstr "Số giờ mỗi tuần"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "ID number"
+msgstr "Số giấy tờ tùy thân"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Job on the contract"
+msgstr "Chức danh ghi trên hợp đồng"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Language"
+msgstr "Ngôn ngữ"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Make it yours"
+msgstr "Sửa thành nội dung của bạn"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Nationality"
+msgstr "Quốc tịch"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/doc_studio.py:0
+msgid "New employment contract"
+msgstr "Hợp đồng lao động mới"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid "No %s"
+msgstr "Chưa có %s"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Not printed"
+msgstr "Không in ra"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "Not saved yet. Saving files it as version 1 in %s's documents."
+msgstr "Chưa lưu. Khi lưu, hợp đồng sẽ là phiên bản 1 trong tài liệu của %s."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "Open the employee to fill it in"
+msgstr "Mở hồ sơ nhân viên để điền"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Open-ended (no end date)"
+msgstr "Không xác định thời hạn (không có ngày kết thúc)"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "PDF ready. Nothing was filed or sent."
+msgstr "Tệp PDF đã sẵn sàng. Không có gì được lưu hay gửi đi."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Paperwork"
+msgstr "Giấy tờ"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Passport number"
+msgstr "Số hộ chiếu"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Pay currency"
+msgstr "Đơn vị tiền lương"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Pay is hidden from you"
+msgstr "Bạn không được xem lương"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Pay scheme"
+msgstr "Chế độ lương"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Place of work"
+msgstr "Địa điểm làm việc"
+
+#. module: pb_doc_contracts
+#: model:ir.model.fields,field_description:pb_doc_contracts.field_pb_employee_document__pbdc_contract_id
+msgid "Printed for contract"
+msgstr "In cho hợp đồng"
+
+#. module: pb_doc_contracts
+#: model:ir.model.fields,field_description:pb_doc_contracts.field_pb_letter_template__pbdc_sample
+msgid "Sample wording"
+msgstr "Nội dung mẫu"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Sample wording."
+msgstr "Nội dung mẫu."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "Save or discard your changes first."
+msgstr "Hãy lưu hoặc bỏ các thay đổi trước."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid ""
+"Save or discard your changes first: the contract document prints what is "
+"saved."
+msgstr ""
+"Hãy lưu hoặc bỏ các thay đổi trước: văn bản hợp đồng in theo nội dung đã "
+"lưu."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "Save to documents · v%s"
+msgstr "Lưu vào tài liệu · v%s"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Saved versions"
+msgstr "Các phiên bản đã lưu"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid ""
+"See the finished contract, download it as a PDF or file it in their "
+"documents"
+msgstr "Xem hợp đồng hoàn chỉnh, tải về dạng PDF hoặc lưu vào tài liệu của họ"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Start date (22/11/2026 style)"
+msgstr "Ngày bắt đầu (dạng 22/11/2026)"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "The PDF could not be made right now."
+msgstr "Chưa thể tạo tệp PDF lúc này."
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid ""
+"The PDF could not be made right now. Try again in a moment; the preview on "
+"screen is exactly what will print."
+msgstr ""
+"Chưa thể tạo tệp PDF lúc này. Hãy thử lại sau giây lát; bản xem trước trên "
+"màn hình chính là bản sẽ được in."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "The contract cannot be shown"
+msgstr "Không thể hiển thị hợp đồng"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "The contract could not be drawn just now. Try again in a moment."
+msgstr "Chưa thể hiển thị hợp đồng lúc này. Hãy thử lại sau giây lát."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "The contract could not be drawn."
+msgstr "Không thể hiển thị hợp đồng."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "The contract could not be filed just now."
+msgstr "Chưa thể lưu hợp đồng lúc này."
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid "The contract could not be filed: %s"
+msgstr "Không thể lưu hợp đồng: %s"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid ""
+"The document kind for contracts is missing. Ask an administrator to add it "
+"back."
+msgstr ""
+"Thiếu loại tài liệu dành cho hợp đồng. Hãy nhờ quản trị viên thêm lại."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "The finished contract"
+msgstr "Hợp đồng hoàn chỉnh"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "The language this wording is written in"
+msgstr "Ngôn ngữ của nội dung này"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid ""
+"There is no employment contract wording switched on. Someone who looks after"
+" documents can add or switch one on in Settings, Documents."
+msgstr ""
+"Chưa có nội dung hợp đồng lao động nào được bật. Người phụ trách tài liệu có"
+" thể thêm hoặc bật trong Cài đặt, Tài liệu."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "These print as nothing. Press one to fill it in."
+msgstr "Những mục này sẽ in ra trống. Bấm vào một mục để điền."
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid ""
+"This contract has no employee yet, so there is nobody to write the contract "
+"for."
+msgstr "Hợp đồng này chưa có nhân viên, nên chưa có ai để lập hợp đồng."
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid ""
+"This contract is not available to you. It may have been removed, or it "
+"belongs to a company you do not work in."
+msgstr ""
+"Bạn không xem được hợp đồng này. Có thể hợp đồng đã bị xóa, hoặc thuộc một "
+"công ty bạn không làm việc."
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid ""
+"This contract shows pay, and you may not see this person's pay. Ask someone "
+"who may see pay to print it."
+msgstr ""
+"Hợp đồng này có ghi tiền lương, và bạn không được xem lương của người này. "
+"Hãy nhờ người được xem lương in hợp đồng."
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/js/contract_doc.js:0
+msgid "This is not on the contract panel. Open the full form to fill it in."
+msgstr ""
+"Thông tin này không có trong bảng hợp đồng. Hãy mở biểu mẫu đầy đủ để điền."
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Today's date (22/11/2026 style)"
+msgstr "Ngày hôm nay (dạng 22/11/2026)"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+#: code:addons/pb_doc_contracts/models/doc_studio.py:0
+msgid "Trial period end date"
+msgstr "Ngày kết thúc thử việc"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Trial period end date (22/11/2026 style)"
+msgstr "Ngày kết thúc thử việc (dạng 22/11/2026)"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Try again"
+msgstr "Thử lại"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Which contract document"
+msgstr "Văn bản hợp đồng nào"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/contract_common.py:0
+msgid "Working schedule"
+msgstr "Lịch làm việc"
+
+#. module: pb_doc_contracts
+#. odoo-javascript
+#: code:addons/pb_doc_contracts/static/src/xml/contract_doc.xml:0
+msgid "Writing the contract…"
+msgstr "Đang soạn hợp đồng…"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid ""
+"You can download this contract. Filing it in the employee's documents needs "
+"the HR or payroll role."
+msgstr ""
+"Bạn có thể tải hợp đồng này. Để lưu vào tài liệu của nhân viên, bạn cần vai "
+"trò Nhân sự hoặc Tính lương."
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid "You may not read everything this contract shows."
+msgstr "Bạn không được xem hết mọi thông tin hợp đồng này hiển thị."
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/pb_contracts.py:0
+msgid "You may not see pay"
+msgstr "Bạn không được xem lương"
+
+#. module: pb_doc_contracts
+#. odoo-python
+#: code:addons/pb_doc_contracts/models/doc_studio.py:0
+msgid "no end date"
+msgstr "không có ngày kết thúc"

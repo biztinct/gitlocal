@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <t t-name="pb_form_studio.RecordForm">
+    <div class="pb-record-form" t-att-class="{'pb-section-form': props.section}">
+      <div t-if="state.error" class="alert alert-info m-3" role="status">
+        <p t-esc="state.error"/><button type="button" class="btn btn-secondary" t-on-click="retry">Retry details</button>
+      </div>
+      <View t-else="" t-key="state.generation" t-props="viewProps"/>
+    </div>
+  </t>
+  <t t-name="pb_form_studio.RecordFormView" t-inherit="web.FormView" t-inherit-mode="extension">
+    <xpath expr="//div[hasclass('o_form_view_container')]" position="before">
+      <div class="pb-record-editbar" t-if="isPremiumRecord">
+        <span><t t-if="env.pbRecordWorkspace.props.title" t-esc="env.pbRecordWorkspace.props.title"/><t t-elif="model.root.isInEdition">Editing this record</t><t t-else="">All details</t><small t-if="env.pbRecordWorkspace.props.section and model.root.isInEdition">Changes are saved when you choose Save.</small></span>
+        <div>
+          <button t-if="canEdit and !model.root.isInEdition" type="button" class="btn btn-primary" t-on-click="pbRecordEdit">Edit</button>
+          <t t-if="model.root.isInEdition">
+            <button type="button" class="btn btn-secondary" t-att-disabled="pbRecordUI.busy" t-on-click="pbRecordCancel">Cancel</button>
+            <button type="button" class="btn btn-primary" t-att-disabled="pbRecordUI.busy" t-on-click="pbRecordSave">Save</button>
+          </t>
+        </div>
+      </div>
+    </xpath>
+    <xpath expr="//div[hasclass('o_form_view_container')]" position="before">
+      <div t-if="isPremiumRecord and ['settings', 'agreement'].includes(env.pbRecordWorkspace.props.section) and workflowProgress and (workflowProgress.available or workflowProgress.canDesign)" class="pb-record-tools">
+        <button t-if="workflowProgress.available" type="button" class="btn btn-outline-primary" t-on-click="() => this.pbRecordWorkflow(false)">View workflow</button>
+        <button t-if="workflowProgress.canDesign" type="button" class="btn btn-outline-primary" t-on-click="() => this.pbRecordWorkflow(true)">Set up workflow</button>
+      </div>
+    </xpath>
+  </t>
+</templates>

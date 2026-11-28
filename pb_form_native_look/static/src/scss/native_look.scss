@@ -1,0 +1,333 @@
+// =============================================================================
+// FS-6 — the employee and contract pages in the current look.
+//
+// pb_theme had opted both forms OUT of the form engine (biz_theme
+// vu_form_engine.scss) because the generic skin did not fit them. Rendering
+// them with the engine on (FS6_REPORT.md §2) showed what "did not fit" means
+// today, and each block below fixes one of those causes:
+//
+//   1. TABS — the engine draws the tab bar as one pill track that is at most
+//      the page wide and never wraps. The employee page has up to 12 tabs:
+//      the last ones ("Payroll facts", "Tax & Dependents"…) were cut off at the
+//      right edge, and on a phone only 3 of 12 could be seen. → the track wraps
+//      on wider screens and scrolls sideways (with snap) on a phone.
+//   2. HEADER — the employee page writes its name with an inline size of up
+//      to 2.6rem and stacks four contact lines under it; moved into the
+//      engine's header card that made a very tall, mostly empty card with a
+//      tiny photo. → name at header size, contact lines in two columns, a
+//      bigger photo; the contract name gets the same weight.
+//   3. PHONE — header card + tab card + section card + page padding left
+//      ~110px for an input on a phone. → one level of card on a phone, tighter
+//      padding, cards never wider than the screen.
+//   4. SUB-LISTS — the engine's rounded list box (`overflow: hidden`) also
+//      took away the list's sideways scroll: columns past the box edge (the
+//      contract components on a phone) could not be reached. → scroll back.
+//
+// Scope: `.pb-nl` is set on these two forms only (views/native_look_views.xml;
+// the arch class of a <form> lands on the `.o_form_view` root, not on the
+// renderer — `.o_form_view.pb-nl .o_form_renderer.vu-form` is the scope);
+// `.vu-form` is set by the engine only when it is active (never in dialogs,
+// never with the kill-switch), so with the engine off nothing here applies.
+// Style only: no rule here hides a field, a label, a button or a tab.
+// =============================================================================
+
+$pb-nl-phone: 767.98px;
+
+.o_form_view.pb-nl .o_form_renderer.vu-form {
+
+    // ── 1. TABS: every tab in sight ──────────────────────────────────────
+    .o_notebook {
+        > .o_notebook_headers {
+            overflow: visible;
+
+            > .nav {
+                flex-wrap: wrap !important;      // core says flex-nowrap
+                width: fit-content;               // one short row stays a pill
+                max-width: 100%;
+                row-gap: 4px;
+                border-radius: var(--vuf-r-lg);   // a wrapped track is a box, not a pill
+
+                .nav-item { flex: 0 0 auto; }
+
+                .nav-link {
+                    white-space: nowrap;
+                    transition: background var(--vuf-t-fast) var(--vuf-ease),
+                                color var(--vuf-t-fast) var(--vuf-ease),
+                                box-shadow var(--vuf-t-fast) var(--vuf-ease);
+
+                    &:focus-visible {
+                        outline: none;
+                        box-shadow: var(--vuf-sh-ring);
+                    }
+                    // a page with an invalid (required, empty) field stays red
+                    &.o_page_invalid { color: var(--vuf-danger); }
+                }
+            }
+        }
+    }
+
+    // ── 2. HEADER card ───────────────────────────────────────────────────
+    .vu-hero {
+        align-items: flex-start;
+
+        .vu-hero-main .oe_title {
+            // the arch's own width classes (col-*, mw-100, w-sm-75…) are for
+            // the old side-by-side layout
+            width: 100%;
+            max-width: none;
+            padding: 0 !important;
+
+            > h1 {
+                margin-bottom: var(--vuf-sp-2) !important;
+
+                .o_field_widget,
+                .o_field_widget input {
+                    // beats the inline `font-size: min(4vw, 2.6rem)` on the
+                    // employee name
+                    // custom property + calc(): the asset compiler (libsass)
+                    // otherwise tries to add vw to px and drops the bundle
+                    --pb-nl-name-size: clamp(20px, calc(1.6vw + 8px), 28px);
+                    font-size: var(--pb-nl-name-size) !important;
+                    font-weight: 800;
+                    letter-spacing: -.015em;
+                    line-height: 1.2;
+                }
+            }
+
+            // a heading whose only field is hidden for this record leaves an
+            // empty block (the contract's company line) — nothing to show
+            > h2:not(:has(*)),
+            > h3:not(:has(*)) {
+                display: none;
+            }
+        }
+    }
+
+    // ── 4. SUB-LISTS keep their sideways scroll ──────────────────────────
+    // The engine rounds the list box with `overflow: hidden`, which also
+    // removes the list's own sideways scroll: on a phone (or a narrow
+    // window) the contract components list cut off every column after the
+    // second. Rounded corners stay; the columns can be scrolled to again.
+    .o_field_x2many .o_list_renderer {
+        overflow-x: auto !important;
+    }
+}
+
+// ── 2a. Employee header: photo + name + contact lines in two columns ──────
+.o_form_view.pb-nl-emp .o_form_renderer.vu-form {
+
+    .vu-hero {
+        padding: var(--vuf-sp-5) var(--vuf-sp-6);
+
+        .vu-hero-pic img {
+            width: 76px !important;
+            height: 76px !important;
+            max-width: 76px;
+            max-height: 76px;
+            border-radius: 18px;
+        }
+
+        .vu-hero-main .oe_title {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            column-gap: var(--vuf-sp-6);
+            row-gap: 2px;
+
+            > h1,
+            > .o_pb_cow_hint,
+            > :not(h5) {
+                grid-column: 1 / -1;
+            }
+
+            > h5 {
+                min-width: 0;
+                margin: 0 !important;
+                padding: 3px 0;
+                font-size: 13.5px;
+                font-weight: 500;
+                color: var(--vuf-ink);
+                align-items: center !important;
+
+                > .fa {
+                    flex: 0 0 auto;
+                    color: var(--vuf-primary) !important;
+                    opacity: .7;
+                }
+
+                .o_field_widget {
+                    min-width: 0;
+                    flex: 1 1 auto;
+                    width: auto !important;
+                }
+            }
+
+            // Country of Work keeps its own line (it decides which country
+            // boxes this record shows)
+            > h5.o_pb_cow_line {
+                grid-column: 1 / -1;
+
+                > span {
+                    color: var(--vuf-muted) !important;
+                    font-weight: 600;
+                }
+
+                // a choice of country, not a sentence: keep the box short
+                .o_field_widget {
+                    flex: 0 1 260px;
+                    max-width: 260px;
+                }
+            }
+
+            > .o_pb_cow_hint {
+                margin: 2px 0 0 26px;
+                color: var(--vuf-muted) !important;
+            }
+        }
+    }
+
+    // the old layout's empty column left behind once the photo and the title
+    // joined the header card (it holds nothing any more)
+    .o_form_sheet > div:has(> .o_presence_status_pill_wrapper) > div:empty {
+        display: none;
+    }
+}
+
+// ── 2b. Contract header: the contract name at header weight ───────────────
+.o_form_view.pb-nl-con .o_form_renderer.vu-form {
+    .vu-hero .vu-hero-main .oe_title > h1 {
+        align-items: center;
+        gap: var(--vuf-sp-3);
+    }
+}
+
+// ── 3. PHONE ──────────────────────────────────────────────────────────────
+@media (max-width: $pb-nl-phone) {
+    .o_form_view.pb-nl .o_form_renderer.vu-form {
+
+        .o_form_sheet {
+            padding: var(--vuf-sp-2) var(--vuf-sp-2) var(--vuf-sp-5) !important;
+        }
+
+        // tabs: one row that scrolls sideways, snapping to a tab
+        .o_notebook > .o_notebook_headers {
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x proximity;
+            margin-bottom: var(--vuf-sp-3);
+
+            &::-webkit-scrollbar { display: none; }
+
+            > .nav {
+                flex-wrap: nowrap !important;
+                width: max-content;
+                max-width: none;
+                border-radius: var(--vuf-r-pill);
+                margin-bottom: 0;
+
+                .nav-link {
+                    scroll-snap-align: start;
+                    padding: 7px 14px;
+                }
+            }
+        }
+
+        // one level of card: the tab body stops being a card around cards
+        .o_notebook .tab-content > .tab-pane {
+            background: transparent;
+            border: 0;
+            box-shadow: none;
+            padding: 0;
+        }
+
+        .o_inner_group.vu-sec {
+            padding: var(--vuf-sp-4) var(--vuf-sp-3) var(--vuf-sp-3) !important;
+        }
+
+        // cards never wider than the screen
+        .o_group.row > .o_inner_group,
+        .o_group.row > .o_group {
+            min-width: 0 !important;
+            flex-basis: 100% !important;
+        }
+
+        .vu-hero {
+            padding: var(--vuf-sp-4) var(--vuf-sp-3);
+            gap: var(--vuf-sp-3);
+
+            .vu-hero-main .oe_title > h1 .o_field_widget,
+            .vu-hero-main .oe_title > h1 .o_field_widget input {
+                --pb-nl-name-size: 19px;
+            }
+        }
+    }
+
+    .o_form_view.pb-nl-emp .o_form_renderer.vu-form .vu-hero {
+        .vu-hero-pic img {
+            width: 56px !important;
+            height: 56px !important;
+            border-radius: 14px;
+        }
+
+        .vu-hero-main {
+            flex-basis: 100%;
+
+            .oe_title { grid-template-columns: minmax(0, 1fr); }
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .o_form_view.pb-nl .o_form_renderer.vu-form {
+        .vu-hero,
+        .o_inner_group.vu-sec { animation: none; }
+        .o_notebook .nav-link { transition: none; }
+    }
+}
+
+// ── Payroll tab: the line that replaces the always-empty Contract / Wage rows
+// (views/employee_form_fixes.xml). Quiet, with a Lucide "info" glyph; styled
+// with or without the engine.
+.o_form_view .o_pb_nl_contract_note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 2px 0 var(--vuf-sp-3, 12px);
+    padding: 8px 12px;
+    border-radius: var(--vuf-r-sm, 10px);
+    background: var(--vuf-primary-soft, #EDEAF8);
+    color: var(--vuf-muted, #6B7280) !important;
+    font-size: 12.5px;
+    line-height: 1.45;
+
+    &::before {
+        content: "";
+        flex: 0 0 auto;
+        width: 15px;
+        height: 15px;
+        margin-top: 1px;
+        background-color: var(--vuf-primary, #5A4BB0);
+        -webkit-mask: url("/biz_theme/static/src/img/lucide/info.svg") center / contain no-repeat;
+        mask: url("/biz_theme/static/src/img/lucide/info.svg") center / contain no-repeat;
+    }
+}
+
+// Compact employee sections: let the content determine height, and give
+// actions/help their own full-width row instead of a narrow field cell.
+.o_form_view.pb-nl-emp {
+    .pb-resume-actions { width: 100%; min-width: 0; }
+    .pb-resume-actions > span { flex: 1 1 260px; }
+    .o_inner_group[name="pb_resume_file"] { min-height: 0; }
+    div:has(> .pb-bank-ro-note) {
+        flex-wrap: wrap;
+        > .o_field_widget { flex: 1 1 220px; min-width: 0; }
+        > .pb-bank-ro-note { flex: 1 0 100%; order: 3; padding-top: 6px; }
+        > .d-flex { flex: 0 0 auto; gap: 10px; }
+        > .d-flex > .w-50 { width: auto !important; }
+    }
+    .o_form_renderer.vu-form .o_group.row { align-items: start; }
+    .o_form_renderer.vu-form .o_notebook .tab-content > .tab-pane {
+        min-height: 0;
+    }
+}

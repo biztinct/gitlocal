@@ -1,0 +1,77 @@
+// ============================================================================
+// PAYOBOOK — BRAND PALETTE  (Indigo · Enterprise)
+// ============================================================================
+// Thin brand overlay over biz_theme. This file compiles immediately BEFORE
+// biz_theme/static/src/scss/biz_variables.scss (deterministic '(before, …)'
+// asset directive in the manifest) and assigns the $vu-* palette WITHOUT
+// !default, so it wins over biz_theme's neutral defaults. All derivations,
+// maps, :root token emission, dark theme and mixins live in biz_theme.
+//
+// Brand: Trustworthy, modern, enterprise.  SOLID colours only — no gradients.
+// Primary = Indigo #5A4BB0 · Accent = Cyan #0891B2 · Money/positive = Emerald.
+// Typography: Inter (headings + body), system fallback.
+// ============================================================================
+
+// ===== ACCENT / HIGHLIGHT FAMILY (kept name; now Cyan accent) =====
+$vu-hibiscus-red: #EF4444;          // danger-ish red (used in dark danger)
+$vu-hibiscus-red-dark: #DC2626;
+$vu-hibiscus-red-darker: #B91C1C;
+$vu-hibiscus-red-light: #F87171;
+$vu-hibiscus-red-lightest: #FDECEC;
+
+$vu-hibiscus-orange: #0891B2;       // repurposed → Cyan accent
+$vu-hibiscus-orange-dark: #0E7490;
+$vu-hibiscus-orange-darker: #155E75;
+$vu-hibiscus-orange-light: #67E8F9;
+$vu-hibiscus-orange-lightest: #E0F4F9;
+
+$vu-leaf-green: #10B981;            // Emerald — money / positive
+$vu-leaf-green-dark: #059669;
+$vu-leaf-green-darker: #047857;
+$vu-leaf-green-light: #6EE7B7;
+$vu-leaf-green-lightest: #E7F8F1;
+
+// ===== PRIMARY UI COLOURS (Indigo) =====
+
+// Violet Storm — primary action colour (buttons, links, headers).
+$vu-deep-blue: #5A4BB0;             // Base — Violet Storm
+$vu-deep-blue-darkest: #241F52;     // Darkest (heroes, dark mode)
+$vu-deep-blue-darker: #4A3D96;      // Darker — Roman Violet (active/hover)
+$vu-deep-blue-base: #5A4BB0;        // Base
+$vu-deep-blue-light: #CBC2EE;       // Light — hover backgrounds
+$vu-deep-blue-lightest: #EDEAF8;    // Lightest — subtle backgrounds
+
+// Cyan — secondary accent (hover, icons, highlights, data-viz)
+$vu-accent-blue: #0891B2;           // Base — cyan-600
+$vu-accent-blue-darkest: #155E75;   // Darkest
+$vu-accent-blue-darker: #0E7490;    // Darker
+$vu-accent-blue-base: #0891B2;      // Base
+$vu-accent-blue-light: #67E8F9;     // Light
+$vu-accent-blue-lightest: #E0F4F9;  // Lightest
+
+// ===== NEUTRAL TONES (Clean, Professional Aesthetic) =====
+$vu-black: #121212;                 // Absolute darkest
+$vu-text-primary: #212121;          // Main text color - high contrast
+$vu-text-secondary: #424242;        // Secondary text, muted content
+$vu-gray-light: #F5F5F5;            // Light backgrounds, surface
+$vu-gray-lighter: #FAFAFA;          // Subtle surface variations
+$vu-white: #FFFFFF;                 // Main background, cards
+
+// ===== STATE COLORS =====
+$vu-success: #0F8A63;               // Emerald — success / paid
+$vu-info: #0891B2;                  // Cyan — info messages
+$vu-warning: #B7791F;               // Amber — warnings / pending
+$vu-danger: #C0332A;                // Red — errors, critical
+
+// ===== WORKFLOW STATE COLORS (Payroll lifecycle) =====
+$vu-state-draft: #64748b;           // Slate — draft
+$vu-state-confirmed: #5A4BB0;       // Violet Storm — submitted / HR pending
+$vu-state-assigned: #6E72B0;        // Indigo-light — GM pending
+$vu-state-active: #B7791F;          // Amber — in progress / testing
+$vu-state-completed: #0F8A63;       // Emerald — done / paid / active
+$vu-state-cancelled: #C0332A;       // Red — cancelled
+$vu-state-closed: #475569;          // Dark slate — archived
+
+// ===== BRAND TYPOGRAPHY =====
+$font-family-sans-serif: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+$font-family-headings: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================ -->
+    <!-- PayAI Pulse — Alert List View                                -->
+    <!-- ============================================================ -->
+
+    <record id="view_payroll_ai_pulse_tree" model="ir.ui.view">
+        <field name="name">payroll.ai.pulse.tree</field>
+        <field name="model">payroll.ai.pulse</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="severity == 'critical'"
+                  decoration-warning="severity == 'warning'"
+                  decoration-info="severity == 'info'">
+                <field name="create_date" string="Detected"/>
+                <field name="name"/>
+                <field name="severity" widget="badge"
+                       decoration-danger="severity == 'critical'"
+                       decoration-warning="severity == 'warning'"
+                       decoration-info="severity == 'info'"/>
+                <field name="category"/>
+                <field name="metric_value"/>
+                <field name="deviation_pct" string="Deviation %"/>
+                <field name="department_id"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_payroll_ai_pulse_form" model="ir.ui.view">
+        <field name="name">payroll.ai.pulse.form</field>
+        <field name="model">payroll.ai.pulse</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_acknowledge" type="object" string="Acknowledge"
+                            invisible="state != 'new'" class="btn-primary"/>
+                    <button name="action_resolve" type="object" string="Resolve"
+                            invisible="state == 'resolved'" class="btn-success"/>
+                    <field name="state" widget="statusbar" statusbar_visible="new,acknowledged,resolved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="severity"/>
+                            <field name="category"/>
+                            <field name="department_id"/>
+                        </group>
+                        <group>
+                            <field name="metric_value"/>
+                            <field name="baseline_value"/>
+                            <field name="deviation_pct"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="AI Summary">
+                            <field name="summary"/>
+                        </page>
+                        <page string="Details">
+                            <field name="details"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_payroll_ai_pulse" model="ir.actions.act_window">
+        <field name="name">Pulse Alerts</field>
+        <field name="res_model">payroll.ai.pulse</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_filter_active': 1}</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- PayAI Report Wizard — Form View                              -->
+    <!-- ============================================================ -->
+
+    <record id="view_payroll_ai_report_wizard_form" model="ir.ui.view">
+        <field name="name">payroll.ai.report.wizard.form</field>
+        <field name="model">payroll.ai.report.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_generate_report" type="object"
+                            string="Generate Report" class="btn-primary"/>
+                </header>
+                <sheet>
+                <group>
+                    <field name="name"/>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="report_format"/>
+                </group>
+                <separator string="Include Sections"/>
+                <group col="4">
+                    <field name="include_salary"/>
+                    <field name="include_headcount"/>
+                    <field name="include_cost_trend"/>
+                    <field name="include_forecast"/>
+                    <field name="include_attendance"/>
+                    <field name="include_leaves"/>
+                    <field name="include_anomalies"/>
+                </group>
+                <separator string="AI Options"/>
+                <group>
+                    <field name="include_ai_narratives" widget="boolean_toggle"/>
+                </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_payroll_ai_report_wizard" model="ir.actions.act_window">
+        <field name="name">Generate AI Report</field>
+        <field name="res_model">payroll.ai.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+    </record>
+
+</odoo>

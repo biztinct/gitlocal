@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Part of biz_deroute — portable Odoo 19 white-label layer. License LGPL-3.
+
+     website.layout's "go to the backend" shortcut builds its app links
+     against the stock backend prefix. Those links do reach the web client —
+     biz_deroute 301s them — but the hop is visible: the browser shows the
+     unbranded URL on hover, in the status bar and in "Copy link address",
+     and every click costs a redirect.
+
+     The prefix below is written out because a view is static XML. It is the
+     THIRD place the prefix is spelled (with controllers/home.py and
+     deroute_router.js), so tests/test_frontend_nav.py reads this file and
+     asserts it against biz_deroute's own BRAND_PREFIX — change one and the
+     suite names the others.
+
+     The `title` on the launcher button is deliberately NOT touched here: it
+     is ordinary user-visible prose and belongs to the biz_debrand text seams,
+     which rewrite it per brand at render time. Pinning a literal here would
+     override that and lose the customer's own name. -->
+<odoo>
+    <template id="frontend_to_backend_apps_prefix"
+              inherit_id="website.layout"
+              name="Backend shortcut uses the branded prefix">
+        <xpath expr="//div[hasclass('o_frontend_to_backend_apps_menu')]/a"
+               position="attributes">
+            <attribute name="t-attf-href">/bizapp/action-#{menu['action'] and menu['action'].split(',')[1] or ''}</attribute>
+        </xpath>
+    </template>
+
+    <!-- The same link in the other place a signed-in visitor finds it: the
+         "Apps" entry in the account dropdown. It is rendered twice per page
+         (the desktop and the mobile dropdown) on every portal and website
+         page, which is most of the frontend. -->
+    <template id="portal_user_dropdown_prefix"
+              inherit_id="portal.user_dropdown"
+              name="Account menu's Apps link uses the branded prefix">
+        <xpath expr="//a[@id='o_backend_user_dropdown_link']"
+               position="attributes">
+            <attribute name="href">/bizapp</attribute>
+        </xpath>
+    </template>
+</odoo>

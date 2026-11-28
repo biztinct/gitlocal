@@ -1,0 +1,46 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-11-12 22:00+1100\n"
+"Last-Translator: Payobook Translation Automation\n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+# ===================================================================
+#  WORKFLOW-2 P5b — Indonesian
+# ===================================================================
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/workflow_timetable.py:0
+msgid "Contracts"
+msgstr "Kontrak"
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/workflow_timetable.py:0
+msgid ""
+"%s days before a contract ends, its manager is asked to decide what happens next."
+msgstr ""
+"%s hari sebelum kontrak berakhir, atasannya diminta memutuskan apa yang terjadi selanjutnya."
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/workflow_timetable.py:0
+msgid ""
+"%s days before a contract ends, its manager can be asked to decide what happens next (raising these by itself is switched off here)."
+msgstr ""
+"%s hari sebelum kontrak berakhir, atasannya dapat diminta memutuskan apa yang terjadi selanjutnya (pembuatan otomatis permintaan ini nonaktif di sini)."
+
+#. module: pb_contract_lifecycle
+#. odoo-python
+#: code:addons/pb_contract_lifecycle/models/workflow_timetable.py:0
+msgid ""
+"While a contract decision is still open, HR is told halfway to the end date, and every day in the last %s days."
+msgstr ""
+"Selama keputusan kontrak masih terbuka, HR diberi tahu saat sudah setengah jalan menuju tanggal berakhir, dan setiap hari dalam %s hari terakhir."

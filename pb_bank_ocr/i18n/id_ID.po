@@ -1,0 +1,613 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 16:08+0000\n"
+"PO-Revision-Date: 2026-11-15 16:08+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "A change to your bank account is already waiting for approval. Take it back first if you want to send a different one."
+msgstr "Perubahan rekening bank Anda sudah menunggu persetujuan. Tarik kembali dulu jika ingin mengirim yang lain."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Backup for %s, who cannot approve their own bank details"
+msgstr "Pengganti %s, yang tidak boleh menyetujui data bank miliknya sendiri"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Bank details need a second person. Nobody other than the person who asked for this change has approved it, so nothing was written."
+msgstr "Data bank memerlukan orang kedua. Belum ada orang selain yang mengajukan perubahan ini yang menyetujuinya, jadi tidak ada yang dicatat."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Bank details need a second person. You cannot approve a change to your own bank account, or one you proposed."
+msgstr "Data bank memerlukan orang kedua. Anda tidak boleh menyetujui perubahan rekening Anda sendiri, atau yang Anda usulkan."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Bank document"
+msgstr "Dokumen bank"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Choose the bank document to upload."
+msgstr "Pilih dokumen bank yang akan diunggah."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__pb_origin__self_service
+msgid "My Payobook"
+msgstr "My Payobook"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__proposed_by_id
+msgid "Proposed by"
+msgstr "Diusulkan oleh"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__pb_decision_note
+msgid "Reason given"
+msgstr "Alasan"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__pb_origin__staff
+msgid "Staff screen"
+msgstr "Layar staf"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__pb_origin
+msgid "Started from"
+msgstr "Dimulai dari"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Taken back by %s"
+msgstr "Ditarik kembali oleh %s"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_approval.py:0 code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "The account number looks right"
+msgstr "Nomor rekening tampak benar"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "The file can be a PDF, JPG or PNG."
+msgstr "File dapat berupa PDF, JPG, atau PNG."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "The file is larger than 10 MB. Try a smaller copy, or a photo of the page."
+msgstr "File lebih dari 10 MB. Coba salinan yang lebih kecil, atau foto halamannya."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "The name on the account does not look like yours; the approver will ask about it"
+msgstr "Nama pada rekening tidak mirip dengan nama Anda; penyetuju akan menanyakannya"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "The name on the account is close to yours; the approver will look at it"
+msgstr "Nama pada rekening mirip dengan nama Anda; penyetuju akan memeriksanya"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "The name on the account matches yours"
+msgstr "Nama pada rekening cocok dengan nama Anda"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "This account number is already on file for somebody else"
+msgstr "Nomor rekening ini sudah tercatat untuk orang lain"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "This account number is already on file for somebody else, so it cannot be sent from here. Ask HR to check it with you."
+msgstr "Nomor rekening ini sudah tercatat untuk orang lain, jadi tidak dapat dikirim dari sini. Minta HR memeriksanya bersama Anda."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "This change is already decided, so it cannot be taken back."
+msgstr "Perubahan ini sudah diputuskan, jadi tidak dapat ditarik kembali."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "This change is already sent."
+msgstr "Perubahan ini sudah dikirim."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "This change is already sent. Take it back first to change it."
+msgstr "Perubahan ini sudah dikirim. Tarik kembali dulu untuk mengubahnya."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "This login cannot approve bank details. One of the company's own people has to approve them."
+msgstr "Akun ini tidak dapat menyetujui data bank. Harus disetujui oleh orang perusahaan sendiri."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Type the account number before sending."
+msgstr "Ketik nomor rekening sebelum mengirim."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_employee_bank_history__change_source__updates
+msgid "Updates or Records"
+msgstr "Pembaruan atau Catatan"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Waiting for a second person. Nobody else in %s can approve bank details yet — add one in Access."
+msgstr "Menunggu orang kedua. Belum ada orang lain di %s yang dapat menyetujui data bank — tambahkan di Akses."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "Waiting for a second person. Nobody else named to approve bank details in %s can approve this yet — add a person to the bank details route in Settings › Approval Matrix."
+msgstr "Menunggu orang kedua. Belum ada orang lain yang ditunjuk menyetujui data bank di %s yang dapat menyetujui ini — tambahkan orang ke alur data bank di Pengaturan › Matriks Persetujuan."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_change_request__pb_decision_note
+msgid "What the approver wrote when they sent it back or turned it down. The employee sees it on My Payobook."
+msgstr "Yang ditulis penyetuju saat mengembalikan atau menolaknya. Karyawan melihatnya di My Payobook."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_self_service.py:0
+msgid "You can only change your own bank details."
+msgstr "Anda hanya dapat mengubah data bank Anda sendiri."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_import_hold.py:0
+msgid "%s approved."
+msgstr "%s disetujui."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_import_hold.py:0
+msgid "%s bank changes are waiting for approval. Nothing changes where these people are paid until a second person approves."
+msgstr "%s perubahan bank menunggu persetujuan. Tujuan gaji orang-orang ini tidak berubah sampai orang kedua menyetujuinya."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_import_hold.py:0
+msgid "%s bank changes need HR to look at them first on the bank screen."
+msgstr "%s perubahan bank perlu diperiksa HR dulu di layar bank."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_import_hold.py:0
+msgid "%s could not be approved; open them one by one."
+msgstr "%s tidak dapat disetujui; buka satu per satu."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_import_hold.py:0
+msgid "%s left waiting for somebody else."
+msgstr "%s tetap menunggu orang lain."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_import_hold.py:0
+msgid "%s left waiting: you ran this import, so somebody else approves them."
+msgstr "%s tetap menunggu: Anda yang menjalankan impor ini, jadi orang lain yang menyetujuinya."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields.selection,name:pb_bank_ocr.selection__pb_bank_change_request__pb_origin__import
+msgid "An import"
+msgstr "Impor data"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "Approve all in this file"
+msgstr "Setujui semua di file ini"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "Approve all of them?"
+msgstr "Setujui semuanya?"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_hr_payroll_import_batch__pb_bank_waiting_note
+msgid "Bank changes"
+msgstr "Perubahan bank"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "Bank changes from imports, waiting for you"
+msgstr "Perubahan bank dari impor, menunggu Anda"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "Cancel"
+msgstr "Batal"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "Changes you imported yourself stay waiting for somebody else. To send one back, open it in Approvals."
+msgstr "Perubahan yang Anda impor sendiri tetap menunggu orang lain. Untuk mengembalikan satu, buka di Persetujuan."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_import_hold.py:0
+msgid "Employee import of %s"
+msgstr "Impor karyawan tanggal %s"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__pb_import_label
+msgid "From the import"
+msgstr "Dari impor"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__pb_import_key
+msgid "Import"
+msgstr "Impor"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_import_hold.py:0
+msgid "Pay data file %s"
+msgstr "File data gaji %s"
+
+#. module: pb_bank_ocr
+#: model_terms:ir.ui.view,arch_db:pb_bank_ocr.view_employee_form_bank_read_only
+msgid "To change where this person is paid, use Compliance › Bank: a second person approves it."
+msgstr "Untuk mengubah tujuan gaji orang ini, gunakan Kepatuhan › Bank: orang kedua yang menyetujuinya."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_import_hold.py:0
+msgid "Upload the bank document first."
+msgstr "Unggah dokumen bank terlebih dahulu."
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "Yes, approve all"
+msgstr "Ya, setujui semua"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "waiting"
+msgstr "menunggu"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_batch_notice.py:0
+msgid "All bank changes from \"%s\" that were waiting are decided. Compliance › Bank shows each one."
+msgstr "Semua perubahan bank dari \"%s\" yang menunggu sudah diputuskan. Kepatuhan › Bank menampilkan masing-masing."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_batch_notice.py:0
+msgid "Bank changes decided: %s"
+msgstr "Perubahan bank sudah diputuskan: %s"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_batch_notice.py:0
+msgid "%(n)s bank changes waiting for your approval: %(what)s"
+msgstr "%(n)s perubahan bank menunggu persetujuan Anda: %(what)s"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_batch_notice.py:0
+msgid "%(n)s bank changes from \"%(what)s\" are waiting for you. Open Compliance › Bank and press \"Approve all in this file\". To send one back, open it in Approvals."
+msgstr "%(n)s perubahan bank dari \"%(what)s\" menunggu Anda. Buka Kepatuhan › Bank lalu tekan \"Setujui semua di file ini\". Untuk mengembalikan satu perubahan, buka di Persetujuan."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_batch_notice.py:0
+msgid "Open Compliance › Bank"
+msgstr "Buka Kepatuhan › Bank"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_batch_notice.py:0
+msgid "Every bank change in this batch is decided."
+msgstr "Semua perubahan bank dalam kelompok ini sudah diputuskan."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_registry__clearing_code
+msgid "Bank code"
+msgstr "Kode bank"
+
+#. module: pb_bank_ocr
+#: model:ir.model,name:pb_bank_ocr.model_pb_bank_registry
+msgid "Bank directory"
+msgstr "Direktori bank"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_registry__country_id
+msgid "Country"
+msgstr "Negara"
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_registry__country_id
+msgid "Empty means a Vietnamese bank (the original directory)."
+msgstr "Kosong berarti bank Vietnam (direktori awal)."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_registry__clearing_code
+msgid "The bank's public national code: Indonesia the 3-digit bank code, Singapore the 4-digit bank code, India the first four letters of every IFSC of this bank."
+msgstr "Kode nasional publik bank: Indonesia kode bank 3 digit, Singapura kode bank 4 digit, India empat huruf pertama setiap IFSC bank ini."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_import_hold.py:0
+msgid "New hire: %s"
+msgstr "Karyawan baru: %s"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "%(low)s to %(high)s digits."
+msgstr "%(low)s sampai %(high)s digit."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "%(low)s to %(high)s letters and digits. An IBAN is fine."
+msgstr "%(low)s sampai %(high)s huruf dan angka. IBAN juga boleh."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "11 characters, on the cheque book or in the bank app."
+msgstr "11 karakter, ada di buku cek atau di aplikasi bank."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "3 digits, if the bank asks for one."
+msgstr "3 digit, jika bank memintanya."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "3 digits. Filled in from the bank when we know it."
+msgstr "3 digit. Diisi otomatis dari bank jika sistem mengenalnya."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "4 digits, on the passbook. Optional."
+msgstr "4 digit, ada di buku tabungan. Opsional."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "4 digits. Filled in from the bank when we know it."
+msgstr "4 digit. Diisi otomatis dari bank jika sistem mengenalnya."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "6 digits, on the bank statement or in the bank app."
+msgstr "6 digit, ada di rekening koran atau di aplikasi bank."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "Another country"
+msgstr "Negara lain"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "BSB"
+msgstr "Kode BSB"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_format_request.py:0
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__pb_bank_format
+msgid "Bank account in"
+msgstr "Rekening bank di"
+
+#. module: pb_bank_ocr
+#: model:ir.model,name:pb_bank_ocr.model_pb_bank_format
+msgid "Bank details by country"
+msgstr "Data bank per negara"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/pb_bank_change_approval.py:0
+#: code:addons/pb_bank_ocr/models/pb_bank_ocr_cockpit.py:0
+#: code:addons/pb_bank_ocr/static/src/js/pb_bank_ocr.js:0
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__x_bank_branch
+msgid "Branch"
+msgstr "Cabang"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+#: model:ir.model.fields,field_description:pb_bank_ocr.field_pb_bank_change_request__x_branch_code
+msgid "Branch code"
+msgstr "Kode cabang"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "IFSC code"
+msgstr "Kode IFSC"
+
+#. module: pb_bank_ocr
+#. odoo-javascript
+#: code:addons/pb_bank_ocr/static/src/xml/pb_bank_ocr.xml:0
+msgid "Not set (6 to 19 digits, no code)"
+msgstr "Belum dipilih (6 sampai 19 digit, tanpa kode)"
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "Optional. 8 or 11 letters and digits, for payments from abroad."
+msgstr ""
+"Opsional. 8 atau 11 huruf dan angka, untuk pembayaran dari luar negeri."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "The BSB is 6 digits, like 062-000."
+msgstr "Kode BSB terdiri dari 6 digit, misalnya 062-000."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid ""
+"The IFSC code is 11 characters: 4 letters, a zero, then 6 letters or digits."
+msgstr ""
+"Kode IFSC terdiri dari 11 karakter: 4 huruf, angka nol, lalu 6 huruf atau "
+"angka."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "The SWIFT / BIC code is 8 or 11 letters and digits."
+msgstr "Kode SWIFT / BIC terdiri dari 8 atau 11 huruf dan angka."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "The account number can only have digits (spaces and dashes are fine)."
+msgstr ""
+"Nomor rekening hanya boleh berisi angka (spasi dan tanda hubung boleh)."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "The account number can only have letters and digits."
+msgstr "Nomor rekening hanya boleh berisi huruf dan angka."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid ""
+"The account number must be %(low)s to %(high)s digits. This one has %(n)s."
+msgstr ""
+"Nomor rekening harus %(low)s sampai %(high)s digit. Nomor ini %(n)s digit."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid ""
+"The account number must be %(low)s to %(high)s letters and digits. This one "
+"has %(n)s."
+msgstr ""
+"Nomor rekening harus %(low)s sampai %(high)s huruf dan angka. Nomor ini "
+"%(n)s karakter."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "The bank code is 3 digits."
+msgstr "Kode bank terdiri dari 3 digit."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "The bank code is 4 digits."
+msgstr "Kode bank terdiri dari 4 digit."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "The branch code is 3 digits."
+msgstr "Kode cabang terdiri dari 3 digit."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "The branch code is 4 digits."
+msgstr "Kode cabang terdiri dari 4 digit."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "Type the 3-digit bank code."
+msgstr "Ketik kode bank 3 digit."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "Type the 3-digit branch code."
+msgstr "Ketik kode cabang 3 digit."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "Type the 4-digit bank code."
+msgstr "Ketik kode bank 4 digit."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "Type the 4-digit branch code."
+msgstr "Ketik kode cabang 4 digit."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "Type the BSB. It is on the bank statement or in the bank app."
+msgstr "Ketik kode BSB. Kode ini ada di rekening koran atau di aplikasi bank."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "Type the IFSC code. It is on the cheque book or in the bank app."
+msgstr "Ketik kode IFSC. Kode ini ada di buku cek atau di aplikasi bank."
+
+#. module: pb_bank_ocr
+#. odoo-python
+#: code:addons/pb_bank_ocr/models/bank_formats.py:0
+msgid "Type the account number."
+msgstr "Ketik nomor rekening."
+
+#. module: pb_bank_ocr
+#: model:ir.model.fields,help:pb_bank_ocr.field_pb_bank_change_request__pb_bank_format
+msgid ""
+"Which country's bank details these are: the codes asked for and the account "
+"number's length follow it. Empty on older changes, which keep the old check."
+msgstr ""
+"Data bank ini dari negara mana: kode yang diminta dan panjang nomor rekening"
+" mengikutinya. Kosong pada perubahan lama, yang tetap memakai pemeriksaan "
+"lama."

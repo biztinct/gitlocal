@@ -1,0 +1,2019 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-16 12:47+0000\n"
+"PO-Revision-Date: 2026-11-16 12:47+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "% no"
+msgstr "% tidak"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "% yes,"
+msgstr "% ya,"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "%(company)s would like to hear from you"
+msgstr "%(company)s ingin mendengar pendapat Anda"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/pb_me_home.py:0
+msgid "%(n)s action plans from surveys are yours"
+msgstr "%(n)s rencana tindakan dari survei adalah milik Anda"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/pb_me_home.py:0
+msgid "%(n)s short surveys are waiting"
+msgstr "%(n)s survei singkat menunggu Anda"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "%(name)s's team"
+msgstr "Tim %(name)s"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "%s (copy)"
+msgstr "%s (salinan)"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid ". Once sent, answers cannot be changed — not even by you, because nothing links them to you."
+msgstr ". Setelah dikirim, jawaban tidak dapat diubah — bahkan oleh Anda, karena tidak ada yang menghubungkannya dengan Anda."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "<b>Action plans you own</b>"
+msgstr "<b>Rencana tindakan milik Anda</b>"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid "<b>Your answers are anonymous.</b>"
+msgstr "<b>Jawaban Anda anonim.</b>"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "<span class=\"pbv-k\">Would recommend working here</span>"
+msgstr "<span class=\"pbv-k\">Akan merekomendasikan bekerja di sini</span>"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "<span class=\"pbv-label\">Progress so far</span>"
+msgstr "<span class=\"pbv-label\">Kemajuan sejauh ini</span>"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "<span class=\"pbv-label\">Status</span>"
+msgstr "<span class=\"pbv-label\">Status</span>"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "<span class=\"pbv-round-d\">Closed. HR shares what was heard and what happens next.</span>"
+msgstr "<span class=\"pbv-round-d\">Ditutup. HR akan membagikan apa yang didengar dan langkah berikutnya.</span>"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.pbme_card_voice
+msgid "<span>Anonymous: nobody, not even HR, can see who said what.</span>"
+msgstr "<span>Anonim: tidak ada seorang pun, termasuk HR, yang dapat melihat siapa mengatakan apa.</span>"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "<span>Answers are anonymous: nobody, not even HR, can see who said what. Results and comments show only for groups with at least the number of answers below (never fewer than 5), and only after the survey closes.</span>"
+msgstr "<span>Jawaban bersifat anonim: tidak ada seorang pun, termasuk HR, yang dapat melihat siapa mengatakan apa. Hasil dan komentar hanya tampil untuk kelompok dengan jumlah jawaban minimal di bawah ini (tidak pernah kurang dari 5), dan hanya setelah survei ditutup.</span>"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.pbme_card_voice
+msgid "<span>Open until</span>"
+msgstr "<span>Dibuka hingga</span>"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "<span>Saved.</span>"
+msgstr "<span>Tersimpan.</span>"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "<span>Thank you. Your answers are in, and nobody can see they are yours.</span>"
+msgstr "<span>Terima kasih. Jawaban Anda sudah masuk, dan tidak ada yang tahu itu milik Anda.</span>"
+
+#. module: pb_voice
+#: model:ir.model.constraint,message:pb_voice.constraint_pb_voice_invite_one_per_round
+msgid "A person is asked once per round."
+msgstr "Setiap orang ditanya sekali per putaran."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "A reminder: %(name)s"
+msgstr "Pengingat: %(name)s"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "A round can hold at most %(n)s questions."
+msgstr "Satu putaran berisi paling banyak %(n)s pertanyaan."
+
+#. module: pb_voice
+#: model:ir.model.constraint,message:pb_voice.constraint_pb_voice_box_round_unique
+msgid "A round has one answer box."
+msgstr "Setiap putaran memiliki satu kotak jawaban."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "A round needs at least %(n)s people, so nobody's answers can be picked out. This one would ask %(m)s."
+msgstr "Satu putaran membutuhkan minimal %(n)s orang agar jawaban siapa pun tidak dapat dikenali. Putaran ini hanya akan menanyai %(m)s orang."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "A short survey is open: %(name)s."
+msgstr "Survei singkat sedang dibuka: %(name)s."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/pb_me_home.py:0
+msgid "A short survey is waiting"
+msgstr "Survei singkat menunggu Anda"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "A survey needs at least"
+msgstr "Survei membutuhkan minimal"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__intro
+msgid "A word to everyone"
+msgstr "Pesan untuk semua orang"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "A word to everyone, shown at the top of the survey (optional)."
+msgstr "Pesan untuk semua orang, tampil di bagian atas survei (opsional)."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_action_form
+msgid "Action plan"
+msgstr "Rencana tindakan"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0 code:addons/pb_voice/static/src/js/voice_palette.js:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__action_ids model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_action_list
+msgid "Action plans"
+msgstr "Rencana tindakan"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_action.py:0
+msgid "Action plans are set up by HR."
+msgstr "Rencana tindakan dibuat oleh HR."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Action plans you own"
+msgstr "Rencana tindakan milik Anda"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__active
+msgid "Active"
+msgstr "Aktif"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_ids
+msgid "Activities"
+msgstr "Aktivitas"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Dekorasi Pengecualian Aktivitas"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_state
+msgid "Activity State"
+msgstr "Status Aktivitas"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Ikon Jenis Aktivitas"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_pick_form
+msgid "Add"
+msgstr "Tambah"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Add at least one question people answer with a rating or a choice."
+msgstr "Tambahkan minimal satu pertanyaan yang dijawab dengan penilaian atau pilihan."
+
+#. module: pb_voice
+#: model:ir.actions.act_window,name:pb_voice.action_pb_voice_library_pick model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_pick_form model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "Add from the library"
+msgstr "Tambah dari pustaka"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_pick_form
+msgid "Add our company values"
+msgstr "Tambahkan nilai-nilai perusahaan"
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice_library_pick
+msgid "Add questions from the library"
+msgstr "Tambah pertanyaan dari pustaka"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_common.py:0
+msgid "Agree"
+msgstr "Setuju"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__kind__scale model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__kind__scale
+msgid "Agree or disagree (5 steps)"
+msgstr "Setuju atau tidak (5 tingkat)"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/pb_me_home.py:0
+msgid "An action plan from a survey is yours"
+msgstr "Satu rencana tindakan dari survei adalah milik Anda"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/pb_me_home.py:0
+msgid "Anonymous. Open until %(date)s."
+msgstr "Anonim. Dibuka hingga %(date)s."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Answer"
+msgstr "Jawab"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.pbme_card_voice
+msgid "Answer now"
+msgstr "Jawab sekarang"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Answer the survey"
+msgstr "Jawab survei"
+
+#. module: pb_voice
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0 code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Answered"
+msgstr "Sudah menjawab"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__answered_count
+msgid "Answered (at close)"
+msgstr "Sudah menjawab (saat ditutup)"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__kind model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__kind
+msgid "Answered as"
+msgstr "Cara menjawab"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Answered, still open"
+msgstr "Sudah dijawab, masih dibuka"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Answers"
+msgstr "Jawaban"
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_round__date_end
+msgid "Answers are taken until the end of this day. Results open the day after, or when you close it earlier."
+msgstr "Jawaban diterima hingga akhir hari ini. Hasil dibuka keesokan harinya, atau saat Anda menutupnya lebih awal."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Answers wait sealed until the survey closes, then go in all at once. Results open then."
+msgstr "Jawaban disegel sampai survei ditutup, lalu masuk sekaligus. Hasil dibuka saat itu."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Ask HR to link it, then the surveys you are asked in appear here."
+msgstr "Minta HR menautkannya, lalu survei untuk Anda akan muncul di sini."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Ask how it is going: pick a few questions from the library, choose who is asked and when it closes. People answer on My Payobook, anonymously."
+msgstr "Tanyakan bagaimana keadaannya: pilih beberapa pertanyaan dari pustaka, pilih siapa yang ditanya dan kapan ditutup. Semua orang menjawab secara anonim di My Payobook."
+
+#. module: pb_voice
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0 code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__invited model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__invited_count
+msgid "Asked"
+msgstr "Ditanya"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Average (1 to 5)"
+msgstr "Rata-rata (1 sampai 5)"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Back to my home"
+msgstr "Kembali ke beranda saya"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid "Back to surveys"
+msgstr "Kembali ke survei"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_round__state__draft
+msgid "Being set up"
+msgstr "Sedang disiapkan"
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_round__remind
+msgid "By email when this system sends email; on My Payobook the \"Needs you\" row stays until they answer, either way."
+msgstr "Lewat email bila sistem ini mengirim email; di My Payobook, baris \"Perlu Anda\" tetap tampil sampai mereka menjawab."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "By theme"
+msgstr "Menurut tema"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Can sign in"
+msgstr "Dapat masuk"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_pick_form
+msgid "Cancel"
+msgstr "Batal"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__cell
+msgid "Cell"
+msgstr "Sel kelompok"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Close"
+msgstr "Tutup"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0 code:addons/pb_voice/static/src/xml/voice_board.xml:0 model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "Close now"
+msgstr "Tutup sekarang"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Close this survey now?"
+msgstr "Tutup survei ini sekarang?"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "Close this survey now? Nobody can answer afterwards, and the results open."
+msgstr "Tutup survei ini sekarang? Setelah itu tidak ada yang bisa menjawab, dan hasil dibuka."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_round__state__closed model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Closed"
+msgstr "Ditutup"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__date_closed
+msgid "Closed on"
+msgstr "Ditutup pada"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Closed. Fewer than %(n)s people answered, so nothing was kept."
+msgstr "Ditutup. Kurang dari %(n)s orang menjawab, jadi tidak ada yang disimpan."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Closed. The results are ready."
+msgstr "Ditutup. Hasil sudah siap."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Closes"
+msgstr "Ditutup"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__date_end
+msgid "Closes on"
+msgstr "Ditutup pada"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Comment"
+msgstr "Komentar"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Comments"
+msgstr "Komentar"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__communication model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__communication model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__communication
+msgid "Communication"
+msgstr "Komunikasi"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__company_ids
+msgid "Companies asked"
+msgstr "Perusahaan yang ditanya"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__company_id model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__company_id model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__company_id model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__company_id model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__company_id model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__company_id model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__company_id model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_group__kind__company
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Copied. Change it, then send it out."
+msgstr "Disalin. Ubah dulu, lalu kirim."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0 code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Copy"
+msgstr "Salin"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Copy this survey?"
+msgstr "Salin survei ini?"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__create_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__create_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__create_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__create_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__create_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__create_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__create_uid
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__create_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__create_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__create_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__create_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__create_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__create_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__create_date
+msgid "Created on"
+msgstr "Dibuat pada"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0 code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Delete"
+msgstr "Hapus"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Delete this survey?"
+msgstr "Hapus survei ini?"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Deleted."
+msgstr "Dihapus."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__department_id model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_group__kind__department
+msgid "Department"
+msgstr "Departemen"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_common.py:0
+msgid "Disagree"
+msgstr "Tidak setuju"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_me_home__display_name model:ir.model.fields,field_description:pb_voice.field_pb_voice__display_name model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__display_name model:ir.model.fields,field_description:pb_voice.field_pb_voice_box__display_name model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__display_name model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__display_name model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__display_name model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__display_name model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__display_name model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__display_name
+msgid "Display Name"
+msgstr "Nama Tampilan"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__state__done model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Done"
+msgstr "Selesai"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Done."
+msgstr "Selesai."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__date_due
+msgid "Due"
+msgstr "Tenggat"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Edit"
+msgstr "Ubah"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__employee_id
+msgid "Employee"
+msgstr "Karyawan"
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Data beranda karyawan"
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice_round
+msgid "Employee survey round"
+msgstr "Putaran survei karyawan"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0
+msgid "Employee surveys"
+msgstr "Survei karyawan"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0 code:addons/pb_voice/models/voice_round.py:0
+msgid "Employee surveys are run by HR."
+msgstr "Survei karyawan dijalankan oleh HR."
+
+#. module: pb_voice
+#: model:ir.actions.server,name:pb_voice.cron_voice_daily_ir_actions_server
+msgid "Employee surveys: close, remind, tidy"
+msgstr "Survei karyawan: tutup, ingatkan, rapikan"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0 code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.actions.client,name:pb_voice.action_pb_voice_board
+msgid "Employee voice"
+msgstr "Suara karyawan"
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice
+msgid "Employee voice board and results"
+msgstr "Papan dan hasil suara karyawan"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__remind_every
+msgid "Every (days)"
+msgstr "Setiap (hari)"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Everyone asked"
+msgstr "Semua yang ditanya"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Excel"
+msgstr "Excel"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Extremely likely"
+msgstr "Sangat mungkin"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Favourable %"
+msgstr "% setuju"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__engagement model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__engagement model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__engagement
+msgid "Feeling about working here"
+msgstr "Perasaan bekerja di sini"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Fewer than %(n)s people answered, so nothing was kept and there are no results."
+msgstr "Kurang dari %(n)s orang menjawab, jadi tidak ada yang disimpan dan tidak ada hasil."
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_action__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Ikon Font Awesome, mis. fa-tasks"
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_library__options model:ir.model.fields,help:pb_voice.field_pb_voice_question__options
+msgid "For \"Pick one option\": one option per line."
+msgstr "Untuk \"Pilih satu opsi\": satu opsi per baris."
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__library_id
+msgid "From the library"
+msgstr "Dari pustaka"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_action.py:0
+msgid "From the survey \"%(name)s\"."
+msgstr "Dari survei \"%(name)s\"."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Group"
+msgstr "Kelompok"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__group_ids
+msgid "Groups"
+msgstr "Kelompok"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "HR only"
+msgstr "Hanya HR"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__has_values
+msgid "Has Values"
+msgstr "Ada nilai perusahaan"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Hidden"
+msgstr "Disembunyikan"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Hidden to keep answers private: fewer than %(n)s answers, or the figures could be worked out from the groups shown beside it."
+msgstr "Disembunyikan agar jawaban tetap rahasia: kurang dari %(n)s jawaban, atau angkanya bisa dihitung dari kelompok yang tampil di sebelahnya."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0 model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "How are we doing?"
+msgstr "Bagaimana kabar kita?"
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_enps
+msgid "How likely are you to recommend working here to a friend?"
+msgstr "Seberapa besar kemungkinan Anda merekomendasikan bekerja di sini kepada teman?"
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_round__answered_count
+msgid "How many people answered, counted when the round closed."
+msgstr "Jumlah orang yang menjawab, dihitung saat putaran ditutup."
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_proud
+msgid "I am proud to work here."
+msgstr "Saya bangga bekerja di sini."
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_time_off
+msgid "I can take time off when I need it."
+msgstr "Saya bisa mengambil cuti saat membutuhkannya."
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_recognised
+msgid "I get recognised when I do good work."
+msgstr "Saya mendapat pengakuan saat bekerja dengan baik."
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_grow
+msgid "I have chances to learn and grow here."
+msgstr "Saya punya kesempatan belajar dan berkembang di sini."
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_expected
+msgid "I know what is expected of me at work."
+msgstr "Saya tahu apa yang diharapkan dari saya di tempat kerja."
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_informed
+msgid "I know what is going on in the company."
+msgstr "Saya tahu apa yang terjadi di perusahaan."
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_stay
+msgid "I see myself still working here in two years."
+msgstr "Saya melihat diri saya masih bekerja di sini dua tahun lagi."
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_me_home__id model:ir.model.fields,field_description:pb_voice.field_pb_voice__id model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__id model:ir.model.fields,field_description:pb_voice.field_pb_voice_box__id model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__id model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__id model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__id model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__id model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__id model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_exception_icon
+msgid "Icon"
+msgstr "Ikon"
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_action__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Ikon untuk menandai aktivitas pengecualian."
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_anything
+msgid "Is there anything else you would like to tell us?"
+msgstr "Apakah ada hal lain yang ingin Anda sampaikan kepada kami?"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "It has not been sent out, so nobody has seen it."
+msgstr "Survei belum dikirim, jadi belum ada yang melihatnya."
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__kind
+msgid "Kind"
+msgstr "Jenis"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__write_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__write_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__write_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__write_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__write_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__write_uid model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__write_uid
+msgid "Last Updated by"
+msgstr "Terakhir diperbarui oleh"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__write_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__write_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__write_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__write_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__write_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__write_date model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__write_date
+msgid "Last Updated on"
+msgstr "Terakhir diperbarui pada"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__last_reminded
+msgid "Last reminder"
+msgstr "Pengingat terakhir"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Late"
+msgstr "Terlambat"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__growth model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__growth model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__growth
+msgid "Learning and growth"
+msgstr "Belajar dan berkembang"
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_library__company_id
+msgid "Leave empty for a question every company can use."
+msgstr "Kosongkan untuk pertanyaan yang bisa dipakai semua perusahaan."
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_round__department_ids
+msgid "Leave empty to ask everyone in the companies above."
+msgstr "Kosongkan untuk menanyai semua orang di perusahaan di atas."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Make sign-in slips"
+msgstr "Buat slip masuk"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_box__marks
+msgid "Marks"
+msgstr "Tanda sudah menjawab"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Monthly team catch-ups with every manager"
+msgstr "Pertemuan tim bulanan dengan setiap manajer"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Tenggat Aktivitas Saya"
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_manager_cares
+msgid "My manager cares about me as a person."
+msgstr "Manajer saya peduli pada saya sebagai pribadi."
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_manager_feedback
+msgid "My manager gives me useful feedback."
+msgstr "Manajer saya memberi saya masukan yang berguna."
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_workload
+msgid "My workload is manageable."
+msgstr "Beban kerja saya masih bisa saya tangani."
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__name
+msgid "Name"
+msgstr "Nama"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_common.py:0
+msgid "Neither agree nor disagree"
+msgstr "Netral"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "New action plan"
+msgstr "Rencana tindakan baru"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0 code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "New survey"
+msgstr "Survei baru"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Acara Kalender Aktivitas Berikutnya"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Tenggat Aktivitas Berikutnya"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_summary
+msgid "Next Activity Summary"
+msgstr "Ringkasan Aktivitas Berikutnya"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_type_id
+msgid "Next Activity Type"
+msgstr "Jenis Aktivitas Berikutnya"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "No action plan yet. Pick a theme in the results and press +, or start one here."
+msgstr "Belum ada rencana tindakan. Pilih tema di hasil lalu tekan +, atau mulai di sini."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_library.py:0
+msgid "No company values are set up."
+msgstr "Belum ada nilai perusahaan yang diatur."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_library.py:0
+msgid "No company values are set up. Add them under Praise first."
+msgstr "Belum ada nilai perusahaan yang diatur. Tambahkan dulu di Pujian."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "No email here: people see the survey under \"Needs you\" on their home page until they answer."
+msgstr "Tidak ada email di sini: orang melihat survei di \"Perlu Anda\" pada beranda sampai mereka menjawab."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "No login yet"
+msgstr "Belum punya akun masuk"
+
+#. module: pb_voice
+#: model_terms:ir.actions.act_window,help:pb_voice.action_pb_voice_library
+msgid "No questions in the library"
+msgstr "Belum ada pertanyaan di pustaka"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "No questions yet. Press Edit, then \"Add from the library\"."
+msgstr "Belum ada pertanyaan. Tekan Ubah, lalu \"Tambah dari pustaka\"."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "No survey matches. Press the number again to see every survey."
+msgstr "Tidak ada survei yang cocok. Tekan angkanya lagi untuk melihat semua survei."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "No survey right now"
+msgstr "Belum ada survei saat ini"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "No survey yet"
+msgstr "Belum ada survei"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Nobody can answer afterwards. The answers go in all at once and the results open."
+msgstr "Setelah itu tidak ada yang bisa menjawab. Jawaban masuk sekaligus dan hasil dibuka."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid "Nobody, not even HR, can see who said what. Your answers are not stored with your name, and results show only for groups of"
+msgstr "Tidak ada seorang pun, termasuk HR, yang dapat melihat siapa mengatakan apa. Jawaban Anda tidak disimpan bersama nama Anda, dan hasil hanya tampil untuk kelompok berisi"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Not at all likely"
+msgstr "Sama sekali tidak mungkin"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_round__result_state__none
+msgid "Not closed yet"
+msgstr "Belum ditutup"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Not sent out yet"
+msgstr "Belum dikirim"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "On the Access screen, open People and press \"Logins for workers\": each person signs in with their employee code and a first password printed on a slip."
+msgstr "Di layar Akses, buka Orang lalu tekan \"Akun untuk pekerja\": setiap orang masuk dengan kode karyawannya dan kata sandi pertama yang dicetak pada slip."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "One option per line"
+msgstr "Satu opsi per baris"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Only a round that has not been sent out can be deleted."
+msgstr "Hanya putaran yang belum dikirim yang dapat dihapus."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Only an open round can be closed."
+msgstr "Hanya putaran yang sedang dibuka yang dapat ditutup."
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__department_ids
+msgid "Only these departments"
+msgstr "Hanya departemen ini"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_round__state__open
+msgid "Open for answers"
+msgstr "Dibuka untuk dijawab"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Open for answers until %(date)s."
+msgstr "Dibuka untuk dijawab hingga %(date)s."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid "Open until"
+msgstr "Dibuka hingga"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid "Optional. Please leave out names and details that could show who you are."
+msgstr "Opsional. Mohon jangan menulis nama atau detail yang bisa menunjukkan siapa Anda."
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__options model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__options
+msgid "Options"
+msgstr "Opsi"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__other model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__other model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__other
+msgid "Other"
+msgstr "Lainnya"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__values model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__values model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__values
+msgid "Our values"
+msgstr "Nilai-nilai kita"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Overview"
+msgstr "Ringkasan"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__owner_id
+msgid "Owner"
+msgstr "Penanggung jawab"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__parent_id
+msgid "Parent"
+msgstr "Induk"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Part of"
+msgstr "Bagian dari"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "People answer on My Payobook only. Somebody with no login cannot answer until they get one."
+msgstr "Orang hanya menjawab di My Payobook. Yang belum punya akun belum bisa menjawab."
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__invite_ids
+msgid "People asked"
+msgstr "Orang yang ditanya"
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_values
+msgid "People here live our company values."
+msgstr "Orang di sini menjalankan nilai-nilai perusahaan."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_library.py:0
+msgid "People here live our value: %(v)s"
+msgstr "Orang di sini menjalankan nilai kita: %(v)s"
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_team_help
+msgid "People in my team help each other."
+msgstr "Orang di tim saya saling membantu."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "People see it on My Payobook at once. Its questions and who is asked cannot change afterwards."
+msgstr "Orang langsung melihatnya di My Payobook. Pertanyaan dan siapa yang ditanya tidak dapat diubah sesudahnya."
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice_invite
+msgid "Person asked in a survey round"
+msgstr "Orang yang ditanya dalam putaran survei"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__kind__choice model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__kind__choice
+msgid "Pick one option"
+msgstr "Pilih satu opsi"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Pick who owns it."
+msgstr "Pilih penanggung jawabnya."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Plan an action on this theme"
+msgstr "Rencanakan tindakan untuk tema ini"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Please answer: \"%(q)s\"."
+msgstr "Mohon jawab: \"%(q)s\"."
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__progress
+msgid "Progress note"
+msgstr "Catatan kemajuan"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_action_form
+msgid "Progress so far"
+msgstr "Kemajuan sejauh ini"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__text model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__text
+msgid "Question"
+msgstr "Pertanyaan"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__question_count
+msgid "Question Count"
+msgstr "Jumlah pertanyaan"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Question by question"
+msgstr "Per pertanyaan"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0 code:addons/pb_voice/static/src/xml/voice_board.xml:0 model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_list
+msgid "Question library"
+msgstr "Pustaka pertanyaan"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__library_ids model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__question_ids model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "Questions"
+msgstr "Pertanyaan"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Read the board again"
+msgstr "Muat ulang papan"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Reading the surveys…"
+msgstr "Membaca survei…"
+
+#. module: pb_voice
+#: model_terms:ir.actions.act_window,help:pb_voice.action_pb_voice_library
+msgid "Ready-made questions HR can add to a survey. Every company can add its own."
+msgstr "Pertanyaan siap pakai yang dapat ditambahkan HR ke survei. Setiap perusahaan dapat menambah pertanyaannya sendiri."
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__recognition model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__recognition model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__recognition
+msgid "Recognition"
+msgstr "Pengakuan"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Remind every 1 to 30 days."
+msgstr "Ingatkan setiap 1 sampai 30 hari."
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__remind
+msgid "Remind people who have not answered"
+msgstr "Ingatkan yang belum menjawab"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Reminders by email every"
+msgstr "Pengingat lewat email setiap"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__activity_user_id
+msgid "Responsible User"
+msgstr "Pengguna Penanggung Jawab"
+
+#. module: pb_voice
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0 code:addons/pb_voice/static/src/js/voice_board.js:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__result_state
+msgid "Results"
+msgstr "Hasil"
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_round__floor
+msgid "Results and comments show only for groups with at least this many answers. It can never be lower than 5."
+msgstr "Hasil dan komentar hanya tampil untuk kelompok dengan minimal jawaban sebanyak ini. Tidak pernah kurang dari 5."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Results open when the round closes, so nobody can work out an answer by watching the numbers change."
+msgstr "Hasil dibuka saat putaran ditutup, agar tidak ada yang bisa menebak jawaban dengan mengamati perubahan angka."
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_round__result_state__kept
+msgid "Results ready"
+msgstr "Hasil siap"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_box__round_id model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__round_id model:ir.model.fields,field_description:pb_voice.field_pb_voice_invite__round_id model:ir.model.fields,field_description:pb_voice.field_pb_voice_library_pick__round_id model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__round_id
+msgid "Round"
+msgstr "Putaran"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Same questions and people, as a new survey being set up."
+msgstr "Pertanyaan dan orang yang sama, sebagai survei baru yang sedang disiapkan."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Save"
+msgstr "Simpan"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Saved. The owner sees it on their home page."
+msgstr "Tersimpan. Penanggung jawab melihatnya di berandanya."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_home_voice
+msgid "Say how it is going, anonymously"
+msgstr "Sampaikan bagaimana keadaannya, secara anonim"
+
+#. module: pb_voice
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0 code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Say what will be done, in a few words."
+msgstr "Tulis singkat apa yang akan dilakukan."
+
+#. module: pb_voice
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0 code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Score"
+msgstr "Skor"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_box__sealed
+msgid "Sealed"
+msgstr "Tersegel"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid "Send my answers"
+msgstr "Kirim jawaban saya"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0 code:addons/pb_voice/static/src/xml/voice_board.xml:0 model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "Send out"
+msgstr "Kirim"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Send this survey out now?"
+msgstr "Kirim survei ini sekarang?"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "Send this survey out now? Its questions and who is asked cannot change afterwards."
+msgstr "Kirim survei ini sekarang? Pertanyaan dan siapa yang ditanya tidak dapat diubah sesudahnya."
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__date_start
+msgid "Sent out on"
+msgstr "Dikirim pada"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Sent out. People see it on My Payobook now."
+msgstr "Terkirim. Orang sekarang melihatnya di My Payobook."
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__sequence model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__sequence
+msgid "Sequence"
+msgstr "Urutan"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "Share of people who agree. Groups of fewer than"
+msgstr "Persentase yang setuju. Kelompok dengan kurang dari"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Short anonymous surveys. Nobody, not even HR, can see who said what; results show only for groups of 5 or more answers."
+msgstr "Survei singkat dan anonim. Tidak ada seorang pun, termasuk HR, yang dapat melihat siapa mengatakan apa; hasil hanya tampil untuk kelompok dengan 5 jawaban atau lebih."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Show results for"
+msgstr "Tampilkan hasil untuk"
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_round__intro
+msgid "Shown at the top of the survey on My Payobook."
+msgstr "Tampil di bagian atas survei di My Payobook."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__floor
+msgid "Smallest group shown"
+msgstr "Kelompok terkecil yang ditampilkan"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__state model:ir.model.fields,field_description:pb_voice.field_pb_voice_round__state
+msgid "Status"
+msgstr "Status"
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_action__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Status berdasarkan aktivitas\n"
+"Terlambat: Tenggat sudah lewat\n"
+"Hari ini: Aktivitas hari ini\n"
+"Direncanakan: Aktivitas mendatang."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_common.py:0 code:addons/pb_voice/tests/test_voice_po.py:0
+msgid "Strongly agree"
+msgstr "Sangat setuju"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_common.py:0
+msgid "Strongly disagree"
+msgstr "Sangat tidak setuju"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__round_id model_terms:ir.ui.view,arch_db:pb_voice.portal_breadcrumbs_voice model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "Survey"
+msgstr "Survei"
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice_action
+msgid "Survey action plan"
+msgstr "Rencana tindakan survei"
+
+#. module: pb_voice
+#: model:ir.actions.act_window,name:pb_voice.action_pb_voice_action
+msgid "Survey action plans"
+msgstr "Rencana tindakan survei"
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice_box
+msgid "Survey answers (sealed)"
+msgstr "Jawaban survei (tersegel)"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__round_name
+msgid "Survey name"
+msgstr "Nama survei"
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice_question
+msgid "Survey question"
+msgstr "Pertanyaan survei"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0 model:ir.actions.act_window,name:pb_voice.action_pb_voice_library model:ir.model,name:pb_voice.model_pb_voice_library
+msgid "Survey question library"
+msgstr "Pustaka pertanyaan survei"
+
+#. module: pb_voice
+#: model:ir.model,name:pb_voice.model_pb_voice_group
+msgid "Survey results group"
+msgstr "Kelompok hasil survei"
+
+#. module: pb_voice
+#: model:ir.actions.act_window,name:pb_voice.action_pb_voice_round model_terms:ir.ui.view,arch_db:pb_voice.portal_breadcrumbs_voice model_terms:ir.ui.view,arch_db:pb_voice.portal_my_home_voice model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_list
+msgid "Surveys"
+msgstr "Survei"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0
+msgid "Switch questions off, change their words, or add your own."
+msgstr "Matikan pertanyaan, ubah kata-katanya, atau tambahkan milik Anda."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_search
+msgid "Switched off"
+msgstr "Dimatikan"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0 code:addons/pb_voice/static/src/js/voice_palette.js:0
+msgid "Talent"
+msgstr "Talenta"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_group__kind__team
+msgid "Team"
+msgstr "Tim"
+
+#. module: pb_voice
+#: model:ir.model.fields,field_description:pb_voice.field_pb_voice_group__manager_id
+msgid "Team of"
+msgstr "Tim dari"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "Team voice"
+msgstr "Suara tim"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__teamwork model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__teamwork model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__teamwork
+msgid "Teamwork"
+msgstr "Kerja sama tim"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Tell the company how it is going. Your answers are anonymous."
+msgstr "Sampaikan kepada perusahaan bagaimana keadaannya. Jawaban Anda anonim."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/pb_me_home.py:0
+msgid "Tell us how it is going. It is anonymous."
+msgstr "Ceritakan bagaimana keadaannya. Ini anonim."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "That cannot be done here."
+msgstr "Itu tidak dapat dilakukan di sini."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "That could not be done."
+msgstr "Itu tidak dapat dilakukan."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/controllers/portal.py:0
+msgid "That did not go through. Nothing was saved — please try again."
+msgstr "Tidak berhasil. Tidak ada yang disimpan — silakan coba lagi."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "The action plan could not be saved."
+msgstr "Rencana tindakan tidak dapat disimpan."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "The closing date is in the past."
+msgstr "Tanggal penutupan sudah lewat."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "The groups could not be worked out."
+msgstr "Kelompok tidak dapat ditentukan."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_action.py:0
+msgid "The owner needs a staff login to follow it up."
+msgstr "Penanggung jawab perlu akun staf untuk menindaklanjutinya."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "The question \"%(q)s\" needs at least two options, one per line."
+msgstr "Pertanyaan \"%(q)s\" membutuhkan minimal dua opsi, satu per baris."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0
+msgid "The ready-made questions HR can add to a survey, in every language this system uses."
+msgstr "Pertanyaan siap pakai yang dapat ditambahkan HR ke survei, dalam setiap bahasa yang dipakai sistem ini."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "The results could not be read."
+msgstr "Hasil tidak dapat dibaca."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "The round's own company must be one of the companies asked."
+msgstr "Perusahaan pemilik putaran harus termasuk perusahaan yang ditanya."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "The smallest group shown can never be lower than %(n)s."
+msgstr "Kelompok terkecil yang ditampilkan tidak pernah kurang dari %(n)s."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "The survey \"%(name)s\" is still open."
+msgstr "Survei \"%(name)s\" masih dibuka."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "The surveys could not be read just now."
+msgstr "Survei tidak dapat dibaca saat ini."
+
+#. module: pb_voice
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0 code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__theme model:ir.model.fields,field_description:pb_voice.field_pb_voice_library__theme model:ir.model.fields,field_description:pb_voice.field_pb_voice_question__theme model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_search
+msgid "Theme"
+msgstr "Tema"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "There are no results."
+msgstr "Tidak ada hasil."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "This action plan no longer exists."
+msgstr "Rencana tindakan ini sudah tidak ada."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "This one is for HR"
+msgstr "Bagian ini untuk HR"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "This round has already been sent out."
+msgstr "Putaran ini sudah dikirim."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "This round has been sent out, so its questions and who is asked can no longer change. Make a copy to ask again."
+msgstr "Putaran ini sudah dikirim, jadi pertanyaan dan siapa yang ditanya tidak dapat diubah lagi. Buat salinan untuk bertanya lagi."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "This round has been sent out, so its questions can no longer change."
+msgstr "Putaran ini sudah dikirim, jadi pertanyaannya tidak dapat diubah lagi."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "This round has been sent out, so its questions stay."
+msgstr "Putaran ini sudah dikirim, jadi pertanyaannya tetap."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_library.py:0 code:addons/pb_voice/models/voice_round.py:0
+msgid "This round has been sent out, so no question can be added."
+msgstr "Putaran ini sudah dikirim, jadi tidak bisa menambah pertanyaan."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "This round is closed."
+msgstr "Putaran ini sudah ditutup."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "This survey asked people in a company you cannot see."
+msgstr "Survei ini menanyai orang di perusahaan yang tidak dapat Anda lihat."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "This survey could not be opened."
+msgstr "Survei ini tidak dapat dibuka."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "This survey is closed. Thank you."
+msgstr "Survei ini sudah ditutup. Terima kasih."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "This survey is not open."
+msgstr "Survei ini tidak sedang dibuka."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "This survey no longer exists."
+msgstr "Survei ini sudah tidak ada."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "This system does not send email, so invitations and reminders show on people's My Payobook home, under \"Needs you\", until they answer."
+msgstr "Sistem ini tidak mengirim email, jadi undangan dan pengingat tampil di beranda My Payobook, di bagian \"Perlu Anda\", sampai mereka menjawab."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_library_pick_form
+msgid "Tick the questions to add. Their words come in every language this system uses."
+msgstr "Centang pertanyaan yang ingin ditambahkan. Kata-katanya tersedia dalam setiap bahasa yang dipakai sistem ini."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__state__open model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "To do"
+msgstr "Akan dikerjakan"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_round__result_state__too_few
+msgid "Too few answers, nothing kept"
+msgstr "Terlalu sedikit jawaban, tidak ada yang disimpan"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Too few people answered the last survey to show any results."
+msgstr "Terlalu sedikit orang menjawab survei terakhir untuk menampilkan hasil."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Type a name"
+msgstr "Ketik nama"
+
+#. module: pb_voice
+#: model:ir.model.fields,help:pb_voice.field_pb_voice_action__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Jenis aktivitas pengecualian pada catatan."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__state__doing model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Under way"
+msgstr "Sedang berjalan"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "Update"
+msgstr "Perbarui"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/pb_me_home.py:0
+msgid "Update its progress when you can."
+msgstr "Perbarui kemajuannya bila sempat."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0
+msgid "Voice"
+msgstr "Suara"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Waiting for your answers"
+msgstr "Menunggu jawaban Anda"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__wellbeing model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__wellbeing model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__wellbeing
+msgid "Wellbeing and workload"
+msgstr "Kesejahteraan dan beban kerja"
+
+#. module: pb_voice
+#: model:pb.voice.library,text:pb_voice.lib_start_stop
+msgid "What is one thing we should start, stop or keep doing?"
+msgstr "Apa satu hal yang sebaiknya kita mulai, hentikan, atau terus lakukan?"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "What the company said it would do after a survey. Update the progress as you go."
+msgstr "Apa yang dijanjikan perusahaan setelah survei. Perbarui kemajuannya seiring berjalan."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_palette.js:0
+msgid "What the company said it would do after each survey."
+msgstr "Apa yang dijanjikan perusahaan setelah setiap survei."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model:ir.model.fields,field_description:pb_voice.field_pb_voice_action__name model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_action_form
+msgid "What we will do"
+msgstr "Yang akan kita lakukan"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "When"
+msgstr "Waktu"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "When the company asks how it is going, the survey appears here and on your home page."
+msgstr "Saat perusahaan menanyakan keadaan, survei akan muncul di sini dan di beranda Anda."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "Who can answer"
+msgstr "Siapa yang dapat menjawab"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.view_pb_voice_round_form
+msgid "Who is asked"
+msgstr "Siapa yang ditanya"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Would recommend"
+msgstr "Akan merekomendasikan"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__kind__enps model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__kind__enps
+msgid "Would recommend (0 to 10)"
+msgstr "Akan merekomendasikan (0 sampai 10)"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__kind__text model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__kind__text
+msgid "Written comment"
+msgstr "Komentar tertulis"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "Written comments"
+msgstr "Komentar tertulis"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/controllers/portal.py:0 code:addons/pb_voice/models/voice_round.py:0
+msgid "You are not asked in this survey."
+msgstr "Anda tidak termasuk yang ditanya dalam survei ini."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "You can only ask people in companies you can see."
+msgstr "Anda hanya dapat menanyai orang di perusahaan yang dapat Anda lihat."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_action.py:0
+msgid "You can update the progress of your own action plans only."
+msgstr "Anda hanya dapat memperbarui kemajuan rencana tindakan Anda sendiri."
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "You have answered this survey. Thank you."
+msgstr "Anda sudah menjawab survei ini. Terima kasih."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "You have answered. Thank you. It closes on"
+msgstr "Anda sudah menjawab. Terima kasih. Survei ditutup pada"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_round.py:0
+msgid "Your answers are anonymous: nobody, not even HR, can see who said what. Results show only for groups of %(n)s or more people."
+msgstr "Jawaban Anda anonim: tidak ada seorang pun, termasuk HR, yang dapat melihat siapa mengatakan apa. Hasil hanya tampil untuk kelompok berisi %(n)s orang atau lebih."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "Your login is not linked to an employee record"
+msgstr "Akun Anda belum ditautkan ke data karyawan"
+
+#. module: pb_voice
+#: model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_action__theme__manager model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_library__theme__manager model:ir.model.fields.selection,name:pb_voice.selection__pb_voice_question__theme__manager
+msgid "Your manager"
+msgstr "Manajer Anda"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Your team"
+msgstr "Tim Anda"
+
+#. module: pb_voice
+#. odoo-python
+#: code:addons/pb_voice/models/voice_results.py:0
+msgid "Your team's answers are counted in the company's results. Results show only for groups of %(n)s or more answers, so nobody's answers can be picked out."
+msgstr "Jawaban tim Anda dihitung dalam hasil perusahaan. Hasil hanya tampil untuk kelompok dengan %(n)s jawaban atau lebih, agar jawaban siapa pun tidak dapat dikenali."
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.pbme_card_voice
+msgid "Your voice"
+msgstr "Suara Anda"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "action plans to do"
+msgstr "rencana tindakan akan dikerjakan"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "action plans, some late"
+msgstr "rencana tindakan, ada yang terlambat"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "agree · average"
+msgstr "setuju · rata-rata"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "and"
+msgstr "dan"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "answered ("
+msgstr "menjawab ("
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "answered ·"
+msgstr "menjawab ·"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "answers are never shown, and written comments go to HR only."
+msgstr "jawaban tidak pernah ditampilkan, dan komentar tertulis hanya untuk HR."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "being set up"
+msgstr "sedang disiapkan"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "days to people who have not answered."
+msgstr "hari kepada yang belum menjawab."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "hidden"
+msgstr "disembunyikan"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "maybe ·"
+msgstr "mungkin ·"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "more."
+msgstr "lainnya."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "no"
+msgstr "tidak"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "of"
+msgstr "dari"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "of 5"
+msgstr "dari 5"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "open for answers"
+msgstr "dibuka untuk dijawab"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice_form
+msgid "or more people, after the survey closes. Written comments are read by HR only. You can answer once."
+msgstr "orang atau lebih, setelah survei ditutup. Komentar tertulis hanya dibaca HR. Anda dapat menjawab sekali."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "people with a login have no email: they see the survey on their home page."
+msgstr "orang punya akun tetapi tanpa email: mereka melihat survei di berandanya."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "people, so nobody's answers can be picked out."
+msgstr "orang, agar jawaban siapa pun tidak dapat dikenali."
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "questions"
+msgstr "pertanyaan"
+
+#. module: pb_voice
+#: model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "questions · open until"
+msgstr "pertanyaan · dibuka hingga"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "share who agree"
+msgstr "persentase yang setuju"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/js/voice_board.js:0
+msgid "with results"
+msgstr "dengan hasil"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "would not (0-6)"
+msgstr "tidak akan (0-6)"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "would recommend (9-10),"
+msgstr "akan merekomendasikan (9-10),"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "yes ·"
+msgstr "ya ·"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice
+msgid "· closed"
+msgstr "· ditutup"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0 model_terms:ir.ui.view,arch_db:pb_voice.portal_my_team_voice model_terms:ir.ui.view,arch_db:pb_voice.portal_my_voice
+msgid "· due"
+msgstr "· tenggat"
+
+#. module: pb_voice
+#. odoo-javascript
+#: code:addons/pb_voice/static/src/xml/voice_board.xml:0
+msgid "· sent out"
+msgstr "· dikirim"

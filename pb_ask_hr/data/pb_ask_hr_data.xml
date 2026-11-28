@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ASK-00042. Shared by default (company False); a company that wants
+         its own run of numbers adds a company-specific copy and
+         `with_company(...).next_by_code` picks it first. -->
+    <record id="seq_pb_ask_hr_ticket" model="ir.sequence">
+        <field name="name">Ask HR question</field>
+        <field name="code">pb.ask.hr.ticket</field>
+        <field name="prefix">ASK-</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

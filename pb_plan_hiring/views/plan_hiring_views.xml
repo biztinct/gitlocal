@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The request names the plan it came from (the other half of the link). -->
+    <record id="view_pb_hiring_requisition_form_plan" model="ir.ui.view">
+        <field name="name">pb.hiring.requisition.form.pb_plan_hiring</field>
+        <field name="model">pb.hiring.requisition</field>
+        <field name="inherit_id" ref="pb_hiring.view_pb_hiring_requisition_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='department_id']" position="after">
+                <field name="pb_plan_id" invisible="not pb_plan_id"
+                       groups="pb_decision_room.group_decision_user,pb_decision_room.group_decision_manager"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The Compliance hub. No menu and no `pb.sidebar.item` on purpose: the
+         rail cutover is Cycle 5, and until then the four rail items keep
+         working exactly as they do today. This cycle reaches the hub through
+         ONE door, the "Compliance Hub (preview)" entry in the global command
+         palette.
+
+         Test URL: /odoo/action-pb_compliance_hub
+                   (/bizapp/action-pb_compliance_hub on the live server)
+
+         Deep-linking, per pb_hub/static/src/js/hub_nav.js:
+             openHub(actionService, { tag: "pb_compliance_hub", lens: "audit" })
+         which writes `pb_lens` into the action context.
+
+         Declared as a RECORD rather than reached by bare tag, so anything that
+         returns through a breadcrumb sees a named action instead of "Unnamed"
+         (W98). -->
+    <record id="action_pb_compliance_hub" model="ir.actions.client">
+        <field name="name">Compliance Hub</field>
+        <field name="tag">pb_compliance_hub</field>
+    </record>
+</odoo>

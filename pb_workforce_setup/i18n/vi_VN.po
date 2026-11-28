@@ -1,0 +1,5045 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_workforce_setup
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-24 14:57+0000\n"
+"PO-Revision-Date: 2026-11-24 14:57+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Language: vi_VN\n"
+"Plural-Forms: \n"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "% extra."
+msgstr "%."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "%(a)s to %(b)s min"
+msgstr "%(a)s đến %(b)s phút"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "%(country)s public holidays for %(year)s"
+msgstr "Ngày nghỉ lễ của %(country)s năm %(year)s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
+msgid "%(day)s: %(shift)s"
+msgstr "%(day)s: %(shift)s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "%(done)s of %(total)s steps done"
+msgstr "Đã xong %(done)s / %(total)s bước"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "%(done)s of %(total)s weeks published"
+msgstr "Đã công bố %(done)s / %(total)s tuần"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "%(from)s to %(to)s"
+msgstr "%(from)s đến %(to)s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "%(h)s counts as overtime at %(rate)s, once a manager approves it."
+msgstr "%(h)s được tính là tăng ca với mức %(rate)s, sau khi quản lý duyệt."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "%(h)s of it is night work, with %(pct)s extra."
+msgstr "Trong đó %(h)s là làm đêm, được cộng thêm %(pct)s."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(n)s already have it."
+msgstr "%(n)s người đã có."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(n)s already work this week, so nothing changes for them."
+msgstr "%(n)s người đã làm tuần này nên không có gì thay đổi với họ."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "%(n)s days off in %(year)s"
+msgstr "%(n)s ngày nghỉ trong năm %(year)s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(n)s keep the week they already have."
+msgstr "%(n)s người giữ tuần làm việc hiện có."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid ""
+"%(n)s more shifts published for %(p)s people. The roster now runs to %(to)s."
+msgstr "Đã công bố thêm %(n)s ca cho %(p)s người. Lịch làm việc giờ kéo dài đến %(to)s."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(n)s of %(total)s have a working week"
+msgstr "%(n)s / %(total)s người đã có tuần làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "%(n)s of %(total)s people have no working week yet and are left out."
+msgstr "%(n)s / %(total)s người chưa có tuần làm việc nên bị bỏ qua."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(n)s of %(total)s still need a working week"
+msgstr "%(n)s / %(total)s người vẫn cần tuần làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "%(n)s one-off shifts added for %(p)s people."
+msgstr "Đã thêm %(n)s ca làm một lần cho %(p)s người."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(n)s one-off shifts will be added."
+msgstr "Sẽ thêm %(n)s ca làm một lần."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(n)s people are also linked to your late rules."
+msgstr "%(n)s người cũng được gắn với quy tắc đi muộn của bạn."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(n)s people change to the %(rule)s late rule."
+msgstr "%(n)s người chuyển sang quy tắc đi muộn %(rule)s."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(n)s people move to %(week)s from %(date)s."
+msgstr "%(n)s người chuyển sang %(week)s từ %(date)s."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "%(n)s people now work “%(week)s”."
+msgstr "%(n)s người giờ làm “%(week)s”."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "%(n)s people set to the %(rule)s late rule."
+msgstr "Đã đặt quy tắc đi muộn %(rule)s cho %(n)s người."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(n)s replace shifts that were planned but not published yet."
+msgstr "%(n)s ca thay cho các ca đã lên kế hoạch nhưng chưa công bố."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid ""
+"%(n)s shifts are on the roster for %(p)s people, from %(from)s to %(to)s."
+msgstr "Lịch làm việc có %(n)s ca cho %(p)s người, từ %(from)s đến %(to)s."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "%(n)s working days in %(year)s"
+msgstr "%(n)s ngày làm việc trong năm %(year)s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid ""
+"%(name)s clocks in at %(in)s and out at %(out)s on %(day)s (%(shift)s)."
+msgstr "%(name)s chấm công vào lúc %(in)s và chấm công ra lúc %(out)s vào %(day)s (%(shift)s)."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "%(name)s on %(day)s is already on the calendar. Nothing was added."
+msgstr "%(name)s vào %(day)s đã có trên lịch. Không thêm gì."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "%(name)s, %(day)s: %(why)s."
+msgstr "%(name)s, %(day)s: %(why)s."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "%(shift)s, %(start)s to %(end)s"
+msgstr "%(shift)s, %(start)s đến %(end)s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_util.js:0
+msgid "%(start)s to %(end)s"
+msgstr "%(start)s đến %(end)s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(week)s ends on %(date)s for %(n)s of them."
+msgstr "%(week)s kết thúc vào %(date)s đối với %(n)s người trong số họ."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(week)s ends on %(date)s for 1 of them."
+msgstr "%(week)s kết thúc vào %(date)s đối với 1 người trong số họ."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(week)s · week %(n)s"
+msgstr "%(week)s · tuần %(n)s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "%(weeks)s · %(people)s people · %(shifts)s shifts."
+msgstr "%(weeks)s · %(people)s người · %(shifts)s ca."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%(why)s (%(n)s)"
+msgstr "%(why)s (%(n)s)"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "%s (copy)"
+msgstr "%s (bản sao)"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
+msgid "%s a week"
+msgstr "%s một tuần"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%s already have a different week"
+msgstr "%s người đã có tuần làm việc khác"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "%s already planned"
+msgstr "%s ca đã lên kế hoạch sẵn"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "%s attendance rules"
+msgstr "%s quy tắc chấm công"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "%s clock-ins received today"
+msgstr "Hôm nay đã nhận %s lượt chấm công vào"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "%s clocks sending clock-ins"
+msgstr "%s máy chấm công đang gửi lượt chấm công"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "%s clocks still need setting up. You can go live without them."
+msgstr "%s máy chấm công còn cần cài đặt. Bạn vẫn có thể bắt đầu áp dụng mà chưa có chúng."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "%s clocks waiting for IT"
+msgstr "%s máy chấm công đang chờ bộ phận IT"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%s days"
+msgstr "%s ngày"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%s days are left out:"
+msgstr "%s ngày bị bỏ qua:"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid ""
+"%s days are left out: someone is on leave, on a public holiday or already "
+"has a shift then."
+msgstr "%s ngày bị bỏ qua: có người đang nghỉ phép, đang nghỉ lễ hoặc đã có ca vào hôm đó."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "%s days off put back."
+msgstr "Đã khôi phục %s ngày nghỉ."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "%s days off removed."
+msgstr "Đã bỏ %s ngày nghỉ."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_util.js:0
+msgid "%s h"
+msgstr "%s giờ"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "%s h off"
+msgstr "Trừ %s giờ"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "%s has no late rule yet. Pick Worker or Manager for them in step 3."
+msgstr "%s chưa có quy tắc đi muộn. Hãy chọn Công nhân hoặc Quản lý cho họ ở bước 3."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "%s has no working week yet."
+msgstr "%s chưa có tuần làm việc."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "%s has no working week yet. Give them one in step 3."
+msgstr "%s chưa có tuần làm việc. Hãy giao cho họ ở bước 3."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "%s is a day off again."
+msgstr "%s lại là ngày nghỉ."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "%s is a working day again."
+msgstr "%s lại là ngày làm việc."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "%s is already a day off."
+msgstr "%s đã là ngày nghỉ."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "%s is now a company day off."
+msgstr "%s giờ là ngày nghỉ của công ty."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "%s is now a public holiday."
+msgstr "%s giờ là ngày nghỉ lễ."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "%s min"
+msgstr "%s phút"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "%s min after the shift ends"
+msgstr "%s phút sau khi ca kết thúc"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "%s min before the shift ends"
+msgstr "%s phút trước khi ca kết thúc"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "%s min break"
+msgstr "Nghỉ %s phút"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "%s min early (not counted)"
+msgstr "Sớm %s phút (không tính)"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "%s min late"
+msgstr "Đi muộn %s phút"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "%s min or more"
+msgstr "Từ %s phút trở lên"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%s more below. Keep scrolling."
+msgstr "Còn %s mục bên dưới. Hãy cuộn tiếp."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "%s new from the working weeks"
+msgstr "%s ca mới từ các tuần làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/days.py:0
+msgid "%s now normal day"
+msgstr "%s ca chuyển thành ngày thường"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/days.py:0
+msgid "%s now public holiday"
+msgstr "%s ca chuyển thành ngày nghỉ lễ"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/days.py:0
+msgid "%s now rest day"
+msgstr "%s ca chuyển thành ngày nghỉ"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "%s of the people you ticked are no longer here and are left out."
+msgstr "%s người bạn đã chọn không còn ở đây nên bị bỏ qua."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "%s one-off shifts added for 1 person."
+msgstr "Đã thêm %s ca làm một lần cho 1 người."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "%s paid"
+msgstr "%s được trả lương"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
+msgid "%s people"
+msgstr "%s người"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid ""
+"%s people are paid by them. To change them, make a new version: these stay "
+"in use until you confirm it."
+msgstr "%s người đang được tính lương theo các quy tắc này. Để thay đổi, hãy tạo phiên bản mới: các quy tắc này vẫn được dùng cho đến khi bạn xác nhận."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "%s people have no clock number"
+msgstr "%s người chưa có mã chấm công"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "%s people have no login and no work email, so tell them in person."
+msgstr "%s người không có tài khoản đăng nhập và email công việc, vì vậy hãy báo trực tiếp cho họ."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "%s people have no working week"
+msgstr "%s người chưa có tuần làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "%s people have the Manager late rule."
+msgstr "%s người theo quy tắc đi muộn Quản lý."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "%s people have the Worker late rule."
+msgstr "%s người theo quy tắc đi muộn Công nhân."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "%s people see their shifts in My Payobook straight away."
+msgstr "%s người thấy ca làm việc của mình trong My Payobook ngay lập tức."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%s people ticked"
+msgstr "Đã chọn %s người"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "%s people work this week. Move them to another week first."
+msgstr "%s người làm tuần này. Hãy chuyển họ sang tuần khác trước."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "%s planned shifts are back to their usual pay."
+msgstr "%s ca đã lên kế hoạch trở lại mức lương thường."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "%s planned shifts are now paid as public holiday."
+msgstr "%s ca đã lên kế hoạch giờ được trả lương như ngày nghỉ lễ."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "%s public holidays added."
+msgstr "Đã thêm %s ngày nghỉ lễ."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "%s published before"
+msgstr "%s ca đã công bố trước đó"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "%s records are waiting on the PC to be sent."
+msgstr "%s bản ghi đang chờ máy tính gửi đi."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "%s shift emails were sent."
+msgstr "Đã gửi %s email về ca làm việc."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "%s shifts"
+msgstr "%s ca"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "%s shifts ready"
+msgstr "%s ca đã sẵn sàng"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "%s things above still need you before you can publish."
+msgstr "Còn %s việc ở trên cần bạn xử lý trước khi công bố."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%s ticked."
+msgstr "Đã chọn %s."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "%s to finish later"
+msgstr "%s máy để hoàn tất sau"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "%s weeks"
+msgstr "%s tuần"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "%s working weeks"
+msgstr "%s tuần làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "%s working weeks ready"
+msgstr "%s tuần làm việc đã sẵn sàng"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
+msgid "%s: day off"
+msgstr "%s: ngày nghỉ"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "%s: when overtime starts"
+msgstr "%s: giờ bắt đầu tăng ca"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "%s: when the unpaid break starts"
+msgstr "%s: giờ bắt đầu nghỉ không lương"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "+%s one-off"
+msgstr "+%s ca làm một lần"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 already has a different week"
+msgstr "1 người đã có tuần làm việc khác"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "1 clock sending clock-ins"
+msgstr "1 máy chấm công đang gửi lượt chấm công"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "1 clock still needs setting up. You can go live without it."
+msgstr "1 máy chấm công còn cần cài đặt. Bạn vẫn có thể bắt đầu áp dụng mà chưa có nó."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "1 clock waiting for IT"
+msgstr "1 máy chấm công đang chờ bộ phận IT"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "1 clock-in received today"
+msgstr "Hôm nay đã nhận 1 lượt chấm công vào"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 day"
+msgstr "1 ngày"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 day is left out:"
+msgstr "1 ngày bị bỏ qua:"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid ""
+"1 day is left out: someone is on leave, on a public holiday or already has a"
+" shift then."
+msgstr "1 ngày bị bỏ qua: có người đang nghỉ phép, đang nghỉ lễ hoặc đã có ca vào hôm đó."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "1 day off in %s"
+msgstr "1 ngày nghỉ trong năm %s"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "1 of the people you ticked is no longer here and is left out."
+msgstr "1 người bạn đã chọn không còn ở đây nên bị bỏ qua."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "1 one-off shift added."
+msgstr "Đã thêm 1 ca làm một lần."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 one-off shift will be added."
+msgstr "Sẽ thêm 1 ca làm một lần."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
+msgid "1 person"
+msgstr "1 người"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 person already has it."
+msgstr "1 người đã có."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 person already works this week, so nothing changes for them."
+msgstr "1 người đã làm tuần này nên không có gì thay đổi với họ."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 person changes to the %(rule)s late rule."
+msgstr "1 người chuyển sang quy tắc đi muộn %(rule)s."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "1 person has no clock number"
+msgstr "1 người chưa có mã chấm công"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "1 person has no login and no work email, so tell them in person."
+msgstr "1 người không có tài khoản đăng nhập và email công việc, vì vậy hãy báo trực tiếp cho họ."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "1 person has no working week"
+msgstr "1 người chưa có tuần làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "1 person has no working week yet and is left out."
+msgstr "1 người chưa có tuần làm việc nên bị bỏ qua."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "1 person has the Manager late rule."
+msgstr "1 người theo quy tắc đi muộn Quản lý."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "1 person has the Worker late rule."
+msgstr "1 người theo quy tắc đi muộn Công nhân."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 person is also linked to your late rules."
+msgstr "1 người cũng được gắn với quy tắc đi muộn của bạn."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid ""
+"1 person is paid by them. To change them, make a new version: these stay in "
+"use until you confirm it."
+msgstr "1 người đang được tính lương theo các quy tắc này. Để thay đổi, hãy tạo phiên bản mới: các quy tắc này vẫn được dùng cho đến khi bạn xác nhận."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 person keeps the week they already have."
+msgstr "1 người giữ tuần làm việc hiện có."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 person moves to %(week)s from %(date)s."
+msgstr "1 người chuyển sang %(week)s từ %(date)s."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "1 person now works “%s”."
+msgstr "1 người giờ làm “%s”."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "1 person sees their shifts in My Payobook straight away."
+msgstr "1 người thấy ca làm việc của mình trong My Payobook ngay lập tức."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "1 person set to the %s late rule."
+msgstr "Đã đặt quy tắc đi muộn %s cho 1 người."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 person ticked"
+msgstr "Đã chọn 1 người"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "1 person works this week. Move them to another week first."
+msgstr "1 người làm tuần này. Hãy chuyển họ sang tuần khác trước."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "1 planned shift is back to its usual pay."
+msgstr "1 ca đã lên kế hoạch trở lại mức lương thường."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "1 planned shift is now paid as public holiday."
+msgstr "1 ca đã lên kế hoạch giờ được trả lương như ngày nghỉ lễ."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "1 public holiday added."
+msgstr "Đã thêm 1 ngày nghỉ lễ."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "1 record is waiting on the PC to be sent."
+msgstr "1 bản ghi đang chờ máy tính gửi đi."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "1 replaces a shift that was planned but not published yet."
+msgstr "1 ca thay cho một ca đã lên kế hoạch nhưng chưa công bố."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "1 shift"
+msgstr "1 ca"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "1 shift email was sent."
+msgstr "Đã gửi 1 email về ca làm việc."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "1 shift ready"
+msgstr "1 ca đã sẵn sàng"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "1 thing above still needs you before you can publish."
+msgstr "Còn 1 việc ở trên cần bạn xử lý trước khi công bố."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "1 to finish later"
+msgstr "1 máy để hoàn tất sau"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "1 week"
+msgstr "1 tuần"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "1 working week ready"
+msgstr "1 tuần làm việc đã sẵn sàng"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "2026 New Year"
+msgstr "Tết Dương lịch 2026"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid ""
+"A clock-in %(n)s min before the shift is outside the %(h)s hours the clock "
+"is read for, so it would not count. Change “Reading the clock” or move the "
+"slider."
+msgstr "Lượt chấm công vào sớm %(n)s phút trước ca nằm ngoài khoảng %(h)s giờ mà máy chấm công được đọc, nên sẽ không được tính. Hãy sửa “Đọc máy chấm công” hoặc kéo thanh trượt."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid ""
+"A clock-out %(n)s min after the shift is outside the %(h)s hours the clock "
+"is read for, so it would not count. Change “Reading the clock” or move the "
+"slider."
+msgstr "Lượt chấm công ra muộn %(n)s phút sau ca nằm ngoài khoảng %(h)s giờ mà máy chấm công được đọc, nên sẽ không được tính. Hãy sửa “Đọc máy chấm công” hoặc kéo thanh trượt."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "A late line is not confirmed yet. Press Confirm these rules."
+msgstr "Có một dòng đi muộn chưa được xác nhận. Hãy bấm Xác nhận các quy tắc này."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "A late line starts at 1 minute or more."
+msgstr "Một dòng đi muộn bắt đầu từ 1 phút trở lên."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "A new version is not confirmed yet. The rules in use stay as they are."
+msgstr "Phiên bản mới chưa được xác nhận. Các quy tắc đang dùng vẫn giữ nguyên."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "A setup link was made. It works until %s."
+msgstr "Đã tạo đường dẫn cài đặt. Đường dẫn dùng được đến %s."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "A shift in this working week is not available in this company."
+msgstr "Có một ca trong tuần làm việc này không dùng được ở công ty này."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "A shift needs a start and an end that differ."
+msgstr "Ca làm việc cần có giờ bắt đầu và giờ kết thúc khác nhau."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "A spreadsheet export from any clock, on the Time screen."
+msgstr "Tệp bảng tính xuất từ bất kỳ máy chấm công nào, trên màn hình Thời gian."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid ""
+"A team in this working week starts in a later week. Move that team first in "
+"the rotation editor."
+msgstr "Có một nhóm trong tuần làm việc này bắt đầu ở tuần sau đó. Hãy chuyển nhóm đó trước trong trình sửa vòng xoay ca."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"A working week is made of shifts. Add one in step 1, then come back here to "
+"paint the week."
+msgstr "Tuần làm việc được tạo từ các ca. Hãy thêm một ca ở bước 1, rồi quay lại đây để tô tuần."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "A working week repeats over 1 to %s weeks."
+msgstr "Một tuần làm việc lặp lại sau 1 đến %s tuần."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Add %s shifts"
+msgstr "Thêm %s ca"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Add 1 shift"
+msgstr "Thêm 1 ca"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Add a clock"
+msgstr "Thêm máy chấm công"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Add a line"
+msgstr "Thêm một dòng"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Add a rotation week"
+msgstr "Thêm một tuần vòng xoay"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Add a shift first"
+msgstr "Hãy thêm ca trước"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Add a shift first (step 1)."
+msgstr "Hãy thêm ca trước (bước 1)."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Add a shift in step 1 first."
+msgstr "Hãy thêm một ca ở bước 1 trước."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Add a shift:"
+msgstr "Thêm một ca:"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Add people under People first. They appear here straight away, ready to be "
+"given a working week."
+msgstr "Hãy thêm người ở mục Nhân viên trước. Họ sẽ xuất hiện ở đây ngay, sẵn sàng để được giao tuần làm việc."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Add the clock"
+msgstr "Thêm máy chấm công"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Add the clocks people use at work, or let them clock in another way below."
+msgstr "Thêm các máy chấm công mọi người dùng ở nơi làm việc, hoặc cho họ chấm công theo cách khác bên dưới."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Add them all"
+msgstr "Thêm tất cả"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "Add your first shift"
+msgstr "Thêm ca làm việc đầu tiên"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Advanced rules screen"
+msgstr "Màn hình quy tắc nâng cao"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Afternoon"
+msgstr "Chiều"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Afternoon 14:00 to 22:00"
+msgstr "Chiều 14:00 đến 22:00"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "All %s have a working week"
+msgstr "Cả %s người đã có tuần làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "All %s people have a working week"
+msgstr "Cả %s người đã có tuần làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "All connected"
+msgstr "Tất cả đã kết nối"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "All of them are already on the calendar."
+msgstr "Tất cả đều đã có trên lịch."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Also on: %s"
+msgstr "Cũng thuộc: %s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Amber"
+msgstr "Hổ phách"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "An attendance manager adds the shifts."
+msgstr "Quản lý chấm công sẽ thêm các ca."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "An attendance manager builds the working weeks."
+msgstr "Quản lý chấm công sẽ tạo các tuần làm việc."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "An attendance manager publishes more weeks."
+msgstr "Quản lý chấm công sẽ công bố thêm tuần."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "An overtime rate is a percentage from 100 to 1000."
+msgstr "Mức tăng ca là phần trăm từ 100 đến 1000."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid ""
+"Another clock at that place reads the time differently. Use another name for"
+" the place."
+msgstr "Một máy chấm công khác ở nơi đó đọc giờ theo cách khác. Hãy dùng tên khác cho nơi này."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Apply to %s"
+msgstr "Áp dụng cho %s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Arriving late"
+msgstr "Đi muộn"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Ascension Day of Jesus Christ"
+msgstr "Lễ Thăng Thiên của Chúa Giê-su"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Ask a manager to switch clock-ins on."
+msgstr "Hãy nhờ quản lý bật gửi lượt chấm công."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "Attendance access is required."
+msgstr "Cần có quyền chấm công."
+
+#. module: pb_workforce_setup
+#: model:ir.model,name:pb_workforce_setup.model_pb_attendance_policy
+msgid "Attendance calculation policy"
+msgstr "Chính sách tính chấm công"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Between"
+msgstr "Đi muộn từ"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Blue"
+msgstr "Xanh dương"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "Build a working week"
+msgstr "Tạo tuần làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Build a working week first"
+msgstr "Hãy tạo tuần làm việc trước"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Build a working week first (step 2)."
+msgstr "Hãy tạo tuần làm việc trước (bước 2)."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Build the week most people work. You can add rotations later."
+msgstr "Hãy tạo tuần mà phần lớn mọi người làm. Bạn có thể thêm vòng xoay ca sau."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__capped
+msgid "Capped"
+msgstr "Có giới hạn"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Carry on"
+msgstr "Tiếp tục"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Change"
+msgstr "Thay đổi"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Change the people you ticked"
+msgstr "Thay đổi những người bạn đã chọn"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Change the rules"
+msgstr "Thay đổi quy tắc"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "Changes not confirmed yet"
+msgstr "Thay đổi chưa được xác nhận"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "Check and confirm"
+msgstr "Kiểm tra và xác nhận"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Check and go live"
+msgstr "Kiểm tra và bắt đầu áp dụng"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/days.py:0
+msgid "Checked %(n)s shifts: %(parts)s."
+msgstr "Đã kiểm tra %(n)s ca: %(parts)s."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/days.py:0
+msgid "Checked %s shifts. All of them were already right."
+msgstr "Đã kiểm tra %s ca. Tất cả đều đã đúng."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Chinese New Year 2576 Kongzili"
+msgstr "Tết Nguyên đán 2576 Kongzili"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Choose 1 to %s weeks."
+msgstr "Chọn từ 1 đến %s tuần."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Choose the company's normal working calendar first."
+msgstr "Hãy chọn lịch giờ làm việc thông thường của công ty trước."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Christmas"
+msgstr "Lễ Giáng sinh"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Christmas Boxing Day"
+msgstr "Ngày sau Giáng sinh"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Christmas Day"
+msgstr "Ngày Giáng sinh"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Classic menu"
+msgstr "Menu cổ điển"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Clear"
+msgstr "Xóa"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Clear ticks"
+msgstr "Bỏ chọn"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Clear ticks (Esc)"
+msgstr "Bỏ chọn (Esc)"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Clock details"
+msgstr "Chi tiết máy chấm công"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Clock read by a PC"
+msgstr "Máy chấm công được máy tính đọc"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Clock that calls in by itself"
+msgstr "Máy chấm công tự gửi dữ liệu"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid ""
+"Clock-ins and clock-outs are counted up to 6 hours before or after a shift."
+msgstr "Lượt chấm vào và chấm ra được tính trong vòng tối đa 6 giờ trước hoặc sau ca."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Clock-ins are also switched off for this clock."
+msgstr "Máy này cũng đang tắt gửi lượt chấm công."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "Clock-ins are switched on for “%s”."
+msgstr "Đã bật gửi lượt chấm công cho “%s”."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Clock-ins from this clock will start arriving in attendance, including the "
+"ones it has already sent, and will be turned into paid hours by the rules in"
+" step 4."
+msgstr "Lượt chấm công từ máy này sẽ bắt đầu vào bảng chấm công, kể cả những lượt máy đã gửi trước đó, và sẽ được tính thành giờ có lương theo quy tắc ở bước 4."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Clock-ins now turn into paid hours using your rules."
+msgstr "Lượt chấm công vào giờ được tính thành giờ có lương theo quy tắc của bạn."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "Clock-ins switched off"
+msgstr "Đã tắt gửi lượt chấm công"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Clocks are confirmed. A clock that is still being set up can be finished any"
+" time."
+msgstr "Máy chấm công đã được xác nhận. Máy nào còn đang cài đặt có thể hoàn tất bất cứ lúc nào."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Clocks are fine. Confirm"
+msgstr "Máy chấm công đã ổn. Xác nhận"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "Clocks confirmed."
+msgstr "Đã xác nhận máy chấm công."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "Clocks confirmed. %s clocks are left to finish later."
+msgstr "Đã xác nhận máy chấm công. Còn %s máy để hoàn tất sau."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "Clocks confirmed. 1 clock is left to finish later."
+msgstr "Đã xác nhận máy chấm công. Còn 1 máy để hoàn tất sau."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Clocks in"
+msgstr "Chấm vào"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Clocks out"
+msgstr "Chấm ra"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Close (Esc)"
+msgstr "Đóng (Esc)"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "Collective leave"
+msgstr "Nghỉ tập thể"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Colour"
+msgstr "Màu"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Coming in %(n)s early is not paid: the day starts at %(start)s."
+msgstr "Đến sớm %(n)s không được trả lương: ngày làm bắt đầu lúc %(start)s."
+
+#. module: pb_workforce_setup
+#: model:ir.model,name:pb_workforce_setup.model_res_company
+msgid "Companies"
+msgstr "Công ty"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__company_id
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_undo__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Company day off"
+msgstr "Ngày nghỉ của công ty"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Confirm the late and overtime rules first (step 4)."
+msgstr "Hãy xác nhận quy tắc đi muộn và tăng ca trước (bước 4)."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Confirm the new version"
+msgstr "Xác nhận phiên bản mới"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Confirmed"
+msgstr "Đã xác nhận"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "Confirmed without a clock"
+msgstr "Đã xác nhận, không có máy chấm công"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Connected, but clock-ins are switched off"
+msgstr "Đã kết nối, nhưng đang tắt gửi lượt chấm công"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Continue, finish %s clocks later"
+msgstr "Tiếp tục, hoàn tất %s máy chấm công sau"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Continue, finish 1 clock later"
+msgstr "Tiếp tục, hoàn tất 1 máy chấm công sau"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Copy"
+msgstr "Sao chép"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Copy setup link for IT"
+msgstr "Sao chép đường dẫn cài đặt cho IT"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Copy the selected link for your IT person. It works for 5 days."
+msgstr "Sao chép đường dẫn đã chọn cho người phụ trách IT của bạn. Đường dẫn dùng được trong 5 ngày."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Copy to change"
+msgstr "Sao chép để thay đổi"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Count a clock-in up to"
+msgstr "Tính lượt chấm công vào sớm tối đa"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__create_uid
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_undo__create_uid
+msgid "Created by"
+msgstr "Người tạo"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__create_date
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_undo__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Day off"
+msgstr "Ngày nghỉ"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_hr_shift_planning__pb_day_kind_manual
+msgid "Day type set by hand"
+msgstr "Loại ngày do người dùng tự đặt"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Days off are kept on that calendar. Until there is one, the year below is "
+"for looking only."
+msgstr "Ngày nghỉ được lưu trên lịch đó. Khi chưa có lịch, năm bên dưới chỉ để xem."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "Days off in %s"
+msgstr "Ngày nghỉ năm %s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Days off this year. Arrow keys move, Enter adds or removes a company day "
+"off."
+msgstr "Ngày nghỉ năm nay. Phím mũi tên để di chuyển, Enter để thêm hoặc bỏ ngày nghỉ của công ty."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Decides which lateness lines from step 4 apply to them."
+msgstr "Quyết định những dòng đi muộn nào ở bước 4 áp dụng cho họ."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Discard changes"
+msgstr "Bỏ các thay đổi"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_hr_shift_planning__display_name
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_attendance_policy__display_name
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup__display_name
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__display_name
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_undo__display_name
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_res_company__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__done
+msgid "Done"
+msgstr "Xong"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Drag across the days to paint several at once. Arrow keys move between days,"
+" and Enter or Space paints the one you are on. Changes save by themselves."
+msgstr "Kéo qua các ngày để tô nhiều ngày cùng lúc. Phím mũi tên để di chuyển giữa các ngày, Enter hoặc Space để tô ngày đang chọn. Thay đổi được tự động lưu."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Each late line must end at or after the minute it starts."
+msgstr "Mỗi dòng đi muộn phải kết thúc bằng hoặc sau phút bắt đầu."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Each rule is a sentence. Change the highlighted numbers and watch the "
+"example on the right change with you."
+msgstr "Mỗi quy tắc là một câu. Hãy sửa các con số được tô sáng và xem ví dụ bên phải thay đổi theo."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Each shift has its own time when overtime starts. Work after it is overtime."
+msgstr "Mỗi ca có giờ bắt đầu tăng ca riêng. Làm sau giờ đó là tăng ca."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "Each week has seven days."
+msgstr "Mỗi tuần có bảy ngày."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Edit"
+msgstr "Sửa"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Eid al-Adha 1446 Hijri"
+msgstr "Lễ Eid al-Adha 1446 Hijri"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Eid al-Fitr 1447 Hijri"
+msgstr "Lễ Eid al-Fitr 1447 Hijri"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__emailed
+msgid "Emailed"
+msgstr "Đã gửi email"
+
+#. module: pb_workforce_setup
+#: model:ir.model,name:pb_workforce_setup.model_hr_employee
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Ends"
+msgstr "Kết thúc"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "Every late line needs to be confirmed. Press Confirm again."
+msgstr "Mọi dòng đi muộn đều cần được xác nhận. Hãy bấm Xác nhận lần nữa."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
+msgid "Every week"
+msgstr "Mỗi tuần"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Everyone has a working week"
+msgstr "Mọi người đều đã có tuần làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid ""
+"Everything is ready. People see their shifts in My Payobook straight away."
+msgstr "Mọi thứ đã sẵn sàng. Mọi người thấy ca làm việc của mình trong My Payobook ngay lập tức."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Everything up to %s was already published. Nothing new to publish."
+msgstr "Mọi thứ đến %s đã được công bố. Không có gì mới để công bố."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Factory 3"
+msgstr "Nhà máy 3"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__failed_index
+msgid "Failed Index"
+msgstr "Vị trí lỗi"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__failed_text
+msgid "Failed Text"
+msgstr "Nội dung lỗi"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Fill Mon to Fri"
+msgstr "Điền Thứ 2 đến Thứ 6"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Fill Mon to Sat"
+msgstr "Điền Thứ 2 đến Thứ 7"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Finish typing the number in the box marked in red."
+msgstr "Hãy nhập xong con số trong ô viền đỏ."
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__finished
+msgid "Finished"
+msgstr "Đã xong"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Finishing…"
+msgstr "Đang hoàn tất…"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__first
+msgid "First"
+msgstr "Ngày đầu"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "First full week of the roster"
+msgstr "Tuần đầy đủ đầu tiên của lịch làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Fix the line marked in red first, or it cannot be saved."
+msgstr "Hãy sửa dòng viền đỏ trước, nếu không sẽ không lưu được."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Fix this"
+msgstr "Sửa ngay"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid ""
+"For cover, a rush order or a training day. Their normal working week stays "
+"as it is."
+msgstr "Dùng khi làm thay, có đơn hàng gấp hoặc ngày đào tạo. Tuần làm việc thông thường của họ vẫn giữ nguyên."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_util.js:0
+msgid "Fri"
+msgstr "Thứ 6"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "From"
+msgstr "Từ"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "From %(from)s to %(to)s."
+msgstr "Từ %(from)s đến %(to)s."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Gate A fingerprint reader"
+msgstr "Máy vân tay cổng A"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Give %s people a working week"
+msgstr "Giao tuần làm việc cho %s người"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Give 1 person a working week"
+msgstr "Giao tuần làm việc cho 1 người"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Give a working week"
+msgstr "Giao tuần làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Give people a working week first (step 3)."
+msgstr "Hãy giao tuần làm việc cho mọi người trước (bước 3)."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "Give the clock a name, like the place it hangs."
+msgstr "Hãy đặt tên cho máy chấm công, ví dụ theo nơi đặt máy."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "Give the shift a name."
+msgstr "Hãy đặt tên cho ca làm việc."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "Give the working week a name."
+msgstr "Hãy đặt tên cho tuần làm việc."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Give them one in step 3 and their week and pay example appear here."
+msgstr "Hãy giao cho họ một tuần ở bước 3, tuần làm việc và ví dụ tính lương của họ sẽ hiện ở đây."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "Go to %s"
+msgstr "Đến %s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Go to late and overtime rules"
+msgstr "Đến quy tắc đi muộn và tăng ca"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Go to shifts"
+msgstr "Đến ca làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Go to who works what"
+msgstr "Đến ai làm ca nào"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Go to working weeks"
+msgstr "Đến tuần làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Good Friday"
+msgstr "Thứ Sáu Tuần Thánh"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Green"
+msgstr "Xanh lá"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Grouped tabs"
+msgstr "Thẻ theo nhóm"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Hari Suci Nyepi"
+msgstr "Ngày Hari Suci Nyepi"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Holidays"
+msgstr "Ngày nghỉ lễ"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_res_company__pb_wfs_holidays_year
+msgid "Holidays confirmed up to year"
+msgstr "Đã xác nhận ngày nghỉ lễ đến năm"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Holidays for %(year)s confirmed: %(n)s days off."
+msgstr "Đã xác nhận ngày nghỉ năm %(year)s: %(n)s ngày nghỉ."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Holidays for %(year)s confirmed: 1 day off."
+msgstr "Đã xác nhận ngày nghỉ năm %(year)s: 1 ngày nghỉ."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "Holidays for %s are confirmed."
+msgstr "Ngày nghỉ năm %s đã được xác nhận."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Hours after the shift"
+msgstr "Số giờ sau ca"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Hours before the shift"
+msgstr "Số giờ trước ca"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Hours between"
+msgstr "Giờ làm từ"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Hours taken off are a number from 0 to 24, in quarter hours."
+msgstr "Số giờ bị trừ là số từ 0 đến 24, theo bước 15 phút."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "Hours taken off are a number from 0 to 24."
+msgstr "Số giờ bị trừ là số từ 0 đến 24."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "How do people clock in?"
+msgstr "Mọi người chấm công bằng cách nào?"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "How many weeks"
+msgstr "Bao nhiêu tuần"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Hung Kings Commemoration Day"
+msgstr "Giỗ Tổ Hùng Vương"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Hung Kings Day"
+msgstr "Giỗ Tổ Hùng Vương"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_hr_employee__id
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_hr_shift_planning__id
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_attendance_policy__id
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup__id
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__id
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_undo__id
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_res_company__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "In the week of %(date)s they work week %(k)s of the rotation."
+msgstr "Trong tuần %(date)s, họ làm tuần %(k)s của vòng xoay ca."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Independence Day of Indonesia"
+msgstr "Ngày Độc lập Indonesia"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Independence day"
+msgstr "Quốc khánh"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Indigo"
+msgstr "Chàm"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "International Labor Day"
+msgstr "Quốc tế Lao động"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Islamic New Year 1 Muharram 1447 Hijri"
+msgstr "Tết Hồi giáo 1 Muharram 1447 Hijri"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Isra Mi‘raj of the Prophet Muhammad SAW."
+msgstr "Lễ Isra Mi‘raj của Nhà tiên tri Muhammad SAW."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "It can still be changed in the rotation editor."
+msgstr "Vẫn có thể thay đổi trong trình sửa vòng xoay ca."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Its clock-ins are kept, and your late and overtime rules read them once "
+"confirmed. They only appear in attendance after clock-ins are switched on."
+msgstr "Lượt chấm công của máy này vẫn được lưu, và quy tắc đi muộn và tăng ca sẽ đọc chúng sau khi được xác nhận. Chúng chỉ hiện trong bảng chấm công sau khi bật gửi lượt chấm công."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Its lateness lines are set in step 4."
+msgstr "Các dòng đi muộn được đặt ở bước 4."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Keep editing"
+msgstr "Tiếp tục sửa"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Keep it"
+msgstr "Giữ lại"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Keep the old one"
+msgstr "Giữ bản cũ"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Keep theirs"
+msgstr "Giữ của họ"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_undo__kind
+msgid "Kind"
+msgstr "Loại"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Labour Day"
+msgstr "Quốc tế Lao động"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__last
+msgid "Last"
+msgstr "Ngày cuối"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__write_uid
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_undo__write_uid
+msgid "Last Updated by"
+msgstr "Người cập nhật cuối"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__write_date
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_undo__write_date
+msgid "Last Updated on"
+msgstr "Cập nhật lần cuối"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Last heard from %s"
+msgstr "Liên lạc lần cuối %s"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Last step"
+msgstr "Bước cuối"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Late and overtime rules"
+msgstr "Quy tắc đi muộn và tăng ca"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+#: model:ir.model.fields.selection,name:pb_workforce_setup.selection__pb_workforce_setup_undo__kind__late
+msgid "Late rule"
+msgstr "Quy tắc đi muộn"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Late rule for %s people"
+msgstr "Quy tắc đi muộn cho %s người"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Late rule for 1 person"
+msgstr "Quy tắc đi muộn cho 1 người"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Line %s: from how many minutes late"
+msgstr "Dòng %s: đi muộn từ bao nhiêu phút"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Line %s: hours taken off"
+msgstr "Dòng %s: số giờ bị trừ"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Line %s: up to how many minutes late"
+msgstr "Dòng %s: đi muộn đến bao nhiêu phút"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Lunar New Year (Tet) Holidays"
+msgstr "Nghỉ Tết Nguyên đán"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__made
+msgid "Made"
+msgstr "Đã tạo"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__made_to
+msgid "Made To"
+msgstr "Đã tạo đến"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__mail_enabled
+msgid "Mail Enabled"
+msgstr "Đã bật email"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Make a new link"
+msgstr "Tạo đường dẫn mới"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Making the roster and marking holiday and rest-day shifts…"
+msgstr "Đang lập lịch làm việc và đánh dấu ca ngày nghỉ lễ và ngày nghỉ…"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Manager"
+msgstr "Quản lý"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Managers"
+msgstr "Quản lý"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Managers have no late lines yet."
+msgstr "Quản lý chưa có dòng đi muộn nào."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Mawlid of Prophet Muhammad SAW."
+msgstr "Lễ Mawlid của Nhà tiên tri Muhammad SAW."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_util.js:0
+msgid "Mon"
+msgstr "Thứ 2"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "More options"
+msgstr "Thêm tùy chọn"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "More than one set of rules"
+msgstr "Nhiều hơn một bộ quy tắc"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid ""
+"More than one set of rules is in use. Check them on the advanced rules "
+"screen."
+msgstr "Đang dùng nhiều hơn một bộ quy tắc. Hãy kiểm tra trên màn hình quy tắc nâng cao."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Morning"
+msgstr "Sáng"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Morning 06:00 to 14:00"
+msgstr "Sáng 06:00 đến 14:00"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Move the sliders, or change a shift or rule. The answer is worked out with "
+"your real rules as you go."
+msgstr "Hãy kéo thanh trượt, hoặc thay đổi ca hay quy tắc. Kết quả được tính ngay theo quy tắc thực tế của bạn."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Name"
+msgstr "Tên"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Name of this working week"
+msgstr "Tên tuần làm việc này"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "National Day"
+msgstr "Quốc khánh"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Needs attention"
+msgstr "Cần chú ý"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "New Year"
+msgstr "Năm mới"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "New Year’s Holiday"
+msgstr "Nghỉ Tết Dương lịch"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "New shift"
+msgstr "Ca mới"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "New working week"
+msgstr "Tuần làm việc mới"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "Next year's holidays are not set yet."
+msgstr "Ngày nghỉ lễ năm sau chưa được đặt."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Next: build the working week"
+msgstr "Tiếp theo: tạo tuần làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Next: check and go live"
+msgstr "Tiếp theo: kiểm tra và bắt đầu áp dụng"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Next: choose who works what"
+msgstr "Tiếp theo: chọn ai làm ca nào"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Next: holidays"
+msgstr "Tiếp theo: ngày nghỉ lễ"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Next: late and overtime rules"
+msgstr "Tiếp theo: quy tắc đi muộn và tăng ca"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Next: time clocks"
+msgstr "Tiếp theo: máy chấm công"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Night"
+msgstr "Đêm"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Night 22:00 to 06:00"
+msgstr "Đêm 22:00 đến 06:00"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Night work"
+msgstr "Làm đêm"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Night work ends"
+msgstr "Giờ kết thúc làm đêm"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "Night work extra"
+msgstr "Phụ cấp làm đêm"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Night work extra is a percentage from 0 to 500."
+msgstr "Phụ cấp làm đêm là phần trăm từ 0 đến 500."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Night work extra, percent"
+msgstr "Phụ cấp làm đêm, phần trăm"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Night work must start and end at different times."
+msgstr "Giờ bắt đầu và kết thúc làm đêm phải khác nhau."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Night work starts"
+msgstr "Giờ bắt đầu làm đêm"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Night work, %s extra"
+msgstr "Làm đêm, cộng thêm %s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "No clock is sending clock-ins yet — paid hours will start once one is."
+msgstr "Chưa có máy chấm công nào gửi lượt chấm công — giờ có lương sẽ bắt đầu khi có một máy gửi."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid ""
+"No clock is sending clock-ins yet. Paid hours start once one is. You can go "
+"live without it."
+msgstr "Chưa có máy chấm công nào gửi lượt chấm công. Giờ có lương sẽ bắt đầu khi có một máy gửi. Bạn vẫn có thể đưa vào sử dụng mà chưa cần máy."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "No clock number"
+msgstr "Chưa có mã chấm công"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "No clock yet"
+msgstr "Chưa có máy chấm công"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "No days off yet this year."
+msgstr "Năm nay chưa có ngày nghỉ nào."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "No emails were sent: email is switched off here."
+msgstr "Không có email nào được gửi: email đang tắt ở đây."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "No late line covers %s minutes late. Add a line in the late rules."
+msgstr "Không có dòng đi muộn nào cho mức đi muộn %s phút. Hãy thêm một dòng trong quy tắc đi muộn."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "No machine at a site?"
+msgstr "Không có máy ở một địa điểm?"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "No people yet"
+msgstr "Chưa có người nào"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid ""
+"No shift is used in a working week yet. Build a working week in step 2."
+msgstr "Chưa có ca nào được dùng trong tuần làm việc. Hãy tạo tuần làm việc ở bước 2."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "No shift yet. Add the shifts you run."
+msgstr "Chưa có ca nào. Hãy thêm các ca bạn đang chạy."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "No shifts yet"
+msgstr "Chưa có ca nào"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "No team"
+msgstr "Không có nhóm"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "No unpaid break"
+msgstr "Không có giờ nghỉ không lương"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "No week"
+msgstr "Không có tuần"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "No working week yet"
+msgstr "Chưa có tuần làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "No working week yet."
+msgstr "Chưa có tuần làm việc."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Nobody has a working week yet."
+msgstr "Chưa ai có tuần làm việc."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Nobody matches. Clear the search or the filter."
+msgstr "Không ai phù hợp. Hãy xóa ô tìm kiếm hoặc bộ lọc."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Nobody matches. Try another name."
+msgstr "Không ai phù hợp. Hãy thử tên khác."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Nobody moves to %(week)s."
+msgstr "Không ai chuyển sang %(week)s."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Nobody works for this company yet"
+msgstr "Công ty này chưa có ai làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Nobody works for this company yet. People appear here once they are added."
+msgstr "Công ty này chưa có ai làm việc. Mọi người sẽ hiện ở đây sau khi được thêm."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Nobody yet"
+msgstr "Chưa có ai"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Normal day"
+msgstr "Ngày thường"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Not confirmed yet."
+msgstr "Chưa xác nhận."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid ""
+"Not confirmed yet. Shifts are only paid by your rules once they are "
+"confirmed."
+msgstr "Chưa xác nhận. Ca làm việc chỉ được trả lương theo quy tắc của bạn sau khi quy tắc được xác nhận."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Not heard from since %s"
+msgstr "Không có tín hiệu từ %s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Not heard from yet"
+msgstr "Chưa có tín hiệu"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Not in a working week"
+msgstr "Không thuộc tuần làm việc nào"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Not now"
+msgstr "Để sau"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Not set"
+msgstr "Chưa đặt"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Not used yet"
+msgstr "Chưa dùng"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Not yet"
+msgstr "Chưa"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Nothing changed."
+msgstr "Không có gì thay đổi."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Nothing is put on the roster yet: that happens when you go live in step 7. "
+"You can undo this straight after."
+msgstr "Chưa có gì được đưa lên lịch làm việc: việc đó diễn ra khi bạn bắt đầu áp dụng ở bước 7. Bạn có thể hoàn tác ngay sau đó."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Nothing reaches the roster or payroll until you press Publish. Fix anything "
+"in amber first."
+msgstr "Không có gì được đưa lên lịch làm việc hay bảng lương cho đến khi bạn bấm Công bố. Hãy sửa các mục màu hổ phách trước."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid ""
+"Nothing received since %s. Ask your IT person to check that the PC beside "
+"the clock is on."
+msgstr "Không nhận được gì từ %s. Hãy nhờ người phụ trách IT kiểm tra máy tính cạnh máy chấm công có đang bật không."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Nothing received yet."
+msgstr "Chưa nhận được gì."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Nothing received yet. Your IT person installs a small program on the PC "
+"beside the clock."
+msgstr "Chưa nhận được gì. Người phụ trách IT của bạn sẽ cài một chương trình nhỏ trên máy tính cạnh máy chấm công."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/days.py:0
+msgid "Nothing to check."
+msgstr "Không có gì để kiểm tra."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Nothing to put back."
+msgstr "Không có gì để khôi phục."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Off"
+msgstr "Tắt"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Off for this company"
+msgstr "Tắt cho công ty này"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid ""
+"On a public holiday every paid hour counts at %(rate)s, once a manager "
+"approves it."
+msgstr "Vào ngày nghỉ lễ, mỗi giờ có lương được tính theo mức %(rate)s, sau khi quản lý duyệt."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid ""
+"On a rest day every paid hour counts at %(rate)s, once a manager approves "
+"it."
+msgstr "Vào ngày nghỉ, mỗi giờ có lương được tính theo mức %(rate)s, sau khi quản lý duyệt."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "On for this company"
+msgstr "Bật cho công ty này"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "On these days"
+msgstr "Vào những ngày này"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "On time."
+msgstr "Đúng giờ."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "One choice, applied to everyone you ticked."
+msgstr "Một lựa chọn, áp dụng cho tất cả những người bạn đã chọn."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "One week fewer"
+msgstr "Bớt một tuần"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "One week more"
+msgstr "Thêm một tuần"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+#: model:ir.model.fields.selection,name:pb_workforce_setup.selection__pb_workforce_setup_undo__kind__oneoff
+msgid "One-off shift"
+msgstr "Ca làm một lần"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "One-off shift for %s people"
+msgstr "Ca làm một lần cho %s người"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "One-off shift for 1 person"
+msgstr "Ca làm một lần cho 1 người"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "Only an administrator can change how the Workforce menu is arranged."
+msgstr "Chỉ quản trị viên mới có thể thay đổi cách sắp xếp menu Lực lượng lao động."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "Only an attendance manager can change the workforce setup."
+msgstr "Chỉ quản lý chấm công mới có thể thay đổi thiết lập lực lượng lao động."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Open the advanced rules screen"
+msgstr "Mở màn hình quy tắc nâng cao"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Open the roster"
+msgstr "Mở lịch làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Open the rotation editor"
+msgstr "Mở trình sửa vòng xoay ca"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Open working calendars"
+msgstr "Mở lịch giờ làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Opening Workforce setup…"
+msgstr "Đang mở Thiết lập lực lượng lao động…"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Overtime"
+msgstr "Tăng ca"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "Overtime always needs a manager's approval before it is paid."
+msgstr "Tăng ca luôn cần quản lý duyệt trước khi được trả lương."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Overtime at %s"
+msgstr "Tăng ca từ %s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Overtime must start after the shift starts and no later than it ends."
+msgstr "Tăng ca phải bắt đầu sau khi ca bắt đầu và không muộn hơn lúc ca kết thúc."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Overtime pays"
+msgstr "Tăng ca được trả"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Overtime rate, percent"
+msgstr "Mức tăng ca, phần trăm"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Overtime starts at %(at)s, so none today."
+msgstr "Tăng ca bắt đầu lúc %(at)s, nên hôm nay không có."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Paid at %s (public holiday)"
+msgstr "Trả theo mức %s (ngày nghỉ lễ)"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Paid at %s (rest day)"
+msgstr "Trả theo mức %s (ngày nghỉ)"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Paid normal hours"
+msgstr "Giờ thường có lương"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Paint with"
+msgstr "Tô bằng"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Pancasila Day"
+msgstr "Ngày Pancasila"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Pay extra for night work"
+msgstr "Trả thêm cho làm đêm"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_undo__payload
+msgid "Payload"
+msgstr "Dữ liệu"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__people_ids
+msgid "People"
+msgstr "Nhân viên"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"People are given a working week here. There is none yet for this company."
+msgstr "Tại đây mọi người được giao tuần làm việc. Công ty này chưa có tuần nào."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"People see their shifts in My Payobook straight away. Published shifts "
+"cannot be un-published in one go."
+msgstr "Mọi người thấy ca làm việc của mình trong My Payobook ngay lập tức. Không thể hủy công bố tất cả ca đã công bố cùng một lúc."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "People tap in and out from My Payobook on their phone."
+msgstr "Mọi người chấm công vào và ra bằng My Payobook trên điện thoại."
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__per_week
+msgid "Per Week"
+msgstr "Mỗi tuần"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Person"
+msgstr "Người"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Phone clock-in"
+msgstr "Chấm công bằng điện thoại"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Pick %s days or fewer at a time. Split a longer stretch into two."
+msgstr "Mỗi lần chọn tối đa %s ngày. Hãy chia khoảng dài hơn thành hai lần."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Pick Worker or Manager."
+msgstr "Chọn Công nhân hoặc Quản lý."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Pick a date."
+msgstr "Hãy chọn một ngày."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Pick a day on the calendar."
+msgstr "Hãy chọn một ngày trên lịch."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Pick a shift below, then click or drag across the days. Add a second week "
+"when a team rotates between days and nights."
+msgstr "Chọn một ca bên dưới, rồi bấm hoặc kéo qua các ngày. Thêm tuần thứ hai khi một nhóm luân phiên giữa ca ngày và ca đêm."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Pick at least one day of the week."
+msgstr "Hãy chọn ít nhất một ngày trong tuần."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "Pick one of the colours shown."
+msgstr "Hãy chọn một trong các màu hiển thị."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Pick one of the weeks of this rotation."
+msgstr "Hãy chọn một trong các tuần của vòng xoay ca này."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Pick today or a later date. Past weeks stay as they were."
+msgstr "Hãy chọn hôm nay hoặc ngày sau đó. Các tuần đã qua giữ nguyên như cũ."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Public holiday"
+msgstr "Ngày nghỉ lễ"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "Public holiday overtime"
+msgstr "Tăng ca ngày nghỉ lễ"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Public holiday rate, percent"
+msgstr "Mức ngày nghỉ lễ, phần trăm"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Public holidays and company days off, on one calendar. Click any day to add "
+"or remove a company day off."
+msgstr "Ngày nghỉ lễ và ngày nghỉ của công ty, trên cùng một lịch. Bấm vào ngày bất kỳ để thêm hoặc bỏ ngày nghỉ của công ty."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Publish %s weeks"
+msgstr "Công bố %s tuần"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Publish %s weeks of roster"
+msgstr "Công bố %s tuần lịch làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Publish 1 week"
+msgstr "Công bố 1 tuần"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Publish 1 week of roster"
+msgstr "Công bố 1 tuần lịch làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Publish for the %s who are ready"
+msgstr "Công bố cho %s người đã sẵn sàng"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Publish more weeks"
+msgstr "Công bố thêm tuần"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Publish more weeks below so people keep seeing their shifts."
+msgstr "Hãy công bố thêm tuần bên dưới để mọi người tiếp tục thấy ca làm việc của mình."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Publish more weeks below whenever you are ready."
+msgstr "Hãy công bố thêm tuần bên dưới bất cứ khi nào bạn sẵn sàng."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Publish now"
+msgstr "Công bố ngay"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__published
+msgid "Published"
+msgstr "Đã công bố"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Publishing stopped before every week was done."
+msgstr "Việc công bố đã dừng trước khi xong mọi tuần."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Publishing…"
+msgstr "Đang công bố…"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_attendance_policy__pb_pending_rates
+msgid "Rates waiting for confirmation"
+msgstr "Mức lương đang chờ xác nhận"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Re-check holiday and rest-day shifts"
+msgstr "Kiểm tra lại ca ngày nghỉ lễ và ngày nghỉ"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Reading the clock"
+msgstr "Đọc máy chấm công"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Ready to go live?"
+msgstr "Sẵn sàng bắt đầu áp dụng?"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Remove"
+msgstr "Xóa"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "Remove %s"
+msgstr "Xóa %s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "Remove %s for everyone?"
+msgstr "Xóa %s cho tất cả mọi người?"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Remove last week"
+msgstr "Xóa tuần cuối"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Remove line %s"
+msgstr "Xóa dòng %s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Remove this working week"
+msgstr "Xóa tuần làm việc này"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
+msgid "Repeats every %s days"
+msgstr "Lặp lại mỗi %s ngày"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
+msgid "Repeats every %s weeks"
+msgstr "Lặp lại mỗi %s tuần"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Replace it"
+msgstr "Thay thế"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Rest day"
+msgstr "Ngày nghỉ"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Rest day rate, percent"
+msgstr "Mức ngày nghỉ, phần trăm"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "Rest-day overtime"
+msgstr "Tăng ca ngày nghỉ"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Reunification Day"
+msgstr "Ngày Thống nhất"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Reunification Day – International Labor Day"
+msgstr "Ngày Giải phóng miền Nam – Quốc tế Lao động"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Rose"
+msgstr "Hồng"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_res_company__pb_wfs_live_on
+msgid "Roster first published from setup"
+msgstr "Lịch làm việc được công bố lần đầu từ thiết lập"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_res_company__pb_wfs_live_to
+msgid "Roster published up to"
+msgstr "Lịch làm việc đã công bố đến"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Roster published up to %s"
+msgstr "Lịch làm việc đã công bố đến %s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Roster published up to %s."
+msgstr "Lịch làm việc đã công bố đến %s."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "Rules confirmed"
+msgstr "Đã xác nhận quy tắc"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "Rules confirmed for %s people."
+msgstr "Đã xác nhận quy tắc cho %s người."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "Rules confirmed for 1 person."
+msgstr "Đã xác nhận quy tắc cho 1 người."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_util.js:0
+msgid "Sat"
+msgstr "Thứ 7"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Save"
+msgstr "Lưu"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Saved"
+msgstr "Đã lưu"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Saving…"
+msgstr "Đang lưu…"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Search a name or team"
+msgstr "Tìm theo tên hoặc nhóm"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Search a name, number or team"
+msgstr "Tìm theo tên, mã số hoặc nhóm"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Search people"
+msgstr "Tìm người"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"See each clock and whether it is sending clock-ins. If one is not, send your"
+" IT person a ready-made setup link."
+msgstr "Xem từng máy chấm công và máy đó có đang gửi lượt chấm công hay không. Nếu không, hãy gửi cho người phụ trách IT một liên kết cài đặt có sẵn."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "See it on a real person"
+msgstr "Xem trên một người thật"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "See step 6"
+msgstr "Xem bước 6"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Sending clock-ins"
+msgstr "Đang gửi lượt chấm công"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Set each shift once. You will reuse it everywhere, so a change here updates "
+"every week and person that uses it."
+msgstr "Mỗi ca chỉ cần đặt một lần. Bạn sẽ dùng lại ca đó ở mọi nơi, nên thay đổi ở đây sẽ cập nhật mọi tuần và mọi người đang dùng ca đó."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/takeover.js:0
+msgid "Set up Workforce"
+msgstr "Thiết lập lực lượng lao động"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Set up in this order"
+msgstr "Thiết lập theo thứ tự này"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,help:pb_workforce_setup.field_hr_shift_planning__pb_day_kind_manual
+msgid ""
+"Set when someone chose normal day, rest day or public holiday for this shift"
+" themselves. Such a shift is never re-marked automatically."
+msgstr "Được đặt khi có người tự chọn ngày thường, ngày nghỉ hoặc ngày nghỉ lễ cho ca này. Ca như vậy không bao giờ bị đánh dấu lại tự động."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Setup link copied. It works for 5 days."
+msgstr "Đã sao chép đường dẫn cài đặt. Đường dẫn dùng được trong 5 ngày."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Setup link for IT"
+msgstr "Đường dẫn cài đặt cho IT"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Setup steps"
+msgstr "Các bước thiết lập"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Shared"
+msgstr "Dùng chung"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Shared with every company. Copy it to change it."
+msgstr "Dùng chung cho mọi công ty. Hãy sao chép để thay đổi."
+
+#. module: pb_workforce_setup
+#: model:ir.model,name:pb_workforce_setup.model_hr_shift_planning
+msgid "Shift Planning"
+msgstr "Kế hoạch ca"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Shifts"
+msgstr "Ca làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Shifts on a public holiday or on a person's day off are marked for the "
+"holiday or rest-day rate by themselves. A shift someone changed by hand "
+"keeps its choice."
+msgstr "Ca vào ngày nghỉ lễ hoặc ngày nghỉ của một người sẽ tự được đánh dấu theo mức ngày nghỉ lễ hoặc ngày nghỉ. Ca do người dùng tự sửa sẽ giữ lựa chọn của họ."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/takeover.js:0
+msgid ""
+"Shifts, working weeks, who works what, late and overtime rules, holidays and"
+" time clocks — seven steps, in order."
+msgstr "Ca làm việc, tuần làm việc, ai làm ca nào, quy tắc đi muộn và tăng ca, ngày nghỉ lễ và máy chấm công — bảy bước, theo thứ tự."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/takeover.js:0
+msgid ""
+"Shifts, working weeks, who works what, late and overtime rules, holidays and"
+" time clocks."
+msgstr "Ca làm việc, tuần làm việc, ai làm ca nào, quy tắc đi muộn và tăng ca, ngày nghỉ lễ và máy chấm công."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Show everyone"
+msgstr "Hiện tất cả mọi người"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Show them"
+msgstr "Hiện họ"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Showing the first %s people. Search to find anyone else."
+msgstr "Đang hiện %s người đầu tiên. Hãy tìm kiếm để thấy người khác."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid ""
+"Some of these days move from year to year or are announced by the "
+"government. Check the government notice before you confirm."
+msgstr "Một số ngày thay đổi theo từng năm hoặc do nhà nước công bố. Hãy xem thông báo của nhà nước trước khi xác nhận."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Someone changed these people after you. Nothing was undone."
+msgstr "Đã có người thay đổi những người này sau bạn. Không có gì được hoàn tác."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Something went wrong on the server."
+msgstr "Đã xảy ra lỗi trên máy chủ."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_util.js:0
+msgid "Something went wrong. Please try again."
+msgstr "Đã xảy ra lỗi. Vui lòng thử lại."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Start from blank"
+msgstr "Bắt đầu từ trống"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Start with one of these, then adjust the times."
+msgstr "Hãy bắt đầu với một trong các mẫu này, rồi chỉnh giờ."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Starting from"
+msgstr "Bắt đầu từ"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Starts"
+msgstr "Bắt đầu"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Step 1 of 7"
+msgstr "Bước 1 / 7"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Step 2 of 7"
+msgstr "Bước 2 / 7"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Step 3 of 7"
+msgstr "Bước 3 / 7"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Step 4 of 7"
+msgstr "Bước 4 / 7"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Step 5 of 7"
+msgstr "Bước 5 / 7"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Step 6 of 7"
+msgstr "Bước 6 / 7"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Step 7 of 7"
+msgstr "Bước 7 / 7"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Stopped here"
+msgstr "Dừng ở đây"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_undo__summary
+msgid "Summary"
+msgstr "Tóm tắt"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_util.js:0
+msgid "Sun"
+msgstr "Chủ nhật"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Supervisor enters hours"
+msgstr "Tổ trưởng nhập giờ"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Switch clock-ins on"
+msgstr "Bật gửi lượt chấm công"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Switch clock-ins on for %s"
+msgstr "Bật gửi lượt chấm công cho %s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Switched off"
+msgstr "Đã tắt"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Switched off. Records already received are kept."
+msgstr "Đã tắt. Các bản ghi đã nhận vẫn được giữ lại."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Taken off for lateness"
+msgstr "Bị trừ do đi muộn"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Teal"
+msgstr "Xanh mòng két"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "Team %s"
+msgstr "Nhóm %s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Team and site"
+msgstr "Nhóm và địa điểm"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Teams"
+msgstr "Nhóm"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Tet (Lunar New Year)"
+msgstr "Tết Nguyên đán"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid ""
+"Tet and Hung Kings follow the lunar calendar, and the extra National Day "
+"holiday is announced each year. Check the government notice before you "
+"confirm."
+msgstr "Tết Nguyên đán và Giỗ Tổ Hùng Vương theo âm lịch, còn ngày nghỉ thêm dịp Quốc khánh được công bố hằng năm. Hãy xem thông báo của nhà nước trước khi xác nhận."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Tet holiday"
+msgstr "Nghỉ Tết"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "That day is not on this company's calendar."
+msgstr "Ngày đó không có trên lịch của công ty này."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "That is %(days)s × %(people)s, less the days below."
+msgstr "Tức là %(days)s × %(people)s, trừ các ngày bên dưới."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "That is %(days)s × %(people)s."
+msgstr "Tức là %(days)s × %(people)s."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "That is %(late)s, so %(off)s comes off (%(rule)s rule)."
+msgstr "Tức là %(late)s, nên bị trừ %(off)s (quy tắc %(rule)s)."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "That is %(late)s; nothing comes off (%(rule)s rule)."
+msgstr "Tức là %(late)s; không bị trừ gì (quy tắc %(rule)s)."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid ""
+"That is more than %s shifts at once. Tick fewer people or pick fewer days."
+msgstr "Như vậy là hơn %s ca cùng lúc. Hãy chọn ít người hơn hoặc ít ngày hơn."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "The 1 person has a working week"
+msgstr "1 người đã có tuần làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid ""
+"The PC cannot read the clock's records. Ask your IT person to check that the"
+" clock program's data is where the setup said."
+msgstr "Máy tính không đọc được bản ghi của máy chấm công. Hãy nhờ người phụ trách IT kiểm tra dữ liệu của chương trình máy chấm công có nằm đúng chỗ như khi cài đặt không."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid ""
+"The PC could not reach Payobook. Ask your IT person to check its internet "
+"connection."
+msgstr "Máy tính không kết nối được với Payobook. Hãy nhờ người phụ trách IT kiểm tra kết nối internet của máy."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "The PC is no longer paired. Copy a new setup link for your IT person."
+msgstr "Máy tính không còn được ghép nối. Hãy sao chép đường dẫn cài đặt mới cho người phụ trách IT."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid ""
+"The PC reported a problem. Open the clock details to see what your IT person"
+" should check."
+msgstr "Máy tính báo có sự cố. Hãy mở chi tiết máy chấm công để xem người phụ trách IT cần kiểm tra gì."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "The Workforce menu is back to the classic menu."
+msgstr "Menu Lực lượng lao động đã trở về menu cổ điển."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "The Workforce menu now shows grouped tabs."
+msgstr "Menu Lực lượng lao động giờ hiển thị thẻ theo nhóm."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "The break cannot be less than zero."
+msgstr "Giờ nghỉ không được nhỏ hơn 0."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "The break is a number of minutes."
+msgstr "Giờ nghỉ là số phút."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "The break is longer than the shift."
+msgstr "Giờ nghỉ dài hơn ca làm việc."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "The check could not be loaded."
+msgstr "Không tải được phần kiểm tra."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "The clock-out must come after the clock-in. Move the sliders apart."
+msgstr "Giờ chấm ra phải sau giờ chấm vào. Hãy kéo các thanh trượt ra xa nhau."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "The clocks could not be loaded."
+msgstr "Không tải được danh sách máy chấm công."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "The current rules stay in use until you confirm."
+msgstr "Các quy tắc hiện tại vẫn được dùng cho đến khi bạn xác nhận."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "The holidays are right. Confirm"
+msgstr "Ngày nghỉ lễ đã đúng. Xác nhận"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "The holidays could not be loaded."
+msgstr "Không tải được ngày nghỉ lễ."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "The last day cannot be before the first day."
+msgstr "Ngày cuối không được trước ngày đầu."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "The last day is before the first day."
+msgstr "Ngày cuối đang ở trước ngày đầu."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "The last late line for managers must be “or more”."
+msgstr "Dòng đi muộn cuối cùng cho quản lý phải là “trở lên”."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "The last late line for workers must be “or more”."
+msgstr "Dòng đi muộn cuối cùng cho công nhân phải là “trở lên”."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "The last late line must be “or more”."
+msgstr "Dòng đi muộn cuối cùng phải là “trở lên”."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid ""
+"The late lines for managers must follow on from each other with no gap."
+msgstr "Các dòng đi muộn cho quản lý phải nối tiếp nhau, không có khoảng trống."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "The late lines for workers must follow on from each other with no gap."
+msgstr "Các dòng đi muộn cho công nhân phải nối tiếp nhau, không có khoảng trống."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "The late lines must follow on from each other with no gap."
+msgstr "Các dòng đi muộn phải nối tiếp nhau, không có khoảng trống."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "The late rules are now linked for %s people."
+msgstr "Quy tắc đi muộn giờ đã được gắn cho %s người."
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,help:pb_workforce_setup.field_res_company__pb_wfs_holidays_year
+msgid ""
+"The latest year whose public holidays and company days off were confirmed in"
+" Workforce setup."
+msgstr "Năm gần nhất có ngày nghỉ lễ và ngày nghỉ của công ty đã được xác nhận trong Thiết lập lực lượng lao động."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"The new rates are used once you confirm these rules. Until then the rates in"
+" use stay as they are."
+msgstr "Mức lương mới được dùng sau khi bạn xác nhận các quy tắc này. Trước đó, mức đang dùng vẫn giữ nguyên."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "The new version is gone. The rules in use stay as they were."
+msgstr "Phiên bản mới đã bị bỏ. Các quy tắc đang dùng vẫn giữ nguyên."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid ""
+"The overtime and break times of “%s” no longer fit the shift. Pick new ones."
+msgstr "Giờ tăng ca và giờ nghỉ của “%s” không còn khớp với ca. Hãy chọn giờ mới."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"The pale gap in each bar is the unpaid break. A shift that ends before it "
+"starts is treated as an overnight shift without you ticking anything."
+msgstr "Khoảng nhạt trong mỗi thanh là giờ nghỉ không lương. Ca kết thúc trước giờ bắt đầu được tính là ca qua đêm mà bạn không cần đánh dấu gì."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "The people could not be loaded."
+msgstr "Không tải được danh sách nhân viên."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "The people you ticked are no longer here. Refresh the list."
+msgstr "Những người bạn đã chọn không còn ở đây. Hãy làm mới danh sách."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "The roster ran out on %s"
+msgstr "Lịch làm việc đã hết vào %s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "The roster ran out on %s."
+msgstr "Lịch làm việc đã hết vào %s."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "The roster runs out on %s"
+msgstr "Lịch làm việc hết vào %s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "The roster runs out on %s."
+msgstr "Lịch làm việc hết vào %s."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "The setup could not be loaded."
+msgstr "Không tải được phần thiết lập."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid ""
+"The unpaid break must start after the shift starts and end before it ends."
+msgstr "Giờ nghỉ không lương phải bắt đầu sau khi ca bắt đầu và kết thúc trước khi ca kết thúc."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Their clock-ins cannot be matched to them."
+msgstr "Không thể khớp lượt chấm công của họ với họ."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Their normal working week stays as it is. You can undo this straight after."
+msgstr "Tuần làm việc thông thường của họ vẫn giữ nguyên. Bạn có thể hoàn tác ngay sau đó."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/days.py:0
+msgid "There are no shifts from today on to check."
+msgstr "Không có ca nào từ hôm nay trở đi để kiểm tra."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "There is no list of public holidays for this country and year."
+msgstr "Chưa có danh sách ngày nghỉ lễ cho quốc gia và năm này."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "There is no new version to discard."
+msgstr "Không có phiên bản mới nào để bỏ."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "There is no such week in this publish."
+msgstr "Không có tuần này trong lần công bố này."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid ""
+"These rules apply to everyone in %(company)s: %(n)s people, %(w)s with the "
+"Worker late rule and %(m)s with the Manager one."
+msgstr "Các quy tắc này áp dụng cho mọi người ở %(company)s: %(n)s người, %(w)s theo quy tắc đi muộn Công nhân và %(m)s theo quy tắc Quản lý."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "These rules are already in use."
+msgstr "Các quy tắc này đã đang được dùng."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "These rules are in use."
+msgstr "Các quy tắc này đang được dùng."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "These rules are in use. Press Change the rules to make a new version."
+msgstr "Các quy tắc này đang được dùng. Hãy bấm Thay đổi quy tắc để tạo phiên bản mới."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "These rules are right. Confirm"
+msgstr "Các quy tắc này đã đúng. Xác nhận"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "These rules cannot be confirmed yet"
+msgstr "Chưa thể xác nhận các quy tắc này"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "These rules could not be confirmed. Check the lines above."
+msgstr "Không xác nhận được các quy tắc này. Hãy kiểm tra các dòng ở trên."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "These rules could not be saved. Check the highlighted numbers."
+msgstr "Không lưu được các quy tắc này. Hãy kiểm tra các con số được tô sáng."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "These rules will apply to everyone in %s."
+msgstr "Các quy tắc này sẽ áp dụng cho mọi người ở %s."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "These times no longer fit the shift. Pick new ones."
+msgstr "Các giờ này không còn khớp với ca. Hãy chọn giờ mới."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"They are shown here read-only. Open the advanced rules screen to change "
+"them."
+msgstr "Các quy tắc này chỉ hiển thị để xem ở đây. Hãy mở màn hình quy tắc nâng cao để thay đổi."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "They begin on"
+msgstr "Họ bắt đầu vào"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "They leave before the shift starts, so nothing is paid."
+msgstr "Họ về trước khi ca bắt đầu nên không được trả lương."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "This change can no longer be undone."
+msgstr "Thay đổi này không thể hoàn tác được nữa."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "This changes only how the Workforce menu is arranged."
+msgstr "Việc này chỉ thay đổi cách sắp xếp menu Lực lượng lao động."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "This clock is no longer there."
+msgstr "Máy chấm công này không còn nữa."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "This company uses more than one set of rules."
+msgstr "Công ty này đang dùng nhiều hơn một bộ quy tắc."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid ""
+"This company uses more than one set of rules. Open the advanced rules "
+"screen."
+msgstr "Công ty này đang dùng nhiều hơn một bộ quy tắc. Hãy mở màn hình quy tắc nâng cao."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "This example cannot be worked out."
+msgstr "Không tính được ví dụ này."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "This example cannot be worked out. Check the rules above."
+msgstr "Không tính được ví dụ này. Hãy kiểm tra các quy tắc ở trên."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid ""
+"This machine is asking to connect. Let it in on the Time clocks screen."
+msgstr "Máy này đang xin kết nối. Hãy cho phép trên màn hình Máy chấm công."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "This person is no longer here. Pick someone else."
+msgstr "Người này không còn ở đây. Hãy chọn người khác."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid ""
+"This publish is no longer there. Press Publish again: shifts already "
+"published are skipped."
+msgstr "Lần công bố này không còn nữa. Hãy bấm Công bố lại: các ca đã công bố sẽ được bỏ qua."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "This replaces the link you sent before. Make a new one?"
+msgstr "Đường dẫn này sẽ thay thế đường dẫn bạn đã gửi trước đó. Tạo đường dẫn mới?"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "This rotation does not follow whole weeks."
+msgstr "Vòng xoay ca này không theo trọn tuần."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid ""
+"This rotation does not follow whole weeks. Change it in the rotation editor."
+msgstr "Vòng xoay ca này không theo trọn tuần. Hãy thay đổi trong trình sửa vòng xoay ca."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "This shift is no longer there."
+msgstr "Ca này không còn nữa."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid ""
+"This shift is shared by every company, so it cannot be changed here. Copy it"
+" to make your own."
+msgstr "Ca này được dùng chung cho mọi công ty nên không thể thay đổi ở đây. Hãy sao chép để tạo ca riêng của bạn."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "This shift is used in %s working weeks. Take it out of them first."
+msgstr "Ca này đang được dùng trong %s tuần làm việc. Hãy bỏ ca khỏi các tuần đó trước."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "This shift is used in 1 working week. Take it out of it first."
+msgstr "Ca này đang được dùng trong 1 tuần làm việc. Hãy bỏ ca khỏi tuần đó trước."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid ""
+"This working week already has 8 different start points. Pick another start "
+"week."
+msgstr "Tuần làm việc này đã có 8 điểm bắt đầu khác nhau. Hãy chọn tuần bắt đầu khác."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid ""
+"This working week has no first day. Open it in step 2 and save it again."
+msgstr "Tuần làm việc này không có ngày đầu tiên. Hãy mở ở bước 2 và lưu lại."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+msgid "This working week is no longer there."
+msgstr "Tuần làm việc này không còn nữa."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_util.js:0
+msgid "Thu"
+msgstr "Thứ 5"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Tick %s"
+msgstr "Chọn %s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Tick all %s in this list"
+msgstr "Chọn tất cả %s người trong danh sách này"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Tick all of %s"
+msgstr "Chọn tất cả %s"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Tick at least one person."
+msgstr "Hãy chọn ít nhất một người."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Tick everyone in this list"
+msgstr "Chọn tất cả mọi người trong danh sách này"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ""
+"Tick people, or pick a whole team, then give them all a working week in one "
+"go. Hold Shift to tick a range."
+msgstr "Chọn người, hoặc chọn cả một nhóm, rồi giao tuần làm việc cho tất cả cùng lúc. Giữ phím Shift để chọn một dãy."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Time clocks"
+msgstr "Máy chấm công"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_res_company__pb_wfs_clocks_ok
+msgid "Time clocks confirmed"
+msgstr "Đã xác nhận máy chấm công"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "To"
+msgstr "Đến"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Try again"
+msgstr "Thử lại"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_util.js:0
+msgid "Tue"
+msgstr "Thứ 3"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Typed in on the weekly sheet."
+msgstr "Nhập trên bảng chấm công hằng tuần."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Undo"
+msgstr "Hoàn tác"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Undone. The one-off shifts are gone and the planned ones are back."
+msgstr "Đã hoàn tác. Các ca làm một lần đã bị xóa và các ca đã lên kế hoạch đã trở lại."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Undone. Their late rules are back as they were."
+msgstr "Đã hoàn tác. Quy tắc đi muộn của họ đã trở lại như cũ."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "Undone. Their working weeks are back as they were."
+msgstr "Đã hoàn tác. Tuần làm việc của họ đã trở lại như cũ."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Unpaid break (minutes)"
+msgstr "Giờ nghỉ không lương (phút)"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Unpaid break starts at"
+msgstr "Giờ nghỉ không lương bắt đầu lúc"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Upload a file"
+msgstr "Tải lên một tệp"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/setup.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Use a time like 08:30."
+msgstr "Hãy nhập giờ theo dạng 08:30."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Used in %s working weeks"
+msgstr "Dùng trong %s tuần làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "Used in 1 working week"
+msgstr "Dùng trong 1 tuần làm việc"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__user_id
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_undo__user_id
+msgid "User"
+msgstr "Người dùng"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/holidays.py:0
+msgid "Vietnam Cultural Day"
+msgstr "Ngày Văn hóa Việt Nam"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Waiting for IT"
+msgstr "Đang chờ IT"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/setup_util.js:0
+msgid "Wed"
+msgstr "Thứ 4"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid ""
+"Week %(n)s (%(label)s) was not published: %(why)s The weeks before it are "
+"published. Press Carry on to try this week again."
+msgstr "Tuần %(n)s (%(label)s) chưa được công bố: %(why)s Các tuần trước đó đã được công bố. Hãy bấm Tiếp tục để thử lại tuần này."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
+msgid "Week %s"
+msgstr "Tuần %s"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+msgid "Week %s is not published yet. Press Carry on."
+msgstr "Tuần %s chưa được công bố. Hãy bấm Tiếp tục."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Weekly rest day"
+msgstr "Ngày nghỉ hằng tuần"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_pb_workforce_setup_run__weeks
+msgid "Weeks"
+msgstr "Tuần"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "What does a normal week look like?"
+msgstr "Một tuần bình thường trông như thế nào?"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "What happens when someone is late or stays on?"
+msgstr "Khi có người đi muộn hoặc ở lại làm thêm thì sao?"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "What is it called?"
+msgstr "Tên gọi là gì?"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "What shifts do you run?"
+msgstr "Bạn đang chạy những ca nào?"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "What will happen"
+msgstr "Điều sẽ xảy ra"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Where is it?"
+msgstr "Máy đặt ở đâu?"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Which days is the company closed?"
+msgstr "Công ty nghỉ vào những ngày nào?"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Which kind of day"
+msgstr "Loại ngày"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Which shift"
+msgstr "Ca nào"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Which week"
+msgstr "Tuần nào"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Who works what"
+msgstr "Ai làm ca nào"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Who works which week?"
+msgstr "Ai làm tuần nào?"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Whose late lines"
+msgstr "Dòng đi muộn của ai"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Work on a rest day pays"
+msgstr "Làm vào ngày nghỉ được trả"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "Worked after break"
+msgstr "Làm sau giờ nghỉ"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "Worker"
+msgstr "Công nhân"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Workers"
+msgstr "Công nhân"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+#: code:addons/pb_workforce_setup/static/src/js/step_rules.js:0
+msgid "Workers have no late lines yet."
+msgstr "Công nhân chưa có dòng đi muộn nào."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Workforce is live."
+msgstr "Lực lượng lao động đã bắt đầu áp dụng."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Workforce menu"
+msgstr "Menu Lực lượng lao động"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/takeover.js:0
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+#: model:ir.actions.client,name:pb_workforce_setup.action_setup_studio
+#: model:ir.model,name:pb_workforce_setup.model_pb_workforce_setup
+msgid "Workforce setup"
+msgstr "Thiết lập lực lượng lao động"
+
+#. module: pb_workforce_setup
+#: model:ir.model,name:pb_workforce_setup.model_pb_workforce_setup_run
+msgid "Workforce setup: one roster publish"
+msgstr "Thiết lập lực lượng lao động: một lần công bố lịch làm việc"
+
+#. module: pb_workforce_setup
+#: model:ir.model,name:pb_workforce_setup.model_pb_workforce_setup_undo
+msgid "Workforce setup: undo of one bulk change"
+msgstr "Thiết lập lực lượng lao động: hoàn tác một thay đổi hàng loạt"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Working out the roster for %s people…"
+msgstr "Đang tính lịch làm việc cho %s người…"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "Working out the roster for 1 person…"
+msgstr "Đang tính lịch làm việc cho 1 người…"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+#: model:ir.model.fields.selection,name:pb_workforce_setup.selection__pb_workforce_setup_undo__kind__assign
+msgid "Working week"
+msgstr "Tuần làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/golive.py:0
+#: code:addons/pb_workforce_setup/static/src/js/setup_studio.js:0
+msgid "Working weeks"
+msgstr "Tuần làm việc"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Year"
+msgstr "Năm"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Yes, discard"
+msgstr "Có, bỏ đi"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Yes, remove"
+msgstr "Có, xóa"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Yes, remove it"
+msgstr "Có, xóa nó"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "You are editing a new version."
+msgstr "Bạn đang sửa một phiên bản mới."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "You can look, but only an attendance manager can change this."
+msgstr "Bạn có thể xem, nhưng chỉ quản lý chấm công mới có thể thay đổi mục này."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "You can publish now. The amber lines above can be finished later."
+msgstr "Bạn có thể công bố ngay. Các dòng màu hổ phách ở trên có thể hoàn tất sau."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "You can undo this straight after."
+msgstr "Bạn có thể hoàn tác ngay sau đó."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "already has clock-ins"
+msgstr "đã có lượt chấm công"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "already published"
+msgstr "đã công bố"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "and"
+msgstr "đến"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "and on a public holiday"
+msgstr "và vào ngày nghỉ lễ"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "company day off"
+msgstr "ngày nghỉ của công ty"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "could not be added"
+msgstr "không thêm được"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "earn"
+msgstr "được cộng thêm"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "hours after it. The first in and the last out are used."
+msgstr "giờ sau ca. Lấy lượt chấm vào đầu tiên và lượt chấm ra cuối cùng."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "hours before the shift and a clock-out up to"
+msgstr "giờ trước ca và lượt chấm công ra muộn tối đa"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "hours."
+msgstr "giờ."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "in the past"
+msgstr "trong quá khứ"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "minutes late or more, take off"
+msgstr "phút đi muộn trở lên, trừ"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "minutes late, take off"
+msgstr "phút, trừ"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "night work is not allowed for this person"
+msgstr "người này không được phép làm đêm"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "no break"
+msgstr "không nghỉ"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "nothing off"
+msgstr "không trừ gì"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "on approved leave"
+msgstr "đang nghỉ phép đã duyệt"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "on time"
+msgstr "đúng giờ"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "overlaps another shift"
+msgstr "trùng với ca khác"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "overtime starts at"
+msgstr "tăng ca bắt đầu lúc"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "public holiday"
+msgstr "ngày nghỉ lễ"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_holidays.js:0
+msgid "rest day"
+msgstr "ngày nghỉ"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "shifts"
+msgstr "ca"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "shifts for %s people"
+msgstr "ca cho %s người"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "shifts for 1 person"
+msgstr "ca cho 1 người"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_live.js:0
+msgid "showing %(n)s of %(total)s people"
+msgstr "đang hiện %(n)s / %(total)s người"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "starts %s"
+msgstr "bắt đầu %s"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/people.py:0
+msgid "under %s min"
+msgstr "dưới %s phút"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_people.js:0
+msgid "week %s"
+msgstr "tuần %s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/preview_panel.js:0
+msgid "when the shift ends"
+msgstr "khi ca kết thúc"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "· ends next day"
+msgstr "· kết thúc ngày hôm sau"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/rules.py:0
+msgid "“%s” has no overtime time yet. Set it in step 4."
+msgstr "“%s” chưa có giờ bắt đầu tăng ca. Hãy đặt ở bước 4."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "“%s” is added. Copy its setup link for your IT person."
+msgstr "Đã thêm “%s”. Hãy sao chép đường dẫn cài đặt của máy cho người phụ trách IT."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+msgid "“%s” is hidden from your shifts. Past roster days keep it."
+msgstr "“%s” đã được ẩn khỏi danh sách ca. Các ngày đã qua trên lịch làm việc vẫn giữ ca này."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_shifts.js:0
+#: code:addons/pb_workforce_setup/static/src/js/step_weeks.js:0
+msgid "“%s” is removed."
+msgstr "Đã xóa “%s”."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Disabled"
+msgstr "Tạm ngưng"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/js/step_clocks.js:0
+msgid "Enable %s"
+msgstr "Bật lại %s"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Disabled on purpose. The PC stays paired and keeps new clock-ins waiting. Once enabled, it sends everything punched meanwhile."
+msgstr "Đã tạm ngưng có chủ ý. Máy tính vẫn được ghép nối và giữ lại các lượt chấm công mới. Khi được bật lại, máy sẽ gửi mọi lượt chấm công trong thời gian này."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Ask a manager to enable it."
+msgstr "Hãy nhờ quản lý bật lại."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Enable"
+msgstr "Bật lại"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "“%s” is enabled. It sends what was punched meanwhile on its next sync."
+msgstr "Đã bật lại “%s”. Máy sẽ gửi các lượt chấm công trong thời gian này ở lần đồng bộ tiếp theo."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "1 clock disabled"
+msgstr "1 máy chấm công đang tạm ngưng"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/clocks.py:0
+msgid "%s clocks disabled"
+msgstr "%s máy chấm công đang tạm ngưng"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ". Overtime comes from your rules."
+msgstr ". Giờ làm thêm lấy từ quy tắc của bạn."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid ". The attendance screens also work out extra hours of their own. Pay never reads them — overtime comes from your rules."
+msgstr ". Các màn hình chấm công cũng tự tính giờ làm thêm riêng. Lương không bao giờ đọc chúng — giờ làm thêm lấy từ quy tắc của bạn."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are already off."
+msgstr "Giờ làm thêm tích hợp đã tắt rồi."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are off: %s rules removed. Overtime comes from your rules."
+msgstr "Đã tắt giờ làm thêm tích hợp: đã bỏ %s quy tắc. Giờ làm thêm lấy từ quy tắc của bạn."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are off: 1 rule removed. Overtime comes from your rules."
+msgstr "Đã tắt giờ làm thêm tích hợp: đã bỏ 1 quy tắc. Giờ làm thêm lấy từ quy tắc của bạn."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are on again: %s rules put back."
+msgstr "Đã bật lại giờ làm thêm tích hợp: đã khôi phục %s quy tắc."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "Built-in extra hours are on again: 1 rule put back."
+msgstr "Đã bật lại giờ làm thêm tích hợp: đã khôi phục 1 quy tắc."
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Built-in extra hours count:"
+msgstr "Tính giờ làm thêm tích hợp:"
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,field_description:pb_workforce_setup.field_res_company__pb_wfs_extra_hours_saved
+msgid "Built-in extra hours rules (saved while switched off)"
+msgstr "Quy tắc giờ làm thêm tích hợp (lưu khi đang tắt)"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "On"
+msgstr "Bật"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Switch it off"
+msgstr "Tắt đi"
+
+#. module: pb_workforce_setup
+#. odoo-javascript
+#: code:addons/pb_workforce_setup/static/src/xml/setup_studio.xml:0
+msgid "Switch it on again"
+msgstr "Bật lại"
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "The attendance app's extra hours are not installed here."
+msgstr "Ở đây chưa cài giờ làm thêm của ứng dụng chấm công."
+
+#. module: pb_workforce_setup
+#. odoo-python
+#: code:addons/pb_workforce_setup/models/extra_hours.py:0
+msgid "There are no saved extra-hours rules to put back. Add them on the attendance settings screen."
+msgstr "Không có quy tắc giờ làm thêm đã lưu để khôi phục. Hãy thêm trên màn hình cài đặt chấm công."
+
+#. module: pb_workforce_setup
+#: model:ir.model.fields,help:pb_workforce_setup.field_res_company__pb_wfs_extra_hours_saved
+msgid "Written by Workforce setup when the built-in extra hours count is switched off, so switching it on again restores the same rules."
+msgstr "Do Thiết lập nhân sự ghi khi tắt tính giờ làm thêm tích hợp, để bật lại sẽ khôi phục đúng các quy tắc đó."

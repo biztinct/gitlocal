@@ -1,0 +1,4 @@
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# Server uses UTC. 19:30 UTC = 02:30 Vietnam, 06:30 Sydney; clear of the 16:15/16:25 cleanup.
+30 19 * * * root /usr/bin/python3 /odoo/ops/nightly_backup.py >> /var/log/payobook-nightly-backup.log 2>&1

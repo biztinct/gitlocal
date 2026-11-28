@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The plain record views. The Pay screen is where this is USED; these
+         exist so a band can be looked at, corrected and audited on its own
+         chatter, and so a support engineer has somewhere to stand. -->
+
+    <record id="view_pb_pay_family_list" model="ir.ui.view">
+        <field name="name">pb.pay.family.list</field>
+        <field name="model">pb.pay.family</field>
+        <field name="arch" type="xml">
+            <list string="Job families">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="band_count" string="Bands"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_pay_family_form" model="ir.ui.view">
+        <field name="name">pb.pay.family.form</field>
+        <field name="model">pb.pay.family</field>
+        <field name="arch" type="xml">
+            <form string="Job family">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="sequence"/>
+                        <field name="active"/>
+                    </group>
+                    <field name="note" placeholder="What kind of work this family covers"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_pay_band_list" model="ir.ui.view">
+        <field name="name">pb.pay.band.list</field>
+        <field name="model">pb.pay.band</field>
+        <field name="arch" type="xml">
+            <list string="Pay bands">
+                <field name="family_id"/>
+                <field name="level"/>
+                <field name="country_code"/>
+                <field name="min_amount"/>
+                <field name="mid_amount"/>
+                <field name="max_amount"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="people_count" string="People"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_pay_band_form" model="ir.ui.view">
+        <field name="name">pb.pay.band.form</field>
+        <field name="model">pb.pay.band</field>
+        <field name="arch" type="xml">
+            <form string="Pay band">
+                <sheet>
+                    <h1><field name="name" readonly="1"/></h1>
+                    <group>
+                        <group>
+                            <field name="family_id"/>
+                            <field name="level"/>
+                            <field name="country_code"/>
+                            <field name="currency_id"/>
+                        </group>
+                        <group>
+                            <field name="min_amount"/>
+                            <field name="mid_amount"/>
+                            <field name="max_amount"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                    </group>
+                    <group string="Only these companies">
+                        <field name="company_ids" widget="many2many_tags" nolabel="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Jobs in this band">
+                            <field name="job_ids">
+                                <list editable="bottom">
+                                    <field name="job_id"/>
+                                    <field name="company_id" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pb_pay_position_list" model="ir.ui.view">
+        <field name="name">pb.pay.position.list</field>
+        <field name="model">pb.pay.position</field>
+        <field name="arch" type="xml">
+            <list string="Where people sit" create="0" edit="0">
+                <field name="employee_id"/>
+                <field name="job_id"/>
+                <field name="band_id"/>
+                <field name="wage"/>
+                <field name="position_pct"/>
+                <field name="state"/>
+                <field name="as_of"/>
+            </list>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- WDGAP S6-A: the catalogue row a change to somebody's own family, ID
+         papers, photo or marital status is approved under. Bank accounts are
+         NOT here: they travel the bank routes (pb_bank_ocr / pb_records). -->
+    <record id="process_me_details" model="biz.approval.process">
+        <field name="key">me_details</field>
+        <field name="name">My details changes</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.me.detail.request</field>
+        <field name="description">A change somebody asks for on My Payobook to their family, ID papers, photo or marital status.</field>
+        <field name="sequence">172</field>
+    </record>
+</odoo>

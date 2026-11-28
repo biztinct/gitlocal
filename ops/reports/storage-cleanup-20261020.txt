@@ -1,0 +1,78 @@
+Server storage maintenance and ABM retirement — 20 October 2026
+
+Scope: Payobook19v2; active databases payobook, payobook_template, p0clone, rize.
+ABM is retired. Do not deploy, provision or restore it without a new explicit
+owner request. This instruction also appears in AGENTS.md and CLAUDE.md.
+
+One-time cleanup
+Removed 112 obsolete backup entries, 7,117 inactive temporary addon copies,
+53 code archives, 35 archive parts, 1,240 completed test logs and 34 temporary
+database backups. Truncated the live Odoo log without replacing its inode.
+Preserved customer workbooks, working data, active process files and live addons.
+Validated a fresh four-database rollback set, then removed the previous retained
+set. The only remaining entry in /odoo/backups is:
+  /odoo/backups/storage-retention-code-20261020-124958
+All four custom database dumps passed full offline extraction, and the code
+archive passed gzip verification. Rollout staging copies were also removed.
+Final snapshot: 34,579,742,720 bytes free; 33,570,189,312 bytes recovered since
+the initial cleanup preflight. Available space changes with normal server use.
+
+Installed retention policy
+  /etc/cron.d/payobook-storage-cleanup
+  /etc/payobook/storage-maintenance.json
+  /odoo/ops/storage_maintenance.py
+16:15 UTC daily: remove recognized inactive temporary addon copies, code
+archives and completed logs older than seven days. Preserve active handles,
+live addon targets, customer workbooks and unknown files.
+16:25 UTC daily: expire nonproduction backups in /odoo/backups after seven
+days, preserving the newest usable copy. Identify databases from backup
+metadata, never filenames. Registered backups are pruned through the Odoo
+service so file and database metadata remain consistent.
+Rize backups and final retirement archives never expire automatically.
+The former fourteen-copy nightly pruning rule now honors the same exemptions.
+The configured nonproduction databases are payobook, payobook_template, p0clone.
+Registered serving tenants use the central seven-day policy; review the JSON
+allowlist when introducing additional unmanaged database backup names.
+Odoo parameters: pb_tenants.backup_retention_days=7 and
+pb_tenants.backup_retention_exempt_slugs=rize. An absent/invalid policy disables
+pruning; Rize remains protected even if the exemption parameter is cleared.
+
+Log rotation
+  /etc/logrotate.d/odoo-server: daily, seven rotations, seven-day maximum age,
+  100 MB size trigger checked hourly at minute 17, compression, mode 0640.
+Odoo uses WatchedFileHandler; rename/create rotation preserves live logging.
+Maintenance log rotates weekly, keeping four compressed rotations.
+
+ABM permanent recovery material
+Server: /odoo/archives/abm-20261020
+Local: /Users/adity/Documents/Payobook Archives/abm-20261020
+  abm-final-with-filestore.zip (287,943,548 bytes)
+  SHA256 5354a96a19b1dae109d9dd4de57e9e26bab25daa4b04f9362103ea3ed916a52a
+Native Odoo ZIP contains the database and filestore. An isolated restore
+matched all 1,121 table counts, six financial/business table hashes and all
+1,076 referenced attachment hashes; none was missing. The check database was
+removed. The custom source archive matches all 130 installed custom module
+versions. Both archive copies were checksum-verified. RESTORE.txt records the
+runtime, validation and future restore process; no configuration secrets were
+copied. The upstream Odoo checkout was clean at retirement.
+The live ABM database and filestore were removed. The tenant is decommissioned;
+no queued rollout tasks remained. abm.payobook.com returns HTTP 410 rather than
+falling through to another tenant. No ABM module upgrade was performed.
+
+Deployment and validation
+Application implementation: b5c79d599; deployed test correction: 6562e8dcc.
+Operational configuration through 871cf700f includes hourly log checks and
+malformed-backup protection. The latest combined snapshot contains 149 custom
+modules / 4,913 files; all content hashes and installed versions match on all
+four active databases. Only pb_tenants required a database upgrade, on payobook.
+Payroll business row hashes and active cron states remained unchanged.
+Two retention tests passed against an isolated restored master database; that
+database and filestore were removed. Two filesystem guard tests passed locally
+and on the server. Logrotate configuration checks and a real rotation passed;
+Odoo continued writing to its new log. HTTP checks passed for Rize/main site
+(200) and ABM (410). Chrome verified ABM's retirement page and Rize's authenticated
+dashboard. No test screenshots or PNG files were created.
+
+Detailed root-only receipts, including cron-environment executions and protected
+archive hash checks, are in /odoo/ops/storage-cleanup-20261020. Permanent ABM
+receipts and restore instructions are stored alongside the retirement archive.

@@ -1,0 +1,572 @@
+[
+ {
+  "definition": {
+   "name": "Receipts check",
+   "nodes": [
+    {
+     "id": "trigger",
+     "stage": 0,
+     "title": "Start",
+     "type": "trigger"
+    },
+    {
+     "due": 2,
+     "form": {
+      "fields": [
+       {
+        "id": "purpose",
+        "label": "Purpose",
+        "required": true,
+        "type": "text"
+       },
+       {
+        "bind": "amount",
+        "id": "amount",
+        "label": "Amount",
+        "type": "number"
+       }
+      ]
+     },
+     "id": "details",
+     "owner": {
+      "kind": "initiator"
+     },
+     "stage": 0,
+     "title": "Receipt details",
+     "type": "input"
+    },
+    {
+     "buttons": [
+      {
+       "key": "fine",
+       "label": "Looks fine"
+      },
+      {
+       "key": "missing",
+       "label": "Paper receipt missing"
+      }
+     ],
+     "due": 2,
+     "id": "check",
+     "owner": {
+      "id": 7,
+      "kind": "user"
+     },
+     "stage": 0,
+     "title": "check",
+     "type": "task"
+    },
+    {
+     "branches": [
+      {
+       "condition": {
+        "match": "all",
+        "rules": [
+         {
+          "field": "step.check.outcome",
+          "op": "eq",
+          "value": "missing"
+         }
+        ]
+       },
+       "id": "p_missing",
+       "label": "Missing",
+       "steps": [
+        "back"
+       ]
+      },
+      {
+       "id": "p_else",
+       "label": "Otherwise",
+       "steps": [
+        "tell"
+       ]
+      }
+     ],
+     "id": "route",
+     "stage": 0,
+     "title": "Route",
+     "type": "branch"
+    },
+    {
+     "id": "back",
+     "stage": 0,
+     "target": "details",
+     "title": "Back to details",
+     "type": "send_back"
+    },
+    {
+     "id": "tell",
+     "owner": {
+      "kind": "initiator"
+     },
+     "stage": 0,
+     "text": "Thanks {{step.details.purpose}}",
+     "title": "Tell them",
+     "type": "notify"
+    }
+   ],
+   "order": [
+    "trigger",
+    "details",
+    "check",
+    "route"
+   ],
+   "schema": "payobook.workflow/1",
+   "scope": {
+    "match": "all",
+    "rules": []
+   },
+   "stages": [
+    {
+     "name": "Prepare"
+    },
+    {
+     "name": "Do the work"
+    },
+    {
+     "name": "Finish"
+    }
+   ],
+   "timing": "live",
+   "trigger": {
+    "date_field": "",
+    "delay": 0,
+    "fields": [],
+    "kind": "manual",
+    "unit": "day"
+   }
+  },
+  "preview": [
+   [
+    {
+     "id": "trigger",
+     "path": "Main path",
+     "title": "Start",
+     "type": "trigger"
+    },
+    {
+     "id": "details",
+     "path": "Main path",
+     "title": "Receipt details",
+     "type": "input"
+    },
+    {
+     "id": "check",
+     "path": "Main path",
+     "title": "check",
+     "type": "task"
+    },
+    {
+     "id": "route",
+     "path": "Main path",
+     "reason": "Otherwise",
+     "title": "Route",
+     "type": "branch"
+    },
+    {
+     "id": "tell",
+     "path": "Otherwise",
+     "title": "Tell them",
+     "type": "notify"
+    }
+   ],
+   [
+    {
+     "id": "trigger",
+     "path": "Main path",
+     "title": "Start",
+     "type": "trigger"
+    },
+    {
+     "id": "details",
+     "path": "Main path",
+     "title": "Receipt details",
+     "type": "input"
+    },
+    {
+     "id": "check",
+     "path": "Main path",
+     "title": "check",
+     "type": "task"
+    },
+    {
+     "id": "route",
+     "path": "Main path",
+     "reason": "Missing",
+     "title": "Route",
+     "type": "branch"
+    },
+    {
+     "id": "back",
+     "path": "Missing",
+     "title": "Back to details",
+     "type": "send_back"
+    }
+   ]
+  ],
+  "validate": []
+ },
+ {
+  "definition": {
+   "name": "Parallel and group",
+   "nodes": [
+    {
+     "id": "trigger",
+     "stage": 0,
+     "title": "Start",
+     "type": "trigger"
+    },
+    {
+     "branches": [
+      {
+       "id": "pa",
+       "label": "A",
+       "steps": [
+        "ta"
+       ]
+      },
+      {
+       "condition": {
+        "match": "all",
+        "rules": [
+         {
+          "field": "amount",
+          "op": "gt",
+          "value": 100
+         }
+        ]
+       },
+       "id": "pb",
+       "label": "B",
+       "steps": [
+        "tb"
+       ]
+      }
+     ],
+     "id": "par",
+     "join": "all",
+     "stage": 1,
+     "title": "Together",
+     "type": "parallel"
+    },
+    {
+     "due": 2,
+     "id": "ta",
+     "owner": {
+      "id": 7,
+      "kind": "user"
+     },
+     "stage": 1,
+     "title": "ta",
+     "type": "task"
+    },
+    {
+     "due": 2,
+     "id": "tb",
+     "owner": {
+      "id": 7,
+      "kind": "user"
+     },
+     "stage": 1,
+     "title": "tb",
+     "type": "task"
+    },
+    {
+     "id": "grp",
+     "stage": 1,
+     "steps": [
+      "w1",
+      "stop"
+     ],
+     "title": "Saved",
+     "type": "subprocess"
+    },
+    {
+     "hours": 2,
+     "id": "w1",
+     "stage": 1,
+     "title": "Pause",
+     "type": "wait"
+    },
+    {
+     "id": "stop",
+     "reason": "Done",
+     "stage": 1,
+     "title": "Stop",
+     "type": "end",
+     "when": {
+      "match": "all",
+      "rules": [
+       {
+        "field": "urgent",
+        "op": "eq",
+        "value": true
+       }
+      ]
+     }
+    }
+   ],
+   "order": [
+    "trigger",
+    "par",
+    "grp"
+   ],
+   "schema": "payobook.workflow/1",
+   "scope": {
+    "match": "all",
+    "rules": []
+   },
+   "stages": [
+    {
+     "name": "Start"
+    },
+    {
+     "name": "Work"
+    }
+   ],
+   "timing": "live",
+   "trigger": {
+    "date_field": "",
+    "delay": 0,
+    "fields": [],
+    "kind": "manual",
+    "unit": "day"
+   }
+  },
+  "preview": [
+   [
+    {
+     "id": "trigger",
+     "path": "Main path",
+     "title": "Start",
+     "type": "trigger"
+    },
+    {
+     "id": "par",
+     "path": "Main path",
+     "title": "Together",
+     "type": "parallel"
+    },
+    {
+     "id": "ta",
+     "path": "A",
+     "title": "ta",
+     "type": "task"
+    },
+    {
+     "id": "par",
+     "path": "Main path",
+     "reason": "Skipped \u00b7 path filters do not match",
+     "skipped": true,
+     "title": "B",
+     "type": "path"
+    },
+    {
+     "id": "grp",
+     "path": "Main path",
+     "title": "Saved",
+     "type": "subprocess"
+    },
+    {
+     "id": "w1",
+     "path": "Saved",
+     "title": "Pause",
+     "type": "wait"
+    },
+    {
+     "id": "stop",
+     "path": "Saved",
+     "reason": "Skipped \u00b7 filters do not match",
+     "skipped": true,
+     "title": "Stop",
+     "type": "end"
+    }
+   ],
+   [
+    {
+     "id": "trigger",
+     "path": "Main path",
+     "title": "Start",
+     "type": "trigger"
+    },
+    {
+     "id": "par",
+     "path": "Main path",
+     "title": "Together",
+     "type": "parallel"
+    },
+    {
+     "id": "ta",
+     "path": "A",
+     "title": "ta",
+     "type": "task"
+    },
+    {
+     "id": "tb",
+     "path": "B",
+     "title": "tb",
+     "type": "task"
+    },
+    {
+     "id": "grp",
+     "path": "Main path",
+     "title": "Saved",
+     "type": "subprocess"
+    },
+    {
+     "id": "w1",
+     "path": "Saved",
+     "title": "Pause",
+     "type": "wait"
+    },
+    {
+     "id": "stop",
+     "path": "Saved",
+     "title": "Stop",
+     "type": "end"
+    }
+   ]
+  ],
+  "validate": []
+ },
+ {
+  "definition": {
+   "name": "Scheduled with problems",
+   "nodes": [
+    {
+     "id": "trigger",
+     "stage": 0,
+     "title": "Start",
+     "type": "trigger"
+    },
+    {
+     "due": 2,
+     "id": "mine",
+     "owner": {
+      "kind": "initiator"
+     },
+     "stage": 0,
+     "title": "mine",
+     "type": "task"
+    },
+    {
+     "id": "bad",
+     "stage": 0,
+     "target": "nowhere",
+     "title": "Bad",
+     "type": "send_back"
+    }
+   ],
+   "order": [
+    "trigger",
+    "mine",
+    "bad"
+   ],
+   "schema": "payobook.workflow/1",
+   "scope": {
+    "match": "all",
+    "rules": [
+     {
+      "field": "amount",
+      "op": "gte",
+      "value": 5
+     }
+    ]
+   },
+   "stages": [
+    {
+     "name": "Prepare"
+    },
+    {
+     "name": "Do the work"
+    },
+    {
+     "name": "Finish"
+    }
+   ],
+   "timing": "live",
+   "trigger": {
+    "date_field": "",
+    "delay": 0,
+    "fields": [],
+    "kind": "schedule",
+    "schedule": {
+     "at": "09:00",
+     "every": "week",
+     "starts": "process",
+     "weekdays": []
+    },
+    "unit": "day"
+   }
+  },
+  "preview": [
+   [
+    {
+     "id": "trigger",
+     "path": "Main path",
+     "title": "Start",
+     "type": "trigger"
+    },
+    {
+     "id": "mine",
+     "path": "Main path",
+     "title": "mine",
+     "type": "task"
+    },
+    {
+     "id": "bad",
+     "path": "Main path",
+     "title": "Bad",
+     "type": "send_back"
+    }
+   ],
+   [
+    {
+     "id": "trigger",
+     "path": "Main path",
+     "title": "Start",
+     "type": "trigger"
+    },
+    {
+     "id": "mine",
+     "path": "Main path",
+     "title": "mine",
+     "type": "task"
+    },
+    {
+     "id": "bad",
+     "path": "Main path",
+     "title": "Bad",
+     "type": "send_back"
+    }
+   ]
+  ],
+  "validate": [
+   {
+    "code": "needs_condition",
+    "id": "bad",
+    "severity": "error",
+    "text": "\u201cBad\u201d would always send the work back. Put it inside a path, or give it an \u201cOnly when\u2026\u201d."
+   },
+   {
+    "code": "send_back_target",
+    "id": "bad",
+    "severity": "error",
+    "text": "Send it back to an earlier task or form on the main path."
+   },
+   {
+    "code": "schedule_weekdays",
+    "id": "trigger",
+    "severity": "error",
+    "text": "Choose at least one day of the week."
+   },
+   {
+    "code": "schedule_initiator",
+    "id": "mine",
+    "severity": "error",
+    "text": "Nobody starts a scheduled workflow. Choose who does this step, for example a named person or a responsibility."
+   }
+  ]
+ }
+]

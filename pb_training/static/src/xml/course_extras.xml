@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       The course drawer's LEARNING L5 sections. Drawn inside the board's
+       `.pbtn-drawer`, so it uses the board's section classes (`.pbtn-sec*`)
+       plus a few `.pbcl-*`. The two small dialogs are scrims of their own,
+       outside the drawer's transform (R114): `position: fixed` on the scrim.
+       Text nodes on one line (LN13).
+       ==================================================================== -->
+  <t t-name="pb_training.PbCourseExtras">
+    <div class="pbcl-extras">
+      <t t-if="state.data">
+
+        <!-- ============ version ============ -->
+        <div class="pbtn-sec">
+          <h4 class="pbtn-sec-h">Version <span class="pbtn-sec-n" t-esc="d.version"/></h4>
+          <div class="pbtn-line-meta" t-esc="d.version_words"/>
+          <div t-if="d.pending" class="pbcl-note-warn"><t t-out="ic('hourglass',13)"/> <t t-esc="pendingWords"/></div>
+          <details t-if="state.log" class="pbcl-log"><summary>Every version</summary><div t-out="state.log"/></details>
+          <button t-if="d.can_manage" class="pbim-btn ghost" t-on-click="openPublish"><t t-out="ic('gitBranch',15)"/> Publish a new version</button>
+        </div>
+
+        <!-- ============ what people said ============ -->
+        <div class="pbtn-sec">
+          <h4 class="pbtn-sec-h">What people said <span t-if="ratings.ratings_count" class="pbtn-sec-n" t-esc="ratings.ratings_count"/></h4>
+          <div t-if="!ratings.ratings_count and !ratings.followups_answered" class="pbtn-sec-empty">No ratings yet. Everybody who finishes it is asked two ratings and one line; a month later their manager is asked whether their work has changed.</div>
+          <t t-else="">
+            <div t-if="ratings.ratings_count" class="pbcl-score">
+              <span class="pbcl-score-n" t-esc="ratings.avg_rating"/>
+              <span class="pbcl-score-l"><t t-out="ic('star',14)"/> <t t-esc="scoreWords"/></span>
+            </div>
+            <ul t-if="(ratings.comments || []).length" class="pbcl-comments"><li t-foreach="ratings.comments" t-as="cm" t-key="cm_index" t-esc="cm.text"/></ul>
+            <div t-if="ratings.followups_answered" class="pbtn-line-meta"><t t-out="ic('trendingUp',13)"/> <t t-esc="workWords"/></div>
+          </t>
+          <div t-if="d.followups_waiting" class="pbtn-line-meta" t-esc="followupsWords"/>
+        </div>
+
+        <!-- ============ skills it gives ============ -->
+        <div class="pbtn-sec">
+          <h4 class="pbtn-sec-h">Skills it gives <span class="pbtn-sec-n" t-esc="d.grants.length"/></h4>
+          <div t-if="!d.grants.length" class="pbtn-sec-empty">None yet. A skill added here goes on a person's record the moment they finish the course; nobody is ever moved down.</div>
+          <div t-else="" class="pbcl-chips">
+            <span t-foreach="d.grants" t-as="gr" t-key="gr.id" class="pbim-badge pbcl-skill pbcl-nocap"><t t-out="ic('sparkles',12)"/> <t t-esc="gr.words"/><button t-if="d.can_write" class="pbcl-x" t-on-click="() => this.dropGrant(gr.id)" title="This course no longer gives it"><t t-out="ic('x',11)"/></button></span>
+          </div>
+          <button t-if="d.can_write" class="pbim-btn ghost" t-on-click="openGrant"><t t-out="ic('plus',14)"/> Add a skill</button>
+        </div>
+
+        <!-- ============ asking for it ============ -->
+        <div class="pbtn-sec">
+          <h4 class="pbtn-sec-h">Asking to take it</h4>
+          <label class="pbcl-toggle">
+            <input type="checkbox" t-att-checked="d.requestable" t-att-disabled="!d.can_write or state.busy" t-on-change="toggleRequestable"/>
+            <span>People may ask to take it from My learning. Their manager decides; an agreed request puts the course on them at once.</span>
+          </label>
+          <div t-if="d.requests_waiting" class="pbcl-note-warn"><t t-out="ic('hourglass',13)"/> <t t-esc="requestsWords"/></div>
+        </div>
+      </t>
+
+      <!-- ============ publish a new version ============ -->
+      <div t-if="state.publish" class="pbim-modal-scrim pbss-scrim pbcl-fixed" t-on-click="closePublish">
+        <div class="pbss-drawer pbcl-drawer-s pbss-vars" t-on-click.stop="() => {}">
+          <div class="pbss-drawer-head">
+            <div>
+              <div class="pbss-eyebrow">Publish a new version</div>
+              <h2 class="pbss-drawer-title">Version <t t-esc="(d.version || 1) + 1"/></h2>
+              <p class="pbss-note" t-esc="finishersWords"/>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closePublish" title="Close"><t t-out="ic('x',16)"/></button>
+          </div>
+          <div class="pbss-drawer-body">
+            <label class="pbss-f pbss-f--wide"><span class="pbss-f-l">What changed (it goes in the email)</span><textarea class="pbss-in" rows="3" placeholder="For example: step 3 now uses the new harness." t-att-value="state.note" t-on-input="onNote"/></label>
+            <label class="pbss-f"><span class="pbss-f-l">Days to read it again</span><input class="pbss-in pbss-in--s" type="number" min="1" t-att-value="state.days" t-on-change="onDays"/></label>
+            <p class="pbss-note pbss-f--wide">Nothing is deleted. Their lesson progress on this course goes back to the start; a test they passed still stands, and so do their certificates.</p>
+          </div>
+          <div class="pbss-drawer-foot">
+            <button class="pbim-btn ghost" t-on-click="closePublish">Cancel</button>
+            <button class="pbim-btn primary" t-att-disabled="!state.note.trim() or state.busy" t-on-click="confirmPublish"><t t-out="ic('gitBranch',15)"/> Publish it</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ a skill it gives ============ -->
+      <div t-if="state.grant" class="pbim-modal-scrim pbss-scrim pbcl-fixed" t-on-click="closeGrant">
+        <div class="pbss-drawer pbcl-drawer-s pbss-vars" t-on-click.stop="() => {}">
+          <div class="pbss-drawer-head">
+            <div>
+              <div class="pbss-eyebrow">Skills it gives</div>
+              <h2 class="pbss-drawer-title">Finishing it gives this skill, at this level</h2>
+            </div>
+            <button class="pbim-btn ghost" t-on-click="closeGrant" title="Close"><t t-out="ic('x',16)"/></button>
+          </div>
+          <div class="pbss-drawer-body">
+            <p t-if="!state.types.length" class="pbss-note pbss-f--wide">No skills are set up yet. Add them under Employees › Skills first.</p>
+            <t t-else="">
+              <label class="pbss-f pbss-f--wide"><span class="pbss-f-l">Kind of skill</span>
+                <select class="pbss-in" t-on-change="(ev) => this.onG('type_id', ev)"><t t-foreach="state.types" t-as="st" t-key="st.id"><option t-att-value="st.id" t-att-selected="state.g.type_id === st.id" t-esc="st.name"/></t></select>
+              </label>
+              <label class="pbss-f"><span class="pbss-f-l">Skill</span>
+                <select class="pbss-in" t-on-change="(ev) => this.onG('skill_id', ev)"><option value="0">Pick one</option><t t-foreach="gType.skills" t-as="sk" t-key="sk.id"><option t-att-value="sk.id" t-att-selected="state.g.skill_id === sk.id" t-esc="sk.name"/></t></select>
+              </label>
+              <label class="pbss-f"><span class="pbss-f-l">Level</span>
+                <select class="pbss-in" t-on-change="(ev) => this.onG('level_id', ev)"><option value="0">Pick one</option><t t-foreach="gType.levels" t-as="lv" t-key="lv.id"><option t-att-value="lv.id" t-att-selected="state.g.level_id === lv.id" t-esc="lv.name"/></t></select>
+              </label>
+            </t>
+          </div>
+          <div class="pbss-drawer-foot">
+            <button class="pbim-btn ghost" t-on-click="closeGrant">Cancel</button>
+            <button class="pbim-btn primary" t-att-disabled="!state.g.skill_id or !state.g.level_id or state.busy" t-on-click="saveGrant"><t t-out="ic('check',15)"/> Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </t>
+
+</templates>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The My Payobook page builder (FS-12). Opened from "Edit this page"
+         on My Profile and from Settings, System, Form builder. Every method
+         it calls refuses anybody but the administrator (R2). -->
+    <record id="action_page_builder" model="ir.actions.client">
+        <field name="name">My Payobook page</field>
+        <field name="tag">pb_page_builder</field>
+    </record>
+</odoo>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The guided Workforce setup screen (WFSETUP P1). A NEW tag: the old
+         workspace keeps `pb_workforce_setup` until the takeover phase. -->
+    <record id="action_setup_studio" model="ir.actions.client">
+        <field name="name">Workforce setup</field>
+        <field name="tag">pb_workforce_setup_studio</field>
+    </record>
+</odoo>

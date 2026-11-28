@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- UPDATES P3a (D1) — a pay data file is for its pay run only. Where a
+       person brings one in, one quiet line says so and where lasting
+       changes go instead. The server enforces it whatever the screen sends
+       (`updates_monthonly.py`). -->
+
+  <!-- The Run Payroll screen: the line that pointed at the Records screen
+       now points at Updates, the one door for lasting changes. -->
+  <t t-name="pb_updates.PayrunWizardMonthOnly" t-inherit="pb_payrun_wizard.PayrunWizard" t-inherit-mode="extension">
+    <!-- Keeps the `t-if` of the line it replaces: the `t-else` after it
+         pairs with it. -->
+    <xpath expr="//div[hasclass('pw-recordsline')]" position="replace">
+      <p t-if="hasRecordsDesk" class="pbu-pw-line pbu-monthonly" role="note">
+        <span class="pbu-pw-line__ic" t-out="pbuIcon('info', 14)"/>
+        <span>This file is used for this pay run only. To change employee, contract or bank records, use People › Updates.
+          <button type="button" class="pbu-monthonly__go" t-on-click="pbuOpenUpdates">Open Updates</button>
+        </span>
+      </p>
+    </xpath>
+  </t>
+
+  <!-- The Import screen's guided "Load Pay Data": the same line on step 1,
+       and no "Create as new employee" (a row for somebody who is not in the
+       system is listed and not paid). -->
+  <t t-name="pb_updates.ImportWizardMonthOnly" t-inherit="pb_import_wizard.ImportWizard" t-inherit-mode="extension">
+    <xpath expr="//div[hasclass('iw-grid2')]" position="after">
+      <p class="pbu-pw-line pbu-monthonly" role="note">
+        <span class="pbu-pw-line__ic" t-out="pbuIcon('info', 14)"/>
+        <span>This file is used for this pay run only. To change employee, contract or bank records, use People › Updates.
+          <button type="button" class="pbu-monthonly__go" t-on-click="pbuOpenUpdates">Open Updates</button>
+        </span>
+      </p>
+    </xpath>
+    <xpath expr="//button[contains(@t-on-click, 'markNewEmployee')]" position="replace">
+      <p class="pbu-monthonly__nobody">Nobody matches? Add the employee first, then load the file again.</p>
+    </xpath>
+  </t>
+
+</templates>

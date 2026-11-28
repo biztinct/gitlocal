@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- No portal row anywhere: an employee reaches their own family list and
+         their own requests only through the /my/details routes, under sudo
+         after the session check (ledger T-R11). -->
+
+    <record id="rule_pb_employee_family_company" model="ir.rule">
+        <field name="name">Family members: own companies</field>
+        <field name="model_id" ref="model_pb_employee_family"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_pb_me_detail_request_company" model="ir.rule">
+        <field name="name">Detail changes: own companies</field>
+        <field name="model_id" ref="model_pb_me_detail_request"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- HR and the pay team see every change; anybody else (an internal
+         login) only what a route asked them to decide (AM60: a seat is also
+         a read, never a write). -->
+    <record id="rule_pb_me_detail_request_hr" model="ir.rule">
+        <field name="name">Detail changes: HR sees all</field>
+        <field name="model_id" ref="model_pb_me_detail_request"/>
+        <field name="groups" eval="[(4, ref('hr.group_hr_user')), (4, ref('om_hr_payroll.group_hr_payroll_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+    <record id="rule_pb_me_detail_request_seat" model="ir.rule">
+        <field name="name">Detail changes: the people the route asked</field>
+        <field name="model_id" ref="model_pb_me_detail_request"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('seat_user_ids', 'in', user.id)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+</odoo>

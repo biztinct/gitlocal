@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The block in the general Settings page (precedent:
+         pb_timesheet_approval). -->
+    <record id="res_config_settings_view_form_payai_actions" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.payai.actions</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+        <field name="priority" eval="121"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='companies']" position="after">
+                <div id="payai_actions_settings">
+                    <block title="PayAI can act" name="payai_actions">
+                        <setting id="payai_tier_look_setting"
+                                 string="PayAI may look (open screens, show figures)"
+                                 help="Open any screen the person can already reach, show where a pay run is, download an approved run's Excel. Nothing changes.">
+                            <field name="payai_tier_look"/>
+                        </setting>
+                        <setting id="payai_tier_prepare_setting"
+                                 string="PayAI may prepare (draft runs, send for approval, change values)"
+                                 help="Prepared only after the person taps Do it, and always through the normal approval route.">
+                            <field name="payai_tier_prepare"/>
+                        </setting>
+                        <setting id="payai_tier_decide_setting"
+                                 string="PayAI may decide (approve, send back, reject)"
+                                 help="Only for the approver's own decision, confirmed by typing the word. A spoken yes never counts.">
+                            <field name="payai_tier_decide"/>
+                        </setting>
+                        <setting id="payai_voice_go_ahead_setting"
+                                 string="A spoken 'go ahead' counts for prepare requests"
+                                 help="A person who asked by voice may confirm a prepare request by saying go ahead.">
+                            <field name="payai_voice_go_ahead"/>
+                        </setting>
+                    </block>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- A small page of its own, for the Settings hub card. -->
+    <record id="payai_can_act_form" model="ir.ui.view">
+        <field name="name">payai.can.act.form</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="900"/>
+        <field name="arch" type="xml">
+            <form string="PayAI can act" class="oe_form_configuration payai-can-act">
+                <header>
+                    <button string="Save" type="object" name="execute" class="btn-primary"/>
+                    <button string="Discard" special="cancel" class="btn-secondary"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>PayAI can act</h1>
+                        <p class="text-muted">What PayAI may do for people in this company when they ask it in words. It only ever does what the person could do themselves on the screen.</p>
+                    </div>
+                    <group>
+                        <field name="company_id" invisible="1"/>
+                        <field name="payai_tier_look"/>
+                        <field name="payai_tier_prepare"/>
+                        <field name="payai_tier_decide"/>
+                        <field name="payai_voice_go_ahead"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_payai_can_act" model="ir.actions.act_window">
+        <field name="name">PayAI can act</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="payai_can_act_form"/>
+        <field name="target">current</field>
+        <field name="context">{'module': 'pb_payai_actions'}</field>
+    </record>
+</odoo>

@@ -1,0 +1,1072 @@
+# Translation of Payobook.
+# This file contains the translation of the following modules:
+# 	* pb_hiring_internal
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-16 00:00+0000\n"
+"PO-Revision-Date: 2026-11-16 00:00+0000\n"
+"Last-Translator: Payobook Translation\n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/offer.py:0
+msgid ""
+"%(who)s already works here, so no Before they join list was made. "
+"%(manager)s, their new manager, was told."
+msgstr ""
+"%(who)s sudah bekerja di sini, jadi tidak dibuat daftar Sebelum bergabung. "
+"%(manager)s, atasan baru mereka, sudah diberi tahu."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+msgid ""
+"%(who)s applied from inside the company. Their current manager is told only "
+"when an offer is near."
+msgstr ""
+"%(who)s melamar dari dalam perusahaan. Atasan mereka saat ini baru diberi "
+"tahu ketika penawaran sudah dekat."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+msgid ""
+"%(who)s is close to an offer for %(role)s. HR will talk to you about the "
+"move and when it happens."
+msgstr ""
+"%(who)s hampir menerima penawaran untuk posisi %(role)s. HR akan "
+"membicarakan perpindahan ini dan waktunya dengan Anda."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/offer.py:0
+msgid ""
+"%(who)s is joining your team as %(job)s from %(when)s. They already work "
+"here, so HR changes their job on their record."
+msgstr ""
+"%(who)s bergabung dengan tim Anda sebagai %(job)s mulai %(when)s. Mereka "
+"sudah bekerja di sini, jadi HR mengubah jabatan di data mereka."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/offer.py:0
+msgid ""
+"%(who)s moves to this role from %(when)s. They already work here, so no new "
+"employee record, contract, login or joining checklist was made. Their job "
+"change comes next."
+msgstr ""
+"%(who)s pindah ke posisi ini mulai %(when)s. Mereka sudah bekerja di sini, "
+"jadi tidak dibuat data karyawan, kontrak, akun masuk, atau daftar orientasi "
+"baru. Selanjutnya adalah perubahan jabatan mereka."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/staff_moves.py:0
+msgid ""
+"%(who)s moves to this role. No new employee record was made. Job change to "
+"do: change their job on their employee record."
+msgstr ""
+"%(who)s pindah ke posisi ini. Tidak ada data karyawan baru. Yang perlu "
+"dilakukan: ubah jabatan di data karyawan mereka."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/staff_moves.py:0
+msgid ""
+"%(who)s moves to this role. No new employee record was made. The job change "
+"is open for you to check and send."
+msgstr ""
+"%(who)s pindah ke posisi ini. Tidak ada data karyawan baru. Perubahan "
+"jabatan sudah terbuka untuk Anda periksa dan kirim."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+msgid "%(who)s withdrew their application."
+msgstr "%(who)s menarik lamarannya."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "%s is joining your team"
+msgstr "%s bergabung dengan tim Anda"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "%s may move to another role"
+msgstr "%s mungkin pindah ke posisi lain"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "%s people are joining your team"
+msgstr "%s orang bergabung dengan tim Anda"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "%s people in your team may move to another role"
+msgstr "%s orang di tim Anda mungkin pindah ke posisi lain"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "%s people in your team may move to another role."
+msgstr "%s orang di tim Anda mungkin pindah ke posisi lain."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+msgid "(no department)"
+msgstr "(tanpa departemen)"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+msgid "(no job title)"
+msgstr "(tanpa jabatan)"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"<span class=\"d-none\" data-pbhi-ask=\"\">Withdraw your application? The "
+"hiring team will see that you withdrew it.</span>"
+msgstr ""
+"<span class=\"d-none\" data-pbhi-ask=\"\">Tarik lamaran Anda? Tim "
+"perekrutan akan melihat bahwa Anda menariknya.</span>"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid "<span class=\"pbhi-hint\">PDF or Word, up to 5 MB.</span>"
+msgstr "<span class=\"pbhi-hint\">PDF atau Word, maksimal 5 MB.</span>"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"<span class=\"pbhi-label\">Why this role? <span class=\"pbhi-"
+"opt\">optional</span></span>"
+msgstr ""
+"<span class=\"pbhi-label\">Mengapa posisi ini? <span "
+"class=\"pbhi-opt\">opsional</span></span>"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"<span class=\"pbhi-label\">Your CV <span class=\"pbhi-"
+"opt\">optional</span></span>"
+msgstr ""
+"<span class=\"pbhi-label\">CV Anda <span "
+"class=\"pbhi-opt\">opsional</span></span>"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"<span class=\"pbhi-step-n\">1</span><span><b>The hiring team looks at "
+"it</b><span>The recruiter for this role gets your application straight "
+"away.</span></span>"
+msgstr ""
+"<span class=\"pbhi-step-n\">1</span><span><b>Tim perekrutan "
+"meninjaunya</b><span>Perekrut untuk posisi ini langsung menerima lamaran "
+"Anda.</span></span>"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"<span class=\"pbhi-step-n\">2</span><span><b>Conversations, if it "
+"fits</b><span>The recruiter arranges any interviews with you "
+"directly.</span></span>"
+msgstr ""
+"<span class=\"pbhi-step-n\">2</span><span><b>Percakapan, jika "
+"cocok</b><span>Perekrut mengatur wawancara langsung dengan "
+"Anda.</span></span>"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"<span class=\"pbhi-step-n\">3</span><span><b>An offer, then a "
+"move</b><span>Your manager is told when an offer is near. Your job then "
+"changes on your record.</span></span>"
+msgstr ""
+"<span class=\"pbhi-step-n\">3</span><span><b>Penawaran, lalu "
+"pindah</b><span>Atasan Anda diberi tahu ketika penawaran sudah dekat. Lalu "
+"jabatan Anda diubah di data Anda.</span></span>"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_promise
+msgid ""
+"<span>Only the hiring team for the role sees your application. Your manager "
+"is told only when an offer is near.</span>"
+msgstr ""
+"<span>Hanya tim perekrutan posisi tersebut yang melihat lamaran Anda. "
+"Atasan Anda baru diberi tahu ketika penawaran sudah dekat.</span>"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"<span>Your manager is on the hiring team for this role, so they will see "
+"your application.</span>"
+msgstr ""
+"<span>Atasan Anda termasuk tim perekrutan posisi ini, jadi mereka akan "
+"melihat lamaran Anda.</span>"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"A few lines for the hiring team: what you would bring, and what you want to "
+"learn."
+msgstr ""
+"Beberapa baris untuk tim perekrutan: apa yang akan Anda bawa, dan apa yang "
+"ingin Anda pelajari."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/offer.py:0
+msgid ""
+"A move can be confirmed once the offer is signed. This one is “%s” — record "
+"the signed copy first."
+msgstr ""
+"Perpindahan dapat dikonfirmasi setelah penawaran ditandatangani. Yang ini "
+"“%s”: catat salinan yang ditandatangani dulu."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+msgid "A move in your team"
+msgstr "Perpindahan di tim Anda"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid ""
+"A staff-only role never goes on the careers page. Choosing it for a role "
+"already there takes the role off."
+msgstr ""
+"Posisi khusus karyawan tidak pernah tampil di halaman karier. Memilihnya "
+"untuk posisi yang sudah tampil akan menurunkan posisi itu."
+
+#. module: pb_hiring_internal
+#: model:ir.model,name:pb_hiring_internal.model_pb_hiring_posting
+msgid "Advert"
+msgstr "Iklan lowongan"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"An offer is being prepared. Your manager has now been told, as promised."
+msgstr ""
+"Penawaran sedang disiapkan. Atasan Anda kini sudah diberi tahu, seperti "
+"yang dijanjikan."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+msgid "An offer is near, so %(manager)s, their current manager, was told."
+msgstr ""
+"Penawaran sudah dekat, jadi %(manager)s, atasan mereka saat ini, sudah "
+"diberi tahu."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+msgid ""
+"An offer is near. %(who)s has no manager on their record, so nobody else was"
+" told."
+msgstr ""
+"Penawaran sudah dekat. %(who)s tidak memiliki atasan di datanya, jadi tidak "
+"ada orang lain yang diberi tahu."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "An offer is near. HR will talk to you about the timing."
+msgstr "Penawaran sudah dekat. HR akan membicarakan waktunya dengan Anda."
+
+#. module: pb_hiring_internal
+#: model:ir.model,name:pb_hiring_internal.model_hr_applicant
+msgid "Applicant"
+msgstr "Pelamar"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "Applications"
+msgstr "Lamaran"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_jobs
+msgid "Applied"
+msgstr "Melamar"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__pb_internal
+msgid "Applied from inside the company"
+msgstr "Melamar dari dalam perusahaan"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+msgid ""
+"Applied from inside the company. Works here now as %(job)s in %(dept)s."
+msgstr ""
+"Melamar dari dalam perusahaan. Saat ini bekerja sebagai %(job)s di %(dept)s."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_toast
+msgid "Applied. The hiring team for this role has it."
+msgstr "Lamaran terkirim. Tim perekrutan posisi ini sudah menerimanya."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid "Apply"
+msgstr "Lamar"
+
+#. module: pb_hiring_internal
+#: model:ir.model,website_form_label:pb_hiring_internal.model_hr_applicant
+msgid "Apply for a Job"
+msgstr "Lamar Pekerjaan"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid "Apply for this role"
+msgstr "Lamar posisi ini"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_alert
+msgid "Attach a PDF or a Word document."
+msgstr "Lampirkan dokumen PDF atau Word."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_pill
+msgid "Being considered"
+msgstr "Sedang dipertimbangkan"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/staff_moves.py:0
+msgid ""
+"Change %(who)s's job on their employee record: new job, manager, pay and "
+"start date. This system has no guided job change yet."
+msgstr ""
+"Ubah jabatan %(who)s di data karyawannya: jabatan baru, atasan, gaji, dan "
+"tanggal mulai. Sistem ini belum memiliki alur perubahan jabatan terpandu."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/staff_moves.py:0
+msgid "Choose who can apply for this role."
+msgstr "Pilih siapa yang dapat melamar posisi ini."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid "Close to an offer elsewhere"
+msgstr "Hampir menerima penawaran di posisi lain"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+msgid "Confidential roles are never shown to staff."
+msgstr "Posisi rahasia tidak pernah ditampilkan kepada karyawan."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/staff_moves.py:0
+msgid ""
+"Confirm the move on their offer first. The job change starts from there."
+msgstr ""
+"Konfirmasi perpindahan di penawaran mereka terlebih dahulu. Perubahan "
+"jabatan dimulai dari sana."
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__display_name
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_job__display_name
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_hiring__display_name
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_hiring_internal__display_name
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_hiring_offer__display_name
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_hiring_posting__display_name
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_hiring_requisition__display_name
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_me_home__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_hiring_internal
+#: model:ir.model,name:pb_hiring_internal.model_pb_me_home
+msgid "Employee home page facts"
+msgstr "Data beranda karyawan"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid "From"
+msgstr "Mulai"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "Hiring paused: hidden from staff"
+msgstr "Perekrutan dijeda: disembunyikan dari karyawan"
+
+#. module: pb_hiring_internal
+#: model:ir.model,name:pb_hiring_internal.model_pb_hiring_requisition
+msgid "Hiring request"
+msgstr "Permintaan perekrutan"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__id
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_job__id
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_hiring__id
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_hiring_internal__id
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_hiring_offer__id
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_hiring_posting__id
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_hiring_requisition__id
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_me_home__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "Internal role"
+msgstr "Posisi internal"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job_missing
+msgid ""
+"It may have been filled or closed. Other roles open to staff are on the "
+"list."
+msgstr ""
+"Posisi ini mungkin sudah terisi atau ditutup. Posisi lain yang terbuka "
+"untuk karyawan ada di daftar."
+
+#. module: pb_hiring_internal
+#: model:ir.model,name:pb_hiring_internal.model_hr_job
+msgid "Job Position"
+msgstr "Posisi Pekerjaan"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields.selection,name:pb_hiring_internal.selection__hr_applicant__pb_job_change_state__opened
+msgid "Job change opened"
+msgstr "Perubahan jabatan dibuka"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields.selection,name:pb_hiring_internal.selection__hr_applicant__pb_job_change_state__to_do
+msgid "Job change to do"
+msgstr "Perubahan jabatan perlu dilakukan"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "Job change to do: change their job on their employee record."
+msgstr ""
+"Perubahan jabatan perlu dilakukan: ubah jabatan di data karyawan mereka."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_breadcrumbs_pbhi
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_home_pbhi
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_jobs
+msgid "Jobs inside the company"
+msgstr "Lowongan di dalam perusahaan"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/offer.py:0
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid "Joining your team"
+msgstr "Bergabung dengan tim Anda"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "Loading…"
+msgstr "Memuat…"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/board_patch.xml:0
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "Manager not told yet"
+msgstr "Atasan belum diberi tahu"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/board_patch.xml:0
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "Manager told"
+msgstr "Atasan sudah diberi tahu"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__pb_manager_told_id
+msgid "Manager who was told"
+msgstr "Atasan yang diberi tahu"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+msgid "Moved"
+msgstr "Sudah pindah"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/offer.py:0
+msgid "Moved to %(role)s through an internal application."
+msgstr "Pindah ke %(role)s melalui lamaran internal."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_breadcrumbs_pbhi
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid "Moves in your team"
+msgstr "Perpindahan di tim Anda"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_pill
+msgid "Moving to this role"
+msgstr "Pindah ke posisi ini"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__pb_new_manager_id
+msgid "New manager who was told"
+msgstr "Atasan baru yang diberi tahu"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/board_patch.xml:0
+msgid "No manager on their record"
+msgstr "Tidak ada atasan di datanya"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid "No moves in your team"
+msgstr "Tidak ada perpindahan di tim Anda"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "No open roles"
+msgstr "Tidak ada posisi terbuka"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_jobs
+msgid "No roles open to staff right now"
+msgstr "Saat ini belum ada posisi yang terbuka untuk karyawan"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "No staff applications yet"
+msgstr "Belum ada lamaran dari karyawan"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_pill
+msgid "Not this time"
+msgstr "Belum kali ini"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid "Not this time. Thank you for applying. Other roles may suit you later."
+msgstr ""
+"Belum kali ini. Terima kasih sudah melamar. Posisi lain mungkin cocok untuk "
+"Anda nanti."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/requisition.py:0
+msgid "Now open to staff only, so it came off the careers page."
+msgstr "Kini hanya untuk karyawan, jadi diturunkan dari halaman karier."
+
+#. module: pb_hiring_internal
+#: model:ir.model,name:pb_hiring_internal.model_pb_hiring_offer
+msgid "Offer"
+msgstr "Penawaran"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_pill
+msgid "Offer accepted"
+msgstr "Penawaran diterima"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_pill
+msgid "Offer being prepared"
+msgstr "Penawaran sedang disiapkan"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "On the careers page"
+msgstr "Di halaman karier"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/staff_moves.py:0
+msgid "Only the hiring team sees staff moves."
+msgstr "Hanya tim perekrutan yang melihat perpindahan karyawan."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid ""
+"Open a role to staff under “Who can apply”. Staff then see it on their own "
+"pages and can apply in one press."
+msgstr ""
+"Buka posisi untuk karyawan di “Siapa yang dapat melamar”. Karyawan lalu "
+"melihatnya di halaman mereka sendiri dan dapat melamar dengan sekali tekan."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_home_pbhi
+msgid "Open roles you can apply for"
+msgstr "Posisi terbuka yang dapat Anda lamar"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_jobs
+msgid ""
+"Open roles you can apply for. Your record is your application, so there is "
+"nothing to type again."
+msgstr ""
+"Posisi terbuka yang dapat Anda lamar. Data Anda adalah lamaran Anda, jadi "
+"tidak perlu mengetik ulang."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "Open the job change"
+msgstr "Buka perubahan jabatan"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_jobs
+msgid "Open to staff"
+msgstr "Terbuka untuk karyawan"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_jobs
+msgid "Opened"
+msgstr "Dibuka"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields.selection,name:pb_hiring_internal.selection__pb_hiring_requisition__pb_staff_posting__outside
+msgid "Outside candidates only"
+msgstr "Hanya kandidat dari luar"
+
+#. module: pb_hiring_internal
+#: model:ir.model,name:pb_hiring_internal.model_pb_hiring
+msgid "Payobook Hiring cockpit data"
+msgstr "Data kokpit perekrutan Payobook"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid ""
+"People moving into your team from another role, and people in your team "
+"close to an offer elsewhere. HR will talk to you about the timing."
+msgstr ""
+"Orang yang pindah ke tim Anda dari posisi lain, dan orang di tim Anda yang "
+"hampir menerima penawaran di tempat lain. HR akan membicarakan waktunya "
+"dengan Anda."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid ""
+"People who applied from inside the company, and which roles staff can see."
+msgstr ""
+"Orang yang melamar dari dalam perusahaan, dan posisi mana yang dapat "
+"dilihat karyawan."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+msgid "Quiet replacements are never shown to staff."
+msgstr "Penggantian diam-diam tidak pernah ditampilkan kepada karyawan."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_pill
+msgid "Received"
+msgstr "Diterima"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "Reload the page. If it keeps happening, tell your administrator."
+msgstr "Muat ulang halaman. Jika terus terjadi, beri tahu administrator Anda."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+msgid "Saved. %s"
+msgstr "Tersimpan. %s"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job_missing
+msgid "See the open roles"
+msgstr "Lihat posisi terbuka"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_jobs
+msgid "See the role"
+msgstr "Lihat posisi"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "Somebody in your team may move to another role."
+msgstr "Seseorang di tim Anda mungkin pindah ke posisi lain."
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields.selection,name:pb_hiring_internal.selection__pb_hiring_requisition__pb_staff_posting__both
+msgid "Staff and outside candidates"
+msgstr "Karyawan dan kandidat dari luar"
+
+#. module: pb_hiring_internal
+#: model:ir.model,name:pb_hiring_internal.model_pb_hiring_internal
+msgid "Staff applications for open roles"
+msgstr "Lamaran karyawan untuk posisi terbuka"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "Staff moves"
+msgstr "Perpindahan karyawan"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "Staff moves could not be read"
+msgstr "Data perpindahan karyawan tidak dapat dibaca"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields.selection,name:pb_hiring_internal.selection__pb_hiring_requisition__pb_staff_posting__staff
+msgid "Staff only"
+msgstr "Hanya karyawan"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,help:pb_hiring_internal.field_pb_hiring_requisition__pb_staff_posting
+msgid ""
+"Staff see a role on their own pages only when it is open to staff. A staff-"
+"only role is never put on the careers page."
+msgstr ""
+"Karyawan hanya melihat posisi di halaman mereka jika posisi itu terbuka "
+"untuk karyawan. Posisi khusus karyawan tidak pernah tampil di halaman "
+"karier."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "Start the job change"
+msgstr "Mulai perubahan jabatan"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/staff_moves.py:0
+msgid "That application is not there any more."
+msgstr "Lamaran itu sudah tidak ada."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+msgid "That could not be opened."
+msgstr "Tidak dapat dibuka."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+msgid "That could not be saved."
+msgstr "Tidak dapat disimpan."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_alert
+msgid "That did not go through. Try again in a moment."
+msgstr "Belum berhasil. Coba lagi sebentar lagi."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_alert
+msgid "That file is bigger than 5 MB. Attach a smaller one, or leave it out."
+msgstr ""
+"File lebih besar dari 5 MB. Lampirkan yang lebih kecil, atau lewati saja."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+msgid "That role is not open to staff any more."
+msgstr "Posisi itu sudah tidak terbuka untuk karyawan."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/staff_moves.py:0
+msgid "That role is not there any more."
+msgstr "Posisi itu sudah tidak ada."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"The hiring team has not written the advert yet. The recruiter for this role "
+"can tell you more."
+msgstr ""
+"Tim perekrutan belum menulis iklannya. Perekrut untuk posisi ini dapat "
+"memberi tahu Anda lebih banyak."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid "The hiring team has your application and will look at it soon."
+msgstr ""
+"Tim perekrutan sudah menerima lamaran Anda dan akan segera meninjaunya."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"The hiring team is looking at your application. The recruiter will be in "
+"touch about next steps."
+msgstr ""
+"Tim perekrutan sedang meninjau lamaran Anda. Perekrut akan menghubungi Anda "
+"tentang langkah selanjutnya."
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,help:pb_hiring_internal.field_hr_applicant__pb_manager_told_on
+msgid "Their current manager is told only when an offer is near."
+msgstr "Atasan mereka saat ini baru diberi tahu ketika penawaran sudah dekat."
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__pb_job_change_state
+msgid "Their job change"
+msgstr "Perubahan jabatan mereka"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__pb_manager_told_on
+msgid "Their manager was told on"
+msgstr "Atasan diberi tahu pada"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__pb_new_manager_told_on
+msgid "Their new manager was told on"
+msgstr "Atasan baru diberi tahu pada"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid ""
+"They already work here, so there is no new-joiner list. HR changes their job"
+" on their record."
+msgstr ""
+"Mereka sudah bekerja di sini, jadi tidak ada daftar karyawan baru. HR "
+"mengubah jabatan di data mereka."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+msgid "They already work here. HR changes their job on their record."
+msgstr "Mereka sudah bekerja di sini. HR mengubah jabatan di data mereka."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_alert
+msgid ""
+"This application can no longer be withdrawn here. Talk to the recruiter for "
+"this role."
+msgstr ""
+"Lamaran ini tidak dapat ditarik di sini lagi. Bicaralah dengan perekrut "
+"untuk posisi ini."
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,help:pb_hiring_internal.field_hr_applicant__pb_internal
+msgid ""
+"This candidate already works here and applied from their own pages. Hiring "
+"them changes their job; it never makes a second employee record."
+msgstr ""
+"Kandidat ini sudah bekerja di sini dan melamar dari halamannya sendiri. "
+"Merekrutnya berarti mengubah jabatannya, tidak pernah membuat data karyawan "
+"kedua."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job_missing
+msgid "This role is not open to staff"
+msgstr "Posisi ini tidak terbuka untuk karyawan"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_alert
+msgid "This role is not open to staff any more."
+msgstr "Posisi ini sudah tidak terbuka untuk karyawan."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/requisition.py:0
+msgid ""
+"This role is open to staff only, so it is not put on the careers page. "
+"Change who can apply first."
+msgstr ""
+"Posisi ini hanya untuk karyawan, jadi tidak ditampilkan di halaman karier. "
+"Ubah siapa yang dapat melamar terlebih dahulu."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid "Told"
+msgstr "Diberi tahu"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid "What happens next"
+msgstr "Apa yang terjadi selanjutnya"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid ""
+"When a role is open for candidates, you choose here whether staff can apply."
+msgstr ""
+"Ketika posisi terbuka untuk kandidat, Anda memilih di sini apakah karyawan "
+"dapat melamar."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_team_moves
+msgid ""
+"When somebody in your team is close to an offer for another role, you are "
+"told here."
+msgstr ""
+"Ketika seseorang di tim Anda hampir menerima penawaran untuk posisi lain, "
+"Anda diberi tahu di sini."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_jobs
+msgid "When the company opens a role to staff, it appears here."
+msgstr ""
+"Ketika perusahaan membuka posisi untuk karyawan, posisi itu muncul di sini."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_pb_hiring_requisition__pb_staff_posting
+msgid "Who can apply"
+msgstr "Siapa yang dapat melamar"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid "Withdraw my application"
+msgstr "Tarik lamaran saya"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/pb_me_home.py:0
+#: code:addons/pb_hiring_internal/static/src/js/staff_moves.js:0
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_pill
+msgid "Withdrawn"
+msgstr "Ditarik"
+
+#. module: pb_hiring_internal
+#: model:ir.model.fields,field_description:pb_hiring_internal.field_hr_applicant__pb_internal_withdrawn_on
+msgid "Withdrawn by them on"
+msgstr "Ditarik oleh mereka pada"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_toast
+msgid "Withdrawn. Nobody else needs to be told."
+msgstr "Sudah ditarik. Tidak ada orang lain yang perlu diberi tahu."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/board_patch.xml:0
+msgid "Works here"
+msgstr "Bekerja di sini"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"You accepted the offer. HR will arrange the move with you and your manager."
+msgstr ""
+"Anda menerima penawaran. HR akan mengatur perpindahan bersama Anda dan "
+"atasan Anda."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid "You are moving to this role. HR changes your job on your record."
+msgstr "Anda pindah ke posisi ini. HR mengubah jabatan di data Anda."
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/applicant.py:0
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.pbhi_alert
+msgid "You have already applied for this role."
+msgstr "Anda sudah melamar posisi ini."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid "You withdrew this application."
+msgstr "Anda menarik lamaran ini."
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid "Your application"
+msgstr "Lamaran Anda"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_jobs
+msgid "Your applications"
+msgstr "Lamaran Anda"
+
+#. module: pb_hiring_internal
+#: model_terms:ir.ui.view,arch_db:pb_hiring_internal.portal_my_job
+msgid ""
+"Your record is your application: the hiring team sees your name, your "
+"current job and your department."
+msgstr ""
+"Data Anda adalah lamaran Anda: tim perekrutan melihat nama, jabatan saat "
+"ini, dan departemen Anda."
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "from staff"
+msgstr "dari karyawan"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "job changes to do"
+msgstr "perubahan jabatan perlu dilakukan"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "roles open to staff"
+msgstr "posisi terbuka untuk karyawan"
+
+#. module: pb_hiring_internal
+#. odoo-javascript
+#: code:addons/pb_hiring_internal/static/src/xml/staff_moves.xml:0
+msgid "staff applications in play"
+msgstr "lamaran karyawan sedang berjalan"
+
+#. module: pb_hiring_internal
+#. odoo-python
+#: code:addons/pb_hiring_internal/models/staff_moves.py:0
+msgid "Already works here"
+msgstr "Sudah bekerja di sini"

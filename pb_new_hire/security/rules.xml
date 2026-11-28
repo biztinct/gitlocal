@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- NEWHIRE P3a: a person reads only what THEY were asked; HR reads all. -->
+    <record id="rule_ask_own" model="ir.rule">
+        <field name="name">New hire asks: own only</field>
+        <field name="model_id" ref="model_pb_new_hire_ask"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user')), (4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    <record id="rule_ask_hr" model="ir.rule">
+        <field name="name">New hire asks: HR, every person</field>
+        <field name="model_id" ref="model_pb_new_hire_ask"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('hr.group_hr_user'))]"/>
+    </record>
+    <record id="rule_ask_company" model="ir.rule">
+        <field name="name">New hire asks: allowed companies</field>
+        <field name="model_id" ref="model_pb_new_hire_ask"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_paper_company" model="ir.rule">
+        <field name="name">New hire papers: shipped list and allowed companies</field>
+        <field name="model_id" ref="model_pb_new_hire_paper"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+    </record>
+</odoo>

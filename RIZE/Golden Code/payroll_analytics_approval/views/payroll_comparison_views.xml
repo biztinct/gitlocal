@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Payroll Comparison Form View -->
+    <record id="view_payroll_comparison_form" model="ir.ui.view">
+        <field name="name">payroll.comparison.form</field>
+        <field name="model">payroll.comparison</field>
+        <field name="arch" type="xml">
+            <form string="Payroll Comparison Analysis">
+                <header>
+                    <button name="action_regenerate_analysis" type="object" string="Regenerate Analysis" class="btn-primary" states="done"/>
+                    <button name="action_export_report" type="object" string="Export Report" class="btn-secondary" states="done"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Comparison Analysis Name"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group string="Current Period">
+                            <field name="country"/>
+                            <field name="current_period_from"/>
+                            <field name="current_period_to"/>
+                            <field name="current_total_employees"/>
+                            <field name="current_total_payroll" widget="monetary"/>
+                        </group>
+                        <group string="Comparison Period">
+                            <field name="comparison_type"/>
+                            <field name="previous_period_from"/>
+                            <field name="previous_period_to"/>
+                            <field name="previous_total_employees"/>
+                            <field name="previous_total_payroll" widget="monetary"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <group string="Analysis Summary">
+                            <field name="employee_variance" widget="percentage"/>
+                            <field name="payroll_variance" widget="percentage"/>
+                            <field name="average_salary_variance" widget="percentage"/>
+                        </group>
+                        <group string="Configuration">
+                            <field name="variance_threshold" widget="percentage"/>
+                            <field name="include_charts"/>
+                            <field name="create_date" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Variance Analysis" name="variance">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="alert alert-info">
+                                        <h5><i class="fa fa-users"/> Employee Variance</h5>
+                                        <h3><field name="employee_variance" widget="percentage"/></h3>
+                                        <small>Change in employee count</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="alert alert-warning">
+                                        <h5><i class="fa fa-money"/> Payroll Variance</h5>
+                                        <h3><field name="payroll_variance" widget="percentage"/></h3>
+                                        <small>Change in total payroll</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="alert alert-success">
+                                        <h5><i class="fa fa-calculator"/> Salary Variance</h5>
+                                        <h3><field name="average_salary_variance" widget="percentage"/></h3>
+                                        <small>Change in average salary</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </page>
+                        
+                        <page string="Component Analysis" name="components">
+                            <field name="component_analysis" widget="text" readonly="1"/>
+                        </page>
+                        
+                        <page string="Detailed Results" name="results">
+                            <field name="analysis_results" widget="text" readonly="1"/>
+                        </page>
+                        
+                        <page string="Charts &amp; Visualizations" name="charts" attrs="{'invisible': [('include_charts', '=', False)]}">
+                            <div class="alert alert-info">
+                                <p><i class="fa fa-info-circle"/> Charts and visualizations are embedded in the detailed dashboard view. Click "Open Dashboard" to view interactive charts.</p>
+                            </div>
+                            <field name="chart_data" widget="text" readonly="1"/>
+                        </page>
+                        
+                        <page string="Recommendations" name="recommendations">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h4><i class="fa fa-lightbulb-o text-success"/> Recommendations</h4>
+                                    <field name="recommendations" widget="text" readonly="1"/>
+                                </div>
+                                <div class="col-md-6">
+                                    <h4><i class="fa fa-exclamation-triangle text-warning"/> Alerts</h4>
+                                    <field name="alerts" widget="text" readonly="1"/>
+                                </div>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+                
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Payroll Comparison Tree View -->
+    <record id="view_payroll_comparison_tree" model="ir.ui.view">
+        <field name="name">payroll.comparison.tree</field>
+        <field name="model">payroll.comparison</field>
+        <field name="arch" type="xml">
+            <tree string="Payroll Comparisons" 
+                  decoration-success="payroll_variance &lt; 5 and payroll_variance &gt; -5"
+                  decoration-warning="payroll_variance &gt;= 5 or payroll_variance &lt;= -5"
+                  decoration-danger="payroll_variance &gt;= 15 or payroll_variance &lt;= -15">
+                <field name="name"/>
+                <field name="country"/>
+                <field name="current_period_from"/>
+                <field name="current_period_to"/>
+                <field name="comparison_type"/>
+                <field name="employee_variance" widget="percentage"/>
+                <field name="payroll_variance" widget="percentage"/>
+                <field name="average_salary_variance" widget="percentage"/>
+                <field name="state" widget="badge"/>
+                <button name="action_open_dashboard" string="Dashboard" type="object" icon="fa-dashboard"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Payroll Comparison Search View -->
+    <record id="view_payroll_comparison_search" model="ir.ui.view">
+        <field name="name">payroll.comparison.search</field>
+        <field name="model">payroll.comparison</field>
+        <field name="arch" type="xml">
+            <search string="Search Payroll Comparisons">
+                <field name="name"/>
+                <field name="country"/>
+                <field name="current_period_from"/>
+                <field name="current_period_to"/>
+                <filter string="High Variance" name="high_variance" 
+                        domain="['|', ('payroll_variance', '&gt;', 15), ('payroll_variance', '&lt;', -15)]"/>
+                <filter string="Normal Variance" name="normal_variance" 
+                        domain="[('payroll_variance', '&lt;=', 5), ('payroll_variance', '&gt;=', -5)]"/>
+                <filter string="This Month" name="this_month" 
+                        domain="[('current_period_from', '&gt;=', (context_today() - relativedelta(day=1)).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Country" name="group_country" context="{'group_by': 'country'}"/>
+                    <filter string="Comparison Type" name="group_type" context="{'group_by': 'comparison_type'}"/>
+                    <filter string="Month" name="group_month" context="{'group_by': 'current_period_from:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Payroll Comparison Action -->
+    <record id="action_payroll_comparison" model="ir.actions.act_window">
+        <field name="name">Payroll Comparisons</field>
+        <field name="res_model">payroll.comparison</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_payroll_comparison_search"/>
+        <field name="context">{
+            'search_default_this_month': 1
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No payroll comparisons found!
+            </p>
+            <p>
+                Create payroll comparison analyses to track changes and trends across different periods.
+                Use the comparison wizard to generate detailed analytics.
+            </p>
+        </field>
+    </record>
+    
+    <!-- Quick Comparison Dashboard View -->
+    <record id="view_payroll_comparison_dashboard" model="ir.ui.view">
+        <field name="name">payroll.comparison.dashboard</field>
+        <field name="model">payroll.comparison</field>
+        <field name="arch" type="xml">
+            <form string="Comparison Dashboard" create="false" edit="false">
+                <div class="comparison-dashboard">
+                    <div class="dashboard-header">
+                        <h1><field name="name"/></h1>
+                        <p class="subtitle"><field name="country"/> - <field name="comparison_type"/> Comparison</p>
+                    </div>
+                    
+                    <div class="comparison-cards">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="metric-card employees-card">
+                                    <h3>Employee Count</h3>
+                                    <div class="current-value"><field name="current_total_employees"/></div>
+                                    <div class="previous-value">Previous: <field name="previous_total_employees"/></div>
+                                    <div class="variance"><field name="employee_variance" widget="percentage"/></div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="metric-card payroll-card">
+                                    <h3>Total Payroll</h3>
+                                    <div class="current-value"><field name="current_total_payroll" widget="monetary"/></div>
+                                    <div class="previous-value">Previous: <field name="previous_total_payroll" widget="monetary"/></div>
+                                    <div class="variance"><field name="payroll_variance" widget="percentage"/></div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="metric-card salary-card">
+                                    <h3>Average Salary</h3>
+                                    <div class="current-value">
+                                        <t t-if="current_total_employees">
+                                            <t t-esc="'{:,.0f}'.format(current_total_payroll / current_total_employees)"/>
+                                        </t>
+                                    </div>
+                                    <div class="previous-value">
+                                        Previous: 
+                                        <t t-if="previous_total_employees">
+                                            <t t-esc="'{:,.0f}'.format(previous_total_payroll / previous_total_employees)"/>
+                                        </t>
+                                    </div>
+                                    <div class="variance"><field name="average_salary_variance" widget="percentage"/></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="comparison-charts mt-4">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="chart-container">
+                                    <h4>Component Analysis</h4>
+                                    <canvas id="comparison-chart" width="800" height="400"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </field>
+    </record>
+    
+</odoo>

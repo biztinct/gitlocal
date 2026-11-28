@@ -1,0 +1,17 @@
+<odoo>
+    <record id="application_snapshot_company_rule" model="ir.rule">
+        <field name="name">Application payroll evidence: allowed companies</field>
+        <field name="model_id" ref="model_hr_payroll_application_snapshot"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="payroll_preparation_owner_company" model="ir.rule">
+        <field name="name">Payroll preparation: own drafts in allowed companies</field>
+        <field name="model_id" ref="model_hr_payroll_preparation"/>
+        <field name="domain_force">[('company_id', 'in', company_ids), '|', ('owner_id', '=', user.id), ('state', '=', 'sealed')]</field>
+    </record>
+    <record id="payroll_preparation_event_company" model="ir.rule">
+        <field name="name">Payroll preparation history: visible preparations</field>
+        <field name="model_id" ref="model_hr_payroll_preparation_event"/>
+        <field name="domain_force">[('company_id', 'in', company_ids), '|', ('preparation_id.owner_id', '=', user.id), ('preparation_id.state', '=', 'sealed')]</field>
+    </record>
+</odoo>

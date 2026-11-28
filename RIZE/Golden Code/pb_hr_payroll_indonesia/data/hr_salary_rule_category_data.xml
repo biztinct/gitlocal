@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Indonesia Specific Categories -->
+        <record id="categ_indonesia_gross" model="hr.salary.rule.category">
+            <field name="name">Indonesia Gross Pay</field>
+            <field name="code">IDN_GROSS</field>
+        </record>
+        
+        <record id="categ_indonesia_deductions" model="hr.salary.rule.category">
+            <field name="name">Indonesia Deductions</field>
+            <field name="code">IDN_DED</field>
+        </record>
+        
+        <record id="categ_indonesia_tax" model="hr.salary.rule.category">
+            <field name="name">Indonesia Tax</field>
+            <field name="code">IDN_TAX</field>
+        </record>
+        
+        <record id="categ_indonesia_bpjs" model="hr.salary.rule.category">
+            <field name="name">Indonesia BPJS</field>
+            <field name="code">IDN_BPJS</field>
+        </record>
+        
+        <record id="categ_indonesia_employer" model="hr.salary.rule.category">
+            <field name="name">Indonesia Employer Contributions</field>
+            <field name="code">IDN_EMP_CONTRIB</field>
+        </record>
+        
+    </data>
+</odoo>

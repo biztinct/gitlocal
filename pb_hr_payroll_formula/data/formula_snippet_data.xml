@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- W104 — starter snippet library. Patterns lifted from the VN demo formulas
+         (proration, cap-at-constant, progressive BRACKET, round-to-thousands).
+         ${CODE} placeholders resolve to a column-letter ref at insertion time;
+         company_id empty => shared across every company. noupdate so users may
+         edit/delete the seeds without a module upgrade reverting them. -->
+    <data noupdate="1">
+
+        <record id="snippet_prorate_workdays" model="hr.formula.snippet">
+            <field name="name">Prorate by workdays</field>
+            <field name="category">proration</field>
+            <field name="body">ROUND(${BASIC}/${DAYSTD}*${DAYSWORKED})</field>
+            <field name="description">Scale a monthly amount to the days actually worked.</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="snippet_overtime_hourly" model="hr.formula.snippet">
+            <field name="name">Overtime pay (hourly)</field>
+            <field name="category">proration</field>
+            <field name="body">ROUND(${BASIC}/${DAYSTD}/${HRSTD}*${MULT}*${OTHOURS})</field>
+            <field name="description">Hourly rate × overtime multiplier × overtime hours.</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="snippet_cap_ceiling" model="hr.formula.snippet">
+            <field name="name">Cap at a ceiling</field>
+            <field name="category">cap</field>
+            <field name="body">MIN(${BASE},${CAP})</field>
+            <field name="description">Limit a value to a maximum (e.g. an insurance cap).</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <record id="snippet_insurance_capped" model="hr.formula.snippet">
+            <field name="name">Insurance (capped deduction)</field>
+            <field name="category">cap</field>
+            <field name="body">-ROUND(MIN(${BASIC},${CAP})*${RATE})</field>
+            <field name="description">Rate applied to a capped base, as a negative deduction.</field>
+            <field name="sequence">40</field>
+        </record>
+
+        <record id="snippet_bracket_pit" model="hr.formula.snippet">
+            <field name="name">Progressive tax (rate table)</field>
+            <field name="category">bracket</field>
+            <field name="body">-ROUND(BRACKET(PIT,${TAXABLE}))</field>
+            <field name="description">Progressive tax on a taxable base via a BRACKET rate table (rename PIT to your table code).</field>
+            <field name="sequence">50</field>
+        </record>
+
+        <record id="snippet_round_thousands" model="hr.formula.snippet">
+            <field name="name">Round to nearest 1,000</field>
+            <field name="category">rounding</field>
+            <field name="body">ROUND(${AMOUNT}/1000)*1000</field>
+            <field name="description">Round a value to the nearest thousand.</field>
+            <field name="sequence">60</field>
+        </record>
+
+    </data>
+</odoo>

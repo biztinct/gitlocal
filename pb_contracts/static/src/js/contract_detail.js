@@ -1,0 +1,84 @@
+/** @odoo-module **/
+import { Component, useState, onWillStart } from "@odoo/owl";
+import { registry } from "@web/core/registry";
+import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
+import { ic } from "@pb_import_kit/js/import_icons";
+
+const MODEL = "pb.contracts";
+const C_CLS = { open: "ok", close: "warn", draft: "info", cancel: "muted" };
+
+export class PbContractDetail extends Component {
+    static template = "pb_contracts.PbContractDetail";
+    static props = ["*"];
+
+    setup() {
+        this.orm = useService("orm");
+        this.action = useService("action");
+        this.notif = useService("notification");
+        const p = (this.props.action && (this.props.action.params || this.props.action.context)) || {};
+        this.cid = p.contract_id || p.active_id;
+        this.state = useState({ loaded: false, busy: false, busyMsg: "", d: null });
+        onWillStart(async () => { await this.refresh(); });
+    }
+
+    ic(n, s = 16) { return ic(n, s); }
+    get d() { return this.state.d || {}; }
+    cCls(s) { return C_CLS[s] || "muted"; }
+    // SCHEMECTX: the sign comes from the payload, which asks the scheme that
+    // pays this person. No literal fallback — a hardcoded "₫" is exactly how
+    // an Indian salary came to be written in dong.
+    // The four facts that used to be big tiles, as one quiet line. Nothing
+    // here filters; rose only when the contract ends within 30 days.
+    get glance() {
+        const d = this.d || {};
+        const days = d.days_to_expiry;
+        const hasDays = days !== null && days !== undefined;
+        return [
+            { key: "wage", n: this.money(d.wage), label: _t("Monthly wage"), tone: "", run: null },
+            { key: "tenure", n: d.tenure_label || "—", label: _t("Tenure"), tone: "", run: null },
+            { key: "end", n: hasDays ? days : "—", label: _t("Days to contract end"), tone: hasDays && days <= 30 ? "rose" : "", run: null },
+            { key: "trial", n: d.trial_end || "—", label: _t("Trial ends"), tone: "", run: null },
+        ];
+    }
+
+    money(n) {
+        const cur = this.d.currency || "";
+        if (!n) return cur + "0";
+        return cur + Math.round(n).toLocaleString("en-US");
+    }
+    initials() { return (this.d.employee || "?").trim().slice(0, 2).toUpperCase(); }
+
+    async refresh() {
+        try { this.state.d = await this.orm.call(MODEL, "get_contract_detail", [this.cid]); }
+        catch (e) { this.state.d = { error: _t("Could not load this contract.") }; }
+        finally { this.state.loaded = true; }
+    }
+
+    async runAction(method) {
+        if (method === "renew") return this.renew();
+        this.state.busy = true;
+        this.state.busyMsg = { set_running: _t("Activating…"), terminate: _t("Terminating…"), cancel: _t("Cancelling…") }[method] || _t("Working…");
+        try {
+            const res = await this.orm.call(MODEL, "run_contract_action", [this.cid, method]);
+            this.state.d = res;
+            if (res.error) this.notif.add(res.error, { type: "warning" });
+            else this.notif.add(_t("Done."), { type: "success" });
+        } catch (e) {
+            this.notif.add((e && e.message && e.message.toString()) || _t("Action failed."), { type: "danger" });
+        } finally { this.state.busy = false; }
+    }
+    renew() {
+        this.action.doAction({ type: "ir.actions.client", tag: "pb_contract_wizard", name: _t("Renew contract"),
+                               params: { employee_id: this.d.employee_id, renew_from: this.cid } });
+    }
+    openEmployee() {
+        if (this.d.employee_id) this.action.doAction({ type: "ir.actions.client", tag: "pb_employee_detail", name: _t("Employee"), params: { emp_id: this.d.employee_id } });
+    }
+    openAdvancedForm() {
+        this.action.doAction({ type: "ir.actions.act_window", res_model: "hr.contract", res_id: this.cid, views: [[false, "form"]], target: "current" });
+    }
+    back() { this.action.doAction("pb_contracts.action_pb_contracts", { clearBreadcrumbs: true }); }
+}
+
+registry.category("actions").add("pb_contract_detail", PbContractDetail);

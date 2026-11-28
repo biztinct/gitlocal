@@ -1,0 +1,155 @@
+// =====================================================================
+//  Jobs inside the company on My Payobook — .pbhi-* (WDGAP S6-B)
+//
+//  A thin layer on pb_me_portal's .pbme kit. Tokens only (--pbim-*), flat
+//  colours, no gradients. Quiet-board palette: grey at rest; the one
+//  coloured pill is an offer (the moment that matters to the person).
+// =====================================================================
+
+.pbme.pbhi {
+    max-width: 960px; margin-left: auto; margin-right: auto;
+
+    .pbhi-card {
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r-lg); box-shadow: var(--pbim-sh); padding: 20px 22px;
+    }
+    .pbhi-h1 { font-size: 26px; font-weight: 800; letter-spacing: -.01em; color: var(--pbim-ink); margin: 4px 0 6px; line-height: 1.2; }
+    .pbhi-h2 {
+        display: flex; align-items: center; gap: 8px;
+        font-size: 15px; font-weight: 800; color: var(--pbim-ink); margin: 0 0 12px;
+    }
+    .pbhi-n {
+        display: inline-grid; place-items: center; min-width: 22px; height: 20px; padding: 0 6px;
+        border-radius: 999px; background: var(--pbim-slate-soft); color: var(--pbim-slate);
+        font-size: 11.5px; font-weight: 800; font-variant-numeric: tabular-nums;
+    }
+    .pbhi-eyebrow { font-size: 11.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--pbim-primary-strong); }
+    .pbhi-muted { color: var(--pbim-muted); font-size: 13.5px; margin: 6px 0 0; }
+    .pbhi-say { color: var(--pbim-text); font-size: 14px; line-height: 1.5; margin: 10px 0 0; }
+    .pbhi-sec { margin-top: 22px; }
+
+    // ---------- the promise about the manager ----------
+    .pbhi-promise, .pbhi-heads-up {
+        display: flex; align-items: flex-start; gap: 10px; margin: 14px 0 0;
+        padding: 11px 14px; border-radius: 12px; font-size: 13.5px; line-height: 1.45;
+        color: var(--pbim-ink);
+    }
+    .pbhi-promise { background: var(--pbim-soft); }
+    .pbhi-promise-ic { color: var(--pbim-primary); display: inline-grid; padding-top: 1px; }
+    .pbhi-heads-up { background: var(--pbim-amber-soft); > span:first-child { color: var(--pbim-amber); display: inline-grid; padding-top: 1px; } }
+
+    // ---------- role list ----------
+    .pbhi-roles {
+        list-style: none; margin: 0; padding: 4px;
+        background: var(--pbim-surface); border: 1px solid var(--pbim-line);
+        border-radius: var(--pbim-r); box-shadow: var(--pbim-sh);
+        animation: pbhi-in 300ms cubic-bezier(.2, .7, .3, 1) both;
+    }
+    .pbhi-role + .pbhi-role { border-top: 1px solid var(--pbim-line-2); }
+    .pbhi-role-in {
+        display: flex; align-items: center; gap: 12px; padding: 13px 12px;
+        border-radius: 10px; color: var(--pbim-text); text-decoration: none;
+        transition: background-color .15s;
+    }
+    a.pbhi-role-in:hover { background: var(--pbim-bg); color: var(--pbim-text); text-decoration: none; }
+    a.pbhi-role-in:focus-visible { outline: 2px solid var(--pbim-primary); outline-offset: -2px; }
+    .pbhi-role-ic {
+        width: 38px; height: 38px; border-radius: 10px; flex: none; display: inline-grid; place-items: center;
+        background: var(--pbim-soft); color: var(--pbim-primary);
+    }
+    .pbhi-role-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+    .pbhi-role-title { font-size: 14.5px; font-weight: 700; color: var(--pbim-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pbhi-role-meta {
+        display: flex; flex-wrap: wrap; font-size: 12.5px; color: var(--pbim-muted); margin: 0;
+        > span + span::before { content: "\00b7"; margin: 0 7px; color: var(--pbim-slate); }
+    }
+    .pbhi-role-meta--big { font-size: 14px; margin-bottom: 14px; }
+    .pbhi-role-side { flex: none; display: flex; align-items: center; }
+    .pbhi-go {
+        display: inline-flex; align-items: center; gap: 2px; font-size: 13px; font-weight: 700;
+        color: var(--pbim-primary-strong);
+    }
+
+    // ---------- status pill (quiet: colour only for an offer) ----------
+    .pbhi-pill {
+        display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+        padding: 5px 11px; border-radius: 999px; border: 1px solid var(--pbim-line);
+        font-size: 12px; font-weight: 700; background: var(--pbim-surface); color: var(--pbim-text);
+    }
+    .pbhi-pill-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--pbim-slate); }
+    .pbhi-pill--received .pbhi-pill-dot, .pbhi-pill--considered .pbhi-pill-dot { background: var(--pbim-amber); }
+    .pbhi-pill--offer, .pbhi-pill--accepted { background: var(--pbim-primary); border-color: var(--pbim-primary); color: #fff; .pbhi-pill-dot { background: #fff; } }
+    .pbhi-pill--moved { color: var(--pbim-green); .pbhi-pill-dot { background: var(--pbim-green); } }
+    .pbhi-pill--closed, .pbhi-pill--withdrawn { background: var(--pbim-slate-soft); border-color: transparent; color: var(--pbim-slate); }
+
+    // ---------- one role ----------
+    .pbhi-job { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 18px; align-items: start; margin-top: 6px; }
+    .pbhi-advert { padding: 26px 28px; }
+    .pbhi-advert-body {
+        font-size: 14.5px; line-height: 1.65; color: var(--pbim-text);
+        h2, h3 { font-size: 16px; font-weight: 800; color: var(--pbim-ink); margin: 20px 0 6px; }
+        p { margin: 0 0 10px; }
+        ul { padding-left: 20px; }
+    }
+    .pbhi-side { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 16px; }
+    .pbhi-status .pbhi-pill { margin-bottom: 4px; }
+    .pbhi-withdraw { margin-top: 14px; }
+    .pbhi-field { display: block; margin: 14px 0 0; }
+    .pbhi-label { display: block; font-size: 13px; font-weight: 700; color: var(--pbim-ink); margin-bottom: 6px; }
+    .pbhi-opt { font-weight: 500; color: var(--pbim-muted); margin-left: 4px; }
+    .pbhi-input {
+        width: 100%; border: 1px solid var(--pbim-line); border-radius: 10px;
+        padding: 10px 12px; font: inherit; font-size: 14px; color: var(--pbim-text); background: var(--pbim-surface);
+        &:focus { outline: none; border-color: var(--pbim-primary); box-shadow: 0 0 0 3px var(--pbim-ring); }
+    }
+    .pbhi-textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
+    .pbhi-file { font-size: 13px; max-width: 100%; }
+    .pbhi-hint { display: block; font-size: 12px; color: var(--pbim-muted); margin-top: 4px; }
+    .pbhi-send { width: 100%; margin-top: 16px; }
+    .pbhi-send.is-busy { opacity: .7; cursor: progress; }
+
+    .pbhi-steps {
+        list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px;
+        li { display: flex; gap: 10px; font-size: 13px; color: var(--pbim-muted); line-height: 1.45; }
+        b { display: block; color: var(--pbim-ink); font-size: 13.5px; }
+    }
+    .pbhi-step-n {
+        flex: none; width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center;
+        background: var(--pbim-slate-soft); color: var(--pbim-slate); font-size: 11.5px; font-weight: 800;
+    }
+
+    // ---------- alert + toast ----------
+    .pbhi-alert {
+        display: flex; align-items: flex-start; gap: 10px; margin: 0 0 12px;
+        padding: 11px 14px; border-radius: 12px; background: var(--pbim-rose-soft); color: var(--pbim-ink);
+        font-size: 13.5px; font-weight: 600; line-height: 1.45;
+    }
+    .pbhi-alert-ic { color: var(--pbim-rose); display: inline-grid; padding-top: 1px; }
+    .pbhi-toast {
+        position: fixed; z-index: 1060; left: 50%; bottom: 24px; transform: translateX(-50%);
+        display: flex; align-items: center; gap: 10px; max-width: calc(100vw - 32px);
+        padding: 11px 18px 11px 12px; border-radius: 14px; background: var(--pbim-ink); color: #fff;
+        box-shadow: var(--pbim-sh-lg); font-size: 13.5px; font-weight: 600;
+        animation: pbhi-toast-in 320ms cubic-bezier(.2, .7, .3, 1) both, pbhi-toast-out 400ms ease-in 4.6s forwards;
+    }
+    .pbhi-toast-ic { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--pbim-green); color: #fff; flex: none; }
+    .pbhi-empty { margin-top: 4px; }
+
+    @media (max-width: 860px) {
+        .pbhi-job { grid-template-columns: minmax(0, 1fr); }
+        .pbhi-side { position: static; }
+        .pbhi-advert { padding: 20px; }
+    }
+    @media (max-width: 560px) {
+        .pbhi-role-in { flex-wrap: wrap; }
+        .pbhi-role-side { width: 100%; padding-left: 50px; }
+        .pbhi-role-title { white-space: normal; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .pbhi-roles, .pbhi-toast { animation: none; }
+    }
+}
+
+@keyframes pbhi-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes pbhi-toast-in { from { opacity: 0; transform: translate(-50%, 12px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@keyframes pbhi-toast-out { to { opacity: 0; transform: translate(-50%, 8px); visibility: hidden; } }

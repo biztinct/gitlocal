@@ -1,0 +1,152 @@
+// The form owns field semantics; the panel owns only space and navigation.
+.pb-workspace.pev-drawer, .pb-workspace.pbc-drawer {
+    --pb-workspace-width: min(92vw, 820px);
+    width: var(--pb-workspace-width) !important;
+    max-width: 100vw !important;
+    container-type: inline-size;
+    &.pb-workspace-expanded {
+        width: 100vw !important;
+        max-width: 1280px !important;
+        right: 0;
+        @media (min-width: 1280px) { right: calc((100vw - 1280px) / 2); }
+        border-radius: 0;
+        // The expanded panel is centred; its closing animation still has to
+        // leave the viewport completely instead of exposing a strip at right.
+        transform: translateX(100vw);
+        &.shown { transform: translateX(0); }
+    }
+    .pev-head, .pbc-head { padding: 18px 24px; }
+    .pev-head-side, .pbc-head-side { flex-wrap: wrap; }
+    .pev-tabs, .pbc-tabs { flex-wrap: nowrap; overflow-x: auto; height: auto; flex-shrink: 0; }
+    .pev-tab, .pbc-tab { flex-shrink: 0; white-space: nowrap; }
+    .pbc-tab.on { border-bottom: 2px solid var(--pbim-primary, #5a4bb0); }
+    .pev-body, .pbc-body { padding: 18px 24px 28px; }
+    .pb-workspace-record { margin: -18px -24px -28px; }
+}
+.pb-record-form {
+    .o_form_view, .o_form_view_container, .o_action { height: auto !important; }
+    // The desktop viewport can be XXL while its drawer is much narrower.
+    // Keep the edit bar above the form instead of becoming an XXL side column.
+    .o_form_view { flex-direction: column !important; }
+    .o_form_view_container { width: 100% !important; min-width: 0; }
+    .o_content { height: auto !important; overflow: visible !important; }
+    .o_control_panel { position: static; padding: 8px 20px; gap: 8px; }
+    .o_control_panel_main { flex-wrap: wrap !important; }
+    .o_control_panel_breadcrumbs { flex: 0 0 auto; }
+    .o_control_panel_actions { flex: 1 1 500px; min-width: 0; }
+    .o_control_panel_navigation { flex: 1 1 100% !important; justify-content: flex-start !important; }
+    .pbhub-navigation__row, .pbhub-navigation__current { display: none; }
+    .o_cp_pager { display: none; }
+    .o_control_panel button { white-space: nowrap; }
+    .o_form_sheet_bg { padding: 0 !important; }
+    .o_form_sheet { width: 100% !important; max-width: none !important; margin: 0 !important; }
+    .o_form_renderer.vu-form .o_form_sheet {
+        width: 100% !important; max-width: none !important;
+        padding: 14px 20px 24px !important;
+    }
+    .o_form_statusbar { position: static !important; }
+    .o_form_renderer.vu-form .vu-hero { padding: 14px 18px; box-shadow: none; }
+    .o_form_renderer.vu-form .o_notebook .tab-content > .tab-pane {
+        padding: 14px; box-shadow: none;
+    }
+    .o_form_renderer.vu-form .o_inner_group.vu-sec { padding: 16px; box-shadow: none; }
+}
+.pb-record-editbar {
+    position: sticky; top: 0; z-index: 6; flex-shrink: 0;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+    gap: 10px; padding: 10px 20px; background: var(--vuf-surface, #fff);
+    border-bottom: 1px solid var(--vuf-border, #e7e8f0);
+    > span { color: var(--vuf-muted, #65718a); font-size: 13px; }
+    > div { display: flex; gap: 8px; }
+}
+.pb-record-tools { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.pb-version-notice { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 12px 24px; background: #fff8e6; color: #65501c; font-size: 12px; flex-shrink: 0; }
+.pb-version-notice > span { flex: 1 1 360px; }
+.pb-section-form .pb-native-block {
+    > button { margin: 0 10px 8px 0; border-radius: 8px; }
+    .pb-record-report-links { display: flex; flex-wrap: wrap; gap: 10px; box-shadow: none; width: 100%; }
+    .oe_stat_button { flex: 1 1 170px; min-height: 56px; border: 1px solid #e1e9ef; border-radius: 10px; padding: 10px; }
+    > .d-flex:has(.o_field_many2many_tags_salary_bank),
+    > .o-row:has(.o_field_many2many_tags_salary_bank) { flex-wrap: wrap; gap: 12px; }
+    .pb-bank-ro-note { flex: 1 1 240px; max-width: 420px; }
+    .pbon-form-note { display: flex; flex-wrap: wrap; gap: 10px; }
+}
+.pbfb-studiobar { flex-wrap: wrap; min-width: 0; }
+.pbfb-studiobar .pbfb-back { flex: 0 1 auto; white-space: normal; }
+@media (max-width: 900px) {
+    .pb-workspace.pev-drawer, .pb-workspace.pbc-drawer { width: 100vw !important; }
+    .pb-record-form .o_group.row > .o_inner_group,
+    .pb-record-form .o_group.row > .o_group { min-width: 0 !important; flex-basis: 100% !important; }
+}
+@media (max-width: 600px) {
+    .pb-workspace.pev-drawer, .pb-workspace.pbc-drawer {
+        .pev-head, .pbc-head { padding: 12px; }
+        .pbc-head { flex-wrap: wrap; }
+        .pbc-head-side {
+            display: grid; grid-template-columns: 1fr auto auto;
+            width: 100%; min-width: 0; gap: 8px;
+        }
+        .pbc-wage { grid-column: 1 / -1; text-align: left; }
+        .pbc-x { justify-self: end; }
+        .pev-body, .pbc-body { padding: 12px; }
+        .pb-workspace-record { margin: -12px; }
+    }
+}
+
+// Section forms use the native fields, without the native page's visual shell.
+.pb-section-form {
+    .pb-record-editbar { padding: 0 0 16px; border: 0; position: static; }
+    .pb-record-editbar > span { font-size: 17px; font-weight: 650; color: #172b38; }
+    .pb-record-editbar small { display: block; font-size: 12px; font-weight: 400; color: #687e8e; margin-top: 5px; }
+    .pb-record-editbar .btn { border-radius: 9px; padding: 7px 17px; }
+    .pb-record-editbar .btn-primary { background: #00877f; border-color: #00877f; }
+    .o_form_renderer { padding: 0 !important; background: transparent !important; }
+    .pb-job-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .pb-job-card { min-width: 0; border: 1px solid #e1e9ef; border-radius: 14px; padding: 20px; background: #fff; }
+    .pb-job-card h3 { font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: #61768c; font-weight: 650; margin: 0 0 18px; }
+    .pb-job-field { min-width: 0; margin-bottom: 18px; }
+    .pb-job-field:last-child { margin-bottom: 0; }
+    .pb-job-field .o_form_label { display: block; color: #64748b; font-weight: 500; font-size: 12px; margin-bottom: 5px; }
+    .pb-job-field .o_field_widget { display: block; width: 100%; color: var(--pbim-text, #1B1733); font-size: 14px; min-height: 22px; }
+    .o_form_readonly .pb-job-field .o_field_widget { font-weight: 600; }
+    .o_form_readonly .pb-job-field .o_field_widget a { color: inherit; font-weight: inherit; }
+    .o_form_readonly .pb-job-field .o_field_widget a:hover { color: var(--pbim-primary, #5A4BB0); }
+    .o_form_editable .pb-job-field .o_input { border: 1px solid #dce5eb; border-radius: 8px; padding: 8px 10px; background: #fbfcfe; }
+    .o_form_editable .pb-job-field .o_input:focus { border-color: #00877f; box-shadow: 0 0 0 2px #00877f16; }
+    .o_form_readonly .pb-job-field .o_field_empty::after { content: "—"; color: #93a1b0; font-weight: 400; }
+}
+@container (max-width: 680px) {
+    .pb-section-form .pb-job-grid { grid-template-columns: 1fr; }
+}
+
+// Keep all migrated sections on the same visual scale as the premium summary.
+.pb-workspace .pbc-tab-ink { display: none; }
+.pb-section-form {
+    .pb-job-grid { align-items: start; }
+    .pb-native-block { grid-column: 1 / -1; overflow-x: auto; }
+    .pb-native-block > div { width: 100%; max-width: none; padding: 0; }
+    .pb-native-block .o_hr_skills_group { border: 0; margin: 0; }
+    .pb-native-block:has(.o_field_resume_one2many),
+    .pb-native-block:has(.o_field_skills_one2many) { grid-column: auto; }
+    .pb-job-field .o_field_image { width: fit-content; }
+    .pb-job-field .o_field_image img { max-height: 128px; }
+    .pb-job-field textarea { min-height: 72px; }
+    .pb-job-field .o_field_radio { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pb-job-field .o_field_many2many_tags { min-height: 30px; }
+    .pb-resume-actions { align-items: center; }
+    .pb-resume-actions .text-muted { flex: 1 1 240px; }
+}
+
+// Expanding creates room for four field columns instead of stretching two
+// long lists across the whole monitor. Drawer and phone keep readable inputs.
+@container (min-width: 1100px) {
+    .pb-section-form .pb-job-card:not(.pb-native-block) {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px 20px;
+        align-content: start;
+        > h3 { grid-column: 1 / -1; margin-bottom: 2px; }
+        .pb-job-field { margin-bottom: 0; }
+        > div:has(.o_field_text, .o_field_html, .o_field_properties) { grid-column: 1 / -1; }
+    }
+}

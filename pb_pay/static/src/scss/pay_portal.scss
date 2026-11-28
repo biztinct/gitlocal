@@ -1,0 +1,41 @@
+// =====================================================================
+//  "Your pay, explained" — the self-service page.
+//
+//  Scoped entirely under `.pbme`, the wrapper the rest of the portal uses,
+//  so this stylesheet cannot reach any other page on the public site. Every
+//  colour is a shared `--pbim-*` token; nothing here invents one.
+// =====================================================================
+.pbme {
+    .paypf-eyebrow {
+        font-size: 11px; font-weight: 700; letter-spacing: .5px;
+        text-transform: uppercase; color: var(--pbim-muted);
+    }
+    .paypf-big {
+        font-size: 34px; font-weight: 800; color: var(--pbim-text);
+        margin: 6px 0 2px; line-height: 1.1;
+    }
+    .paypf-sub { font-size: 13px; color: var(--pbim-muted); }
+    .paypf-sentence {
+        font-size: 15px; line-height: 1.7; color: var(--pbim-text);
+        margin: 8px 0 12px;
+    }
+    .paypf-why { font-size: 13px; color: var(--pbim-muted); margin: 0 0 12px; }
+
+    .paypf-track {
+        position: relative; height: 10px; border-radius: 999px;
+        background: var(--pbim-line-2); margin: 4px 0 6px;
+    }
+    .paypf-fill {
+        display: block; height: 100%; border-radius: 999px;
+        background: var(--pbim-primary);
+    }
+    .paypf-pin {
+        position: absolute; top: -4px; width: 4px; height: 18px;
+        margin-left: -2px; border-radius: 2px; background: var(--pbim-text);
+    }
+    .paypf-ends {
+        display: flex; justify-content: space-between;
+        font-size: 11px; color: var(--pbim-muted);
+    }
+    .paypf-off, .paypf-ask { font-size: 13px; color: var(--pbim-muted); }
+}

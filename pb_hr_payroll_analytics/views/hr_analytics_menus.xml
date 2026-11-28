@@ -1,85 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Menu Item for HR Analytics Under Payroll -->
-    <menuitem
-        id="menu_hr_analytics_root"
-        name="Analytics"
-        parent="om_hr_payroll.menu_hr_payroll_root"
-        sequence="50"
-        groups="pb_hr_payroll_base.group_payroll_base_manager,pb_hr_payroll_base.group_payroll_super_admin"
-    />
+    <!--
+      Sudima Phase M — the Analytics menu forest is RETIRED.
 
-    <!-- Main Dashboard -->
-    <menuitem
-        id="menu_hr_analytics_dashboard"
-        name="Analytics Dashboard"
-        parent="menu_hr_analytics_root"
-        action="action_prepare_hr_analytics_dashboard"
-        sequence="1"
-    />
+      This file used to publish `menu_hr_analytics_root` plus eight children
+      under om_hr_payroll's payroll root: a pre-design-system native menu tree
+      over 14 report models. The single entry point is now the Insights cockpit
+      (`pb_insights`, sidebar > Insights), whose report gallery launches each of
+      these actions by xmlid.
 
-    <!-- Personnel Costs -->
-    <menuitem
-        id="menu_hr_analytics_personnel_costs"
-        name="Personnel Costs"
-        parent="menu_hr_analytics_root"
-        action="action_view_hr_analytics_personnel_costs"
-        sequence="2"
-    />
+      Nothing else is removed: every ir.actions.act_window, view and model in
+      this module STAYS, off-menu, as the admin fallback (C18.42 / C18.55) and
+      as the gallery's destinations. Dropping the menuitems is reversible — the
+      records return by restoring this file and re-running `-u`.
 
-    <!-- Statutory Contributions -->
-    <menuitem
-        id="menu_hr_analytics_statutory"
-        name="Statutory Contributions"
-        parent="menu_hr_analytics_root"
-        action="action_view_hr_analytics_statutory_contrib"
-        sequence="3"
-    />
-
-    <!-- Headcount Analysis -->
-    <menuitem
-        id="menu_hr_analytics_headcount"
-        name="Headcount Analysis"
-        parent="menu_hr_analytics_root"
-        action="action_view_hr_analytics_headcount"
-        sequence="4"
-    />
-
-    <!-- Dependents -->
-    <menuitem
-        id="menu_hr_analytics_dependents"
-        name="Dependents &amp; Benefits"
-        parent="menu_hr_analytics_root"
-        action="action_view_hr_analytics_dependents"
-        sequence="5"
-    />
-
-    <!-- Budget Variance -->
-    <menuitem
-        id="menu_hr_analytics_budget"
-        name="Budget Variance"
-        parent="menu_hr_analytics_root"
-        action="action_view_hr_analytics_budget_variance"
-        sequence="6"
-    />
-
-    <!-- Annual Costs -->
-    <menuitem
-        id="menu_hr_analytics_annual"
-        name="Annual HR Costs"
-        parent="menu_hr_analytics_root"
-        action="action_view_hr_analytics_annual_costs"
-        sequence="7"
-    />
-
-    <!-- Salary Structure Analytics (Formula Config Based) -->
-    <menuitem
-        id="menu_formula_config_analytics"
-        name="Salary Structure Analytics"
-        parent="menu_hr_analytics_root"
-        action="action_prepare_formula_config_analytics"
-        sequence="8"
-    />
+      Menuitems retired here (their actions still resolve):
+        menu_hr_analytics_root
+          menu_hr_analytics_dashboard        -> action_prepare_hr_analytics_dashboard
+          menu_hr_analytics_personnel_costs  -> action_view_hr_analytics_personnel_costs
+          menu_hr_analytics_statutory        -> action_view_hr_analytics_statutory_contrib
+          menu_hr_analytics_headcount        -> action_view_hr_analytics_headcount
+          menu_hr_analytics_dependents       -> action_view_hr_analytics_dependents
+          menu_hr_analytics_budget           -> action_view_hr_analytics_budget_variance
+          menu_hr_analytics_annual           -> action_view_hr_analytics_annual_costs
+          menu_formula_config_analytics      -> action_prepare_formula_config_analytics
+    -->
 
 </odoo>

@@ -1,0 +1,148 @@
+HISTORICAL HANDOVER — SUPERSEDED ON RESUME
+The owner explicitly resumed implementation on 9 November 2026. The unfinished
+state below is retained as history, not the current implementation status.
+See IMPLEMENTATION.txt and the release receipt for current scope and checks.
+
+WORKFLOW STUDIO — PAUSED WIP, NOT READY TO DEPLOY
+9 November 2026
+
+Owner explicitly requested: "pause when you can so that i can go offline for
+some time". Subsequent messages add visual record-level progress; they do not
+resume implementation. Resume only when the owner asks.
+
+Isolation
+Base: 874f18ac35ef874fdc3136e5258106033e710503 (branch 19.1).
+WIP branch: codex/workflow-studio-implementation
+Worktree: /Users/adity/Documents/GitHub/gitlocal-worktrees/workflow-studio
+All 11 unfinished files were copied byte-for-byte into this worktree. Only the
+2 tracked implementation changes were restored and 9 new implementation files
+removed from the original working directory after verifying identical copies.
+Unrelated user/session files were preserved. Do not merge this WIP into 19.1 or
+include it in a combined release until implementation and validation finish.
+
+State at pause
+No production files, databases, automation rules or live workflows changed.
+No deployment or base_automation installation occurred. No browser screenshots
+or PNGs were created in this implementation session. The previous POC is still
+at https://payobook.com/preview/workflow-studio/ (base commit above).
+Python syntax compilation for the three new Python modules and git diff
+--check passed. No functional Odoo, security, integration or Chrome UI tests
+have run for this WIP. The frontend is incomplete: the new OWL wrapper points
+to /pb_lifecycle/static/workflow/index.html, which DOES NOT EXIST yet.
+The manifest bumps pb_lifecycle to 19.0.1.7.0 and adds base_automation; do not
+upgrade/install this draft. IMPLEMENTATION.txt describes intended behaviour,
+not a certification that it is complete.
+
+Approved direction
+System-wide, all installed modules and new custom processes; Hiring is only
+an adapter/example. Use the approved POC UI: readable typography, friendly
+short language, Journey default, Flowchart/People synchronized, real structural
+drag reordering across stages/branches, Undo and accessible Move dialog.
+Reuse existing Approval Matrix, access/delegation, module stages/state actions,
+settings, templates, calendars, tasks, integrations and notifications. Avoid
+parallel stores for those responsibilities. Multiple typed fields are collected
+on a dedicated participant screen with save/resume and server validation.
+New flows are opt-in; installation/publishing must not replace existing flows.
+Record-level read-only visual progress is newly required; see the final section
+of IMPLEMENTATION.txt. This is NOT yet implemented.
+
+Native Odoo automation
+Owner explicitly confirmed installing and leveraging Odoo 19 Community native
+automation during the eventual release. Read-only server inspection found the
+stock /odoo/odoo-server/addons/base_automation present but uninstalled in all
+four active databases. Manifest depends on base,digest,resource,mail,sms.
+Use the server's stock module, not a replacement from the local repository.
+base_automation supplies record/date triggers. A fixed generated ir.actions.
+server code captures an event; durable orchestration handles long-lived work.
+Native fields inspected: action_server_ids, trigger_field_ids, filter_domain,
+filter_pre_domain, trg_date_id/range/mode/unit. on_write exists (deprecated but
+supported); use edit-only semantics rather than incorrect timestamp heuristics.
+Review dependency defaults/cron/send switches before installing; do not enable
+unintended native broadcasts or activate sample rules.
+
+Files drafted
+- workflow_definition.py: pure graph/schema validator, conditions, typed form
+  validation and simulation; no Odoo imports/eval.
+- workflow_models.py: protected workflow/version/event/run/step/log models;
+  generated native trigger bindings; durable run/step progression; mail.activity
+  reuse; pinned approval process/version; native queue emails and adapter actions.
+- workflow_studio.py: gated facade for create/edit/review/publish/activate,
+  metadata, simulation, event capture, runtime, participant forms/uploads and
+  cron. Dynamic module model catalog; no required Hiring dependency.
+- workflow_security.xml and workflow_access.csv: company rules, designer and
+  publisher roles, protected ORM operations. Needs adversarial review/testing.
+- workflow_action.xml and workflow_cron.xml: action and minute worker, no seed
+  flows. static/src/js/workflow_studio.js: wrapper and Settings/palette entry.
+- __manifest__.py and models/__init__.py: loading/dependency/version changes.
+
+Important known issues / unfinished decisions
+1. Build the actual persisted frontend; no localStorage/fake runtime as product.
+   Include library/new process, stage editing, three views, semantic drag,
+   field builder, participant multi-field forms/tasks, simulation, review,
+   publish/activation, activity, native settings return and new progress viewer.
+2. Fix Hiring action payload: pb.hiring.act('journey_stage', ...) expects
+   applicant_ids/applicant_id, NOT ids. Guard native Joined stage, preserve
+   native template/sender events, handle already-at-stage idempotently.
+3. Harden malformed graph/form/trigger inputs (None/nonlists/missing labels,
+   nonfinite numbers) and validate typed rules/facts. Record lookup fields are
+   not implemented. Test graph cycles/joins/depth/required forms before Matrix.
+4. Approval-capable source must not bypass its mandatory route by omitting
+   process selection. Audit custom process metadata ACLs and pinned versions.
+   Returned approvals currently fail the step; correction/form reopen/resubmit
+   UX and revision-safe resubmission are unfinished. Never fork approval state.
+5. Audit every mail.activity completion path, including action_done/_action_done,
+   direct write/delete and feedback, so form validation cannot be bypassed.
+6. Audit RPC/direct ORM/company/source/field access and internal capabilities;
+   run metadata/log errors/owners must not leak source information. Manual
+   initiators need explicit permission; executor authority must not escalate
+   record rights. Progress viewing must be separate from design/publish rights.
+7. Reuse role/responsibility/delegation resolution; current owner selection only
+   supports initiator or explicit user. Use shared resource calendars for due
+   dates; current draft adds calendar days. Integrate rather than duplicate.
+8. Mail step currently completes when queued; native queue failure/retry
+   reflection needs design. Retry the same message, avoid duplicate sends.
+9. Manual start key currently allows one workflow/source run forever; define
+   repeat/recurrence semantics. Failed captured events need a controlled retry.
+   Cron earliest-300 selection can starve other runs; improve fairness/locking.
+10. Review parallel cancellation, durable waits, resume/cancel/retry semantics,
+    native pending approval withdrawal and side effects. Undo edits cannot undo
+    delivered mail or applied business actions.
+11. Complete overlap reconciliation across all modules. Existing native rules
+    and same-template checks are partial; separate email-purpose text does not
+    prove no duplication. Native integration/outbox and decision tables pending.
+12. Finalise module capability/adapters and sensitive-field catalog. Native
+    states and workflow stages differ; do not create invalid native state keys.
+13. Complete real version/ownership/access/runtime tests before deployment.
+    New module/UI defaults must leave existing process behaviour unchanged.
+
+Useful existing code
+POC: docs/design/workflow-studio/{flow-model.js,flow-ui.js,ui.js,style.css,
+model.js,forms-ui.js,modules-ui.js,app.js}. Reuse proven graph-move helpers and
+visual tokens/icons; replace fictional records/runtime with authenticated RPC.
+Existing POC prior checks: 64 model / 92 Chrome assertions, before this WIP.
+Approval engine: biz_approval_workflow/models/engine.py; submit checks source
+write access and uses its adapter contract. Success is applied (not approved).
+Event polling reads biz.approval.event; don't change core engine hooks blindly.
+Lifecycle employee cases require employee_id and have many specialised hooks;
+keep generic workflow additive rather than weakening that schema.
+Hiring native templates are pb.hiring.message.template with company/key and
+language fallback, distinct from mail.template. Reuse the native facade editor.
+Settings registry group workflows exists; no extra competing navigation rail.
+
+Resume / release requirements
+Read current AGENTS.md; recheck 19.1 and concurrent changes before merging or
+releasing. Commit only relevant changes, deploy latest combined custom state.
+Target Payobook19v2, addons ONLY /odoo/odoo-server/addons, preserve stock addons.
+Active databases: payobook, payobook_template, p0clone, rize. Upgrade custom
+modules only where installed. pb_lifecycle was installed at 19.0.1.6.0 on all.
+Validate with isolated/restored p0clone first, then all four scoped databases.
+Back up databases/filestores before release; Rize production backup never
+expires. Nonproduction seven days, keep latest usable. ABM retired: never
+provision/deploy it or touch /odoo/archives/abm-20261020 or retired hostname.
+Review tools/deploy_access_studio.py for backup/lock/combined-tree patterns;
+it is NOT directly suitable unchanged for this release. Standard dependency
+installation and new workflow tests must be added deliberately.
+After deployment: code/version parity, existing-flow regression, positive and
+negative permission checks, end-to-end actual Chrome workflows and record
+progress across modules. Report commit/targets/test results; remove only this
+test run's screenshots/PNGs. Do not blanket-clean /tmp.

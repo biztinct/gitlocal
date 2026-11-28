@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- FS-9 follow-on A: the joining checklist says what was SENT and waits
+       for HR, apart from what is still to fill in. Template inheritance only. -->
+  <t t-name="pb_employee_bank_panel.PbOnboardingBoard" t-inherit="pb_onboarding.PbOnboardingBoard" t-inherit-mode="extension">
+
+    <xpath expr="//span[hasclass('obb-fact-l')][text()='Their record']/following-sibling::span[1]" position="after">
+      <span t-if="row.waiting" class="obb-fact-v muted pbbp-ob-wait">Sent, waiting for HR: <t t-esc="row.waiting"/></span>
+    </xpath>
+
+    <xpath expr="//span[hasclass('obb-mini-l')][text()='Their record']/.." position="after">
+      <div t-if="state.drawer.joiner.waiting" class="obb-mini">
+        <span class="obb-mini-l">Sent, waiting for HR</span>
+        <b t-esc="state.drawer.joiner.waiting"/>
+      </div>
+    </xpath>
+  </t>
+
+</templates>

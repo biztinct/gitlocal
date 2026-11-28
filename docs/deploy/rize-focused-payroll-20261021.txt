@@ -1,0 +1,59 @@
+Rize focused payroll and independent Records Desk — deployment record
+2026-10-21 UTC
+
+Implementation commits
+2e977787902121160ce7d938aa868483d4f164cb — independent master records, focused inputs, reviewed master updates
+793ee8187c5f660e51944410d8ce12a7205c4d77 — honest initial release snapshots for copied schemes
+ac0432b9f9ad8a41927de142ff040fbc3bdb736a — application runtime mode excluded from monthly worksheets
+e994a80a69be2f08440b3136d707e05bd2c8eda3 — correct focused layout editable-record description
+
+Deployment
+SSH Payobook19v2; sole addons directory /odoo/odoo-server/addons.
+pb_records 19.0.1.6.0 and pb_payroll_templates 19.0.1.3.0 deployed/upgraded where installed across p0clone, payobook, payobook_template, rize.
+All 151 custom addon trees and installed manifest versions match combined committed source e994a80a6. Concurrent uncommitted Learning/sidebar work excluded and preserved.
+Rize-only configuration replacements; generic functionality available across all four databases. ABM untouched.
+Shared deploy notes read, START/DONE/FAILED entries maintained, commands serialized with flock /tmp/payobook-studio-deploy.lock.
+Final server log DONE at 06:15 UTC; service active; payobook.com, rize.payobook.com and p0clone.payobook.com warmed.
+Exact active cron sets preserved: p0clone 26, payobook 37, payobook_template 0, rize 69.
+
+Rize replacement schemes
+Country | old ID | new ID | code | components before/after | inputs before/after | removed
+Vietnam | 4760 | 7118 | RIZE_VN_FOCUSED_2026 | 185/130 | 139/84 | 55
+India | 6382 | 7119 | RIZE_IN_FOCUSED_2026 | 136/86 | 116/66 | 50
+Singapore | 7095 | 7120 | RIZE_SG_FOCUSED_2026 | 120/66 | 103/49 | 54
+Indonesia | 7096 | 7121 | RIZE_ID_FOCUSED_2026 | 461/403 | 132/74 | 58
+Total 217 HR-only components removed from replacements. Old main configurations archived; historical branches remain separate. Existing master records, original runs/uploads and historical payslips preserved. Current assignments switched to replacements.
+
+Behavior
+Payroll templates retain relevant calculations, tax/control/reporting inputs, contribution outputs and identity. Education and bank-maintenance fields removed from payroll surfaces, available in independent master maintenance.
+Records Desk defaults to Master records with a curated application-domain catalogue independent of payroll mappings. Existing compensation components and bank records supported.
+Retained writable record fields can be edited in focused monthly workbooks. At review, an explicit option applies mapped changes to master records through existing approvals. Default unchecked. Identity matching keys remain protected. Conflicting aliases/stale reviews/refused changes are rejected. Pending approvals remain pending.
+System-controlled application.mode retained in engine but removed from monthly worksheet lanes.
+Previously agreed pending HR/payroll settlement-tax treatments remain pending. A source binding is not proof of employee/period data completeness. Vietnam still visibly flags two application mappings for review (employment type and proposed equity award); the release does not silently activate these mappings.
+
+Validation
+171 deployed regression tests passed on p0clone, covering record updates, approval/conflict protections, workbook behavior and focused catalogues.
+Synthetic p0clone replacement rehearsal including initial release snapshots passed.
+64,100 real saved-result comparisons passed on server: Vietnam 12,480; India 2,322; Singapore 132; Indonesia 49,166. Baseline computation errors zero. Historical payslip fingerprint unchanged.
+Rize layout rollback rehearsal and repeated idempotent apply passed.
+Chrome end-to-end navigation on deployed Rize:
+- Formula Studio shows four active focused schemes, archived originals, clean released replacements and separate historical branches.
+- Mapping selects the same focused schemes; Vietnam Journey has 70/70 fed in the selected spreadsheet view, 80 spreadsheet bindings and 60 application mappings. Employee Name appears once in source rows; HR-only bank/education rows absent.
+- Records Desk opens independently with Master records and 269 selectable fields; Field of Study can be selected without a payroll mapping.
+- Configure Templates selects focused Vietnam, resolves 50 employees, retains probation/tax/pay/contribution fields, excludes bank/education fields, keeps Application data mode in Available only and displays reviewed-edit guidance.
+- Final refreshed browser template console contains no errors.
+Chrome checks were read-only; no real employee values changed and no production payroll computed for testing. Write/approval paths exercised by deployed automated tests.
+No PNG or screenshot files were created on disk by this test run. Inline browser observations only; unrelated assets preserved.
+
+Deployment incidents and recovery
+First configuration attempt rolled back on copied-scheme release no_changes response. Generic upgrades/tests had passed; service/crons restored before retry.
+Retry committed the four replacements and passed all result comparisons, but its post-commit verification script encountered a false/empty source key. That receipt is marked FAILED; it does not mean the committed migration rolled back. Script corrected, verification rerun successfully at 06:09 UTC. Retry downtime was 774 seconds. Final layout and label updates had no downtime.
+
+Evidence
+Permanent Rize backup: /odoo/archives/rize-focused-config-20261021T055453Z
+Initial generic rollout: /tmp/rize-focused-release-2e9777879
+Configuration retry and comparison evidence: /tmp/rize-focused-config-793ee8187
+Successful live configuration verification: /tmp/rize-focused-layout-ac0432b9f/logs/verification.log
+Final combined-source/versions/cron receipt: /tmp/rize-focused-label-e994a80a6/receipt.json
+Final shared coordination log: /opt/deploy-notes.md
+Field-by-field metadata plan: tools/data/rize_focused_payroll_plan.json

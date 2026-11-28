@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- UPDATES P2d — the Run Payroll screen (pb_payrun_wizard), extended in
+       place: one line on step 1, the D11 choice on the review step. -->
+  <t t-name="pb_updates.PayrunWizardOneoff" t-inherit="pb_payrun_wizard.PayrunWizard" t-inherit-mode="extension">
+
+    <xpath expr="//label[text()='Batch name']" position="before">
+      <p t-if="pbuOneoff and pbuOneoff.line" t-attf-class="pbu-pw-line is-{{ pbuOneoff.kind }}" role="note">
+        <span class="pbu-pw-line__ic" t-out="ic(pbuOneoff.kind === 'application' ? 'info' : 'coins', 14)"/>
+        <span t-esc="pbuOneoff.line"/>
+      </p>
+    </xpath>
+
+    <xpath expr="//t[@t-if='exc.length or state.summary.flagged']" position="before">
+      <section t-if="pbuClashes.length" class="pbu-pw-clash" aria-labelledby="pbu-pw-clash-h">
+        <header class="pbu-pw-clash__h">
+          <span class="pbu-pw-clash__ic" t-out="ic('scale', 18)"/>
+          <div>
+            <h3 id="pbu-pw-clash-h" t-esc="pbuClashTitle"/>
+            <p class="pw-muted">Updates and the pay data file each give an amount for the same person and month. Choose which one is paid: that payslip is worked out again straight away. Nothing is paid twice and the two are never added up.</p>
+          </div>
+        </header>
+        <div t-foreach="pbuClashes" t-as="c" t-key="c.id" class="pbu-pw-clash__row">
+          <div class="pbu-pw-clash__who">
+            <b t-esc="c.emp"/>
+            <span><t t-esc="c.item"/> · <t t-esc="c.month"/></span>
+          </div>
+          <div class="pbu-pw-clash__amts">
+            <span class="pbu-pw-amt is-upd"><small>From Updates</small><b t-esc="c.updates"/></span>
+            <span class="pbu-pw-amt__vs" aria-hidden="true">or</span>
+            <span class="pbu-pw-amt is-file"><small>In the pay data file</small><b t-esc="c.file"/></span>
+          </div>
+          <div t-if="pbuCanChoose" class="pbu-pw-clash__act">
+            <button type="button" class="pw-btn ghost sm" t-att-disabled="state.pbuBusy"
+                    t-on-click="() => this.pbuChoose(c, 'updates')">
+              <t t-out="ic('fileSpreadsheet', 14)"/> Use the Updates amount
+            </button>
+            <button type="button" class="pw-btn ghost sm" t-att-disabled="state.pbuBusy"
+                    t-on-click="() => this.pbuChoose(c, 'file')">
+              <t t-out="ic('upload', 14)"/> Use the file's amount
+            </button>
+          </div>
+          <p t-else="" class="pw-muted">Someone who runs payroll can choose.</p>
+        </div>
+      </section>
+    </xpath>
+  </t>
+
+  <!-- Application-data mode: the "Review pay data" worksheet says once that
+       one-offs from Updates are not part of this kind of pay run. -->
+  <t t-name="pb_updates.PayrollReviewOneoff" t-inherit="pb_payrun_wizard.PayrollReviewDialog" t-inherit-mode="extension">
+    <xpath expr="//div[@t-if='state.data.global_issues.length']" position="before">
+      <div class="pr-remind-line" role="note" t-if="state.data.updates_oneoffs_note">
+        <span class="pr-remind-icon" t-out="icons.remindLarge"/><span t-esc="state.data.updates_oneoffs_note"/>
+      </div>
+    </xpath>
+  </t>
+
+</templates>

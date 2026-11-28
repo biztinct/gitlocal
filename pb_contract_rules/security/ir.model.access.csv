@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pb_contract_rule_hr_user,pb.contract.rule hr officer,model_pb_contract_rule,hr.group_hr_user,1,0,0,0
+access_pb_contract_rule_hr_manager,pb.contract.rule hr manager,model_pb_contract_rule,hr.group_hr_manager,1,1,1,1
+access_pb_contract_rule_lifecycle,pb.contract.rule lifecycle manager,model_pb_contract_rule,pb_lifecycle.group_lifecycle_manager,1,1,1,0

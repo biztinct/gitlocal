@@ -1,0 +1,50 @@
+/* W98 (WP-H) — offer calculator overlay (inherits token palette from .pbfs) */
+.pbfs-offer-scrim { position: fixed; inset: 0; z-index: 1400; background: rgba(15,12,40,.34); display: flex; align-items: center; justify-content: center; padding: 24px; }
+.pbfs-offer { width: 96vw; max-width: 860px; max-height: 90vh; display: flex; flex-direction: column; background: #fff; border-radius: 18px; box-shadow: 0 24px 64px rgba(15,12,40,.28); overflow: hidden; }
+
+.pbof-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--line-soft, #F0F1F8); }
+.pbof-titles b { display: block; font-size: 16px; color: #1E293B; }
+.pbof-titles small { display: block; font-size: 12px; color: var(--muted, #6B7280); margin-top: 2px; max-width: 560px; }
+.pbof-x { border: none; background: none; color: #94A3B8; cursor: pointer; padding: 4px; }
+.pbof-x:hover { color: #1E293B; }
+.pbof-x svg { width: 18px; height: 18px; }
+
+.pbof-body { display: grid; grid-template-columns: 300px 1fr; gap: 0; overflow: hidden; min-height: 0; }
+@media (max-width: 680px) { .pbof-body { grid-template-columns: 1fr; } }
+
+.pbof-left { padding: 16px 18px; border-right: 1px solid var(--line-soft, #F0F1F8); overflow-y: auto; }
+@media (max-width: 680px) { .pbof-left { border-right: none; border-bottom: 1px solid var(--line-soft, #F0F1F8); } }
+.pbof-sec-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.pbof-sec-h > span { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: #94A3B8; }
+.pbof-sample { border: 1px solid var(--line, #E8E9F3); border-radius: 8px; padding: 5px 8px; font-size: 12px; font-family: inherit; background: #fff; color: #475569; max-width: 160px; }
+.pbof-noinputs { font-size: 12.5px; color: var(--muted, #6B7280); }
+.pbof-input { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+.pbof-input label { flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.pbof-icode { font-family: ui-monospace, monospace; font-size: 11px; font-weight: 700; color: #1E293B; }
+.pbof-iname { font-size: 11.5px; color: #64748B; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pbof-input .ce-input { width: 120px; text-align: right; font-variant-numeric: tabular-nums; }
+
+.pbof-right { padding: 16px 20px; overflow-y: auto; min-height: 0; }
+.pbof-net { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 14px 18px; border-radius: 14px; background: var(--i-soft, #EEEBFA); border: 1px solid var(--i-border, #D9D2F2); }
+.pbof-net-l { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--i, #5A4BB0); }
+.pbof-net-v { font-size: 24px; font-weight: 800; color: var(--i, #5A4BB0); font-variant-numeric: tabular-nums; }
+
+.pbof-subs { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0; }
+.pbof-sub { flex: 1; min-width: 120px; padding: 10px 14px; border: 1px solid var(--line-soft, #F0F1F8); border-radius: 12px; background: #FCFDFE; }
+.pbof-sub-g { display: block; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: #94A3B8; }
+.pbof-sub-v { display: block; font-size: 16px; font-weight: 800; color: #1E293B; font-variant-numeric: tabular-nums; margin-top: 3px; }
+
+.pbof-break { border: 1px solid var(--line-soft, #F0F1F8); border-radius: 12px; overflow: hidden; }
+.pbof-grp { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: #94A3B8; background: #F8FAFC; padding: 7px 14px; }
+.pbof-row { display: grid; grid-template-columns: 120px 1fr auto; align-items: center; gap: 12px; padding: 7px 14px; border-top: 1px solid var(--line-soft, #F0F1F8); }
+.pbof-row.onslip { background: #FBFAFF; }
+.pbof-rcode { font-family: ui-monospace, monospace; font-size: 12px; font-weight: 700; color: #1E293B; }
+.pbof-row.onslip .pbof-rcode { color: var(--i, #5A4BB0); }
+.pbof-rname { font-size: 12px; color: #64748B; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pbof-rval { font-size: 12.5px; font-weight: 700; color: #1E293B; font-variant-numeric: tabular-nums; text-align: right; }
+
+.pbof-honesty { font-size: 11.5px; color: var(--muted, #6B7280); margin-top: 12px; font-style: italic; }
+.pbof-idle { display: flex; align-items: center; justify-content: center; height: 100%; color: var(--muted, #6B7280); font-size: 13px; padding: 40px; }
+
+.pbof-foot { display: flex; align-items: center; gap: 10px; padding: 14px 20px; border-top: 1px solid var(--line-soft, #F0F1F8); }
+.pbof-foot-note { font-size: 12px; color: var(--muted, #6B7280); }

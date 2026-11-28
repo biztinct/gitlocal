@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Follow-up mails for the 2026-10-08 duplicate sign-ups (see
+         models/signup_recovery.py). Same card as the branded set-password
+         mail (views/reset_password_email.xml); English first, Vietnamese
+         under it, because most recipients are in Vietnam but their accounts
+         are in English. Values: name, email, url, days. -->
+
+    <template id="mail_signup_frame" name="Payobook demo follow-up mail frame">
+        <div style="margin:0; padding:0; background:#F5F6FA;">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"
+                   style="background:#F5F6FA; margin:0; padding:0; width:100%;">
+                <tr><td align="center" style="padding:28px 12px;">
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="600"
+                           style="width:600px; max-width:600px; background:#ffffff; border:1px solid #E7E5F2; border-radius:18px; overflow:hidden; font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+                        <tr><td style="background:#5A4BB0; padding:22px 32px;">
+                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"><tr>
+                                <td align="left" style="font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif; color:#ffffff; font-size:22px; font-weight:800; letter-spacing:.3px;">Payobook</td>
+                                <td align="right" style="font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif; color:#CBC2EE; font-size:12px; font-weight:600;">Payroll for all of Asia</td>
+                            </tr></table>
+                        </td></tr>
+                        <t t-out="0"/>
+                        <tr><td style="padding:24px 32px 30px 32px; border-top:1px solid #EEF0F8;">
+                            <div style="font-size:15px; font-weight:800; color:#5A4BB0;">Payobook</div>
+                            <div style="margin-top:5px; font-size:12px; line-height:1.6; color:#8A87A0;">
+                                <a href="https://payobook.com" style="color:#8A87A0; text-decoration:none;">payobook.com</a>
+                                &#8226; <a href="mailto:hello@payobook.com" style="color:#8A87A0; text-decoration:none;">hello@payobook.com</a>
+                            </div>
+                            <div style="margin-top:12px; font-size:11px; color:#B4B1C4;">Payroll, unified across Asia — with an AI copilot.</div>
+                        </td></tr>
+                    </table>
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="600" style="width:600px; max-width:600px;">
+                        <tr><td align="center" style="padding:14px 8px; font-size:11px; line-height:1.6; color:#B4B1C4; font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+                            You received this email because you registered for a Payobook demo.<br/>
+                            Bạn nhận được email này vì bạn đã đăng ký dùng thử Payobook.
+                        </td></tr>
+                    </table>
+                </td></tr>
+            </table>
+        </div>
+    </template>
+
+    <!-- One language block: eyebrow, heading, paragraphs, button, small print, note. -->
+    <template id="mail_signup_block" name="Payobook demo follow-up mail block">
+        <tr><td t-att-style="'padding:%s 32px 26px 32px;' % (top or '36px')">
+            <div style="text-transform:uppercase; letter-spacing:.09em; font-size:11px; font-weight:700; color:#5A4BB0;" t-out="eyebrow"/>
+            <h1 style="margin:8px 0 12px 0; font-size:24px; line-height:1.25; color:#1B1733; font-weight:800;" t-out="heading"/>
+            <t t-foreach="paras" t-as="para">
+                <p style="margin:0 0 14px 0; font-size:15px; line-height:1.6; color:#4B5168;" t-out="para"/>
+            </t>
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin:10px 0 14px 0;">
+                <tr><td align="center" bgcolor="#5A4BB0" style="border-radius:12px; box-shadow:0 6px 16px rgba(90,75,176,0.30);">
+                    <a t-att-href="url"
+                       style="display:inline-block; padding:15px 32px; font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif; font-size:15px; font-weight:700; color:#ffffff; text-decoration:none; border-radius:12px;">
+                        <t t-out="button"/> &#8594;
+                    </a>
+                </td></tr>
+            </table>
+            <p style="margin:0 0 20px 0; font-size:13px; line-height:1.6; color:#6E6A85;" t-out="small"/>
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background:#EDEAF8; border-radius:12px;">
+                <tr><td style="padding:14px 16px; font-size:13px; line-height:1.55; color:#4B5168;" t-out="note"/>
+            </tr></table>
+        </td></tr>
+    </template>
+
+    <template id="mail_signup_divider" name="Payobook demo follow-up mail divider">
+        <tr><td style="padding:0 32px;">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"><tr>
+                <td style="border-top:1px solid #EEF0F8; font-size:0; line-height:0;">&#160;</td>
+                <td width="90" align="center" style="padding:0 10px; font-size:11px; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:#B4B1C4; white-space:nowrap;">Tiếng Việt</td>
+                <td style="border-top:1px solid #EEF0F8; font-size:0; line-height:0;">&#160;</td>
+            </tr></table>
+        </td></tr>
+    </template>
+
+    <!-- 1. For the people the duplicates locked out: a fresh password link. -->
+    <template id="mail_signup_fresh_link" name="Payobook demo: fresh password link">
+        <t t-call="pb_demo_portal.mail_signup_frame">
+            <t t-call="pb_demo_portal.mail_signup_block">
+                <t t-set="eyebrow">Account access</t>
+                <t t-set="heading">We fixed your sign-in</t>
+                <t t-set="paras" t-value="[
+                    'Hi %s, when you registered for the Payobook demo, our sign-up page created more than one account for your email. That is why signing in did not work for you.' % name,
+                    'Your demo account is ready. Press the button to choose a fresh password and go straight in.',
+                ]"/>
+                <t t-set="button">Set a fresh password</t>
+                <t t-set="small" t-value="'This link works for %s days. Your sign-in email: %s' % (days, email)"/>
+                <t t-set="note">Sorry for the trouble. If anything still does not work, just reply to this email and we will help.</t>
+            </t>
+            <t t-call="pb_demo_portal.mail_signup_divider"/>
+            <t t-call="pb_demo_portal.mail_signup_block">
+                <t t-set="top" t-value="'26px'"/>
+                <t t-set="eyebrow">Truy cập tài khoản</t>
+                <t t-set="heading">Chúng tôi đã khắc phục sự cố đăng nhập của bạn</t>
+                <t t-set="paras" t-value="[
+                    'Xin chào %s, khi bạn đăng ký dùng thử Payobook, trang đăng ký của chúng tôi đã tạo nhiều hơn một tài khoản cho email của bạn. Vì vậy bạn đã không đăng nhập được.' % name,
+                    'Tài khoản demo của bạn đã sẵn sàng. Bấm nút bên dưới để đặt mật khẩu mới và vào ngay.',
+                ]"/>
+                <t t-set="button">Đặt mật khẩu mới</t>
+                <t t-set="small" t-value="'Liên kết có hiệu lực trong %s ngày. Email đăng nhập của bạn: %s' % (days, email)"/>
+                <t t-set="note">Xin lỗi vì sự bất tiện này. Nếu vẫn gặp sự cố, bạn chỉ cần trả lời email này, chúng tôi sẽ hỗ trợ.</t>
+            </t>
+        </t>
+    </template>
+
+    <!-- 2. For the people whose single account and password work: come back. -->
+    <template id="mail_signup_login_reminder" name="Payobook demo: sign-in reminder">
+        <t t-call="pb_demo_portal.mail_signup_frame">
+            <t t-call="pb_demo_portal.mail_signup_block">
+                <t t-set="eyebrow">Your demo</t>
+                <t t-set="heading">Your Payobook demo is ready when you are</t>
+                <t t-set="paras" t-value="[
+                    'Hi %s, your demo account is set up and your password is saved.' % name,
+                    'Sign in any time and try payroll on a sample company: run a pay month, open the payslips and see the reports.',
+                ]"/>
+                <t t-set="button">Sign in to my demo</t>
+                <t t-set="small" t-value="'Sign-in email: %s. Forgot your password? Press “Reset password” on the sign-in page.' % email"/>
+                <t t-set="note">Questions? Reply to this email and our team will help.</t>
+            </t>
+            <t t-call="pb_demo_portal.mail_signup_divider"/>
+            <t t-call="pb_demo_portal.mail_signup_block">
+                <t t-set="top" t-value="'26px'"/>
+                <t t-set="eyebrow">Bản demo của bạn</t>
+                <t t-set="heading">Bản demo Payobook đã sẵn sàng chờ bạn</t>
+                <t t-set="paras" t-value="[
+                    'Xin chào %s, tài khoản demo của bạn đã được thiết lập và mật khẩu đã được lưu.' % name,
+                    'Hãy đăng nhập bất cứ lúc nào để trải nghiệm tính lương trên một công ty mẫu: chạy một kỳ lương, xem phiếu lương và các báo cáo.',
+                ]"/>
+                <t t-set="button">Đăng nhập vào bản demo</t>
+                <t t-set="small" t-value="'Email đăng nhập: %s. Quên mật khẩu? Bấm “Đặt lại mật khẩu” trên trang đăng nhập.' % email"/>
+                <t t-set="note">Có câu hỏi? Hãy trả lời email này, đội ngũ của chúng tôi sẽ hỗ trợ bạn.</t>
+            </t>
+        </t>
+    </template>
+
+    <!-- 3. For the people who never set a password: their first link expired. -->
+    <template id="mail_signup_expired_link" name="Payobook demo: new password link">
+        <t t-call="pb_demo_portal.mail_signup_frame">
+            <t t-call="pb_demo_portal.mail_signup_block">
+                <t t-set="eyebrow">Account access</t>
+                <t t-set="heading">Set your password to open your demo</t>
+                <t t-set="paras" t-value="[
+                    'Hi %s, thanks for registering for the Payobook demo. Your demo account is ready.' % name,
+                    'The link in our first email has expired, so here is a new one. Press the button to choose your password and go straight in.',
+                ]"/>
+                <t t-set="button">Set my password</t>
+                <t t-set="small" t-value="'This link works for %s days. Your sign-in email: %s' % (days, email)"/>
+                <t t-set="note">Questions? Reply to this email and our team will help.</t>
+            </t>
+            <t t-call="pb_demo_portal.mail_signup_divider"/>
+            <t t-call="pb_demo_portal.mail_signup_block">
+                <t t-set="top" t-value="'26px'"/>
+                <t t-set="eyebrow">Truy cập tài khoản</t>
+                <t t-set="heading">Đặt mật khẩu để mở bản demo của bạn</t>
+                <t t-set="paras" t-value="[
+                    'Xin chào %s, cảm ơn bạn đã đăng ký dùng thử Payobook. Tài khoản demo của bạn đã sẵn sàng.' % name,
+                    'Liên kết trong email đầu tiên đã hết hạn, vì vậy chúng tôi gửi bạn liên kết mới. Bấm nút bên dưới để đặt mật khẩu và vào ngay.',
+                ]"/>
+                <t t-set="button">Đặt mật khẩu</t>
+                <t t-set="small" t-value="'Liên kết có hiệu lực trong %s ngày. Email đăng nhập của bạn: %s' % (days, email)"/>
+                <t t-set="note">Có câu hỏi? Hãy trả lời email này, đội ngũ của chúng tôi sẽ hỗ trợ bạn.</t>
+            </t>
+        </t>
+    </template>
+</odoo>

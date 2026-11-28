@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <t t-name="biz_theme.RequiredFieldsDialog">
+    <Dialog title="title" size="'md'" contentClass="'biz-required-dialog'">
+      <p>Complete these fields before continuing. Your changes have been kept.</p>
+      <ul class="biz-required-list">
+        <li t-foreach="props.fields" t-as="field" t-key="field_index" t-esc="field.label"/>
+      </ul>
+      <p class="text-muted mb-0">You will return to the first required field.</p>
+      <t t-set-slot="footer">
+        <button type="button" class="btn btn-primary" t-on-click="props.close">Go to first field</button>
+      </t>
+    </Dialog>
+  </t>
+</templates>

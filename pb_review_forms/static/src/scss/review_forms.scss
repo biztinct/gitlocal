@@ -1,0 +1,200 @@
+// =====================================================================
+//  Review forms (backend): the Settings screen `.pbrf-st` and the panel in
+//  the Goals drawer `.pbrf-dr`. Locked palette: indigo #5A4BB0, soft
+//  #EDEAF8, white cards, no gradients. Quiet board: grey at zero, colour
+//  only where something is waiting to be done.
+// =====================================================================
+
+$rf-primary: #5A4BB0;
+$rf-primary-dark: #241F52;
+$rf-soft: #EDEAF8;
+$rf-line: #E2E8F0;
+$rf-muted: #64748B;
+$rf-ink: #1E1B2E;
+$rf-good: #2E7D4F;
+$rf-warn: #D97706;
+$rf-bad: #DC2668;
+
+.pbrf-st {
+    .pbrf-st-wrap { max-width: 1240px; margin: 0 auto; padding: 18px 20px 40px; }
+    .pbrf-st-head { margin: 0 0 18px; }
+    .pbrf-st-h { font-size: 22px; font-weight: 800; color: $rf-ink; margin: 6px 0 4px; }
+    .pbrf-st-s { color: $rf-muted; margin: 0; max-width: 760px; }
+    .pbrf-st-empty { text-align: center; padding: 48px 16px; }
+    .pbrf-st-empty-ic { color: $rf-primary; margin-bottom: 8px; }
+
+    .pbrf-st-grid { display: grid; grid-template-columns: 260px 1fr; gap: 18px; align-items: start; }
+    @media (max-width: 860px) { .pbrf-st-grid { grid-template-columns: 1fr; } }
+
+    .pbrf-st-years { display: flex; flex-direction: column; gap: 8px; }
+    .pbrf-st-year {
+        display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
+        text-align: left; padding: 11px 13px; border-radius: 12px;
+        border: 1px solid $rf-line; background: #FFFFFF; cursor: pointer;
+        &:hover { border-color: #CBC2EE; }
+        &.is-on { border-color: $rf-primary; box-shadow: 0 0 0 3px rgba(90, 75, 176, .12); }
+    }
+    .pbrf-st-year-n { font-weight: 700; color: $rf-ink; }
+    .pbrf-st-year-d { font-size: 12px; color: $rf-muted; }
+
+    .pbrf-chip {
+        display: inline-flex; align-items: center; gap: 4px; margin-top: 3px;
+        padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700;
+        text-transform: none;
+        &--quiet { background: #F1F5F9; color: $rf-muted; }
+        &--wait { background: #FEF3C7; color: #92400E; }
+        &--ok { background: $rf-soft; color: $rf-primary-dark; }
+    }
+
+    .pbrf-st-main {
+        background: #FFFFFF; border: 1px solid $rf-line; border-radius: 16px;
+        padding: 18px 20px; min-width: 0;
+    }
+    .pbrf-st-top { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .pbrf-st-title { font-size: 18px; font-weight: 800; margin: 0; color: $rf-ink; }
+    .pbrf-st-sub { color: $rf-muted; margin: 2px 0 0; }
+    .pbrf-st-top-acts { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-start; }
+
+    .pbrf-st-note {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        margin: 14px 0 0; padding: 10px 12px; border-radius: 10px;
+        background: #F8FAFC; color: $rf-muted; font-size: 13px;
+        &--act { background: $rf-soft; color: $rf-primary-dark; }
+    }
+
+    .pbrf-st-progress {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 8px; margin: 14px 0 0;
+    }
+    .pbrf-tile {
+        display: flex; flex-direction: column; padding: 10px 12px; border-radius: 12px;
+        border: 1px solid $rf-line; background: #FFFFFF;
+        strong { font-size: 20px; font-weight: 800; color: $rf-ink; font-variant-numeric: tabular-nums; }
+        span { font-size: 12px; color: $rf-muted; }
+        &.is-zero strong { color: #94A3B8; }
+        &.is-act { border-color: #CBC2EE; background: $rf-soft;
+            strong { color: $rf-primary; } }
+    }
+
+    .pbrf-st-steps { display: flex; gap: 6px; flex-wrap: wrap; margin: 18px 0 12px; }
+    .pbrf-st-step {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 6px 12px 6px 6px; border-radius: 999px; cursor: pointer;
+        border: 1px solid $rf-line; background: #FFFFFF; color: $rf-muted;
+        font-size: 13px; font-weight: 700;
+        &.is-on { background: $rf-primary; border-color: $rf-primary; color: #FFFFFF;
+            .pbrf-st-step-n { background: #FFFFFF; color: $rf-primary; } }
+    }
+    .pbrf-st-step-n {
+        width: 22px; height: 22px; border-radius: 50%;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: #F1F5F9; font-size: 12px;
+    }
+
+    .pbrf-st-card {
+        border: 1px solid $rf-line; border-radius: 14px; padding: 16px 18px;
+        h4 { font-size: 15px; font-weight: 800; margin: 0 0 4px; color: $rf-ink; }
+    }
+    .pbrf-st-help { color: $rf-muted; margin: 0 0 14px; font-size: 13px; }
+    .pbrf-st-f { display: flex; flex-direction: column; gap: 4px; margin: 0 0 12px;
+        > span { font-size: 12px; font-weight: 700; color: $rf-muted; } }
+    .pbrf-in {
+        width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 10px;
+        border: 1px solid $rf-line; background: #FFFFFF; color: $rf-ink; font: inherit;
+        &:focus { outline: none; border-color: $rf-primary; box-shadow: 0 0 0 3px rgba(90, 75, 176, .12); }
+        &:disabled { background: #F8FAFC; color: $rf-muted; }
+        &--num { width: 88px; text-align: right; font-variant-numeric: tabular-nums; }
+        &--soft { color: $rf-muted; }
+        &--sel { width: auto; max-width: 100%; }
+        &--date { width: 200px; }
+    }
+    .pbrf-st-shares { display: flex; gap: 12px; flex-wrap: wrap; }
+    .pbrf-st-share {
+        display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+        border: 1px solid $rf-line; border-radius: 12px; flex: 1 1 200px;
+        span { flex: 1 1 auto; font-weight: 700; color: $rf-ink; }
+        em { font-style: normal; color: $rf-muted; }
+    }
+    .pbrf-st-total {
+        display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+        margin: 12px 0 0; font-size: 13px; font-weight: 700;
+        &.is-ok { color: $rf-good; }
+        &.is-off { color: $rf-warn; }
+    }
+    .pbrf-st-line {
+        display: flex; gap: 10px; align-items: flex-start; padding: 10px 0;
+        border-top: 1px solid #F1F5F9;
+        &:first-of-type { border-top: 0; }
+    }
+    .pbrf-st-line-n {
+        width: 24px; height: 24px; border-radius: 50%; flex: 0 0 auto; margin-top: 6px;
+        display: inline-flex; align-items: center; justify-content: center;
+        background: $rf-soft; color: $rf-primary; font-size: 12px; font-weight: 800;
+    }
+    .pbrf-st-line-f { flex: 1 1 auto; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    .pbrf-st-line-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .pbrf-st-line-acts { display: flex; gap: 2px; }
+    .pbrf-st-check { display: inline-flex; align-items: center; gap: 6px; margin: 0;
+        font-size: 13px; color: $rf-muted; }
+    .pbrf-st-none { color: #94A3B8; margin: 6px 0; }
+    .pbrf-st-adds { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .pbrf-st-radios { display: flex; flex-direction: column; gap: 8px; margin: 0 0 12px; }
+    .pbrf-st-radio {
+        display: flex; align-items: center; gap: 8px; margin: 0; cursor: pointer;
+        padding: 10px 12px; border: 1px solid $rf-line; border-radius: 12px;
+        &.is-on { border-color: $rf-primary; background: $rf-soft; }
+    }
+    .pbrf-st-problems { display: flex; flex-direction: column; gap: 6px; margin: 0 0 12px; }
+    .pbrf-st-problem { display: flex; align-items: center; gap: 6px; color: #92400E; font-size: 13px; }
+    .pbrf-st-summary { margin: 12px 0; padding-left: 18px; color: $rf-ink;
+        li { margin: 3px 0; } }
+    .pbrf-st-final { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .pbrf-st-copy { display: flex; gap: 6px; align-items: center; }
+    .pbrf-st-foot { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+}
+
+// ----------------------------------------------------- the Goals drawer
+.pbrf-dr {
+    margin: 10px 0 4px; padding: 12px; border-radius: 12px;
+    border: 1px solid $rf-line; background: #FFFFFF;
+    .pbrf-dr-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        > .pbim-btn { margin-left: auto; } }
+    .pbrf-dr-ic {
+        width: 26px; height: 26px; border-radius: 8px; display: inline-flex;
+        align-items: center; justify-content: center; background: $rf-soft; color: $rf-primary;
+    }
+    .pbrf-dr-body { margin-top: 10px; }
+    .pbrf-dr-note { display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+        color: $rf-muted; font-size: 13px; margin: 6px 0; }
+    .pbrf-dr-sec { margin: 12px 0 0;
+        h5 { font-size: 13px; font-weight: 800; margin: 0 0 6px; color: $rf-ink; } }
+    .pbrf-dr-line { padding: 8px 0; border-top: 1px solid #F1F5F9;
+        &:first-of-type { border-top: 0; } }
+    .pbrf-dr-q { display: flex; flex-direction: column; margin-bottom: 4px; }
+    .pbrf-dr-hint { color: $rf-muted; font-size: 12px; }
+    .pbrf-dr-theirs, .pbrf-dr-mine { display: flex; gap: 8px; align-items: flex-start;
+        margin: 4px 0; flex-wrap: wrap; }
+    .pbrf-dr-who { min-width: 70px; font-size: 11px; font-weight: 800; color: $rf-muted;
+        padding-top: 5px;
+        &--me { color: $rf-primary; } }
+    .pbrf-dr-mine > select, .pbrf-dr-mine > textarea { flex: 1 1 220px; }
+    .pbrf-dr-scale { display: flex; gap: 4px; flex-wrap: wrap; }
+    .pbrf-dr-pill {
+        padding: 4px 10px; border-radius: 999px; border: 1px solid $rf-line;
+        background: #FFFFFF; font-size: 12px; font-weight: 700; color: $rf-ink; cursor: pointer;
+        &.is-on { background: $rf-primary; border-color: $rf-primary; color: #FFFFFF; }
+        &:disabled { cursor: default; opacity: .8; }
+    }
+    .pbrf-dr-result {
+        display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 0;
+        padding: 10px; border-radius: 10px; background: $rf-soft;
+    }
+    .pbrf-dr-overall, .pbrf-dr-part {
+        display: flex; flex-direction: column; padding: 6px 10px; border-radius: 8px;
+        background: #FFFFFF; min-width: 110px;
+        span { font-size: 11px; color: $rf-muted; font-weight: 700; }
+        strong { font-size: 18px; color: $rf-primary-dark; font-variant-numeric: tabular-nums; }
+        em { font-style: normal; font-size: 11px; color: $rf-muted; }
+    }
+    .pbrf-dr-acts { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
+}

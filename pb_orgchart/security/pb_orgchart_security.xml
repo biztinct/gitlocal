@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ORG CHART P3. Plans are made and changed by HR users; the people a
+         published route asks to decide may READ the plan they decide (a seat
+         is a read, approval ledger AM60) and nothing more. Ship the pair:
+         group rules are ORed, so the wide HR rule sits beside the narrow
+         one (an HR user also holds the internal-user tier). -->
+
+    <record id="rule_orgchart_plan_company" model="ir.rule">
+        <field name="name">Org chart plan: company</field>
+        <field name="model_id" ref="model_pb_orgchart_plan"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_orgchart_plan_seat" model="ir.rule">
+        <field name="name">Org chart plan: mine, or I am asked to decide it</field>
+        <field name="model_id" ref="model_pb_orgchart_plan"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', ('seat_user_ids', 'in', user.id), ('user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_orgchart_plan_hr" model="ir.rule">
+        <field name="name">Org chart plan: HR users</field>
+        <field name="model_id" ref="model_pb_orgchart_plan"/>
+        <field name="groups" eval="[(4, ref('hr.group_hr_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+    <record id="rule_orgchart_plan_change_company" model="ir.rule">
+        <field name="name">Org chart plan change: company</field>
+        <field name="model_id" ref="model_pb_orgchart_plan_change"/>
+        <field name="domain_force">[('plan_id.company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="rule_orgchart_plan_change_seat" model="ir.rule">
+        <field name="name">Org chart plan change: mine, or I am asked to decide it</field>
+        <field name="model_id" ref="model_pb_orgchart_plan_change"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', ('plan_id.seat_user_ids', 'in', user.id), ('plan_id.user_id', '=', user.id)]</field>
+    </record>
+
+    <record id="rule_orgchart_plan_change_hr" model="ir.rule">
+        <field name="name">Org chart plan change: HR users</field>
+        <field name="model_id" ref="model_pb_orgchart_plan_change"/>
+        <field name="groups" eval="[(4, ref('hr.group_hr_user'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+
+</odoo>

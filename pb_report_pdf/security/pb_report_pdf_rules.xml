@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- PDF looks: cloned from the Explorer's saved-view rules
+         (pb_explorer/security/pb_explorer_rules.xml). Read your own, the
+         shared ones and your company's default; change only your own (never
+         a company default); administrators tidy anything. The designer also
+         checks the REPORT for the reader on every call — a look is a set of
+         printing choices, never data. -->
+    <record id="rule_pb_report_pdf_look_read" model="ir.rule">
+        <field name="name">PDF looks: read your own, the shared ones and the company default</field>
+        <field name="model_id" ref="model_pb_report_pdf_look"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">['|', '|', ('user_id', '=', user.id), ('shared', '=', True), '&amp;', ('is_default', '=', True), ('company_id', 'in', company_ids)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    <record id="rule_pb_report_pdf_look_own" model="ir.rule">
+        <field name="name">PDF looks: change only your own</field>
+        <field name="model_id" ref="model_pb_report_pdf_look"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="domain_force">[('user_id', '=', user.id), ('is_default', '=', False)]</field>
+        <field name="perm_read" eval="False"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+    <record id="rule_pb_report_pdf_look_admin" model="ir.rule">
+        <field name="name">PDF looks: settings admins tidy any look</field>
+        <field name="model_id" ref="model_pb_report_pdf_look"/>
+        <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+    </record>
+</odoo>

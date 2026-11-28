@@ -1,0 +1,1997 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/ess_workforce.py:0
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "%(balance)s days left"
+msgstr "Sisa %(balance)s hari"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/ess_workforce.py:0
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "%(days)s days earned so far this year"
+msgstr "%(days)s hari diperoleh sejauh ini tahun ini"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/ess_workforce.py:0
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "%(taken)s of %(allocated)s days used"
+msgstr "%(taken)s dari %(allocated)s hari terpakai"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid ""
+"%(year)s days a year, built up each month: %(month)s added after each month "
+"worked."
+msgstr ""
+"%(year)s hari setahun, bertambah tiap bulan: %(month)s ditambahkan setelah "
+"setiap bulan bekerja."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "%s could not be added; the next run tries again."
+msgstr "%s tidak dapat ditambahkan; proses berikutnya mencoba lagi."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/ess_workforce.py:0
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "%s days"
+msgstr "%s hari"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "%s days a year, added at the start of each year."
+msgstr "%s hari setahun, ditambahkan di awal setiap tahun."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/models/starters.py:0
+msgid "%s days a year, all at once"
+msgstr "%s hari setahun, sekaligus"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/models/starters.py:0
+msgid "%s days a year, built up each month"
+msgstr "%s hari setahun, bertambah tiap bulan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "%s kinds"
+msgstr "%s jenis"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "%s kinds added, switched off. Review each one, then switch it on."
+msgstr ""
+"%s jenis ditambahkan, dalam keadaan mati. Tinjau satu per satu, lalu "
+"aktifkan."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "%s people have days of it"
+msgstr "%s orang memiliki hari jenis ini"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "%s people have no date of joining, so nothing was added for them."
+msgstr ""
+"%s orang tidak memiliki tanggal bergabung, jadi tidak ada yang ditambahkan "
+"untuk mereka."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "%s to review"
+msgstr "%s perlu ditinjau"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "+%(days)s for %(years)s years of service"
+msgstr "+%(days)s untuk %(years)s tahun masa kerja"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "0 means no limit."
+msgstr "0 berarti tanpa batas."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "0 means they do not run out."
+msgstr "0 berarti tidak hangus."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/ess_workforce.py:0
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "1 day"
+msgstr "1 hari"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "1 kind"
+msgstr "1 jenis"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "1 kind added, switched off. Review it, then switch it on."
+msgstr "1 jenis ditambahkan, dalam keadaan mati. Tinjau, lalu aktifkan."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "1 kind that is switched on has no pay decision yet."
+msgstr "1 jenis yang aktif belum ditentukan pembayarannya."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "1 person has days of it"
+msgstr "1 orang memiliki hari jenis ini"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "1 person has no date of joining."
+msgstr "1 orang tidak memiliki tanggal bergabung."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "1 ready-made kind is waiting for your review."
+msgstr "1 jenis siap pakai menunggu tinjauan Anda."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "1 to review"
+msgstr "1 perlu ditinjau"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "A document is needed"
+msgstr "Perlu dokumen"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "A document is needed for this kind of leave"
+msgstr "Jenis cuti ini memerlukan dokumen"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "A kind taken in hours is given by HR."
+msgstr "Jenis yang dihitung per jam diberikan oleh HR."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid ""
+"A kind taken in hours is given by HR. Choose whole or half days to let it "
+"build up."
+msgstr ""
+"Jenis yang dihitung per jam diberikan oleh HR. Pilih hari penuh atau "
+"setengah hari agar bisa bertambah sendiri."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"A pay run that works from leave records stops at these until somebody says "
+"how they are paid."
+msgstr ""
+"Penggajian yang memakai catatan cuti berhenti pada jenis ini sampai ada yang"
+" menentukan cara pembayarannya."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_type.py:0
+msgid "A service step adds between 0 and 60 days a year."
+msgstr "Satu tingkat masa kerja menambah 0 sampai 60 hari setahun."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_type.py:0
+msgid "A service step starts after 1 to 60 years."
+msgstr "Satu tingkat masa kerja dimulai setelah 1 sampai 60 tahun."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: model:ir.model.fields.selection,name:pb_leave_setup.selection__hr_leave_type__pb_ls_earning__monthly
+msgid "A share each month"
+msgstr "Sebagian setiap bulan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "A starting point — please review each kind before switching it on."
+msgstr "Titik awal — tinjau setiap jenis sebelum mengaktifkannya."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Add %s kinds, switched off"
+msgstr "Tambahkan %s jenis, dalam keadaan mati"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Add 1 kind, switched off"
+msgstr "Tambahkan 1 jenis, dalam keadaan mati"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Add a kind"
+msgstr "Tambah jenis"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Add a step"
+msgstr "Tambah tingkat"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Add the finished months now"
+msgstr "Tambahkan bulan yang sudah selesai sekarang"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup_palette.js:0
+msgid ""
+"Add, review and switch on kinds of leave, with ready-made kinds for each "
+"country."
+msgstr ""
+"Tambah, tinjau, dan aktifkan jenis cuti, dengan jenis siap pakai untuk "
+"setiap negara."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "After"
+msgstr "Setelah"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "After %s years"
+msgstr "Setelah %s tahun"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "After 1 year"
+msgstr "Setelah 1 tahun"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,field_description:pb_leave_setup.field_pb_leave_service_step__after_years
+msgid "After this many years"
+msgstr "Setelah sekian tahun"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: model:ir.model.fields.selection,name:pb_leave_setup.selection__hr_leave_type__pb_ls_earning__yearly
+msgid "All at once each year"
+msgstr "Sekaligus setiap tahun"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,field_description:pb_leave_setup.field_pb_leave_earning__allocation_id
+msgid "Allocation"
+msgstr "Alokasi"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Allowance"
+msgstr "Jatah"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Already added"
+msgstr "Sudah ditambahkan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Already switched on"
+msgstr "Sudah aktif"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "An outside fund"
+msgstr "Dana dari luar"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"Before the year's cut-off, so the days get used rather than lost. 0 means no"
+" warning."
+msgstr ""
+"Sebelum batas akhir tahun, agar hari dipakai dan tidak hangus. 0 berarti "
+"tanpa peringatan."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Both"
+msgstr "Keduanya"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_earn_from
+msgid "Build-up starts from"
+msgstr "Mulai bertambah dari"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Can be asked for after it happened"
+msgstr "Dapat diajukan setelah terjadi"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Cancel"
+msgstr "Batal"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,field_description:pb_leave_setup.field_pb_leave_earning__capped
+msgid "Capped"
+msgstr "Mencapai batas"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Choose how it is earned."
+msgstr "Pilih cara memperolehnya."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Choose how it is paid."
+msgstr "Pilih cara pembayarannya."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Choose how this kind is paid before switching it on."
+msgstr "Pilih cara pembayaran jenis ini sebelum mengaktifkannya."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Choose who approves it."
+msgstr "Pilih siapa yang menyetujui."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Choose who pays for it."
+msgstr "Pilih siapa yang membayar."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Choose whole days, half days or hours."
+msgstr "Pilih hari penuh, setengah hari, atau jam."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Close"
+msgstr "Tutup"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_pb_leave_earning__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Counted"
+msgstr "Dihitung"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Counted against an allowance"
+msgstr "Dihitung dari jatah"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Country"
+msgstr "Negara"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,field_description:pb_leave_setup.field_pb_leave_earning__days
+msgid "Days"
+msgstr "Hari"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_days_per_year
+#: model:ir.model.fields,field_description:pb_leave_setup.field_pb_leave_earning__base_days
+msgid "Days a year"
+msgstr "Hari per tahun"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_type.py:0
+msgid "Days a year must be between 0 and 366."
+msgstr "Hari per tahun harus antara 0 dan 366."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Days added recently"
+msgstr "Hari yang baru ditambahkan"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Days added: %s."
+msgstr "Hari ditambahkan: %s."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_type.py:0
+msgid "Days can run out between 0 and 60 months after the year ends."
+msgstr "Hari dapat hangus 0 sampai 60 bulan setelah tahun berakhir."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Days not taken do not run out."
+msgstr "Hari yang tidak diambil tidak hangus."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Days not taken run out %s months after the year ends."
+msgstr "Hari yang tidak diambil hangus %s bulan setelah tahun berakhir."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_expire_months
+msgid "Days run out this many months after the year ends"
+msgstr "Hari hangus sekian bulan setelah tahun berakhir"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"Decide this before switching it on: a pay run that works from leave records "
+"stops at a kind with no pay decision."
+msgstr ""
+"Tentukan ini sebelum mengaktifkan: penggajian yang memakai catatan cuti "
+"berhenti pada jenis yang belum ditentukan pembayarannya."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Each kind is added switched off."
+msgstr "Setiap jenis ditambahkan dalam keadaan mati."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Each month"
+msgstr "Setiap bulan"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Each step needs a number of years and a number of days."
+msgstr "Setiap tingkat memerlukan jumlah tahun dan jumlah hari."
+
+#. module: pb_leave_setup
+#: model:ir.model.constraint,message:pb_leave_setup.constraint_hr_leave_allocation_pb_ls_year_once
+msgid "Earned days already have an allocation for this person, kind and year."
+msgstr ""
+"Hari yang diperoleh sudah memiliki alokasi untuk orang, jenis, dan tahun "
+"ini."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/earning.py:0
+msgid "Earned days are a permanent record and cannot be changed."
+msgstr "Hari yang diperoleh adalah catatan permanen dan tidak dapat diubah."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/earning.py:0
+msgid "Earned days are a permanent record and cannot be deleted."
+msgstr "Hari yang diperoleh adalah catatan permanen dan tidak dapat dihapus."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/earning.py:0
+msgid "Earned days are added by the build-up job only."
+msgstr ""
+"Hari yang diperoleh hanya ditambahkan oleh proses penambahan otomatis."
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_allocation__pb_ls_year
+msgid "Earned days for the year"
+msgstr "Hari yang diperoleh untuk tahun"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/earning.py:0
+msgid "Earned leave %(year)s"
+msgstr "Cuti diperoleh %(year)s"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,field_description:pb_leave_setup.field_pb_leave_earning__employee_id
+msgid "Employee"
+msgstr "Karyawan"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,help:pb_leave_setup.field_hr_leave_type__pb_ls_hr_only
+msgid ""
+"Employees do not see this kind on their own leave page; HR enters it for "
+"them."
+msgstr ""
+"Karyawan tidak melihat jenis ini di halaman cutinya; HR yang memasukkannya."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Every company"
+msgstr "Semua perusahaan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Every country"
+msgstr "Semua negara"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Every kind"
+msgstr "Semua jenis"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup_palette.js:0
+msgid ""
+"Every kind of leave people can take, how it is paid and how the days build "
+"up."
+msgstr ""
+"Setiap jenis cuti yang dapat diambil, cara pembayarannya, dan cara harinya "
+"bertambah."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"Every kind of leave your people can take, how it is paid, and how the days "
+"build up."
+msgstr ""
+"Setiap jenis cuti yang dapat diambil karyawan Anda, cara pembayarannya, dan "
+"cara harinya bertambah."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Example"
+msgstr "Contoh"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_pb_leave_earning__extra_days
+#: model:ir.model.fields,field_description:pb_leave_setup.field_pb_leave_service_step__extra_days
+msgid "Extra days a year"
+msgstr "Hari tambahan per tahun"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_step_ids
+msgid "Extra days for long service"
+msgstr "Hari tambahan untuk masa kerja"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid ""
+"Extra days for long service count from the month the person reaches each "
+"step, measured from their date of joining."
+msgstr ""
+"Hari tambahan masa kerja dihitung sejak bulan orang itu mencapai setiap "
+"tingkat, diukur dari tanggal bergabung."
+
+#. module: pb_leave_setup
+#: model:ir.model,name:pb_leave_setup.model_pb_leave_service_step
+msgid "Extra days of leave for long service"
+msgstr "Hari cuti tambahan untuk masa kerja"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Find a kind of leave…"
+msgstr "Cari jenis cuti…"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"For example a medical certificate. The page asks for it; sending is never "
+"blocked."
+msgstr ""
+"Misalnya surat dokter. Halaman memintanya; pengiriman tidak pernah diblokir."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "For example: Annual leave"
+msgstr "Contoh: Cuti tahunan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "For people working in"
+msgstr "Untuk yang bekerja di"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"For sick leave and the like. Other kinds can only be entered for a past date"
+" by HR."
+msgstr ""
+"Untuk cuti sakit dan sejenisnya. Jenis lain hanya dapat dimasukkan untuk "
+"tanggal lampau oleh HR."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "For the company"
+msgstr "Untuk perusahaan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Give the kind of leave a name."
+msgstr "Beri nama jenis cuti ini."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: model:ir.model.fields.selection,name:pb_leave_setup.selection__hr_leave_type__pb_ls_earning__none
+msgid "Given by HR"
+msgstr "Diberikan oleh HR"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,help:pb_leave_setup.field_hr_leave_type__pb_ls_earning
+msgid ""
+"Given by HR: nothing is added automatically (as before). All at once each "
+"year: the year's days are added when the year starts (or when the person "
+"becomes entitled). A share each month: one twelfth of the year's days is "
+"added after each month worked."
+msgstr ""
+"Diberikan oleh HR: tidak ada yang ditambahkan otomatis (seperti sebelumnya)."
+" Sekaligus setiap tahun: hari setahun ditambahkan saat tahun dimulai (atau "
+"saat orang itu berhak). Sebagian setiap bulan: seperdua belas hari setahun "
+"ditambahkan setelah setiap bulan bekerja."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "HR gives the days by hand; nothing is added automatically."
+msgstr ""
+"HR memberikan hari secara manual; tidak ada yang ditambahkan otomatis."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Half days"
+msgstr "Setengah hari"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Half days or whole days"
+msgstr "Setengah hari atau hari penuh"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Hours"
+msgstr "Jam"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_earning
+msgid "How it is earned"
+msgstr "Cara memperoleh"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "How people take it"
+msgstr "Cara mengambilnya"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "How the days are given"
+msgstr "Cara hari diberikan"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "How this kind is earned is set by your leave policy."
+msgstr "Cara memperoleh jenis ini ditetapkan oleh kebijakan cuti Anda."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "How this kind is paid is set by your leave policy."
+msgstr "Cara pembayaran jenis ini ditetapkan oleh kebijakan cuti Anda."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "In the first year"
+msgstr "Pada tahun pertama"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/ess_workforce.py:0
+msgid "Includes %(days)s days not earned yet"
+msgstr "Termasuk %(days)s hari yang belum diperoleh"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Is it paid?"
+msgstr "Apakah dibayar?"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "It starts switched off until you switch it on."
+msgstr "Jenis ini mati sampai Anda mengaktifkannya."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Kind of leave"
+msgstr "Jenis cuti"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup_palette.js:0
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.actions.client,name:pb_leave_setup.action_pb_leave_kinds
+msgid "Kinds of leave"
+msgstr "Jenis cuti"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid ""
+"Kinds of leave are looked after by the HR team. Ask your administrator for "
+"Time Off rights to see this screen."
+msgstr ""
+"Jenis cuti dikelola oleh tim HR. Minta hak akses Cuti kepada administrator "
+"untuk melihat layar ini."
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,field_description:pb_leave_setup.field_pb_leave_earning__leave_type_id
+#: model:ir.model.fields,field_description:pb_leave_setup.field_pb_leave_service_step__leave_type_id
+msgid "Leave Type"
+msgstr "Jenis cuti"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Leave type"
+msgstr "Jenis cuti"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Leave without saving your changes?"
+msgstr "Keluar tanpa menyimpan perubahan?"
+
+#. module: pb_leave_setup
+#: model:ir.actions.server,name:pb_leave_setup.cron_leave_earning_ir_actions_server
+msgid "Leave: add the days people have earned"
+msgstr "Cuti: tambahkan hari yang telah diperoleh"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Loading"
+msgstr "Memuat"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Loading…"
+msgstr "Memuat…"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,help:pb_leave_setup.field_hr_leave_type__pb_ls_review
+msgid "Made from a ready-made kind and not yet reviewed and switched on."
+msgstr "Dibuat dari jenis siap pakai dan belum ditinjau serta diaktifkan."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"Measured from the date of joining. The highest step reached counts; steps "
+"are not added together."
+msgstr ""
+"Diukur dari tanggal bergabung. Tingkat tertinggi yang dicapai yang berlaku; "
+"tingkat tidak dijumlahkan."
+
+#. module: pb_leave_setup
+#: model:ir.model.fields.selection,name:pb_leave_setup.selection__pb_leave_earning__period__month
+msgid "Month"
+msgstr "Bulan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"Months before it are never added, so days already given by hand are not "
+"given twice."
+msgstr ""
+"Bulan sebelumnya tidak pernah ditambahkan, jadi hari yang sudah diberikan "
+"manual tidak diberikan dua kali."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_max_balance
+msgid "Most days a person can hold"
+msgstr "Hari terbanyak yang dapat dimiliki"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Name"
+msgstr "Nama"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Name A–Z"
+msgstr "Nama A–Z"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Name in Indonesian"
+msgstr "Nama dalam bahasa Indonesia"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Name in Vietnamese"
+msgstr "Nama dalam bahasa Vietnam"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "New"
+msgstr "Baru"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "New kind of leave"
+msgstr "Jenis cuti baru"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Newest first"
+msgstr "Terbaru dahulu"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/ess_workforce.py:0
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Next: %(days)s on %(date)s"
+msgstr "Berikutnya: %(days)s pada %(date)s"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "No kinds of leave match these filters"
+msgstr "Tidak ada jenis cuti yang cocok dengan filter ini"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "No kinds of leave yet"
+msgstr "Belum ada jenis cuti"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Nobody (approved at once)"
+msgstr "Tidak ada (langsung disetujui)"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Nobody (unpaid)"
+msgstr "Tidak ada (tanpa upah)"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid ""
+"Nobody holds more than %s days; nothing more is added until they take some."
+msgstr ""
+"Tidak ada yang memiliki lebih dari %s hari; tidak ada tambahan sampai mereka"
+" mengambil sebagian."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Not counted"
+msgstr "Tidak dihitung"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/starters.py:0
+msgid "Not counted against an allowance"
+msgstr "Tidak dihitung dari jatah"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Not counted against an allowance: people ask for it when they need it."
+msgstr "Tidak dihitung dari jatah: orang mengajukan saat membutuhkannya."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Not decided yet"
+msgstr "Belum ditentukan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Not offered: only HR enters it"
+msgstr "Tidak ditawarkan: hanya HR yang memasukkan"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Nothing is added in the first %s months of service."
+msgstr "Tidak ada yang ditambahkan dalam %s bulan pertama masa kerja."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Nothing new to add: every finished month is already in."
+msgstr "Tidak ada yang baru: setiap bulan yang selesai sudah masuk."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Nothing was added: these kinds are already there."
+msgstr "Tidak ada yang ditambahkan: jenis ini sudah ada."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Nothing yet. Days are added the night after each month ends."
+msgstr "Belum ada. Hari ditambahkan pada malam setelah setiap bulan berakhir."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"Off: only what is earned so far. On: the whole year's days from the start of"
+" the year."
+msgstr ""
+"Mati: hanya yang sudah diperoleh. Aktif: seluruh hari setahun sejak awal "
+"tahun."
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,help:pb_leave_setup.field_hr_leave_type__pb_ls_take_ahead
+msgid ""
+"Off: people can take only what they have earned so far. On: the whole year's"
+" days can be taken from the start of the year; if somebody leaves early they"
+" may owe the days they took ahead."
+msgstr ""
+"Mati: orang hanya dapat mengambil yang sudah diperoleh. Aktif: seluruh hari "
+"setahun dapat diambil sejak awal tahun; yang keluar lebih awal mungkin "
+"berutang hari yang diambil di muka."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "On their leave page"
+msgstr "Di halaman cuti mereka"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_hr_only
+msgid "Only HR can enter this"
+msgstr "Hanya HR yang dapat memasukkan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Only HR enters it"
+msgstr "Hanya HR yang memasukkan"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Only a kind counted against an allowance can build up."
+msgstr "Hanya jenis yang dihitung dari jatah yang dapat bertambah."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Only an HR manager can change kinds of leave."
+msgstr "Hanya manajer HR yang dapat mengubah jenis cuti."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Paid"
+msgstr "Dibayar"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Paid %s"
+msgstr "Dibayar %s"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Paid leave needs somebody to pay for it."
+msgstr "Cuti berbayar memerlukan pihak yang membayar."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Partly paid"
+msgstr "Dibayar sebagian"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Partly paid (%(pct)s%%) %(who)s"
+msgstr "Dibayar sebagian (%(pct)s%%) %(who)s"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Pay"
+msgstr "Pembayaran"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Pay and how the days build up are set by your leave policy."
+msgstr ""
+"Pembayaran dan cara hari bertambah ditetapkan oleh kebijakan cuti Anda."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Pay to decide"
+msgstr "Pembayaran belum ditentukan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_take_ahead
+msgid "People can take days before they are earned"
+msgstr "Boleh mengambil hari sebelum diperoleh"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "People can take only what they have earned so far."
+msgstr "Orang hanya dapat mengambil yang sudah diperoleh."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid ""
+"People can take the whole year's days from the start of the year. Somebody "
+"who leaves early may owe the days taken ahead."
+msgstr ""
+"Orang dapat mengambil seluruh hari setahun sejak awal tahun. Yang keluar "
+"lebih awal mungkin berutang hari yang diambil di muka."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "People do not see it on their own leave page."
+msgstr "Orang tidak melihatnya di halaman cuti mereka."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "People have a number of days of it, shown on their leave page."
+msgstr "Orang memiliki sejumlah hari, ditampilkan di halaman cuti mereka."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "People have already asked for it, so this cannot change."
+msgstr "Sudah ada yang mengajukannya, jadi ini tidak dapat diubah."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid ""
+"People have already asked for this kind of leave, so how it is counted "
+"cannot change. Make a new kind instead."
+msgstr ""
+"Sudah ada yang mengajukan jenis cuti ini, jadi cara menghitungnya tidak "
+"dapat diubah. Buat jenis baru."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid ""
+"People have already asked for this kind of leave, so whether it is counted "
+"against an allowance cannot change. Make a new kind instead."
+msgstr ""
+"Sudah ada yang mengajukan jenis cuti ini, jadi apakah dihitung dari jatah "
+"tidak dapat diubah. Buat jenis baru."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Pick one of your own companies."
+msgstr "Pilih salah satu perusahaan Anda."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Pick the first month."
+msgstr "Pilih bulan pertama."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Read the list again"
+msgstr "Muat ulang daftar"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Reading the kinds of leave…"
+msgstr "Membaca jenis cuti…"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Ready-made"
+msgstr "Siap pakai"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_starter_key
+msgid "Ready-made kind"
+msgstr "Jenis siap pakai"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Ready-made kinds"
+msgstr "Jenis siap pakai"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/starters.py:0
+msgid ""
+"Ready-made kinds are offered for Vietnam, Indonesia, India, Singapore, "
+"Thailand, Cambodia and Malaysia."
+msgstr ""
+"Jenis siap pakai tersedia untuk Vietnam, Indonesia, India, Singapura, "
+"Thailand, Kamboja, dan Malaysia."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup_palette.js:0
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model,name:pb_leave_setup.model_pb_leave_starters
+msgid "Ready-made kinds of leave"
+msgstr "Jenis cuti siap pakai"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_starter_version
+msgid "Ready-made version"
+msgstr "Versi siap pakai"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Remove a filter above, or start again from every kind."
+msgstr "Hapus filter di atas, atau mulai lagi dari semua jenis."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Remove this step"
+msgstr "Hapus tingkat ini"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Save"
+msgstr "Simpan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Save and switch on"
+msgstr "Simpan dan aktifkan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Saved and switched on. People can ask for it now."
+msgstr "Disimpan dan diaktifkan. Orang dapat mengajukannya sekarang."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Saved."
+msgstr "Tersimpan."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Say how many days a year it gives."
+msgstr "Sebutkan berapa hari setahun yang diberikan."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Service"
+msgstr "Masa kerja"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Set by your leave policy"
+msgstr "Ditetapkan kebijakan cuti"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Set-up check"
+msgstr "Pemeriksaan pengaturan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup_palette.js:0
+msgid "Settings"
+msgstr "Pengaturan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Share of pay (%)"
+msgstr "Bagian upah (%)"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Show"
+msgstr "Tampilkan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Show every kind"
+msgstr "Tampilkan semua jenis"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Show them"
+msgstr "Tampilkan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Showing"
+msgstr "Menampilkan"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid ""
+"Somebody who joins during the year gets a share for the rest of that year."
+msgstr "Yang bergabung di tengah tahun mendapat bagian untuk sisa tahun itu."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid ""
+"Somebody who joins or leaves part-way through a month gets that part of the "
+"month's days."
+msgstr ""
+"Yang bergabung atau keluar di tengah bulan mendapat bagian hari bulan itu."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"Start from the ready-made kinds for your country, or add your own one by "
+"one."
+msgstr ""
+"Mulai dari jenis siap pakai untuk negara Anda, atau tambahkan sendiri satu "
+"per satu."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_waiting_months
+msgid "Starts after this many months of service"
+msgstr "Dimulai setelah sekian bulan masa kerja"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Status"
+msgstr "Status"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Switch off"
+msgstr "Matikan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Switch on"
+msgstr "Aktifkan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Switched off"
+msgstr "Mati"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Switched off. Nobody can ask for it; what was taken stays recorded."
+msgstr ""
+"Dimatikan. Tidak ada yang dapat mengajukannya; yang sudah diambil tetap "
+"tercatat."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Switched on"
+msgstr "Aktif"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Switched on or off"
+msgstr "Aktif atau mati"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Switched on. People can ask for it now."
+msgstr "Diaktifkan. Orang dapat mengajukannya sekarang."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Taken in"
+msgstr "Diambil dalam"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Tell HR when it is"
+msgstr "Beri tahu HR saat terjadi"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "That could not be done."
+msgstr "Tidak dapat dilakukan."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "That could not be saved."
+msgstr "Tidak dapat disimpan."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "The HR team"
+msgstr "Tim HR"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/earning.py:0
+msgid ""
+"The allocation needs a second approval in Time Off, so the earned days were "
+"not added."
+msgstr ""
+"Alokasi memerlukan persetujuan kedua di Cuti, jadi hari yang diperoleh tidak"
+" ditambahkan."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "The company"
+msgstr "Perusahaan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "The company's share (%)"
+msgstr "Bagian perusahaan (%)"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "The company's share cannot be more than the part that is paid."
+msgstr "Bagian perusahaan tidak boleh lebih dari bagian yang dibayar."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "The connection may have dropped. Your filters are kept."
+msgstr "Koneksi mungkin terputus. Filter Anda tetap disimpan."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"The figures follow the law named under each one, as we read it. Check them "
+"against your own legal advice and your company's policy."
+msgstr ""
+"Angka-angka mengikuti undang-undang yang disebut di bawah masing-masing, "
+"menurut pemahaman kami. Periksa dengan nasihat hukum dan kebijakan "
+"perusahaan Anda."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"The figures follow the law named under each one, as we read it. Nothing "
+"reaches anyone until you check a kind and switch it on."
+msgstr ""
+"Angka-angka mengikuti undang-undang yang disebut di bawah masing-masing, "
+"menurut pemahaman kami. Tidak ada yang sampai ke siapa pun sampai Anda "
+"memeriksa dan mengaktifkan suatu jenis."
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,help:pb_leave_setup.field_hr_leave_type__pb_ls_earn_from
+msgid ""
+"The first month the days build up. Months before it are never added, so days"
+" HR already gave by hand are not given twice."
+msgstr ""
+"Bulan pertama hari mulai bertambah. Bulan sebelumnya tidak pernah "
+"ditambahkan, jadi hari yang sudah diberikan HR tidak diberikan dua kali."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "The kinds could not be added."
+msgstr "Jenis tidak dapat ditambahkan."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "The kinds of leave could not be read just now."
+msgstr "Jenis cuti tidak dapat dibaca saat ini."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "The kinds of leave could not load"
+msgstr "Jenis cuti tidak dapat dimuat"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid ""
+"The kinds of leave could not load. Check your connection, then press Try "
+"again."
+msgstr "Jenis cuti tidak dapat dimuat. Periksa koneksi, lalu tekan Coba lagi."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_type.py:0
+msgid "The most days a person can hold cannot be below zero."
+msgstr "Hari terbanyak tidak boleh di bawah nol."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "The ready-made kinds could not be read."
+msgstr "Jenis siap pakai tidak dapat dibaca."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_type.py:0
+msgid "The waiting period must be between 0 and 120 months."
+msgstr "Masa tunggu harus antara 0 dan 120 bulan."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Their manager"
+msgstr "Atasan mereka"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Their manager, then HR"
+msgstr "Atasan, lalu HR"
+
+#. module: pb_leave_setup
+#: model:ir.model.constraint,message:pb_leave_setup.constraint_pb_leave_earning_posting_once
+msgid "These days have already been added."
+msgstr "Hari-hari ini sudah ditambahkan."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid ""
+"They get no extra days for long service, and nothing from a kind with a "
+"waiting period. Add the date on their employee record."
+msgstr ""
+"Mereka tidak mendapat hari tambahan masa kerja, dan tidak mendapat apa pun "
+"dari jenis dengan masa tunggu. Tambahkan tanggal di data karyawan mereka."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "They stay switched off until you check each one and switch it on."
+msgstr ""
+"Jenis ini tetap mati sampai Anda memeriksa dan mengaktifkan masing-masing."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid ""
+"This kind does not build up: switch it on and choose how it is earned first."
+msgstr ""
+"Jenis ini tidak bertambah: aktifkan dan pilih cara memperolehnya terlebih "
+"dahulu."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "This kind of leave"
+msgstr "Jenis cuti ini"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "This kind of leave could not be found."
+msgstr "Jenis cuti ini tidak ditemukan."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "This kind of leave could not be opened."
+msgstr "Jenis cuti ini tidak dapat dibuka."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "This one is for the HR team"
+msgstr "Ini untuk tim HR"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Tick at least one kind to add."
+msgstr "Centang setidaknya satu jenis untuk ditambahkan."
+
+#. module: pb_leave_setup
+#: model:ir.model,name:pb_leave_setup.model_hr_leave_allocation
+msgid "Time Off Allocation"
+msgstr "Alokasi cuti"
+
+#. module: pb_leave_setup
+#: model:ir.model,name:pb_leave_setup.model_hr_leave_type
+msgid "Time Off Type"
+msgstr "Jenis cuti"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Try again"
+msgstr "Coba lagi"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Two steps start after the same number of years."
+msgstr "Dua tingkat dimulai setelah jumlah tahun yang sama."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Type a number of days."
+msgstr "Ketik jumlah hari."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Type a number of months."
+msgstr "Ketik jumlah bulan."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Type a share between 0 and 100."
+msgstr "Ketik bagian antara 0 dan 100."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Unpaid"
+msgstr "Tanpa upah"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_review
+msgid "Waiting for review"
+msgstr "Menunggu tinjauan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Warn people holding more than this many days"
+msgstr "Peringatkan yang memiliki lebih dari sekian hari"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "What it is"
+msgstr "Apa ini"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "What it means, and what people see"
+msgstr "Artinya, dan apa yang dilihat orang"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Where every kind of leave is"
+msgstr "Posisi setiap jenis cuti"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+#: model:ir.model.fields,field_description:pb_leave_setup.field_hr_leave_type__pb_ls_sources
+msgid "Where the figures come from"
+msgstr "Asal angka-angka"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,help:pb_leave_setup.field_hr_leave_type__pb_ls_starter_key
+msgid ""
+"Which ready-made kind this was made from (for example VN.annual). Applying "
+"the same country again never makes it twice."
+msgstr ""
+"Jenis siap pakai asal jenis ini (misalnya VN.annual). Menerapkan negara yang"
+" sama lagi tidak membuatnya dua kali."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Who approves it"
+msgstr "Siapa yang menyetujui"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Who pays for it"
+msgstr "Siapa yang membayar"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Whole days"
+msgstr "Hari penuh"
+
+#. module: pb_leave_setup
+#: model:ir.model.fields.selection,name:pb_leave_setup.selection__pb_leave_earning__period__year
+msgid "Year"
+msgstr "Tahun"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Years of service"
+msgstr "Tahun masa kerja"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "You can look; only an HR manager can change kinds of leave."
+msgstr "Anda dapat melihat; hanya manajer HR yang dapat mengubah jenis cuti."
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,help:pb_leave_setup.field_hr_leave_type__pb_ls_max_balance
+msgid ""
+"Zero means no limit. Once somebody holds this many days, nothing more is "
+"added until they take some."
+msgstr ""
+"Nol berarti tanpa batas. Setelah seseorang memiliki sekian hari, tidak ada "
+"tambahan sampai mereka mengambil sebagian."
+
+#. module: pb_leave_setup
+#: model:ir.model.fields,help:pb_leave_setup.field_hr_leave_type__pb_ls_expire_months
+msgid "Zero means the days do not run out."
+msgstr "Nol berarti hari tidak hangus."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/starters.py:0
+msgid "after %s months of service"
+msgstr "setelah %s bulan masa kerja"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "build up by themselves"
+msgstr "bertambah sendiri"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "by an outside fund"
+msgstr "oleh dana dari luar"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "by the company"
+msgstr "oleh perusahaan"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "by the company and a fund"
+msgstr "oleh perusahaan dan dana"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "kinds of leave"
+msgstr "jenis cuti"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "kinds that are switched on have no pay decision yet."
+msgstr "jenis yang aktif belum ditentukan pembayarannya."
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "limited by the most a person can hold"
+msgstr "dibatasi oleh hari terbanyak yang dapat dimiliki"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "more"
+msgstr "lagi"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "more days a year"
+msgstr "hari tambahan per tahun"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/starters.py:0
+msgid "more with long service"
+msgstr "lebih banyak dengan masa kerja"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "of"
+msgstr "dari"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/starters.py:0
+msgid "paid"
+msgstr "dibayar"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "part of the period"
+msgstr "sebagian periode"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/starters.py:0
+msgid "partly paid"
+msgstr "dibayar sebagian"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/starters.py:0
+msgid "pay to decide"
+msgstr "pembayaran belum ditentukan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "people have no date of joining."
+msgstr "orang tidak memiliki tanggal bergabung."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "people with no date of joining"
+msgstr "orang tanpa tanggal bergabung"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "ready-made kinds are waiting for your review."
+msgstr "jenis siap pakai menunggu tinjauan Anda."
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "switched on"
+msgstr "aktif"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/starters.py:0
+msgid "unpaid"
+msgstr "tanpa upah"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "waiting for review"
+msgstr "menunggu tinjauan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "with pay to decide"
+msgstr "pembayaran belum ditentukan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "years:"
+msgstr "tahun:"
+
+#. module: pb_leave_setup
+#. odoo-python
+#: code:addons/pb_leave_setup/models/leave_setup.py:0
+msgid "Figures differ by state — check yours before switching on"
+msgstr "Angka berbeda di setiap negara bagian — periksa milik Anda sebelum mengaktifkan"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Hide kinds for other countries"
+msgstr "Sembunyikan jenis cuti negara lain"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/js/leave_setup.js:0
+msgid "Show kinds for other countries (%s)"
+msgstr "Tampilkan jenis cuti negara lain (%s)"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "Other countries"
+msgstr "Negara lain"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "No kinds of leave for your countries yet"
+msgstr "Belum ada jenis cuti untuk negara Anda"
+
+#. module: pb_leave_setup
+#. odoo-javascript
+#: code:addons/pb_leave_setup/static/src/xml/leave_setup.xml:0
+msgid "The kinds there are belong to other countries. Show them, or start from the ready-made kinds for your country."
+msgstr "Jenis cuti yang ada milik negara lain. Tampilkan, atau mulai dari jenis siap pakai untuk negara Anda."

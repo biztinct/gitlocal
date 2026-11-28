@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- ====================================================================
+       PSCHEME P2a: the Mapping board's person drawers. Every sentence on one
+       line, one class attribute per element, no double hyphen in a comment.
+       ==================================================================== -->
+
+  <!-- ========================= Give everyone their own pay scheme -->
+  <t t-name="pb_scheme_map.PersonFillDrawer">
+    <div class="smp-scrim" t-on-click="() => this.props.onClose()">
+      <div class="smp-panel is-wide smp-pf smp-ps" role="dialog" t-att-aria-label="title" t-on-click.stop="stay" t-on-keydown="onKeydown">
+        <div class="smp-panel__head">
+          <h3><span class="smp-pf-tile" t-out="ic('userCheck', 16)"/><t t-esc="title"/></h3>
+          <button type="button" class="smp-icon" title="Close" t-on-click="() => this.props.onClose()"><t t-out="ic('x', 16)"/></button>
+        </div>
+
+        <div t-if="state.loading and !state.plan" class="smp-pf-skel" aria-busy="true">
+          <span class="smp-pf-skel-hero"/>
+          <span class="smp-pf-skel-row"/>
+          <span class="smp-pf-skel-row"/>
+          <span class="smp-pf-skel-row smp-pf--short"/>
+        </div>
+
+        <div t-elif="state.error" class="smp-empty">
+          <span class="smp-empty__icon is-bad"><t t-out="ic('alert', 22)"/></span>
+          <p class="smp-empty__title" t-esc="state.error"/>
+          <button class="pbim-btn outline" t-on-click="() => this.load()"><t t-out="ic('refresh', 15)"/> Try again</button>
+        </div>
+
+        <t t-else="">
+          <!-- the hero: how much of the company has a pay scheme of its own -->
+          <div class="smp-pf-hero">
+            <svg class="smp-ring smp-pf-ring" viewBox="0 0 36 36" aria-hidden="true">
+              <circle class="smp-ring__track" cx="18" cy="18" r="15"/>
+              <circle class="smp-ring__fill" cx="18" cy="18" r="15" t-att-stroke-dashoffset="ringOffset"/>
+            </svg>
+            <div class="smp-pf-hero-t">
+              <b t-esc="heroLine"/>
+              <span t-if="p.without" t-esc="heroSub"/>
+              <span t-elif="p.people">New people get theirs when they are added. Change one person's from their record.</span>
+            </div>
+          </div>
+
+          <!-- done -->
+          <div t-if="state.done" t-attf-class="smp-pf-done {{ state.done.failed ? 'smp-pf--bad' : '' }}" role="status">
+            <span t-attf-class="smp-pf-done-ic {{ state.done.saved ? '' : 'smp-pf--wait' }}" t-out="ic(state.done.failed ? 'alert' : (state.done.saved ? 'check' : 'send'), 22)"/>
+            <div>
+              <b t-if="state.done.head" t-esc="state.done.head"/>
+              <p t-esc="state.done.line"/>
+            </div>
+            <button t-if="state.done.failed or (state.done.saved and p.without)" type="button" class="pbim-btn ghost sm" t-on-click="again">Back to the list</button>
+          </div>
+
+          <!-- the latest fill, and its undo -->
+          <div t-if="latest" class="smp-pf-latest">
+            <span class="smp-pf-latest-ic" t-out="ic('history', 15)"/>
+            <span class="smp-pf-latest-t" t-esc="latestLine"/>
+            <button t-if="canUndo and !state.confirmUndo" type="button" class="pbim-btn outline sm" t-on-click="askUndo"><t t-out="ic('undo', 14)"/> Undo this fill</button>
+          </div>
+          <div t-if="state.confirmUndo" class="smp-pf-confirm" role="alertdialog">
+            <p t-esc="undoLine"/>
+            <p t-if="state.undoError" class="smp-refuse" t-esc="state.undoError"/>
+            <div class="smp-pf-confirm-acts">
+              <button type="button" class="pbim-btn ghost sm" t-on-click="keepFill">Keep it</button>
+              <button type="button" class="pbim-btn primary sm smp-pf-danger" t-att-disabled="state.busy ? 'disabled' : false" t-on-click="undo"><t t-out="ic('undo', 14)"/> Undo this fill</button>
+            </div>
+          </div>
+
+          <t t-if="p.without and !(state.done and !state.done.saved and !state.done.failed)">
+            <div class="smp-pf-tools">
+              <label class="smp-pf-search">
+                <t t-out="ic('search', 14)"/>
+                <input t-ref="search" type="search" placeholder="Find a person…" aria-label="Find a person" t-att-value="state.query" t-on-input="onQuery"/>
+              </label>
+              <span class="smp-pf-own" t-if="count('own')"><t t-out="ic('user', 13)"/> <t t-esc="ownLine"/></span>
+            </div>
+
+            <div class="smp-pf-groups">
+              <t t-foreach="groups" t-as="g" t-key="g.key">
+              <section t-if="count(g.key)" t-attf-class="smp-pf-group smp-pf--{{ g.tone }}">
+                <header class="smp-pf-ghead">
+                  <input t-if="g.key === 'ready' or g.key === 'country'" type="checkbox" class="smp-pf-tick" t-att-checked="allTicked(g.key)" t-att-aria-label="g.title" t-on-change="() => this.tickAll(g.key)"/>
+                  <span t-else="" class="smp-pf-gic" t-out="ic(g.icon, 15)"/>
+                  <button type="button" class="smp-pf-gtitle" t-att-aria-expanded="state.open[g.key] ? 'true' : 'false'" t-on-click="() => this.toggleOpen(g.key)">
+                    <b t-esc="g.title"/>
+                    <span class="smp-pf-gcount" t-esc="groupCountLabel(g.key)"/>
+                    <small t-esc="g.sub"/>
+                    <span t-attf-class="smp-pf-chev {{ state.open[g.key] ? 'smp-pf--open' : '' }}" t-out="ic('chevronDown', 14)"/>
+                  </button>
+                </header>
+
+                <div t-if="state.open[g.key]" class="smp-pf-gbody">
+                  <div t-if="g.key === 'check'" class="smp-pf-bulk">
+                    <span>For everyone here:</span>
+                    <button type="button" class="pbim-btn ghost sm" t-on-click="() => this.bulkCheck('today')">Keep today's</button>
+                    <button t-if="checkHasCountry" type="button" class="pbim-btn ghost sm" t-on-click="() => this.bulkCheck('country')">Their country's</button>
+                  </div>
+                  <div t-if="g.key === 'choice' and choiceCountries().length" class="smp-pf-bulk">
+                    <label t-foreach="choiceCountries()" t-as="c" t-key="c.code" class="smp-pf-bulkpick">
+                      <span t-esc="bulkChoiceLabel(c)"/>
+                      <select class="smp-select" t-on-change="(ev) => this.onBulkChoice(c, ev)">
+                        <option value="">Pick a pay scheme…</option>
+                        <option t-foreach="c.options" t-as="o" t-key="o" t-att-value="o" t-esc="schemeName(o)"/>
+                      </select>
+                    </label>
+                  </div>
+
+                  <t t-foreach="sections(g.key)" t-as="item" t-key="item.key">
+                    <p t-if="item.kind === 'country'" class="smp-pf-country"><t t-out="ic('globe', 13)"/> <t t-esc="item.label"/> <span t-esc="item.n"/></p>
+                    <p t-elif="item.kind === 'team'" class="smp-pf-team-h"><t t-out="ic('users', 12)"/> <t t-esc="item.label"/> <span t-esc="item.n"/></p>
+                    <div t-else="" t-attf-class="smp-pf-row {{ (isTicked(item.row) or pickOf(item.row)) ? 'is-on' : '' }}">
+                      <input t-if="g.key === 'ready' or g.key === 'country'" type="checkbox" class="smp-pf-tick" t-att-checked="isTicked(item.row)" t-att-aria-label="item.row.name" t-on-click="(ev) => this.onTick(item.row, ev)"/>
+                      <span t-else="" class="smp-pf-dot" aria-hidden="true"><t t-if="pickOf(item.row)" t-out="ic('check', 11)"/></span>
+                      <span class="smp-pf-who">
+                        <b t-esc="item.row.name"/>
+                        <small><t t-esc="todayLine(item.row)"/><t t-if="advanceLine(item.row)"> <t t-esc="advanceLine(item.row)"/></t></small>
+                        <small t-if="reasonLine(item.row)" class="smp-pf-why" t-esc="reasonLine(item.row)"/>
+                      </span>
+                      <span t-if="g.key === 'ready' or g.key === 'country'" class="smp-pf-to"><t t-out="ic('arrowRight', 13)"/> <t t-esc="schemeName(item.row.target_id)"/></span>
+                      <span t-elif="g.key === 'check'" class="smp-pf-seg" role="radiogroup" t-att-aria-label="item.row.name">
+                        <button type="button" role="radio" t-att-aria-checked="pickOf(item.row) === item.row.today_id ? 'true' : 'false'" t-attf-class="smp-pf-segb {{ pickOf(item.row) === item.row.today_id ? 'is-on' : '' }}" t-on-click="() => this.keepToday(item.row)" t-esc="keepLabel(item.row)"/>
+                        <button t-if="item.row.country_pick" type="button" role="radio" t-att-aria-checked="pickOf(item.row) === item.row.country_pick ? 'true' : 'false'" t-attf-class="smp-pf-segb {{ pickOf(item.row) === item.row.country_pick ? 'is-on' : '' }}" t-on-click="() => this.takeCountry(item.row)"><t t-esc="schemeName(item.row.country_pick)"/></button>
+                        <button t-elif="item.row.fix" type="button" class="smp-ps-link" t-on-click="() => this.runFix(item.row)"><t t-out="ic('wand', 13)"/> <t t-esc="noSchemeLine(item.row)"/></button>
+                        <select t-else="" class="smp-select" t-on-change="(ev) => this.onPickSelect(item.row, ev)">
+                          <option value="">Their country's…</option>
+                          <option t-foreach="item.row.options" t-as="o" t-key="o" t-att-value="o" t-att-selected="pickOf(item.row) === o" t-esc="schemeName(o)"/>
+                        </select>
+                      </span>
+                      <span t-else="" class="smp-pf-pick">
+                        <select t-if="item.row.options.length" class="smp-select" t-att-aria-label="item.row.name" t-on-change="(ev) => this.onPickSelect(item.row, ev)">
+                          <option value="">Pick a pay scheme…</option>
+                          <option t-foreach="item.row.options" t-as="o" t-key="o" t-att-value="o" t-att-selected="pickOf(item.row) === o" t-esc="schemeName(o)"/>
+                        </select>
+                        <button t-if="fixLabel(item.row)" type="button" class="smp-ps-link" t-on-click="() => this.runFix(item.row)"><t t-out="ic('wand', 13)"/> <t t-esc="fixLabel(item.row)"/></button>
+                      </span>
+                    </div>
+                  </t>
+                  <button t-if="moreIn(g.key)" type="button" class="pbim-btn ghost sm smp-pf-more" t-on-click="() => this.showMore(g.key)" t-esc="moreLabel(g.key)"/>
+                  <p t-if="!rowsOf(g.key).length" class="smp-panel__none">Nobody here matches that name.</p>
+                </div>
+              </section>
+              </t>
+            </div>
+
+            <div class="smp-pf-foot">
+              <p class="smp-pf-sum" aria-live="polite"><t t-out="ic('sigma', 14)"/><span t-esc="sumLine"/></p>
+              <p t-if="p.blocked" class="smp-ps-why" t-esc="p.blocked"/>
+              <div class="smp-panel__acts">
+                <button type="button" class="pbim-btn ghost" t-on-click="() => this.props.onClose()">Close</button>
+                <button type="button" class="pbim-btn primary" t-att-disabled="canApply ? false : 'disabled'" t-att-aria-busy="state.busy ? 'true' : 'false'" t-on-click="apply">
+                  <t t-out="ic(route ? 'send' : 'check', 15)"/> <t t-esc="applyLabel"/>
+                </button>
+              </div>
+            </div>
+          </t>
+          <div t-elif="!p.people" class="smp-empty">
+            <span class="smp-empty__icon"><t t-out="ic('users', 22)"/></span>
+            <p class="smp-empty__title">Nobody works in this company yet</p>
+            <p class="smp-empty__sub">People added from now on get their pay scheme in Add employee.</p>
+          </div>
+        </t>
+      </div>
+    </div>
+  </t>
+
+  <!-- ============================== Set for everyone in this team -->
+  <t t-name="pb_scheme_map.TeamSetDrawer">
+    <div class="smp-scrim" t-on-click="() => this.props.onClose()">
+      <div class="smp-panel is-wide smp-pf smp-ps smp-pf-team" role="dialog" aria-label="Set for everyone in this team" t-on-click.stop="stay" t-on-keydown="onKeydown">
+        <div class="smp-panel__head">
+          <h3><span class="smp-pf-tile" t-out="ic('users', 16)"/><t t-esc="title"/></h3>
+          <button type="button" class="smp-icon" title="Close" t-on-click="() => this.props.onClose()"><t t-out="ic('x', 16)"/></button>
+        </div>
+
+        <div t-if="state.loading and !state.plan" class="smp-pf-skel" aria-busy="true">
+          <span class="smp-pf-skel-row"/><span class="smp-pf-skel-row"/><span class="smp-pf-skel-row smp-pf--short"/>
+        </div>
+        <div t-elif="state.error" class="smp-empty">
+          <span class="smp-empty__icon is-bad"><t t-out="ic('alert', 22)"/></span>
+          <p class="smp-empty__title" t-esc="state.error"/>
+          <button class="pbim-btn outline" t-on-click="() => this.load()"><t t-out="ic('refresh', 15)"/> Try again</button>
+        </div>
+        <div t-elif="!p.people.length" class="smp-empty">
+          <span class="smp-empty__icon"><t t-out="ic('users', 22)"/></span>
+          <p class="smp-empty__title">Nobody works in this team yet</p>
+          <p class="smp-empty__sub">Its usual pay scheme is where new people start. Set it with the plus button on the team.</p>
+        </div>
+        <div t-elif="state.done" t-attf-class="smp-pf-done {{ state.done.failed ? 'smp-pf--bad' : '' }}" role="status">
+          <span t-attf-class="smp-pf-done-ic {{ state.done.saved ? '' : 'smp-pf--wait' }}" t-out="ic(state.done.failed ? 'alert' : (state.done.saved ? 'check' : 'send'), 22)"/>
+          <div>
+            <b t-if="state.done.head" t-esc="state.done.head"/>
+            <p t-esc="state.done.line"/>
+          </div>
+          <button type="button" class="pbim-btn ghost sm" t-on-click="again">Back to the team</button>
+        </div>
+
+        <t t-else="">
+          <div class="smp-pf-body">
+          <p class="smp-panel__sub" t-esc="lead"/>
+          <p class="smp-pf-label">Pay scheme</p>
+          <div t-if="!p.choices.length" class="smp-pf-confirm"><p>This company has no pay scheme yet. Build one first.</p></div>
+          <div class="smp-ps-cards smp-pf-cards" role="radiogroup" aria-label="Pay scheme">
+            <div t-foreach="cards" t-as="c" t-key="c.id" t-attf-class="smp-ps-card {{ state.pick === c.id ? 'is-on' : '' }}" role="radio" t-att-aria-checked="state.pick === c.id ? 'true' : 'false'" t-att-tabindex="state.pick === c.id ? '0' : '-1'" t-on-click="() => this.pickCard(c)" t-on-keydown="(ev) => this.onCardKey(c, ev)">
+              <span class="smp-ps-dot" aria-hidden="true"><t t-if="state.pick === c.id" t-out="ic('check', 11)"/></span>
+              <span class="smp-ps-card-t"><b t-esc="c.name"/><small t-esc="meta(c)"/></span>
+              <span t-if="isUsual(c)" class="smp-ps-tag">Usual</span>
+            </div>
+          </div>
+          <button t-if="moreCards" type="button" class="smp-ps-link" t-on-click="toggleMoreCards"><t t-out="ic('layers', 14)"/> <t t-esc="moreCardsLabel"/></button>
+
+          <div t-if="advances.length" class="smp-ps-adv">
+            <label t-if="oneAdvance" class="smp-ps-switch">
+              <input type="checkbox" role="switch" t-att-checked="state.advance ? true : false" t-on-change="toggleAdvance"/>
+              <span class="smp-ps-switch-ui" aria-hidden="true"/>
+              <span t-esc="advanceLine"/>
+            </label>
+            <label t-else="" class="smp-ps-f">
+              <span>Mid-month advance</span>
+              <select class="smp-ps-in" t-on-change="onAdvanceSelect">
+                <option value="" t-att-selected="!state.advance">None</option>
+                <option t-foreach="advances" t-as="a" t-key="a.id" t-att-value="a.id" t-att-selected="state.advance === a.id" t-esc="a.name"/>
+              </select>
+            </label>
+          </div>
+
+          <section class="smp-pf-group smp-pf--good">
+            <header class="smp-pf-ghead">
+              <span class="smp-pf-gic" t-out="ic('userPlus', 15)"/>
+              <div class="smp-pf-gtitle smp-pf--static"><b t-esc="withoutTitle"/><small t-esc="fillFromLine"/></div>
+              <span class="smp-pf-all" t-if="without.length">
+                <button type="button" class="smp-ps-link" t-on-click="() => this.allFill(true)">All</button>
+                <button type="button" class="smp-ps-link" t-on-click="() => this.allFill(false)">None</button>
+              </span>
+            </header>
+            <div class="smp-pf-gbody">
+              <p t-if="!without.length" class="smp-panel__none">Everybody here already has a pay scheme of their own.</p>
+              <label t-foreach="without" t-as="r" t-key="r.id" t-attf-class="smp-pf-row {{ isFill(r) ? 'is-on' : '' }}">
+                <input type="checkbox" class="smp-pf-tick" t-att-checked="isFill(r)" t-on-click="(ev) => this.onFill(r, ev)"/>
+                <span class="smp-pf-who"><b t-esc="r.name"/><small><t t-esc="r.team"/> · <t t-esc="countryChip(r)"/></small>
+                  <small t-if="!fits(r)" class="smp-pf-why" t-esc="misfitLine(r)"/></span>
+              </label>
+            </div>
+          </section>
+
+          <section t-if="having.length" class="smp-pf-group smp-pf--warn">
+            <header class="smp-pf-ghead">
+              <input type="checkbox" class="smp-pf-tick" t-att-checked="state.alsoMove" t-att-aria-label="alsoMoveLabel" t-on-change="toggleAlsoMove"/>
+              <div class="smp-pf-gtitle smp-pf--static"><b t-esc="havingTitle"/><small t-esc="alsoMoveLabel"/></div>
+            </header>
+            <div t-if="state.alsoMove" class="smp-pf-move">
+              <label class="smp-ps-f"><span>From</span><input type="date" class="smp-ps-in" t-att-value="state.moveDate" t-on-change="onMoveDate"/></label>
+              <p class="smp-ps-dateline"><t t-out="ic('calendar', 13)"/><span t-esc="moveDateLine"/></p>
+            </div>
+            <div class="smp-pf-gbody">
+              <label t-foreach="having" t-as="r" t-key="r.id" t-attf-class="smp-pf-row {{ isMove(r) ? 'is-on' : '' }} {{ state.alsoMove ? '' : 'is-off' }}">
+                <input type="checkbox" class="smp-pf-tick" t-att-checked="isMove(r)" t-att-disabled="(!state.alsoMove or same(r)) ? 'disabled' : false" t-on-click="(ev) => this.onMove(r, ev)"/>
+                <span class="smp-pf-who"><b t-esc="r.name"/><small><t t-esc="r.team"/> · <t t-esc="countryChip(r)"/></small>
+                  <small t-if="!fits(r)" class="smp-pf-why" t-esc="misfitLine(r)"/></span>
+                <span class="smp-pf-to"><t t-esc="r.own.scheme"/> <t t-out="ic('arrowRight', 13)"/> <b t-if="same(r)">no change</b><b t-else="" t-esc="picked ? picked.name : ''"/></span>
+              </label>
+            </div>
+          </section>
+          </div>
+
+          <div class="smp-pf-foot">
+            <p class="smp-pf-sum" aria-live="polite"><t t-out="ic('sigma', 14)"/><span t-esc="sumLine"/></p>
+            <p t-if="p.blocked" class="smp-ps-why" t-esc="p.blocked"/>
+            <div class="smp-panel__acts">
+              <button type="button" class="pbim-btn ghost" t-on-click="() => this.props.onClose()">Close</button>
+              <button type="button" class="pbim-btn primary" t-att-disabled="canApply ? false : 'disabled'" t-att-aria-busy="state.busy ? 'true' : 'false'" t-on-click="apply">
+                <t t-out="ic(route ? 'send' : 'check', 15)"/> <t t-esc="applyLabel"/>
+              </button>
+            </div>
+          </div>
+        </t>
+      </div>
+    </div>
+  </t>
+
+  <!-- ================== Paid by a pay scheme of another country -->
+  <t t-name="pb_scheme_map.MismatchDrawer">
+    <div class="smp-scrim" t-on-click="() => this.props.onClose()">
+      <div class="smp-panel is-wide smp-pf smp-ps" role="dialog" aria-label="Paid by a pay scheme of another country" t-on-click.stop="stay">
+        <div class="smp-panel__head">
+          <h3><span class="smp-pf-tile smp-pf--amber" t-out="ic('globe', 16)"/>Paid by a pay scheme of another country</h3>
+          <button type="button" class="smp-icon" title="Close" t-on-click="() => this.props.onClose()"><t t-out="ic('x', 16)"/></button>
+        </div>
+        <div t-if="state.loading and !state.data" class="smp-pf-skel" aria-busy="true"><span class="smp-pf-skel-row"/><span class="smp-pf-skel-row"/></div>
+        <div t-elif="state.error" class="smp-empty">
+          <span class="smp-empty__icon is-bad"><t t-out="ic('alert', 22)"/></span>
+          <p class="smp-empty__title" t-esc="state.error"/>
+        </div>
+        <t t-else="">
+          <p class="smp-panel__sub">Their Country of work and their pay scheme disagree. Tax and insurance follow the Country of work, so the pay scheme usually should too. Nothing changes until you press a button.</p>
+          <div t-if="state.done" t-attf-class="smp-pf-done {{ state.done.failed ? 'smp-pf--bad' : '' }}" role="status">
+            <span t-attf-class="smp-pf-done-ic {{ state.done.saved ? '' : 'smp-pf--wait' }}" t-out="ic(state.done.failed ? 'alert' : (state.done.saved ? 'check' : 'send'), 20)"/>
+            <p t-esc="state.done.line"/>
+          </div>
+          <div t-if="!d.people.length" class="smp-empty">
+            <span class="smp-empty__icon"><t t-out="ic('checkCircle', 22)"/></span>
+            <p class="smp-empty__title">Everybody is paid by a pay scheme of their Country of work</p>
+          </div>
+          <div t-else="" class="smp-panel__list">
+            <div t-foreach="d.people" t-as="r" t-key="r.employee_id" class="smp-person">
+              <span class="smp-person__who">
+                <b t-esc="r.name"/>
+                <small><t t-esc="r.team or ''"/></small>
+                <small class="smp-pf-why" t-esc="line(r)"/>
+                <small t-if="r.target" t-esc="fitsLine(r)"/>
+              </span>
+              <button t-if="canChange" type="button" class="pbim-btn outline sm" t-on-click="(ev) => this.openOne(r, ev)">
+                <t t-out="ic('pencil', 14)"/> Change pay scheme
+              </button>
+            </div>
+          </div>
+          <div t-if="groups.length and canChange" class="smp-pf-foot">
+            <p class="smp-pf-sum"><t t-out="ic('calendar', 14)"/><span t-esc="bulkLine"/></p>
+            <div class="smp-panel__acts">
+              <button t-foreach="groups" t-as="g" t-key="g.target_id" type="button" class="pbim-btn primary" t-att-disabled="state.busy ? 'disabled' : false" t-on-click="() => this.changeAll(g)"><t t-out="ic(route ? 'send' : 'check', 15)"/> <t t-esc="bulkLabel(g)"/></button>
+            </div>
+          </div>
+          <p t-if="d.blocked" class="smp-ps-why" t-esc="d.blocked"/>
+        </t>
+      </div>
+    </div>
+  </t>
+
+  <!-- ===================================== M have their own: the names -->
+  <t t-name="pb_scheme_map.OwnPeoplePanel">
+    <div class="smp-scrim" t-on-click="() => this.props.onClose()">
+      <div class="smp-panel smp-pf smp-ps" role="dialog" t-att-aria-label="title" t-on-click.stop="stay">
+        <div class="smp-panel__head">
+          <h3 t-esc="title"/>
+          <button type="button" class="smp-icon" title="Close" t-on-click="() => this.props.onClose()"><t t-out="ic('x', 16)"/></button>
+        </div>
+        <div t-if="state.loading" class="smp-pf-skel" aria-busy="true"><span class="smp-pf-skel-row"/><span class="smp-pf-skel-row"/></div>
+        <p t-elif="state.error" class="smp-refuse" t-esc="state.error"/>
+        <t t-else="">
+          <p class="smp-panel__sub">They keep their own pay scheme whatever this team's usual one is.</p>
+          <div class="smp-panel__list">
+            <p t-if="!d.people.length" class="smp-panel__none">Nobody in this team has a pay scheme of their own yet.</p>
+            <div t-foreach="d.people" t-as="r" t-key="r.employee_id" class="smp-person">
+              <span class="smp-person__who">
+                <b t-esc="r.name"/>
+                <small><t t-esc="r.team"/></small>
+              </span>
+              <span class="smp-pf-to"><b t-esc="r.scheme"/><small t-esc="sinceLine(r)"/><small t-if="r.advance" t-esc="advanceWords(r)"/></span>
+            </div>
+            <p t-if="d.total > d.people.length" class="smp-panel__none" t-esc="moreLine"/>
+          </div>
+        </t>
+      </div>
+    </div>
+  </t>
+</templates>

@@ -1,0 +1,22 @@
+<odoo>
+    <record id="view_employee_payroll_profile" model="ir.ui.view">
+        <field name="name">hr.employee.domain.profile</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Employment profile" groups="hr.group_hr_user">
+                    <group><group string="Identity"><field name="pb_legal_first_name"/><field name="pb_legal_last_name"/><field name="pb_blood_type" groups="hr.group_hr_manager"/><field name="pb_religion" groups="hr.group_hr_manager"/></group>
+                        <group string="Position"><field name="pb_position_reference"/><field name="pb_job_level"/></group></group>
+                    <group string="Contact details"><field name="pb_emergency_relationship"/><field name="pb_permanent_address"/></group>
+                    <group string="Employment and membership identifiers"><field name="pb_visa_status"/><field name="pb_npwp_number"/><field name="pb_family_card_number"/><field name="pb_bpjs_employment_number"/><field name="pb_bpjs_health_number"/></group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_contract_payroll_profile" model="ir.ui.view">
+        <field name="name">hr.contract.domain.profile</field><field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+        <field name="arch" type="xml"><xpath expr="//sheet" position="inside"><group string="Agreement details"><field name="pb_trial_date_start"/><field name="pb_signed_date"/><field name="pb_salary_basis"/><field name="pb_payroll_contract_type"/><field name="pb_payroll_nationality_status"/></group></xpath></field>
+    </record>
+</odoo>

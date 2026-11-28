@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- WDGAP W3-B (PRV1): the Pay Review waits for its start date. Inherited from
+     the pay review screen, never edited (lane rule). Anchors are the action
+     bar's coach mark and the preview's open-run line (S8D-1: an xpath that
+     matches nothing stops the whole screen; walk it after an asset purge).
+     No double hyphen in any comment (W22). -->
+<templates xml:space="preserve">
+  <t t-inherit="pb_pay.PbPayReview" t-inherit-mode="extension">
+    <xpath expr="//div[@data-coach='pp-review-actions']" position="after">
+      <div class="pay-pbs-when" t-if="card.pbs_waits">
+        <span class="pay-pbs-ic"><t t-out="ic('calendarClock', 16)"/></span>
+        <div>
+          <p class="pay-pbs-h" t-esc="card.pbs_waits.label"/>
+          <p class="pay-pbs-s" t-esc="card.pbs_waits.note"/>
+        </div>
+      </div>
+      <div class="pay-pbs-paid" t-if="card.pbs_paid">
+        <span class="pay-pbs-ic"><t t-out="ic('triangleAlert', 16)"/></span>
+        <div class="pay-pbs-paid-b">
+          <p class="pay-pbs-h" t-esc="card.pbs_paid.sentence"/>
+          <p class="pay-pbs-s" t-esc="card.pbs_paid.detail"/>
+          <p class="pay-pbs-s" t-if="card.pbs_paid.note" t-esc="card.pbs_paid.note"/>
+        </div>
+        <button class="pbim-btn outline sm" t-if="card.pbs_paid.can_rework"
+                t-on-click="() => this.pbsRework()" t-att-disabled="state.busy">
+          <t t-out="ic('history', 15)"/>
+          <span t-if="card.pbs_paid.rework_made">Open the re-work</span>
+          <span t-else="">Re-work those months</span>
+        </button>
+      </div>
+      <div class="pay-pbs-skip" t-if="card.pbs_skipped">
+        <p class="pay-pbs-h" t-esc="card.pbs_skipped.sentence"/>
+        <div t-foreach="card.pbs_skipped.rows" t-as="sk" t-key="sk.id" class="pay-badrow">
+          <span class="pay-badrow-n" t-esc="sk.name"/>
+          <span class="pay-badrow-w" t-esc="sk.why"/>
+        </div>
+      </div>
+    </xpath>
+    <xpath expr="//p[@t-if='state.preview.open_run']" position="after">
+      <p class="pay-pbs-when pay-pbs-when--flat" t-if="state.preview.pbs_when">
+        <span class="pay-pbs-ic"><t t-out="ic('calendarClock', 16)"/></span>
+        <span t-esc="state.preview.pbs_when"/>
+      </p>
+    </xpath>
+    <xpath expr="//div[@t-if='state.preview']/div[hasclass('pay-drawer-f')]/p" position="attributes">
+      <attribute name="t-if">!state.preview.pbs_undo_line</attribute>
+    </xpath>
+    <xpath expr="//div[@t-if='state.preview']/div[hasclass('pay-drawer-f')]/p" position="after">
+      <p class="pay-sub" t-else="" t-esc="state.preview.pbs_undo_line"/>
+    </xpath>
+  </t>
+</templates>

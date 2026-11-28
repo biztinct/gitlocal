@@ -1,0 +1,62 @@
+.pbmi {
+  min-height: 100%; overflow: auto; padding: 24px 4vw 64px;
+  color: #201b3d; background: #f5f6fa;
+  .pbmi-head { display: flex; align-items: start; justify-content: space-between; gap: 24px; max-width: 1500px; margin: auto auto 24px; }
+  .pbmi-eyebrow { color: #5b51a9; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+  h1 { margin: 6px 0 6px; font-size: 30px; font-weight: 750; }
+  h2 { margin: 0 0 4px; font-size: 18px; }
+  p { margin: 0; color: #667695; }
+  button { cursor: pointer; }
+  .pbmi-refresh, .pbmi-view button { border: 1px solid #dce2ed; border-radius: 10px; background: white; padding: 9px 14px; color: #252143; font-weight: 650; }
+  .pbmi-refresh svg { vertical-align: middle; }
+  .pbmi-tabs { display: flex; gap: 6px; max-width: 1500px; margin: 0 auto 20px; padding: 5px; width: fit-content; border: 1px solid #dee3ed; border-radius: 14px; background: white; }
+  .pbmi-tabs button { border: 0; border-radius: 9px; background: transparent; padding: 9px 18px; color: #667695; font-weight: 700; }
+  .pbmi-tabs button.is-on { background: #5d4bb7; color: white; }
+  .pbmi-section { max-width: 1500px; margin: auto; }
+  // RAIL FIT 2026-11-02: a hosted report screen takes the rest of the height
+  // and owns its own scrolling (W20: a definite-height box, never auto).
+  &.is-hosting { height: 100%; min-height: 0; display: flex; flex-direction: column; overflow: hidden; padding: 14px 0 0; }
+  &.is-hosting .pbmi-tabs { flex: none; margin: 0 4vw 14px; }
+  .pbmi-host { flex: 1 1 auto; min-height: 0; min-width: 0; display: flex; border-top: 1px solid #dee3ed; }
+  .pbmi-host > * { flex: 1 1 auto; min-height: 0; min-width: 0; width: 100%; }
+  .pbmi-intro, .pbmi-question { margin: 8px 0 18px; font-size: 14px; }
+  .pbmi-tiles, .pbmi-reportgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); gap: 12px; }
+  .pbmi-tile, .pbmi-report { text-align: left; border: 1px solid #dfe4ed; border-radius: 14px; background: white; box-shadow: 0 8px 20px rgba(27, 32, 69, .035); }
+  .pbmi-tile { min-height: 182px; padding: 18px; display: flex; flex-direction: column; align-items: start; }
+  .pbmi-tile__label { font-size: 13px; font-weight: 700; }
+  .pbmi-tile strong { margin: 12px 0 7px; font-size: 30px; line-height: 1; }
+  .pbmi-tile small { color: #667695; line-height: 1.4; }
+  .pbmi-tile__open { margin-top: auto; padding-top: 14px; font-weight: 750; color: #5d4bb7; }
+  .pbmi-controls { display: flex; gap: 12px; flex-wrap: wrap; padding: 15px; border: 1px solid #dfe4ed; border-radius: 14px; background: white; }
+  .pbmi-controls label { display: grid; gap: 5px; color: #667695; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
+  .pbmi-controls select { min-width: 150px; max-width: 260px; border: 1px solid #dce2ed; border-radius: 10px; background: white; color: #201b3d; padding: 9px 12px; font-size: 13px; font-weight: 650; text-transform: none; letter-spacing: 0; }
+  .pbmi-result { margin-top: 16px; border: 1px solid #dfe4ed; border-radius: 14px; background: white; overflow: hidden; }
+  .pbmi-result__head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 17px 18px; border-bottom: 1px solid #e7ebf2; }
+  .pbmi-result__head > div:first-child { display: flex; align-items: baseline; gap: 12px; color: #667695; }
+  .pbmi-result__head strong { color: #201b3d; font-size: 25px; }
+  .pbmi-view { display: flex; gap: 5px; }
+  .pbmi-view button.is-on { color: #5d4bb7; background: #f1edff; border-color: #c9bbfa; }
+  .pbmi-note { padding: 10px 18px; color: #667695; font-size: 12px; }
+  .pbmi-bars { display: grid; gap: 11px; padding: 18px; }
+  .pbmi-bar { display: grid; grid-template-columns: minmax(130px, 22%) minmax(80px, 1fr) 120px; align-items: center; gap: 12px; font-size: 12px; }
+  .pbmi-bar__label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 650; }
+  .pbmi-bar__label small { display: block; color: #7d8aa3; font-weight: 500; }
+  .pbmi-bar__track { background: #f0eff8; border-radius: 5px; height: 16px; }
+  .pbmi-bar__fill { height: 100%; min-width: 2px; border-radius: 5px; background: linear-gradient(90deg, #6251b9, #9d8be2); }
+  .pbmi-bar b { text-align: right; }
+  .pbmi-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .pbmi-table th, .pbmi-table td { padding: 10px 16px; border-top: 1px solid #edf0f5; text-align: left; }
+  .pbmi-table th { color: #667695; }
+  .pbmi-table td:nth-last-child(-n+2) { font-variant-numeric: tabular-nums; }
+  .pbmi-reporthead { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 4px 0 16px; }
+  .pbmi-reporthead input { width: 300px; max-width: 100%; border: 1px solid #dce2ed; border-radius: 10px; padding: 10px 13px; background: white; }
+  .pbmi-report { display: flex; gap: 13px; align-items: center; padding: 15px; }
+  .pbmi-report > span:nth-child(2) { flex: 1; }
+  .pbmi-report b, .pbmi-report small { display: block; }
+  .pbmi-report small { color: #667695; margin-top: 3px; }
+  .pbmi-report__icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9px; color: #5d4bb7; background: #f0edfb; }
+  .pbmi-error, .pbmi-empty, .pbmi-loading { max-width: 1500px; margin: 12px auto; padding: 14px; border-radius: 10px; }
+  .pbmi-error { color: #9a3535; background: #fff0ee; }
+  .pbmi-empty, .pbmi-loading { color: #667695; background: white; }
+  @media (max-width: 700px) { .pbmi-head, .pbmi-reporthead { flex-direction: column; } .pbmi-tabs { margin-left: 0; } .pbmi-bar { grid-template-columns: 110px minmax(40px, 1fr) 70px; gap: 6px; } }
+}

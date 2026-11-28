@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- F113 / T113.2b — Thailand 2026 statutory pack (B4). Published so the
+         Thailand template resolves values at both real seed time and
+         certification (pinned 2026.1). ⚠ See item notes + report for VERIFY items. -->
+    <data noupdate="1">
+        <record id="legis_pack_th_2026" model="hr.formula.legislation.pack">
+            <field name="name">Thailand Statutory Parameters 2026</field>
+            <field name="country_code">TH</field>
+            <field name="version">2026.1</field>
+            <field name="effective_date">2026-01-01</field>
+            <field name="authority">Social Security Act B.E. 2533 · Revenue Code</field>
+            <field name="state">published</field>
+            <field name="sequence">5</field>
+            <field name="description">Thailand Social Security Fund and personal income-tax deduction parameters, 2026.</field>
+        </record>
+
+        <record id="legis_pack_th_2026_ssfrate" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_th_2026"/>
+            <field name="code">SSFRATE</field><field name="label">Social Security Rate</field>
+            <field name="value">0.05</field><field name="number_format">percentage</field><field name="sequence">10</field>
+        </record>
+        <record id="legis_pack_th_2026_ssfcap" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_th_2026"/>
+            <field name="code">SSFCAP</field><field name="label">SSF Wage Cap</field>
+            <field name="value">15000</field><field name="number_format">currency</field><field name="note">⚠ VERIFY 2026 SSF ceiling</field><field name="sequence">20</field>
+        </record>
+        <record id="legis_pack_th_2026_persallow" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_th_2026"/>
+            <field name="code">PERSALLOW</field><field name="label">Personal Allowance (annual)</field>
+            <field name="value">60000</field><field name="number_format">currency</field><field name="sequence">30</field>
+        </record>
+        <record id="legis_pack_th_2026_exprate" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_th_2026"/>
+            <field name="code">EXPRATE</field><field name="label">Expense Deduction Rate</field>
+            <field name="value">0.5</field><field name="number_format">percentage</field><field name="sequence">40</field>
+        </record>
+        <record id="legis_pack_th_2026_expcap" model="hr.formula.legislation.item">
+            <field name="pack_id" ref="legis_pack_th_2026"/>
+            <field name="code">EXPCAP</field><field name="label">Expense Deduction Cap (annual)</field>
+            <field name="value">100000</field><field name="number_format">currency</field><field name="sequence">50</field>
+        </record>
+    </data>
+</odoo>

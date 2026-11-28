@@ -1,0 +1,517 @@
+/* =============================================================================
+   LEARNREV P3 — the Library (journey/library.js).
+
+   One column, 1,180 px at most: search · Continue · path strip · every screen
+   in menu order (two columns of groups on a wide screen, so 42 rows fit in
+   about a screen and a half) · Practice. Flat colours only, no gradients (the
+   ring is a border, not a dial). Rows are 52 px. Groups fold on a phone.
+   ========================================================================== */
+.lrn-lib {
+    --lib-ink: var(--vuf-ink, #1E1B2E);
+    --lib-muted: var(--vuf-muted, #6B6787);
+    --lib-line: var(--vuf-line, #E4E1F2);
+    --lib-soft: #F4F3FA;
+    --lib-brand: var(--vuf-primary, #5A4BB0);
+    --lib-brand-soft: #EDEAF8;
+    --lib-ok: #2E7D4F;
+    --lib-ok-soft: #E6F2EA;
+    --lib-warn: #B45309;
+    --lib-warn-soft: #FDF3E2;
+    max-width: 1180px;
+    margin: 0 auto;
+    /* Room at the bottom for the corner helper button: it never sits on a
+       row (G28). */
+    padding-bottom: 88px;
+    color: var(--lib-ink);
+}
+
+/* ------------------------------------------------------------- search */
+.lrn-lib-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 46px;
+    padding: 0 14px;
+    background: var(--vuf-surface, #fff);
+    border: 1px solid var(--lib-line);
+    border-radius: 12px;
+    color: var(--lib-muted);
+    transition: border-color .14s, box-shadow .14s;
+
+    &:focus-within {
+        border-color: var(--lib-brand);
+        box-shadow: 0 0 0 3px var(--lib-brand-soft);
+    }
+    input {
+        flex: 1 1 auto;
+        min-width: 0;
+        border: 0;
+        outline: none;
+        background: transparent;
+        font: inherit;
+        font-size: 14px;
+        color: var(--lib-ink);
+    }
+}
+.lrn-lib-kbd {
+    flex: none;
+    padding: 2px 7px;
+    border: 1px solid var(--lib-line);
+    border-bottom-width: 2px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--lib-muted);
+    background: var(--lib-soft);
+}
+
+.lrn-lib-results { margin-top: 12px; }
+.lrn-lib-results:empty { display: none; }
+.lrn-lib.searching .lrn-lib-home { display: none; }
+.lrn-lib-count {
+    margin: 0 0 8px 2px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--lib-muted);
+}
+.lrn-lib-hits {
+    list-style: none;
+    margin: 0;
+    padding: 4px;
+    background: var(--vuf-surface, #fff);
+    border: 1px solid var(--lib-line);
+    border-radius: 14px;
+}
+.lrn-lib-hit {
+    > button {
+        display: grid;
+        grid-template-columns: 96px minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        min-height: 48px;
+        padding: 6px 12px;
+        border: 0;
+        border-radius: 10px;
+        background: transparent;
+        font: inherit;
+        text-align: left;
+        color: inherit;
+        cursor: pointer;
+
+        &:hover, &:focus-visible { background: var(--lib-soft); outline: none; }
+        &:focus-visible { box-shadow: inset 0 0 0 2px var(--lib-brand); }
+        > .lrn-ic { color: var(--lib-muted); }
+    }
+    & + & { border-top: 1px solid var(--lib-soft); }
+}
+.lrn-lib-kind {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    justify-self: start;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--lib-soft);
+    color: var(--lib-muted);
+    .lrn-ic { width: 12px; height: 12px; }
+
+    &.k-screen, &.k-lesson { background: var(--lib-brand-soft); color: var(--lib-brand); }
+    &.k-field, &.k-term { background: var(--lib-ok-soft); color: var(--lib-ok); }
+    &.k-task { background: var(--lib-warn-soft); color: var(--lib-warn); }
+}
+.lrn-lib-htx {
+    display: grid;
+    min-width: 0;
+    b { font-weight: 700; }
+    small {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-size: 12px;
+        color: var(--lib-muted);
+    }
+}
+.lrn-lib-def {
+    margin: 0 12px 10px 120px;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--lib-ink);
+}
+.lrn-lib-empty {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px 18px;
+    background: var(--vuf-surface, #fff);
+    border: 1px dashed var(--lib-line);
+    border-radius: 14px;
+    p { display: flex; align-items: center; gap: 8px; margin: 0; flex: 1 1 260px; color: var(--lib-muted); }
+}
+
+/* ------------------------------------------------------------- Continue */
+.lrn-lib-cont {
+    margin-top: 16px;
+    padding: 16px 20px;
+    background: var(--vuf-surface, #fff);
+    border: 1px solid var(--lib-line);
+    border-left: 4px solid var(--lib-brand);
+    border-radius: 14px;
+
+    &.done { border-left-color: var(--lib-ok); }
+}
+.lrn-lib-eyebrow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--lib-muted);
+
+    > span:first-child { color: var(--lib-brand); }
+}
+.lrn-lib-dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: currentColor;
+}
+.lrn-lib-link {
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid transparent;
+    background: none;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    color: var(--lib-brand);
+    cursor: pointer;
+    &:hover, &:focus-visible { border-bottom-color: currentColor; outline: none; }
+}
+.lrn-lib-cmain {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 8px;
+}
+.lrn-lib-cico {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--lib-brand-soft);
+    color: var(--lib-brand);
+    .lrn-ic { width: 20px; height: 20px; }
+    &.ok { background: var(--lib-ok-soft); color: var(--lib-ok); }
+}
+.lrn-lib-ctext { flex: 1 1 auto; min-width: 0; }
+.lrn-lib-ctitle {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -.01em;
+}
+.lrn-lib-cont.pick .lrn-lib-ctitle { margin-top: 8px; }
+.lrn-lib-cwhy {
+    margin: 2px 0 0;
+    font-size: 13px;
+    color: var(--lib-muted);
+}
+.lrn-lib-go { flex: none; }
+.lrn-lib-roles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+.lrn-lib-role {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid var(--lib-line);
+    border-radius: 999px;
+    background: var(--vuf-surface, #fff);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--lib-ink);
+    cursor: pointer;
+    &:hover, &:focus-visible { border-color: var(--lib-brand); outline: none; }
+    &[aria-pressed="true"] { background: var(--lib-brand); border-color: var(--lib-brand); color: #fff; }
+}
+.lrn-lib-cline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--lib-soft);
+    font-size: 12.5px;
+    color: var(--lib-muted);
+    > span { flex: 1 1 auto; }
+    b { color: var(--lib-ink); }
+}
+
+/* ------------------------------------------------------------- path strip */
+.lrn-lib-path {
+    margin-top: 10px;
+    /* Wraps rather than scrolls: a long path (Owner: 10) must still show
+       every step and the "Change role" chip at the end. */
+    ol {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 0;
+        padding: 2px 2px 4px;
+        list-style: none;
+    }
+}
+.lrn-lib-step {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 30px;
+    padding: 0 12px;
+    border: 1px solid var(--lib-line);
+    border-radius: 999px;
+    background: var(--vuf-surface, #fff);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--lib-ink);
+    cursor: pointer;
+    .lrn-ic { width: 13px; height: 13px; }
+    &:hover, &:focus-visible { border-color: var(--lib-brand); outline: none; }
+
+    &.done { background: var(--lib-ok-soft); border-color: transparent; color: var(--lib-ok); }
+    &.now { background: var(--lib-brand); border-color: var(--lib-brand); color: #fff; }
+    &.change { border-style: dashed; color: var(--lib-muted); }
+}
+.lrn-lib-pip {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: .45;
+}
+.lrn-lib-step.now .lrn-lib-pip { opacity: 1; }
+
+/* ------------------------------------------------------------- browse */
+.lrn-lib-browse {
+    margin: 22px 0 10px 2px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--lib-muted);
+}
+.lrn-lib-groups {
+    columns: 2 420px;
+    column-gap: 16px;
+}
+.lrn-lib-group {
+    break-inside: avoid;
+    margin: 0 0 16px;
+    background: var(--vuf-surface, #fff);
+    border: 1px solid var(--lib-line);
+    border-radius: 14px;
+    overflow: hidden;
+}
+.lrn-lib-ghead {
+    margin: 0;
+    > button {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 10px 14px;
+        border: 0;
+        background: transparent;
+        font: inherit;
+        text-align: left;
+        color: inherit;
+        cursor: default;
+    }
+}
+.lrn-lib-gic {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: var(--lib-brand-soft);
+    color: var(--lib-brand);
+    .lrn-ic { width: 14px; height: 14px; }
+}
+.lrn-lib-gname { flex: 1 1 auto; font-size: 13.5px; font-weight: 800; }
+.lrn-lib-gcount {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--lib-muted);
+    font-variant-numeric: tabular-nums;
+}
+.lrn-lib-gchev { display: none; color: var(--lib-muted); transition: transform .16s; }
+.lrn-lib-rows { list-style: none; margin: 0; padding: 0; }
+.lrn-lib-row {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    min-height: 52px;
+    padding: 6px 12px 6px 16px;
+    border-top: 1px solid var(--lib-soft);
+    outline: none;
+    transition: background .12s;
+
+    &:hover { background: #FAF9FD; }
+    &:focus-visible { box-shadow: inset 0 0 0 2px var(--lib-brand); }
+}
+.lrn-lib-ring {
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #D9D5EA;
+    color: #fff;
+    .lrn-ic { width: 11px; height: 11px; stroke-width: 3; }
+
+    &.started { border-color: var(--lib-brand); box-shadow: inset 0 0 0 3px #fff; background: var(--lib-brand); }
+    &.done { border-color: var(--lib-ok); background: var(--lib-ok); }
+}
+.lrn-lib-main {
+    display: grid;
+    min-width: 0;
+    cursor: pointer;
+    small {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-size: 12px;
+        color: var(--lib-muted);
+    }
+}
+.lrn-lib-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    b { font-weight: 700; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+}
+.lrn-lib-main:hover .lrn-lib-title b { color: var(--lib-brand); }
+.lrn-lib-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex: none;
+    font-size: 10.5px;
+    font-weight: 700;
+    .lrn-ic { width: 11px; height: 11px; }
+
+    &.req { padding: 1px 7px; border-radius: 999px; background: var(--lib-brand-soft); color: var(--lib-brand); }
+    &.menu { color: #8A87A0; font-weight: 600; }
+}
+.lrn-lib-chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+}
+.lrn-lib-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 26px;
+    padding: 0 10px;
+    border: 1px solid var(--lib-line);
+    border-radius: 999px;
+    background: var(--vuf-surface, #fff);
+    font: inherit;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--lib-ink);
+    cursor: pointer;
+    transition: border-color .12s, background .12s;
+    .lrn-ic { width: 12px; height: 12px; }
+    &:hover, &:focus-visible { border-color: var(--lib-brand); outline: none; }
+    &:focus-visible { box-shadow: 0 0 0 2px var(--lib-brand-soft); }
+    &.pri { background: var(--lib-brand-soft); border-color: transparent; color: var(--lib-brand); }
+    &.pri:hover, &.pri:focus-visible { border-color: var(--lib-brand); }
+}
+
+/* ------------------------------------------------------------- practice, team */
+.lrn-lib-more { display: grid; gap: 10px; }
+.lrn-lib-extra {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--vuf-surface, #fff);
+    border: 1px solid var(--lib-line);
+    border-radius: 14px;
+    .lrn-lib-main { cursor: default; }
+    .lrn-lib-main b { font-weight: 800; }
+}
+.lrn-lib-xico {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--lib-brand-soft);
+    color: var(--lib-brand);
+}
+
+/* A role pick: the card and the strip settle in once. */
+.lrn-lib-home.anim > .lrn-lib-cont,
+.lrn-lib-home.anim > .lrn-lib-path { animation: lrn-lib-in .32s cubic-bezier(.2, .8, .2, 1) both; }
+.lrn-lib-home.anim > .lrn-lib-path { animation-delay: .06s; }
+@keyframes lrn-lib-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .lrn-lib-home.anim > .lrn-lib-cont,
+    .lrn-lib-home.anim > .lrn-lib-path { animation: none; }
+    .lrn-lib-row, .lrn-lib-chip, .lrn-lib-gchev { transition: none; }
+}
+
+/* The outline's grey "not in your menu" note (from a Guide chip). */
+.lrn-callout.mute { background: var(--vuf-line-soft, #F1F0F7); color: #6B6787; }
+
+/* ------------------------------------------------------------- phone */
+@media (max-width: 640px) {
+    .lrn-lib-kbd { display: none; }
+    .lrn-lib-groups { columns: 1; }
+    .lrn-lib-ghead > button { cursor: pointer; }
+    .lrn-lib-gchev { display: inline-flex; }
+    .lrn-lib-group.open .lrn-lib-gchev { transform: rotate(180deg); }
+    .lrn-lib-group:not(.open) .lrn-lib-rows { display: none; }
+    .lrn-lib-row {
+        grid-template-columns: 18px minmax(0, 1fr);
+        .lrn-lib-chips { grid-column: 2; justify-content: flex-start; }
+    }
+    .lrn-lib-cmain { flex-wrap: wrap; }
+    .lrn-lib-go { width: 100%; justify-content: center; }
+    .lrn-lib-extra {
+        grid-template-columns: 36px minmax(0, 1fr);
+        .lrn-lib-chips { grid-column: 1 / -1; justify-content: flex-start; }
+    }
+    .lrn-lib-hit > button { grid-template-columns: minmax(0, 1fr) auto; }
+    .lrn-lib-hit .lrn-lib-kind { grid-column: 1 / -1; }
+    .lrn-lib-def { margin-left: 12px; }
+}

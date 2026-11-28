@@ -1,0 +1,547 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_doc_studio_hiring
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-23 22:26+0000\n"
+"PO-Revision-Date: 2026-11-23 22:26+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "%s lines"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "1 line"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "A field that no longer exists"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "A person"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer.py:0
+msgid "Amount"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "An offer"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#: model_terms:ir.ui.view,arch_db:pb_doc_studio_hiring.view_pb_hiring_offer_form_pbds
+msgid "Automatic"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Candidate"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Candidate name"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "Choose an offer to preview with."
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Company"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Company name"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Country"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Currency"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Dates"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "Dear ${candidate_name},"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Department"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_doc_studio__display_name
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring__display_name
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring_offer__display_name
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_letter_template__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model,name:pb_doc_studio_hiring.model_pb_doc_studio
+msgid "Document studio"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_studio.xml:0
+msgid ""
+"Draft an offer in Hiring, then come back to see this letter with real "
+"figures."
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Employment type"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Every month"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "Find a person"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "Find an offer"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_letter_template__pbds_kind
+msgid "Group"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+#: model:ir.model.fields.selection,name:pb_doc_studio_hiring.selection__pb_letter_template__pbds_kind__hiring
+#: model:ir.model.fields.selection,name:pb_doc_studio_hiring.selection__pb_letter_template__pbds_kind_set__hiring
+msgid "Hiring"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer.py:0
+msgid "How often"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_doc_studio__id
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring__id
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring_offer__id
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_letter_template__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Job"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Job position"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Job title"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "Kind regards,"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_board.xml:0
+msgid "Language of the letter"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_board.js:0
+msgid "Language: %(lang)s, automatic (%(why)s)"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_board.js:0
+msgid "Language: automatic"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,help:pb_doc_studio_hiring.field_pb_hiring_offer__pbds_letter_lang
+msgid ""
+"Leave empty to write the letter in the language the candidate applied in, or"
+" in the company's language when that is not known. Choose a language to "
+"write it in that language instead; press \"Write the letter\" again "
+"afterwards."
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model,name:pb_doc_studio_hiring.model_pb_letter_template
+msgid "Letter Template"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring_offer__pbds_lang
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring_offer__pbds_letter_lang
+msgid "Letter language"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring_offer__pbds_lang_name
+msgid "Letter written in"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Monthly total"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "New offer letter"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "No %s on this offer"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_studio.xml:0
+msgid "No offer to preview with yet."
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_studio.xml:0
+msgid "No offer you can see matches."
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model,name:pb_doc_studio_hiring.model_pb_hiring_offer
+msgid "Offer"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer.py:0
+msgid "Offer %(who)s"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+#: model:pb.letter.template,name:pb_hiring.letter_template_offer_generic
+msgid "Offer letter"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#: model:pb.letter.template,name:pb_hiring.letter_template_offer_vietnam
+msgid "Offer letter — Vietnam"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "Offers for roles at %(company)s in %(countries)s will use this copy."
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "Offers for roles at %s will use this copy."
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "Offers for roles in %s will use this copy."
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Once a year"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "One-off"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Pay"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer.py:0
+msgid "Pay item"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Pay lines table"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model,name:pb_doc_studio_hiring.model_pb_hiring
+msgid "Payobook Hiring cockpit data"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_studio.xml:0
+msgid "Preview with"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_studio.xml:0
+msgid ""
+"Previewing an offer letter needs Hiring access. You can still change the "
+"wording; ask your administrator for access to check it with a real offer."
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "Printed when an offer is prepared in Hiring"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_letter_template__pbds_kind_set
+msgid "Shown under"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer.py:0
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_studio.xml:0
+msgid "Signature and date"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Start date"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/hiring_facade.py:0
+msgid "That language is not switched on here."
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid ""
+"The PDF could not be made right now. Try again in a moment; the preview on "
+"screen is exactly what will print."
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/js/offer_studio.js:0
+msgid "The candidate"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,help:pb_doc_studio_hiring.field_pb_hiring_offer__pbds_lang
+msgid ""
+"The language the offer letter was written in the last time it was prepared."
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/hiring_facade.py:0
+msgid ""
+"The letter has already gone to the candidate, so its language can no longer "
+"change."
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/hiring_facade.py:0
+msgid "The letter will be written in %s, chosen automatically."
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/hiring_facade.py:0
+msgid "The letter will be written in %s."
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer.py:0
+msgid ""
+"There is nothing in this offer yet. Add what is being offered — the basic "
+"pay at least — before the letter is written."
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "This document"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Today's date"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "Used by %s offers"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "Used by 1 offer"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid ""
+"We are pleased to offer you the role of ${job_title}, starting on "
+"${start_date}."
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Where they will be based"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,help:pb_doc_studio_hiring.field_pb_hiring_offer__pbds_wording_note
+msgid ""
+"Which wording the letter uses when a company or country has its own copy of "
+"the offer letter."
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Who they will report to"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#: model:ir.model.fields,field_description:pb_doc_studio_hiring.field_pb_hiring_offer__pbds_wording_note
+msgid "Wording used"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer_common.py:0
+msgid "Yearly total"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-javascript
+#: code:addons/pb_doc_studio_hiring/static/src/xml/offer_studio.xml:0
+msgid "You cannot see any offer."
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/doc_studio.py:0
+msgid "You may not see this offer. Ask your administrator for Hiring access."
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/hiring_facade.py:0
+msgid "the company's language"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/hiring_facade.py:0
+msgid "the language they applied in"
+msgstr ""
+
+#. module: pb_doc_studio_hiring
+#. odoo-python
+#: code:addons/pb_doc_studio_hiring/models/offer.py:0
+msgid "“%s” has no wording in it yet, so there is nothing to print."
+msgstr ""

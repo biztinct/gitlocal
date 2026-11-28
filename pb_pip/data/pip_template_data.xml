@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         Two starting points, and they are deliberately the two things
+         growth plans are actually about: the work itself, and working with
+         the people around you. Anything more specific is a company's own,
+         which is why these are records rather than code.
+
+         EVERY FOCUS LINE IS ITS OWN RECORD WITH ITS OWN XMLID, and that is
+         not style. A `(0, 0, {...})` inside `focus_line_ids` is a CREATE
+         command with nothing to match on, so it makes a NEW row every time
+         the data file is loaded — and a data file is loaded again on every
+         `-u` that reaches it. Three reloads during this phase's own testing
+         turned three focus areas into nine, and the manager's request dialog
+         showed each of them three times over. A child with an xmlid is
+         matched and updated; a child without one is minted again.
+
+         COMPANY-LESS (R8). `company_id` defaults to the loading user's
+         company, so a seeded template installs onto whichever company ran
+         the install and the `['|',('company_id','=',False),...]` rule then
+         hides it from everyone else. `eval="False"` on every one, and the
+         install hook frees any that slipped through anyway.
+
+         noupdate="1" so a company that has reworded one keeps its wording
+         through every upgrade.
+
+         THE COACHING TEXT IS WHERE THE TONE IS SET. Plain text, because the
+         drawer edits it in a textarea and prose is what it is. It opens by
+         saying what this stage is NOT — because the single most useful thing
+         a coaching note can do is stop everybody in the room believing a
+         decision has already been made.
+         ================================================================== -->
+
+    <record id="pip_template_delivery" model="pb.pip.template">
+        <field name="name">Delivery and quality — 6 weeks</field>
+        <field name="sequence">10</field>
+        <field name="default_weeks">6</field>
+        <field name="checkin_freq">weekly</field>
+        <field name="company_id" eval="False"/>
+        <field name="coaching_body">This is a conversation, not a decision. Nothing has been written to
+anybody's record and nothing has been filed. The point of this stage is to
+find out what is actually in the way, and most of the time that is where it
+ends.
+
+WHAT WE TALKED ABOUT
+
+
+WHAT THEY SAID WAS GETTING IN THE WAY
+
+
+WHAT WE AGREED TO TRY, AND BY WHEN
+
+
+WHAT SUPPORT THEY ARE GETTING
+</field>
+    </record>
+
+    <record id="pip_line_delivery_ontime" model="pb.pip.template.line">
+        <field name="template_id" ref="pip_template_delivery"/>
+        <field name="sequence">10</field>
+        <field name="name">Work that lands on time</field>
+        <field name="description">Agreed dates are either met or moved before they pass, not after.</field>
+    </record>
+
+    <record id="pip_line_delivery_rework" model="pb.pip.template.line">
+        <field name="template_id" ref="pip_template_delivery"/>
+        <field name="sequence">20</field>
+        <field name="name">Work that comes back</field>
+        <field name="description">How much has to be redone, and how often the same thing is redone twice.</field>
+    </record>
+
+    <record id="pip_line_delivery_stuck" model="pb.pip.template.line">
+        <field name="template_id" ref="pip_template_delivery"/>
+        <field name="sequence">30</field>
+        <field name="name">Saying when something is stuck</field>
+        <field name="description">A problem is raised while there is still time to do something about it.</field>
+    </record>
+
+    <record id="pip_template_collaboration" model="pb.pip.template">
+        <field name="name">Working with the team — 4 weeks</field>
+        <field name="sequence">20</field>
+        <field name="default_weeks">4</field>
+        <field name="checkin_freq">weekly</field>
+        <field name="company_id" eval="False"/>
+        <field name="coaching_body">This is a conversation, not a decision. Nothing has been written to
+anybody's record and nothing has been filed. Where two people work badly
+together there are usually two accounts of why, and this stage exists to hear
+the second one.
+
+WHAT WE TALKED ABOUT
+
+
+THEIR ACCOUNT OF IT
+
+
+WHAT WE AGREED TO TRY, AND BY WHEN
+
+
+WHAT THEIR MANAGER IS DOING DIFFERENTLY
+</field>
+    </record>
+
+    <record id="pip_line_collab_answering" model="pb.pip.template.line">
+        <field name="template_id" ref="pip_template_collaboration"/>
+        <field name="sequence">10</field>
+        <field name="name">Answering the people who are waiting</field>
+        <field name="description">Messages and requests from colleagues are answered within a working day, even when the answer is "not yet".</field>
+    </record>
+
+    <record id="pip_line_collab_handover" model="pb.pip.template.line">
+        <field name="template_id" ref="pip_template_collaboration"/>
+        <field name="sequence">20</field>
+        <field name="name">Handing work over cleanly</field>
+        <field name="description">The next person can pick it up without having to come back and ask.</field>
+    </record>
+
+    <record id="pip_line_collab_disagree" model="pb.pip.template.line">
+        <field name="template_id" ref="pip_template_collaboration"/>
+        <field name="sequence">30</field>
+        <field name="name">Disagreeing in the room</field>
+        <field name="description">Concerns are raised with the person they are about, at the time, rather than afterwards.</field>
+    </record>
+
+</odoo>

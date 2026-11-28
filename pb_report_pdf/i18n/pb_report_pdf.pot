@@ -1,0 +1,794 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pb_report_pdf
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-22 11:49+0000\n"
+"PO-Revision-Date: 2026-11-22 11:49+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/layout.py:0
+msgid "%(count)s rows"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/sources.py:0
+msgid "%(period)s, by %(date)s"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/sources.py:0
+msgid "%(start)s to %(end)s"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "%s (fit)"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "%s of %s rows"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "%s rows"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "%s wide"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid ". Saving keeps your own copy."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "1 page"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_report_pdf/models/layout.py:0 code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "1 row"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "A line under the title"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "A second line"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Aa"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "About %s pages"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Auto · %s"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Back to the standard look"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Back to the standard look."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Close"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Close without saving"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Closing note"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Columns"
+msgstr ""
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__company_id
+msgid "Company"
+msgstr ""
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__is_default
+msgid "Company default"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Company letterhead"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Company look"
+msgstr ""
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/sources.py:0
+msgid "Currency"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0
+msgid "Deep ink"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Design the PDF"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Design the PDF of this report"
+msgstr ""
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_ir_actions_report__display_name model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf__display_name model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__display_name model:ir.model.fields,field_description:pb_report_pdf.field_report_pb_report_pdf_report_table__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Download PDF"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Download the PDF (Ctrl+Enter)"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Drag a column edge on the page to change its width."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Drag the edge between two column headings to make a column wider. Download PDF gives the true file."
+msgstr ""
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__shared
+msgid "Everyone who opens this report"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Everyone who opens this report prints with it"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "First page of the PDF"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0
+msgid "Fit"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Fit turns the page sideways when more than %s columns print."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Font"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Footer"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "For example: Prepared for the board. Figures before tax."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Forget it"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Forget your look for this report?"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/layout.py:0
+msgid "Grand total"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Grand total row"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Group headings and subtotals, as on screen"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Heading"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Heading row colour"
+msgstr ""
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_ir_actions_report__id model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf__id model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__id model:ir.model.fields,field_description:pb_report_pdf.field_report_pb_report_pdf_report_table__id
+msgid "ID"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0
+msgid "Indigo"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Keep it"
+msgstr ""
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Left empty, it says the period and the filters of the report."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Let the widths fit the text again"
+msgstr ""
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__look
+msgid "Look"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Look saved and shared with everyone who opens this report."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Look saved. Only you print with it now."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Look saved. This report prints like this from now on."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Making your PDF…"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/sources.py:0
+msgid "Name"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "New reports now start with this paper, page and table style."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "New reports start with the standard look again."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/layout.py:0
+msgid "No"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Not printed"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/layout.py:0
+msgid "Not set"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0 code:addons/pb_report_pdf/models/look.py:0
+msgid "Only administrators can change the company's default look."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0 code:addons/pb_report_pdf/models/look.py:0
+msgid "Only administrators can set the company's default look."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/layout.py:0
+msgid "Only the first %(cap)s of %(total)s rows are printed. Add a filter to print fewer rows."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/sources.py:0
+msgid "Only the largest rows are included; %(more)s more were left out."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0
+msgid "Only the person who saved this report can share its look."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "PDF"
+msgstr ""
+
+#. module: pb_report_pdf
+#: model:ir.model,name:pb_report_pdf.model_pb_report_pdf_look
+msgid "PDF look of a report"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Page"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0
+msgid "Page %(page)s of %(total)s"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Paper"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Paper size"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0 code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Pick at least one column to print."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0
+msgid "Plain"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/layout.py:0
+msgid "Printed on %(when)s by %(who)s"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Printed on (date) by (your name)"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/sources.py:0 model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__source_id
+msgid "Report"
+msgstr ""
+
+#. module: pb_report_pdf
+#: model:ir.model,name:pb_report_pdf.model_ir_actions_report
+msgid "Report Action"
+msgstr ""
+
+#. module: pb_report_pdf
+#: model:ir.model,name:pb_report_pdf.model_report_pb_report_pdf_report_table
+msgid "Report PDF"
+msgstr ""
+
+#. module: pb_report_pdf
+#: model:ir.actions.report,name:pb_report_pdf.action_report_pdf_a3
+msgid "Report PDF (A3)"
+msgstr ""
+
+#. module: pb_report_pdf
+#: model:ir.actions.report,name:pb_report_pdf.action_report_pdf_a4
+msgid "Report PDF (A4)"
+msgstr ""
+
+#. module: pb_report_pdf
+#: model:ir.model,name:pb_report_pdf.model_pb_report_pdf
+msgid "Report PDF designer"
+msgstr ""
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__source_model
+msgid "Report kind"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Save and close"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Save look"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Save the report first."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Save this look (Ctrl+S)"
+msgstr ""
+
+#. module: pb_report_pdf
+#: model:ir.model.fields,field_description:pb_report_pdf.field_pb_report_pdf_look__user_id
+msgid "Saved by"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Second line"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Shared by %s"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0 code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Sideways"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0
+msgid "Slate"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0
+msgid "Soft indigo"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Something went wrong. Try again."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Standard look"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Stop using a company look"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Striped rows"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Table"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Text size"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0
+msgid "The PDF could not be made right now. Try again in a moment; the page on screen is exactly what will print."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "This look"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "This report cannot be printed right now"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0
+msgid "This report cannot be printed right now."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/layout.py:0
+msgid "This report has no rows to print."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "This report has no totals. Add a total to a column on screen to print one here."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/sources.py:0
+msgid "This report is no longer available. It may have been deleted, or it is no longer shared with you."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/sources.py:0
+msgid "This screen cannot be printed as a PDF."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Title"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/sources.py:0
+msgid "Total"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/layout.py:0
+msgid "Total %(group)s"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Try again"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Unsaved changes"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0 code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Upright"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Use this look for every new report"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Which way up"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/layout.py:0
+msgid "Yes"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-python
+#: code:addons/pb_report_pdf/models/facade.py:0
+msgid "You already keep %(cap)s PDF looks. Put one you no longer use back to the standard look first."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "You changed the look. Keep it for the next time you print this report?"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Your PDF is downloaded: %(rows)s, made in %(sec)s seconds."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Your look"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "Your look · shared"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/js/report_pdf.js:0
+msgid "the report's owner"
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Page numbers come from your company's own letter footer."
+msgstr ""
+
+#. module: pb_report_pdf
+#. odoo-javascript
+#: code:addons/pb_report_pdf/static/src/xml/report_pdf.xml:0
+msgid "Every page ends with “Page 1 of 3”."
+msgstr ""

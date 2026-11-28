@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- ==================================================================
+         The two letters P0 did not ship.
+
+         P0 seeded `probation_pass` (and this module reuses it rather than
+         shipping a second one with the same job). The extension and the
+         "not confirmed" letters live here, because they are the two whose
+         wording is a decision this phase makes.
+
+         noupdate="1" so a company that has reworded one keeps its wording
+         through every upgrade. Nothing here is evaluated — P0's letter
+         engine SUBSTITUTES, so a `${...}` that is misspelt stays on the
+         page exactly as typed, which is what makes editing these safe for a
+         non-technical administrator. `${new_trial_end}` and
+         `${improvements}` are handed in by the verdict.
+
+         THE TONE IS THE POINT. An extension letter that reads like a
+         warning turns a second chance into a countdown; a "not confirmed"
+         letter that reads like an apology leaves the person unsure what has
+         actually happened. Both say the decision plainly in the first
+         sentence, and then say what happens next.
+         ================================================================== -->
+
+    <record id="letter_template_probation_extend" model="pb.letter.template">
+        <field name="name">Probation extended</field>
+        <field name="letter_type">probation_extend</field>
+        <field name="subject">Your trial period</field>
+        <field name="sequence">21</field>
+        <field name="company_id" eval="False"/>
+        <field name="vault_category_id" ref="pb_employee_vault.cat_labor_contract"/>
+        <field name="body_html" type="html">
+            <div>
+                <p>Dear ${employee_name},</p>
+                <p>
+                    Following your probation review, we have decided to extend
+                    your trial period as <strong>${job_title}</strong> in
+                    ${department}. It now runs until
+                    <strong>${new_trial_end}</strong>.
+                </p>
+                <p>
+                    This is so that you have a fair run at the areas below,
+                    with your manager's support, before a final decision is
+                    made. Nothing else about your employment changes in the
+                    meantime.
+                </p>
+                <p><strong>What we would like to see</strong><br/>
+                   ${improvements}</p>
+                <p>${extra}</p>
+                <p>
+                    Your manager will go through this with you and will meet
+                    you regularly until the new date. If anything here is not
+                    clear, ask them or your HR contact — that is what they are
+                    there for.
+                </p>
+            </div>
+        </field>
+    </record>
+
+    <record id="letter_template_probation_fail" model="pb.letter.template">
+        <field name="name">Probation not passed</field>
+        <field name="letter_type">probation_fail</field>
+        <field name="subject">Your trial period</field>
+        <field name="sequence">22</field>
+        <field name="company_id" eval="False"/>
+        <field name="vault_category_id" ref="pb_employee_vault.cat_labor_contract"/>
+        <field name="body_html" type="html">
+            <div>
+                <p>Dear ${employee_name},</p>
+                <p>
+                    Following your probation review, we have decided not to
+                    confirm your employment as <strong>${job_title}</strong> in
+                    ${department}. Your trial period ends on
+                    <strong>${trial_end}</strong>.
+                </p>
+                <p>
+                    This decision was taken after speaking to the colleagues
+                    you have worked with and after your conversation with your
+                    manager. The areas that did not come together are set out
+                    below.
+                </p>
+                <p><strong>What was discussed</strong><br/>
+                   ${improvements}</p>
+                <p>${extra}</p>
+                <p>
+                    Your HR contact will go through what happens next with you,
+                    including your notice, anything still owed and the return of
+                    company equipment. Thank you for the work you did with us
+                    since ${joining_date}, and we wish you well.
+                </p>
+            </div>
+        </field>
+    </record>
+
+</odoo>

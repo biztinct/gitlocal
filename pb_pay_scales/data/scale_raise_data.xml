@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- WDGAP S8-D (SC1). The catalogue row this module owns (engine rule: every
+         row is created by the module that owns the business object, never in
+         pb_approval_config/data/processes.xml). noupdate so a business that
+         rewords it keeps its wording; `model_name` is re-pointed by the seed. -->
+    <record id="process_scaleraise" model="biz.approval.process">
+        <field name="key">scaleraise</field>
+        <field name="name">Pay scale rises</field>
+        <field name="area">people</field>
+        <field name="model_name">pb.pay.scale.raise</field>
+        <field name="money" eval="True"/>
+        <field name="description">A new version of a pay scale that moves everybody on it, signed off once for the whole rise: HR, then Finance.</field>
+        <field name="sequence">246</field>
+    </record>
+
+    <!-- Approved rises are written on their day.
+
+         Hourly, so a rise starts within the hour after midnight in its
+         company's own time zone. Each rise is its own transaction; a person
+         whose pay changed since the rise was sent is skipped with the reason.
+         With nothing waiting it reads one empty list and stops. Sends nothing. -->
+    <record id="ir_cron_scale_raise_apply_due" model="ir.cron">
+        <field name="name">Pay scales: write approved rises on their day</field>
+        <field name="model_id" ref="model_pb_pay_scale_raise"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_apply_due()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">hours</field>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="active" eval="True"/>
+    </record>
+
+</odoo>

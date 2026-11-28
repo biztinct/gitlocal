@@ -8,10 +8,11 @@
               groups="pb_hr_payroll_base.group_payroll_super_admin"
               web_icon="om_hr_payroll,static/description/icon.png"/>
 
-    <!-- Override Main Payroll Menu to Show Country Selector Only -->
+    <!-- DISABLED - action_enhanced_country_selector is in payroll_dashboard_enhanced_views.xml which is disabled in manifest
     <record id="om_hr_payroll.menu_hr_payroll_root" model="ir.ui.menu">
         <field name="action" ref="action_enhanced_country_selector"/>
     </record>
+    -->
 
     <!-- Dashboard Section - moved to PayrollBackup -->
     <menuitem id="menu_payroll_dashboard_section" 
@@ -29,7 +30,7 @@
     <record id="action_hr_employee_payroll" model="ir.actions.act_window">
         <field name="name">Employees</field>
         <field name="res_model">hr.employee</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="domain">[]</field>
         <field name="context">{}</field>
     </record>
@@ -44,7 +45,7 @@
     <record id="action_hr_contract_payroll" model="ir.actions.act_window">
         <field name="name">Contracts</field>
         <field name="res_model">hr.contract</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="domain">[]</field>
         <field name="context">{}</field>
     </record>
@@ -65,7 +66,7 @@
     <record id="action_hr_payslip_payroll" model="ir.actions.act_window">
         <field name="name">Payslips</field>
         <field name="res_model">hr.payslip</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="domain">[]</field>
         <field name="context">{}</field>
     </record>
@@ -80,7 +81,7 @@
     <record id="action_hr_payslip_run_payroll" model="ir.actions.act_window">
         <field name="name">Payslip Batches</field>
         <field name="res_model">hr.payslip.run</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="domain">[]</field>
         <field name="context">{}</field>
     </record>
@@ -101,7 +102,7 @@
     <record id="action_payroll_analysis" model="ir.actions.act_window">
         <field name="name">Payroll Analysis</field>
         <field name="res_model">hr.payslip</field>
-        <field name="view_mode">graph,pivot,tree</field>
+        <field name="view_mode">graph,pivot,list</field>
         <field name="context">{'search_default_group_by_employee': 1}</field>
     </record>
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- Certificates in the Document studio (phase A1): what a certificate
+       card prints for, and how often it was issued. -->
+  <t t-inherit="pb_doc_studio.Gallery" t-inherit-mode="extension">
+    <xpath expr="//dl[hasclass('pbds-meta')]" position="after">
+      <p t-if="c.kind === 'certificates' and c.prints_for" class="pbdx-prints" data-coach="dm-prints">
+        <t t-out="ic('award', 12)"/> <span t-esc="c.prints_for"/><t t-if="c.uses_text"> <span class="pbdx-uses" t-esc="c.uses_text"/></t>
+      </p>
+    </xpath>
+  </t>
+
+</templates>

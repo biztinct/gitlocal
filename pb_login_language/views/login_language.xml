@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inject a language selector into the login form -->
+    <template id="login_language_selector" inherit_id="web.login" name="Login Language Selector">
+
+        <!-- Add the language dropdown above the login button -->
+        <xpath expr="//div[hasclass('oe_login_buttons')]" position="before">
+            <div class="mb-3 pb_lang_selector" t-if="languages and len(languages) &gt; 1">
+                <label for="lang" class="form-label d-flex align-items-center gap-1">
+                    <i class="fa fa-globe"/>
+                    Language
+                </label>
+                <select name="lang" id="lang" class="form-select form-select-sm">
+                    <t t-foreach="languages" t-as="l">
+                        <option t-att-value="l[0]"
+                                t-att-selected="l[0] == current_lang and 'selected' or None">
+                            <t t-esc="l[1]"/>
+                        </option>
+                    </t>
+                </select>
+            </div>
+        </xpath>
+
+    </template>
+</odoo>

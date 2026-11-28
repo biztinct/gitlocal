@@ -1,0 +1,259 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-15 20:47+0000\n"
+"PO-Revision-Date: 2026-11-15 20:47+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pb_expense_allowance
+#. odoo-python
+#: code:addons/pb_expense_allowance/models/checks.py:0
+msgid "%(what)s %(year)s: limit %(limit)s, used %(used)s, left %(left)s, this claim %(asked)s"
+msgstr "%(what)s %(year)s: batas %(limit)s, terpakai %(used)s, sisa %(left)s, klaim ini %(asked)s"
+
+#. module: pb_expense_allowance
+#. odoo-python
+#: code:addons/pb_expense_allowance/models/allowance.py:0
+msgid "%(who)s works for another company, so their limit cannot be set under %(here)s."
+msgstr "%(who)s bekerja untuk perusahaan lain, jadi batasnya tidak dapat diatur di bawah %(here)s."
+
+#. module: pb_expense_allowance
+#. odoo-python
+#: code:addons/pb_expense_allowance/models/allowance.py:0
+msgid "%s does not look like a year."
+msgstr "%s tidak tampak seperti tahun."
+
+#. module: pb_expense_allowance
+#. odoo-python
+#: code:addons/pb_expense_allowance/models/allowance.py:0
+msgid "A yearly limit cannot be below zero. Set it to zero if nobody may claim it."
+msgstr "Batas tahunan tidak boleh di bawah nol. Atur ke nol jika tidak ada yang boleh mengklaim."
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__active
+msgid "Active"
+msgstr "Aktif"
+
+#. module: pb_expense_allowance
+#: model_terms:ir.actions.act_window,help:pb_expense_allowance.action_pb_expense_allowance
+msgid "Add a limit per kind of expense for everybody, or for one person (it wins over the company figure). With no limit, claims are not checked."
+msgstr "Tambahkan batas per jenis pengeluaran untuk semua orang, atau untuk satu orang (mengalahkan angka perusahaan). Tanpa batas, klaim tidak diperiksa."
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_pay_setup__allow_over model:ir.model.fields,field_description:pb_expense_allowance.field_res_company__pb_expense_allow_over
+msgid "Claims may go over the yearly limit"
+msgstr "Klaim boleh melebihi batas tahunan"
+
+#. module: pb_expense_allowance
+#: model:ir.model,name:pb_expense_allowance.model_res_company
+msgid "Companies"
+msgstr "Perusahaan"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__company_id
+msgid "Company"
+msgstr "Perusahaan"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__create_uid
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__create_date
+msgid "Created on"
+msgstr "Dibuat pada"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__currency_id
+msgid "Currency"
+msgstr "Mata uang"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__display_name model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_claim__display_name model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_pay_setup__display_name model:ir.model.fields,field_description:pb_expense_allowance.field_pb_me_expense__display_name model:ir.model.fields,field_description:pb_expense_allowance.field_res_company__display_name
+msgid "Display Name"
+msgstr "Nama tampilan"
+
+#. module: pb_expense_allowance
+#: model_terms:ir.ui.view,arch_db:pb_expense_allowance.pb_expense_allowance_view_list
+msgid "Everybody in the company"
+msgstr "Semua orang di perusahaan"
+
+#. module: pb_expense_allowance
+#: model:ir.model,name:pb_expense_allowance.model_pb_expense_claim
+msgid "Expense claim"
+msgstr "Klaim pengeluaran"
+
+#. module: pb_expense_allowance
+#: model:ir.model,name:pb_expense_allowance.model_pb_me_expense
+msgid "Expenses on the employee pages"
+msgstr "Pengeluaran di halaman karyawan"
+
+#. module: pb_expense_allowance
+#: model_terms:ir.ui.view,arch_db:pb_expense_allowance.pb_expense_allowance_view_search
+msgid "For everybody"
+msgstr "Untuk semua orang"
+
+#. module: pb_expense_allowance
+#: model_terms:ir.ui.view,arch_db:pb_expense_allowance.pb_expense_allowance_view_search
+msgid "For one person"
+msgstr "Untuk satu orang"
+
+#. module: pb_expense_allowance
+#: model:ir.model,name:pb_expense_allowance.model_pb_expense_pay_setup
+msgid "How approved expense claims are paid back"
+msgstr "Cara klaim yang disetujui dibayar kembali"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__id model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_claim__id model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_pay_setup__id model:ir.model.fields,field_description:pb_expense_allowance.field_pb_me_expense__id model:ir.model.fields,field_description:pb_expense_allowance.field_res_company__id
+msgid "ID"
+msgstr "ID"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__employee_id
+msgid "Just for"
+msgstr "Hanya untuk"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__product_id
+msgid "Kind of expense"
+msgstr "Jenis pengeluaran"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__write_uid
+msgid "Last Updated by"
+msgstr "Terakhir diperbarui oleh"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__write_date
+msgid "Last Updated on"
+msgstr "Terakhir diperbarui pada"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,help:pb_expense_allowance.field_pb_expense_allowance__employee_id
+msgid "Leave it empty and this is the limit for everybody in the company. Name somebody and it is theirs alone, and it wins over the company figure."
+msgstr "Kosongkan, maka ini batas untuk semua orang di perusahaan. Pilih seseorang, maka batas ini hanya untuknya dan mengalahkan angka perusahaan."
+
+#. module: pb_expense_allowance
+#: model_terms:ir.ui.view,arch_db:pb_expense_allowance.portal_my_expenses_limits
+msgid "Left"
+msgstr "Sisa"
+
+#. module: pb_expense_allowance
+#: model_terms:ir.ui.view,arch_db:pb_expense_allowance.portal_my_expenses_limits
+msgid "Limit"
+msgstr "Batas"
+
+#. module: pb_expense_allowance
+#: model_terms:ir.actions.act_window,help:pb_expense_allowance.action_pb_expense_allowance
+msgid "No yearly limits yet"
+msgstr "Belum ada batas tahunan"
+
+#. module: pb_expense_allowance
+#: model_terms:ir.ui.view,arch_db:pb_expense_allowance.pb_expense_pay_setup_view_form_allowance
+msgid "Off: a claim over what is left of a yearly limit is refused, and the person sees the limit, what is used and what is left. On: it is sent, and its approvers see that it is over."
+msgstr "Mati: klaim yang melebihi sisa batas tahunan ditolak, dan karyawan melihat batas, yang terpakai dan sisanya. Nyala: klaim dikirim, dan pemberi persetujuan melihat bahwa itu melebihi."
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,help:pb_expense_allowance.field_res_company__pb_expense_allow_over
+msgid "Off: a claim over what is left of a yearly limit is refused, with the numbers. On: it is sent, and its approvers see it is over."
+msgstr "Mati: klaim yang melebihi sisa batas tahunan ditolak, dengan angkanya. Nyala: klaim dikirim, dan pemberi persetujuan melihat itu melebihi."
+
+#. module: pb_expense_allowance
+#. odoo-python
+#: code:addons/pb_expense_allowance/models/checks.py:0
+msgid "Only an expense manager or a payroll manager can set yearly limits."
+msgstr "Hanya manajer pengeluaran atau manajer penggajian yang dapat mengatur batas tahunan."
+
+#. module: pb_expense_allowance
+#. odoo-python
+#: code:addons/pb_expense_allowance/models/checks.py:0
+msgid "Over a yearly limit"
+msgstr "Melebihi batas tahunan"
+
+#. module: pb_expense_allowance
+#. odoo-python
+#: code:addons/pb_expense_allowance/models/checks.py:0
+msgid "Over the yearly limit"
+msgstr "Melebihi batas tahunan"
+
+#. module: pb_expense_allowance
+#: model_terms:ir.ui.view,arch_db:pb_expense_allowance.pb_expense_pay_setup_view_form_allowance
+msgid "Set yearly limits"
+msgstr "Atur batas tahunan"
+
+#. module: pb_expense_allowance
+#. odoo-python
+#: code:addons/pb_expense_allowance/models/allowance.py:0
+msgid "That is more than is left for %(what)s this year. Your limit for %(year)s is %(limit)s, %(used)s is already approved and %(waiting)s is waiting approval, so %(left)s is left and this comes to %(asked)s."
+msgstr "Itu melebihi sisa untuk %(what)s tahun ini. Batas Anda untuk %(year)s adalah %(limit)s, %(used)s sudah disetujui dan %(waiting)s menunggu persetujuan, jadi sisa %(left)s dan klaim ini %(asked)s."
+
+#. module: pb_expense_allowance
+#. odoo-python
+#: code:addons/pb_expense_allowance/models/allowance.py:0
+msgid "That is more than is left for %(what)s this year. Your limit for %(year)s is %(limit)s, %(used)s is already approved, so %(left)s is left and this comes to %(asked)s."
+msgstr "Itu melebihi sisa untuk %(what)s tahun ini. Batas Anda untuk %(year)s adalah %(limit)s, %(used)s sudah disetujui, jadi sisa %(left)s dan klaim ini %(asked)s."
+
+#. module: pb_expense_allowance
+#. odoo-python
+#: code:addons/pb_expense_allowance/models/allowance.py:0
+msgid "There is already a company limit for %(what)s in %(year)s. Change that one rather than adding a second."
+msgstr "Sudah ada batas perusahaan untuk %(what)s di %(year)s. Ubah yang itu daripada menambah yang kedua."
+
+#. module: pb_expense_allowance
+#: model:ir.model.constraint,message:pb_expense_allowance.constraint_pb_expense_allowance_uniq_allowance
+msgid "There is already a limit for that kind of expense, that year and that person. Change the one that is there."
+msgstr "Sudah ada batas untuk jenis pengeluaran, tahun dan orang itu. Ubah yang sudah ada."
+
+#. module: pb_expense_allowance
+#: model_terms:ir.ui.view,arch_db:pb_expense_allowance.portal_my_expenses_limits
+msgid "Used"
+msgstr "Terpakai"
+
+#. module: pb_expense_allowance
+#: model_terms:ir.ui.view,arch_db:pb_expense_allowance.portal_my_expenses_limits
+msgid "Waiting"
+msgstr "Menunggu"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__note
+msgid "Why this figure"
+msgstr "Alasan angka ini"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__year
+msgid "Year"
+msgstr "Tahun"
+
+#. module: pb_expense_allowance
+#: model:ir.model,name:pb_expense_allowance.model_pb_expense_allowance
+msgid "Yearly claim limit"
+msgstr "Batas klaim tahunan"
+
+#. module: pb_expense_allowance
+#: model:ir.actions.act_window,name:pb_expense_allowance.action_pb_expense_allowance model_terms:ir.ui.view,arch_db:pb_expense_allowance.pb_expense_allowance_view_list
+msgid "Yearly claim limits"
+msgstr "Batas klaim tahunan"
+
+#. module: pb_expense_allowance
+#: model:ir.model.fields,field_description:pb_expense_allowance.field_pb_expense_allowance__amount
+msgid "Yearly limit"
+msgstr "Batas tahunan"
+
+#. module: pb_expense_allowance
+#: model_terms:ir.ui.view,arch_db:pb_expense_allowance.pb_expense_pay_setup_view_form_allowance
+msgid "Yearly limits"
+msgstr "Batas tahunan"
+
+#. module: pb_expense_allowance
+#: model_terms:ir.ui.view,arch_db:pb_expense_allowance.portal_my_expenses_limits
+msgid "Your yearly limits"
+msgstr "Batas tahunan Anda"

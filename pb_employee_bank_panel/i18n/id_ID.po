@@ -1,0 +1,242 @@
+# Translation of Payobook Server.
+# This file contains the translation of the following modules:
+# 	* pb_employee_bank_panel
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-20 06:37+0000\n"
+"PO-Revision-Date: 2026-11-20 06:37+0000\n"
+"Last-Translator: \n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_employee_bank_panel/models/bank_panel.py:0
+#: code:addons/pb_employee_bank_panel/static/src/xml/bank_panel.xml:0
+msgid "Account holder"
+msgstr "Pemilik rekening"
+
+#. module: pb_employee_bank_panel
+#. odoo-python
+#: code:addons/pb_employee_bank_panel/models/bank_panel.py:0
+msgid "Account number"
+msgstr "Nomor rekening"
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/bank_panel.xml:0
+msgid "Account number, last four digits"
+msgstr "Nomor rekening, empat digit terakhir"
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/bank_panel.xml:0
+msgid ""
+"Account numbers show the last four digits only. To change where this person "
+"is paid, use a bank change request."
+msgstr "Nomor rekening hanya menampilkan empat digit terakhir. Untuk mengubah rekening gaji orang ini, ajukan permintaan perubahan bank."
+
+#. module: pb_employee_bank_panel
+#. odoo-python
+#: code:addons/pb_employee_bank_panel/models/bank_panel.py:0
+msgid "Approved"
+msgstr "Disetujui"
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_employee_bank_panel/models/bank_panel.py:0
+#: code:addons/pb_employee_bank_panel/static/src/xml/bank_panel.xml:0
+msgid "Bank"
+msgstr "Bank"
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/bank_panel.xml:0
+msgid "Bank files cannot pay this person until an account is approved."
+msgstr "File bank tidak dapat membayar orang ini sampai ada rekening yang disetujui."
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/bank_panel.xml:0
+msgid "Bank not named"
+msgstr "Nama bank belum dicatat"
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/bank_panel.xml:0
+msgid "Change waiting for approval"
+msgstr "Perubahan menunggu persetujuan"
+
+#. module: pb_employee_bank_panel
+#: model:ir.model.fields,help:pb_employee_bank_panel.field_hr_employee__pb_profile_waiting
+msgid "Details this person has sent that are waiting for HR to approve."
+msgstr "Data yang sudah dikirim orang ini dan menunggu persetujuan HR."
+
+#. module: pb_employee_bank_panel
+#. odoo-python
+#: code:addons/pb_employee_bank_panel/models/bank_panel.py:0
+msgid "Employee not found."
+msgstr "Karyawan tidak ditemukan."
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/bank_panel.xml:0
+msgid "In another person's name:"
+msgstr "Atas nama orang lain:"
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/bank_panel.xml:0
+msgid "Mark as seen"
+msgstr "Tandai sudah dilihat"
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/js/bank_panel.js:0
+msgid "Marked as seen by %(who)s on %(date)s. Payment is not changed by this."
+msgstr "Ditandai sudah dilihat oleh %(who)s pada %(date)s. Pembayaran tidak berubah karenanya."
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/js/bank_panel.js:0
+msgid "Marked as seen. Payment is not changed by this."
+msgstr "Sudah ditandai dilihat. Pembayaran tidak berubah karenanya."
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/bank_panel.xml:0
+msgid ""
+"Marking it as seen only hides this notice. Whether this person is paid by "
+"bank file is decided by the company setting on Settings › Payroll › Bank "
+"layouts."
+msgstr "Menandai sudah dilihat hanya menyembunyikan pemberitahuan ini. Apakah orang ini dibayar lewat file bank ditentukan oleh pengaturan perusahaan di Pengaturan › Penggajian › Tata letak bank."
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/bank_panel.xml:0
+msgid "New account:"
+msgstr "Rekening baru:"
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/bank_panel.xml:0
+msgid "No approved bank account on record."
+msgstr "Belum ada rekening bank yang disetujui."
+
+#. module: pb_employee_bank_panel
+#. odoo-python
+#: code:addons/pb_employee_bank_panel/models/mapping_retired.py:0
+msgid "No longer shown — use Bank account"
+msgstr "Tidak ditampilkan lagi — gunakan Rekening bank"
+
+#. module: pb_employee_bank_panel
+#. odoo-python
+#: code:addons/pb_employee_bank_panel/models/bank_panel.py:0
+msgid "None"
+msgstr "Tidak ada"
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/bank_panel.xml:0
+msgid "Not recorded"
+msgstr "Belum dicatat"
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/bank_panel.xml:0
+msgid "Nothing is paid by bank file until it is approved."
+msgstr "Tidak ada pembayaran lewat file bank sampai perubahan disetujui."
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/bank_panel.xml:0
+msgid "Open Bank Verification"
+msgstr "Buka Verifikasi Bank"
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/bank_panel.xml:0
+msgid "Open the request"
+msgstr "Buka permintaan"
+
+#. module: pb_employee_bank_panel
+#. odoo-python
+#: code:addons/pb_employee_bank_panel/models/mapping_retired.py:0
+msgid "Send bank details to the Bank lane instead."
+msgstr "Kirim data bank ke jalur Bank."
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/onboarding_board.xml:0
+#: model:ir.model.fields,field_description:pb_employee_bank_panel.field_hr_employee__pb_profile_waiting
+#: model_terms:ir.ui.view,arch_db:pb_employee_bank_panel.portal_my_journey_waiting
+msgid "Sent, waiting for HR"
+msgstr "Terkirim, menunggu HR"
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/onboarding_board.xml:0
+msgid "Sent, waiting for HR:"
+msgstr "Terkirim, menunggu HR:"
+
+#. module: pb_employee_bank_panel
+#. odoo-python
+#: code:addons/pb_employee_bank_panel/models/bank_panel.py:0
+msgid "Status"
+msgstr "Status"
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/bank_panel.xml:0
+msgid "The Vietnamese bank file has a different account:"
+msgstr "File bank Vietnam memakai rekening lain:"
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/bank_panel.xml:0
+msgid ""
+"The payment list pays the account above; the Vietnamese bank file pays this "
+"one."
+msgstr "Daftar pembayaran membayar ke rekening di atas; file bank Vietnam membayar ke rekening ini."
+
+#. module: pb_employee_bank_panel
+#. odoo-python
+#: code:addons/pb_employee_bank_panel/models/mapping_retired.py:0
+msgid ""
+"This box is no longer on any screen and nothing is paid from it. The mapping"
+" saved here keeps working; for bank details, send the column to the Bank "
+"lane (the employee's bank account) instead."
+msgstr "Kotak ini tidak ada lagi di layar mana pun dan tidak dipakai untuk membayar. Pemetaan yang tersimpan di sini tetap berjalan; untuk data bank, kirim kolom ke jalur Bank (rekening bank karyawan)."
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/js/bank_panel.js:0
+msgid "This could not be marked as seen."
+msgstr "Tidak dapat ditandai sudah dilihat."
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/bank_panel.xml:0
+msgid "Until it is approved, pay goes to the account above."
+msgstr "Sampai disetujui, gaji tetap dibayar ke rekening di atas."
+
+#. module: pb_employee_bank_panel
+#. odoo-javascript
+#: code:addons/pb_employee_bank_panel/static/src/xml/bank_panel.xml:0
+msgid "Vietnamese bank file"
+msgstr "File bank Vietnam"
+
+#. module: pb_employee_bank_panel
+#. odoo-python
+#: code:addons/pb_employee_bank_panel/models/bank_panel.py:0
+msgid "Waiting for approval"
+msgstr "Menunggu persetujuan"

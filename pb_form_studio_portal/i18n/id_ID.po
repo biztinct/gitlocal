@@ -1,0 +1,1415 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"Language-Team: Indonesian\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "\"%s\" cannot be shown on My Payobook."
+msgstr "\"%s\" tidak dapat ditampilkan di My Payobook."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%(f)s in %(s)s"
+msgstr "%(f)s di %(s)s"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%(f)s: %(w)s"
+msgstr "%(f)s: %(w)s"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%(f)s: %(what)s"
+msgstr "%(f)s: %(what)s"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%(label)s: \"Employee can change it\" switched off: %(why)s"
+msgstr "%(label)s: \"Karyawan dapat mengubahnya\" dimatikan: %(why)s"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%(n)s of %(total)s"
+msgstr "%(n)s dari %(total)s"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%(s)s: %(n)s"
+msgstr "%(s)s: %(n)s"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%(what)s can be at most %(n)s characters."
+msgstr "%(what)s paling banyak %(n)s karakter."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%(who)s published this page after you started your changes. Publishing now would replace their page with yours."
+msgstr "%(who)s menerbitkan halaman ini setelah Anda mulai mengubah. Menerbitkan sekarang akan mengganti halaman mereka dengan milik Anda."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s changes not yet published"
+msgstr "%s perubahan belum diterbitkan"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s fields"
+msgstr "%s kolom"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s gets its own page"
+msgstr "%s mendapat halaman sendiri"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s moved"
+msgstr "%s dipindahkan"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s removed"
+msgstr "%s dihapus"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s taken off the page"
+msgstr "%s dilepas dari halaman"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s uses the page for all companies again"
+msgstr "%s kembali memakai halaman untuk semua perusahaan"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%s: My Payobook tick put back as before the page"
+msgstr "%s: centang My Payobook dikembalikan seperti sebelum halaman"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%s: placed on the My Payobook page"
+msgstr "%s: ditaruh di halaman My Payobook"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%s: taken off the My Payobook page"
+msgstr "%s: dilepas dari halaman My Payobook"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid ". Look only: nothing here can be changed or sent."
+msgstr ". Hanya lihat: tidak ada yang bisa diubah atau dikirim di sini."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "1 change not yet published"
+msgstr "1 perubahan belum diterbitkan"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "<option value=\"\">Choose…</option>"
+msgstr "<option value=\"\">Pilih…</option>"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.portal_my_details_page_door
+msgid "<span class=\"pbmd-door-tx\"><b>Company details</b><span>See them and ask for a change on My Profile</span></span>"
+msgstr "<span class=\"pbmd-door-tx\"><b>Detail perusahaan</b><span>Lihat dan minta perubahan di Profil Saya</span></span>"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "<span class=\"pbmd-door-tx\"><b>Family, ID papers, photo and bank account</b><span>See them all and ask for a change</span></span>"
+msgstr "<span class=\"pbmd-door-tx\"><b>Keluarga, dokumen identitas, foto dan rekening bank</b><span>Lihat semuanya dan minta perubahan</span></span>"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "<span>Note to HR (optional)</span>"
+msgstr "<span>Catatan untuk HR (opsional)</span>"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "A change is already waiting for HR; sending again replaces it."
+msgstr "Sudah ada perubahan yang menunggu HR; mengirim lagi akan menggantikannya."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "A page can have at most %s sections."
+msgstr "Satu halaman paling banyak %s bagian."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "A section can hold at most %s fields."
+msgstr "Satu bagian paling banyak %s kolom."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "A section name"
+msgstr "Nama bagian"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Add a picture"
+msgstr "Tambah gambar"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Add a section"
+msgstr "Tambah bagian"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "All"
+msgstr "Semua"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "All companies"
+msgstr "Semua perusahaan"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Always first on the page"
+msgstr "Selalu pertama di halaman"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Always on the page; the order can change"
+msgstr "Selalu ada di halaman; urutannya bisa diubah"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Always shown"
+msgstr "Selalu ditampilkan"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Amber"
+msgstr "Kuning"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Another administrator published this page after you started your changes."
+msgstr "Administrator lain menerbitkan halaman ini setelah Anda mulai mengubah."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Any Country of Work"
+msgstr "Semua negara kerja"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/settings_card.js:0
+msgid "Arrange the employee's My Profile page: sections, fields, headings and a banner picture."
+msgstr "Atur halaman Profil Saya karyawan: bagian, kolom, judul dan gambar spanduk."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Banner picture"
+msgstr "Gambar spanduk"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Banner picture removed"
+msgstr "Gambar spanduk dihapus"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Blue"
+msgstr "Biru"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Build"
+msgstr "Susun"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Build or preview"
+msgstr "Susun atau pratinjau"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Change the picture"
+msgstr "Ganti gambar"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Change what is wrong and send it. Some details are saved at once; the others change on your record once HR approves them."
+msgstr "Ubah yang salah lalu kirim. Sebagian detail langsung tersimpan; sisanya berubah di catatan Anda setelah HR menyetujuinya."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Changes discarded. Nothing was published."
+msgstr "Perubahan dibuang. Tidak ada yang diterbitkan."
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Changes once HR approves it."
+msgstr "Berubah setelah HR menyetujuinya."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Clear the filter"
+msgstr "Hapus filter"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Close the page builder"
+msgstr "Tutup penyusun halaman"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Colour"
+msgstr "Warna"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Columns"
+msgstr "Kolom tata letak"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Company details"
+msgstr "Detail perusahaan"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Country of Work"
+msgstr "Negara kerja"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Desktop"
+msgstr "Desktop"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Discard"
+msgstr "Buang"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Done"
+msgstr "Selesai"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Drag a field onto a section, or tap it to add it to the section you picked. Every field the employee may see is here; pay figures never are."
+msgstr "Seret kolom ke sebuah bagian, atau ketuk untuk menambahkannya ke bagian yang Anda pilih. Semua kolom yang boleh dilihat karyawan ada di sini; angka gaji tidak pernah."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Drop a field here"
+msgstr "Letakkan kolom di sini"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Each section needs its own name tag. Start again from the published page."
+msgstr "Setiap bagian butuh penanda sendiri. Mulai lagi dari halaman yang diterbitkan."
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.portal_my_profile_page
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
+msgid "Edit this page"
+msgstr "Ubah halaman ini"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Employee can change"
+msgstr "Karyawan dapat mengubah"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Employee can change it"
+msgstr "Karyawan dapat mengubahnya"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Employees see the standard page again at once. Fields go back to how they were shown on My Payobook before the page was first published. The history is kept, so you can restore this page later."
+msgstr "Karyawan langsung melihat halaman standar lagi. Kolom kembali seperti sebelum halaman pertama kali diterbitkan. Riwayat tetap disimpan, jadi Anda bisa memulihkan halaman ini nanti."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Every employee sees it the next time they open My Profile."
+msgstr "Setiap karyawan melihatnya saat membuka Profil Saya berikutnya."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Family, ID papers, photo and bank account"
+msgstr "Keluarga, dokumen identitas, foto dan rekening bank"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Fields"
+msgstr "Kolom"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Fields and page settings"
+msgstr "Kolom dan pengaturan halaman"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Find a field"
+msgstr "Cari kolom"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Find a person"
+msgstr "Cari orang"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+#: model:ir.model,name:pb_form_studio_portal.model_pb_form_studio
+msgid "Form builder"
+msgstr "Penyusun formulir"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Full"
+msgstr "Penuh"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Give this company its own page"
+msgstr "Beri perusahaan ini halaman sendiri"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Green"
+msgstr "Hijau"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Grey"
+msgstr "Abu-abu"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "HR approves"
+msgstr "HR menyetujui"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "HR approves the change"
+msgstr "HR menyetujui perubahan"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Half"
+msgstr "Setengah"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Header"
+msgstr "Kepala halaman"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Header colour: %s"
+msgstr "Warna kepala halaman: %s"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Heading"
+msgstr "Judul"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "History"
+msgstr "Riwayat"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "JPG, PNG or WebP, at most 2 MB. It is cut to the width of the header."
+msgstr "JPG, PNG atau WebP, paling besar 2 MB. Gambar dipotong selebar kepala halaman."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Keep editing"
+msgstr "Lanjut mengubah"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Keep going"
+msgstr "Lanjutkan"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Keep this page"
+msgstr "Simpan halaman ini"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Label"
+msgstr "Label"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Leave a language empty to keep the standard words."
+msgstr "Kosongkan satu bahasa untuk memakai kata standar."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Line under the heading"
+msgstr "Baris di bawah judul"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Move down"
+msgstr "Pindah ke bawah"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Move up"
+msgstr "Pindah ke atas"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "My %s"
+msgstr "%s Saya"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+#: code:addons/pb_form_studio_portal/static/src/js/settings_card.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+#: model:ir.actions.client,name:pb_form_studio_portal.action_page_builder
+msgid "My Payobook page"
+msgstr "Halaman My Payobook"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
+msgid "My Profile"
+msgstr "Profil Saya"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "My Profile is the standard page again."
+msgstr "Profil Saya kembali menjadi halaman standar."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "My requests"
+msgstr "Permintaan saya"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Name"
+msgstr "Nama"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "New section"
+msgstr "Bagian baru"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "No"
+msgstr "Tidak"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "No change requests yet."
+msgstr "Belum ada permintaan perubahan."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "No changes yet"
+msgstr "Belum ada perubahan"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "No field matches"
+msgstr "Tidak ada kolom yang cocok"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Nobody with a My Payobook login was found to preview as."
+msgstr "Tidak ada orang dengan login My Payobook untuk dipratinjau."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Not on the page"
+msgstr "Tidak di halaman"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Nothing published yet: employees see the standard page."
+msgstr "Belum ada yang diterbitkan: karyawan melihat halaman standar."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/controllers/portal.py:0
+msgid "Nothing was changed."
+msgstr "Tidak ada yang diubah."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Offered in \"Request a change\" on the page."
+msgstr "Ditawarkan di \"Minta perubahan\" pada halaman."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "On the page"
+msgstr "Di halaman"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "On the page means shown on My Payobook: the same tick as in the employee Form builder. Taking a field off never deletes what is stored."
+msgstr "Di halaman berarti tampil di My Payobook: centang yang sama seperti di penyusun formulir karyawan. Melepas kolom tidak pernah menghapus data tersimpan."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "On the page, employee can change"
+msgstr "Di halaman, karyawan dapat mengubah"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "One column"
+msgstr "Satu kolom"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Only %s"
+msgstr "Hanya %s"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Only an empty section can be removed, and the page keeps at least one."
+msgstr "Hanya bagian kosong yang bisa dihapus, dan halaman selalu punya setidaknya satu."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Open my own My Profile"
+msgstr "Buka Profil Saya sendiri"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Opening the page builder…"
+msgstr "Membuka penyusun halaman…"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Order in %s"
+msgstr "Urutan di %s"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Own"
+msgstr "Sendiri"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Own field"
+msgstr "Kolom sendiri"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+#: model:ir.model.fields,field_description:pb_form_studio_portal.field_pb_form_layout__page
+msgid "Page"
+msgstr "Halaman"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Page for"
+msgstr "Halaman untuk"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Phone"
+msgstr "Telepon"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Photo, name and department"
+msgstr "Foto, nama dan departemen"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Pick a header colour from the list."
+msgstr "Pilih warna kepala halaman dari daftar."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Pick the header, a section or a field on the page to change it."
+msgstr "Pilih kepala halaman, bagian, atau kolom di halaman untuk mengubahnya."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Picture description"
+msgstr "Deskripsi gambar"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Preview"
+msgstr "Pratinjau"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Preview as"
+msgstr "Pratinjau sebagai"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Preview of My Profile"
+msgstr "Pratinjau Profil Saya"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Publish"
+msgstr "Terbitkan"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Publish for everyone"
+msgstr "Terbitkan untuk semua"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Publish mine over it"
+msgstr "Terbitkan milik saya menggantikannya"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Publish this page for every employee?"
+msgstr "Terbitkan halaman ini untuk semua karyawan?"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Published the My Payobook page, version %s"
+msgstr "Halaman My Payobook diterbitkan, versi %s"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Published. %s changes are now live for every employee."
+msgstr "Diterbitkan. %s perubahan kini berlaku untuk semua karyawan."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Published. 1 change is now live for every employee."
+msgstr "Diterbitkan. 1 perubahan kini berlaku untuk semua karyawan."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Publishing did not work. Nothing was changed."
+msgstr "Penerbitan gagal. Tidak ada yang diubah."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Purple"
+msgstr "Ungu"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Put it on the page"
+msgstr "Taruh di halaman"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Remove"
+msgstr "Hapus"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Remove this section"
+msgstr "Hapus bagian ini"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Request a change"
+msgstr "Minta perubahan"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Reset My Profile to the standard page?"
+msgstr "Kembalikan Profil Saya ke halaman standar?"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Reset the My Payobook page to the standard page"
+msgstr "Halaman My Payobook dikembalikan ke halaman standar"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Reset to the standard page"
+msgstr "Kembalikan ke halaman standar"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Restore"
+msgstr "Pulihkan"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Restored the page published %s"
+msgstr "Halaman terbitan %s dipulihkan"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Rose"
+msgstr "Merah muda"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Saved at once."
+msgstr "Langsung tersimpan."
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Saved."
+msgstr "Tersimpan."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Saves at once"
+msgstr "Langsung tersimpan"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Screen size"
+msgstr "Ukuran layar"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Section"
+msgstr "Bagian"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Section name: %s"
+msgstr "Nama bagian: %s"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Send"
+msgstr "Kirim"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Sent to HR. Nothing changes on your record until it is approved."
+msgstr "Terkirim ke HR. Catatan Anda tidak berubah sampai disetujui."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Settings"
+msgstr "Pengaturan"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Show"
+msgstr "Tampilkan"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Shown only to people whose Country of Work is"
+msgstr "Hanya ditampilkan untuk orang dengan negara kerja"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Shown when a field on the page can be changed by the employee"
+msgstr "Muncul jika ada kolom di halaman yang bisa diubah karyawan"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Someone published first"
+msgstr "Seseorang menerbitkan lebih dulu"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Standard"
+msgstr "Standar"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Standard field"
+msgstr "Kolom standar"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Start again"
+msgstr "Mulai lagi"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Start again from the published page"
+msgstr "Mulai lagi dari halaman yang diterbitkan"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Start again from their page"
+msgstr "Mulai lagi dari halaman mereka"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Take it off the page"
+msgstr "Lepas dari halaman"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Teal"
+msgstr "Hijau toska"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "That did not work. Nothing was changed."
+msgstr "Gagal. Tidak ada yang diubah."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "That file could not be read."
+msgstr "Berkas itu tidak dapat dibaca."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "That file is empty."
+msgstr "Berkas itu kosong."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "That version is loaded. Publish to make it live again."
+msgstr "Versi itu dimuat. Terbitkan agar berlaku lagi."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "The banner image could not be found. Upload it again."
+msgstr "Gambar spanduk tidak ditemukan. Unggah lagi."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "The employee"
+msgstr "Karyawan"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "The employee can change it"
+msgstr "Karyawan dapat mengubahnya"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "The employee changes it with \"Request a change\"; HR approves every change."
+msgstr "Karyawan mengubahnya lewat \"Minta perubahan\"; HR menyetujui setiap perubahan."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "The heading"
+msgstr "Judul"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "The label is the field's own: it changes on every screen, as in the Form builder."
+msgstr "Label milik kolom itu sendiri: berubah di setiap layar, seperti di penyusun formulir."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "The line under the heading"
+msgstr "Baris di bawah judul"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "The page being changed"
+msgstr "Halaman yang sedang diubah"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "The page builder could not open."
+msgstr "Penyusun halaman tidak dapat dibuka."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "The page needs at least one section."
+msgstr "Halaman butuh setidaknya satu bagian."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "The picture description"
+msgstr "Deskripsi gambar"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "The picture is too big: at most 2 MB."
+msgstr "Gambar terlalu besar: paling besar 2 MB."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/controllers/portal.py:0
+msgid "This change could not be sent."
+msgstr "Perubahan ini tidak dapat dikirim."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "This company shows the page for all companies."
+msgstr "Perusahaan ini memakai halaman untuk semua perusahaan."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "This version cannot be restored."
+msgstr "Versi ini tidak dapat dipulihkan."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Two columns"
+msgstr "Dua kolom"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Undo the last publish"
+msgstr "Batalkan terbitan terakhir"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Untitled section"
+msgstr "Bagian tanpa nama"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Uploaded a banner picture for My Payobook (%s KB)"
+msgstr "Mengunggah gambar spanduk untuk My Payobook (%s KB)"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Use a JPG, PNG or WebP picture."
+msgstr "Gunakan gambar JPG, PNG atau WebP."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Use the page for all companies again"
+msgstr "Pakai lagi halaman untuk semua perusahaan"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "What the picture shows (for screen readers)"
+msgstr "Isi gambar (untuk pembaca layar)"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "When the employee changes it"
+msgstr "Saat karyawan mengubahnya"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "White"
+msgstr "Putih"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Width"
+msgstr "Lebar"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Yes"
+msgstr "Ya"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Your details"
+msgstr "Detail Anda"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_page
+msgid "Your details on file. Bank changes go through a separate secure flow."
+msgstr "Detail Anda yang tercatat. Perubahan bank melalui alur aman tersendiri."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Your unpublished changes from last time are back."
+msgstr "Perubahan Anda yang belum diterbitkan dari sebelumnya kembali."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "another administrator"
+msgstr "administrator lain"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "changeable fields, in page order"
+msgstr "kolom yang bisa diubah, sesuai urutan halaman"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "employee can change it"
+msgstr "karyawan dapat mengubahnya"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "full width"
+msgstr "lebar penuh"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "half width"
+msgstr "setengah lebar"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "label"
+msgstr "label"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "look only"
+msgstr "hanya lihat"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "one column"
+msgstr "satu kolom"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "saves at once"
+msgstr "langsung tersimpan"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "two columns"
+msgstr "dua kolom"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "%s to publish"
+msgstr "%s belum diterbitkan"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "no login yet"
+msgstr "belum punya login"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid "Field code: %s"
+msgstr "Kode field: %s"
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "No employee was found to preview as."
+msgstr "Tidak ada karyawan untuk dipratinjau."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "There is no page to preview."
+msgstr "Tidak ada halaman untuk dipratinjau."
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
+msgid "Your login has no employee record"
+msgstr "Login Anda belum terhubung ke data karyawan"
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
+msgid "My Profile shows a person's own details, so there is nothing to show for you here."
+msgstr "Profil Saya menampilkan data milik orang itu sendiri, jadi tidak ada yang bisa ditampilkan untuk Anda di sini."
+
+#. module: pb_form_studio_portal
+#: model_terms:ir.ui.view,arch_db:pb_form_studio_portal.my_profile_no_employee
+msgid "You can still arrange this page for your employees and preview it as any of them."
+msgstr "Anda tetap bisa menata halaman ini untuk karyawan dan mempratinjaunya sebagai siapa pun dari mereka."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%s: the employee can change it (HR approves)"
+msgstr "%s: karyawan dapat mengubahnya (HR menyetujui)"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "%s: look only for the employee; only HR changes it"
+msgstr "%s: karyawan hanya melihat; hanya HR yang mengubahnya"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Personal details: \"Employee can change it\" put back as before the page"
+msgstr "Detail pribadi: \"Karyawan dapat mengubahnya\" dikembalikan seperti sebelum halaman"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/controllers/portal.py:0
+#: code:addons/pb_form_studio_portal/models/res_users.py:0
+msgid "Some of these details can only be changed by HR. Nothing was sent."
+msgstr "Beberapa detail ini hanya dapat diubah oleh HR. Tidak ada yang dikirim."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid "Look only: the employee sees it; only HR changes it."
+msgstr "Hanya dilihat: karyawan melihatnya; hanya HR yang mengubahnya."
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/res_users.py:0
+msgid "Your details change only through \"Request a change\" on My Profile, where HR approves them. Nothing was saved."
+msgstr "Detail Anda hanya berubah melalui \"Minta perubahan\" di Profil Saya, tempat HR menyetujuinya. Tidak ada yang disimpan."
+
+#. module: pb_form_studio_portal
+#: model:res.groups,comment:pb_form_studio_portal.group_page_builder
+msgid ""
+"Change the My Payobook page of your own company: add, hide and order fields,"
+" headings and the banner."
+msgstr ""
+"Ubah halaman My Payobook perusahaan Anda sendiri: tambah, sembunyikan dan "
+"urutkan kolom, judul dan banner."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/xml/page_builder.xml:0
+msgid ""
+"Its label and what the employee can change apply to every company, so an "
+"administrator changes them."
+msgstr ""
+"Labelnya dan apa yang bisa diubah karyawan berlaku untuk semua perusahaan, "
+"jadi administrator yang mengubahnya."
+
+#. module: pb_form_studio_portal
+#: model:res.groups,name:pb_form_studio_portal.group_page_builder
+msgid "My Payobook page builder"
+msgstr "Pembuat halaman My Payobook"
+
+#. module: pb_form_studio_portal
+#. odoo-python
+#: code:addons/pb_form_studio_portal/models/page_builder.py:0
+msgid "Only the administrator can change forms."
+msgstr "Hanya administrator yang dapat mengubah formulir."
+
+#. module: pb_form_studio_portal
+#. odoo-javascript
+#: code:addons/pb_form_studio_portal/static/src/js/page_builder.js:0
+msgid ""
+"You are changing the page for %s. Labels and what employees can change apply"
+" to every company, so an administrator changes those."
+msgstr ""
+"Anda sedang mengubah halaman untuk %s. Label dan apa yang bisa diubah "
+"karyawan berlaku untuk semua perusahaan, jadi administrator yang "
+"mengubahnya."

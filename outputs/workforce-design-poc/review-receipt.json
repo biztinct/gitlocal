@@ -1,0 +1,46 @@
+{
+  "artifact": "index.html",
+  "date": "2026-11-24",
+  "type": "standalone design prototype; no production module or configuration changes",
+  "recommendation": "A: Unified workspace, with B: Guided journey for onboarding and C: location summary as an Overview view",
+  "research": {
+    "vendors": [
+      "Deputy",
+      "Workday",
+      "Quinyx",
+      "Rippling"
+    ],
+    "method": "Public first-party documentation, two inspected published product visuals, and local repository source audit. Authenticated Sudima browser session unavailable (login screen).",
+    "details": "Open Compare & research in the prototype for links, findings and reuse matrix."
+  },
+  "checks": {
+    "chrome_desktop": "1440 x 1000; A, B, C and shift editor visually inspected",
+    "functional_checks_passed": 31,
+    "mobile_views_no_page_overflow": 10,
+    "mobile_viewport": "390 x 844",
+    "coverage": [
+      "day/night shift preview and editing",
+      "invalid break rejection",
+      "employee category edits and selected-person bulk changes",
+      "pattern assignment",
+      "publication blocked until demo prerequisites supplied",
+      "explicit zero deduction distinguished from missing rule",
+      "worker and manager lateness examples",
+      "overnight attendance explanation",
+      "OT approval",
+      "source punch drill-down",
+      "location scope",
+      "working-day toggles",
+      "November calendar alignment and month rollover",
+      "Escape closes drawer"
+    ],
+    "known_limitations": [
+      "Illustrative people and fixed timesheet examples, not live customer records",
+      "Changes are in memory and reset on reload",
+      "Guided pattern creation, private invitations and payroll handoff illustrate the workflow without backend actions",
+      "No payroll engine, permissions or Windows connector changes in this deliverable"
+    ],
+    "final_console": "No warnings or errors after final reload"
+  },
+  "sha256": "ba9d9075d2132d6b436b5be9c845d9865e923743ad92775f88d2b4e426062224"
+}

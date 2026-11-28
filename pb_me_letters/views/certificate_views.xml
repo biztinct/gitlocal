@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Read-only: a salary certificate is issued from Approvals ("Approve");
+         this list is where a row from the inbox opens. -->
+    <record id="view_pb_me_certificate_list" model="ir.ui.view">
+        <field name="name">pb.me.certificate.list</field>
+        <field name="model">pb.me.certificate</field>
+        <field name="arch" type="xml">
+            <list string="Certificates" create="false" edit="false" delete="false">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="kind"/>
+                <field name="purpose"/>
+                <field name="state" widget="badge" decoration-warning="state == 'hr_review'" decoration-success="state == 'issued'" decoration-danger="state == 'refused'"/>
+                <field name="issued_on"/>
+                <field name="issued_by"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pb_me_certificate_form" model="ir.ui.view">
+        <field name="name">pb.me.certificate.form</field>
+        <field name="model">pb.me.certificate</field>
+        <field name="arch" type="xml">
+            <form string="Certificate" create="false" edit="false" delete="false">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="hr_review,issued"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-info" role="status" invisible="state != 'hr_review'">Issue it from Approvals: approving it prints the certificate and files it in the employee's documents.</div>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="kind"/>
+                            <field name="purpose"/>
+                            <field name="purpose_note" invisible="not purpose_note"/>
+                            <field name="lang"/>
+                        </group>
+                        <group>
+                            <field name="issued_on" invisible="not issued_on"/>
+                            <field name="issued_by" invisible="not issued_by"/>
+                            <field name="letter_id" invisible="not letter_id"/>
+                            <field name="document_id" invisible="not document_id"/>
+                            <field name="downloaded_on" invisible="not downloaded_on"/>
+                            <field name="decision_note" invisible="not decision_note"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pb_me_certificate" model="ir.actions.act_window">
+        <field name="name">Certificates</field>
+        <field name="res_model">pb.me.certificate</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

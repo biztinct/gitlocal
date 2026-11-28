@@ -1,0 +1,962 @@
+/** @odoo-module **/
+/**
+ * `<PbInbox/>` — one inbox for every decision, whoever you are.
+ *
+ * THE OLD WAY WAS THREE INBOXES. A pay-run board, a workforce list and a
+ * scheme queue, each with its own idea of what "waiting for me" meant, and none
+ * of them able to say what a person actually owed anybody today. This is the
+ * one screen that replaces them: every process, one set of tabs, one card
+ * shape, one drawer.
+ *
+ * "MY TURN" IS A SEAT AND NOTHING ELSE. A card is mine when an open seat on the
+ * step that is waiting names me — my own, or one I am covering while somebody
+ * is away. Never "somebody in my team", never "anyone in HR". The server
+ * decides it; the ring around the card is only how it is drawn.
+ *
+ * MONEY IS NEVER ADDED ACROSS CURRENCIES. The summary line above the cards says
+ * "620,000,000 VND · 4,200 SGD", because one number there would be a lie.
+ *
+ * A BLOCKED CARD CARRIES ITS OWN REPAIR. "Nobody holds HR lead for Operations"
+ * is not an error to report to somebody; it is a sentence with a door under it.
+ *
+ * AND "ASK FOR A SIGN-OFF" IS HERE. Anything that has no process of its own can
+ * still be sent to the right person, through the same route machinery and the
+ * same trail as everything else.
+ */
+import {
+    Component, onMounted, onPatched, onWillStart, onWillUnmount, useExternalListener,
+    useState, useRef,
+} from "@odoo/owl";
+import { registry } from "@web/core/registry";
+import { useService } from "@web/core/utils/hooks";
+import { _t } from "@web/core/l10n/translation";
+import { ic } from "@pb_import_kit/js/import_icons";
+import { useNavigationState } from "@pb_hub/js/navigation_state";
+import { RequestDrawer } from "@pb_approval_config/js/request_drawer";
+import { initials, money, when } from "@pb_approval_config/js/sentence";
+import { FilterKit } from "@pb_filter_kit/js/filter_kit";
+import { PbFilterLayout } from "@pb_filter_kit/js/filter_components";
+
+const PAGE = 60;
+/** INBOX-BULK-BANK — a big selection is approved this many per call (the
+ *  server's `MAX_BULK`), so every call stays short and Stop is honoured
+ *  between groups. */
+const BULK_CHUNK = 50;
+/** The four tabs, as the filter panel's first four views (same words). */
+const TAB_FILTERS = {
+    mine: { my_turn: ["yes"] },
+    all: { pile: ["waiting"] },
+    returned: { pile: ["returned"] },
+    done: { pile: ["done"] },
+};
+
+/**
+ * PAYAI P4 — a door may open the inbox ON one request: the arrival carries
+ * `pb_focus: "request:<id>"` (or `"request:<id>:<scope>"` when the request was
+ * found under "My team" / "Everyone"). Anything else in `pb_focus` ("queue",
+ * "month:2026-06") is another screen's word and is left alone. Navigation
+ * only: the drawer re-reads the request with the person's own rights, exactly
+ * as a click on its card would.
+ *
+ * Takes either an action context (`pb_focus`) or the hub's arrival payload
+ * (`focus`, see `inboxArrival`).
+ */
+const FOCUS_SCOPES = ["me", "team", "org"];
+export function focusRequest(context) {
+    const raw = context && (context.pb_focus || context.focus);
+    const m = /^request:(\d+)(?::(me|team|org))?$/.exec(String(raw || ""));
+    if (!m) { return null; }
+    const scope = FOCUS_SCOPES.includes(m[2]) ? m[2] : "me";
+    return { id: Number(m[1]), scope };
+}
+
+/**
+ * NAV P3c — a door may open the inbox with one AREA already chosen:
+ * `pb_focus: "area:time"` lights the Time chip, exactly as pressing it would
+ * (Home › TEAM's "Waiting on you" tiles). An unknown area is ignored; the
+ * `request:<id>` form above keeps working and wins when both could apply.
+ */
+const FOCUS_AREAS = ["pay", "money", "data", "people", "time", "setup",
+                     "platform", "other"];
+export function focusArea(context) {
+    const raw = context && (context.pb_focus || context.focus);
+    const m = /^area:([a-z]+)$/.exec(String(raw || ""));
+    return m && FOCUS_AREAS.includes(m[1]) ? m[1] : "";
+}
+
+/**
+ * PAYAI FIX-1 (P4:link-1) — WHERE THE DEEP LINK REACHES THE INBOX.
+ *
+ * As the Home hub's Approvals lens, the inbox is handed the hub's arrival
+ * payload as the `arrival` prop (the lens says `wantsArrival`, exactly like
+ * Pulse); as the standalone client action, its own `action.context`. Those
+ * two and nothing else. The action service's current action is NOT a source:
+ * on this version it is a Promise, and while a lens is being set up it is
+ * still the PREVIOUS screen's action — the deep link silently did nothing.
+ *
+ * The object returned is the one a "consumed once" guard keys on, so it must
+ * keep its identity: the hub builds its arrival payload once per visit.
+ */
+export function inboxArrival(props) {
+    const arrival = props && props.arrival;
+    if (arrival && arrival.focus) { return arrival; }
+    const own = props && props.action && props.action.context;
+    if (own && own.pb_focus) { return own; }
+    // The Records Desk, Statutory and the tenant console open the inbox ON a
+    // request with `params: { request_id }` — the same door, a different key.
+    const params = props && props.action && props.action.params;
+    if (params && params.request_id) {
+        // one arrival object per door, so "consumed once" still holds
+        if (!_paramArrivals.has(params)) {
+            _paramArrivals.set(params, { focus: "request:" + Number(params.request_id) });
+        }
+        return _paramArrivals.get(params);
+    }
+    return null;
+}
+const _paramArrivals = new WeakMap();
+// One arrival opens one drawer: a lens re-mounted later (tab away and back)
+// does not pop the same request open again.
+const _consumedFocus = new WeakSet();
+// The same for an area: chosen once on arrival, never again on a re-mount.
+const _consumedArea = new WeakSet();
+
+export class PbInbox extends Component {
+    static template = "pb_approval_config.PbInbox";
+    static components = { RequestDrawer, PbFilterLayout };
+    static props = {
+        embedded: { type: Boolean, optional: true },
+        action: { type: Object, optional: true },
+        // The Home hub's deep link (`wantsArrival`): `{ lens, focus }`.
+        arrival: { type: Object, optional: true },
+        // WHOSE QUEUE THIS IS. "me" is everything I am part of; "team" is
+        // everything waiting about somebody who works for me — the Workforce
+        // screen a manager used to have, now the same inbox as everything
+        // else. A scope is a way of LOOKING, never a permission: the decide
+        // buttons come from the seat, which the server re-checks every time.
+        scope: { type: String, optional: true },
+        "*": true,
+    };
+
+    setup() {
+        this.ic = ic;
+        this.initials = initials;
+        this.money = money;
+        this.when = when;
+        this.orm = useService("orm");
+        this.notif = useService("notification");
+        this.actionService = useService("action");
+
+        if (!this.props.embedded && this.env.config
+                && this.env.config.setDisplayName) {
+            this.env.config.setDisplayName(_t("Approvals"));
+        }
+
+        this.state = useState({
+            loading: true,
+            failed: "",
+            scope: this.props.scope || "me",
+            data: null,
+            // the cards the filter panel produced, one page at a time
+            cards: [],
+            total: 0,
+            money: [],
+            listLoaded: false,
+            loadingMore: false,
+            openId: 0,
+            asking: false,
+            ask: { name: "", description: "", amount: 0, area_key: "" },
+            askOptions: null,
+            busy: false,
+            // WDGAP QF1 — "Approve selected". The ticked cards (id -> true),
+            // only ever among the cards loaded; the in-page confirm; the
+            // honest list of what could not be approved.
+            sel: {},
+            confirming: false,
+            bulkBusy: false,
+            bulkFailed: [],
+            // INBOX-BULK-BANK — "Select all N that I can approve" across the
+            // whole filter. `selRev` keeps the lock revision of ticks that
+            // are not on a loaded card; `selSig` is the query the selection
+            // was made for (a new filter clears it); `bulkAll` is the count
+            // the server offers; `summary`/`checkOpen`/`checked` are the
+            // extra check; `progress` is the "120 of 358 approved" line.
+            selRev: {},
+            selSig: "",
+            bulkAll: null,
+            bulkAllBusy: false,
+            summary: null,
+            summaryBusy: false,
+            checkOpen: false,
+            checked: false,
+            progress: null,
+        });
+
+        this.navigationRoot = useRef("navigationRoot");
+        // Retain whose queue the reader was viewing. Each inbox entry starts
+        // with undecided requests; explicit arrivals can open a request below.
+        const savedNavigation = useNavigationState(this, "approvals", () => ({
+            scope: this.state.scope, openId: this.state.openId,
+            scrollTop: this.navigationRoot.el?.scrollTop || 0,
+        }));
+        if (savedNavigation) {
+            if (FOCUS_SCOPES.includes(savedNavigation.scope)) {
+                this.state.scope = savedNavigation.scope;
+            }
+        }
+
+        // The shared filter panel (pb_filter_kit). Built by hand rather than
+        // with useFilterKit, because a door has to find its request's pile
+        // and scope BEFORE the panel's first load (one read, on the right
+        // queue). The scope rides on every panel call as `pbf_ctx.scope`.
+        this.kit = useState(new FilterKit({
+            orm: this.orm,
+            notification: this.notif,
+            model: "pb.approval.inbox",
+            noun: _t("requests"),
+            ctx: { scope: this.state.scope },
+            // Controller state can survive a reload via the action service.
+            // It must not let an earlier Finished view override this default.
+            // Explicit shared-filter and request/area links still choose
+            // their own queue; ordinary entry always starts with waiting work.
+            initial: !new URLSearchParams(window.location.search).has("pbf")
+                ? { filters: TAB_FILTERS.all, viewKey: "all" } : undefined,
+            onChange: () => this.loadPage(),
+        }));
+        useExternalListener(window, "resize", () => this.kit.onResize());
+        onWillUnmount(() => this.kit.destroy());
+        // ai-tabs (42 lessons) points at the four tabs, which are now the
+        // panel's view row: the anchor is put on that row (see report: a kit
+        // option for it is a kit gap).
+        const tagTabs = () => {
+            const row = this.navigationRoot.el && this.navigationRoot.el.querySelector(".pbf-views");
+            if (row && row.getAttribute("data-coach") !== "ai-tabs") {
+                row.setAttribute("data-coach", "ai-tabs");
+            }
+        };
+        let observer = null;
+        onMounted(() => {
+            tagTabs();
+            if (this.navigationRoot.el && window.MutationObserver) {
+                observer = new MutationObserver(tagTabs);
+                observer.observe(this.navigationRoot.el, { childList: true, subtree: true });
+            }
+        });
+        onPatched(tagTabs);
+        onWillUnmount(() => observer && observer.disconnect());
+        onMounted(() => {
+            if (this.navigationRoot.el && savedNavigation) {
+                this.navigationRoot.el.scrollTop = savedNavigation.scrollTop || 0;
+            }
+        });
+        this.onEscape = this.onEscape.bind(this);
+        const arrival = inboxArrival(this.props);
+        const focus = focusRequest(arrival);
+        // A request focus always wins (PayAI's doors): it is never combined
+        // with an area, so the drawer opens on whatever area the request is.
+        const area = focus ? "" : focusArea(arrival);
+        if (area && !_consumedArea.has(arrival)) {
+            _consumedArea.add(arrival);
+            // "Waiting on you" in one area (Home › Team): my turn, that area
+            this.kit.initial = { filters: { my_turn: ["yes"], area: [area] } };
+        }
+        onWillStart(async () => {
+            // Find the pile first, so the list is read ONCE, on the view and
+            // scope where the request really is.
+            if (focus && !_consumedFocus.has(arrival)) {
+                _consumedFocus.add(arrival);
+                await this.locateFocused(focus);
+            }
+            this.kit.ctx = { scope: this.state.scope };
+            await Promise.all([this.load(), this.kit.load()]);
+        });
+        onMounted(() => {
+            window.addEventListener("keydown", this.onEscape,
+                                    { capture: true });
+        });
+        onWillUnmount(() => {
+            window.removeEventListener("keydown", this.onEscape,
+                                       { capture: true });
+        });
+    }
+
+    /**
+     * Open one request's drawer on the tab and scope that list it — "My approvals"
+     * when it is waiting for me, else "All I can see", "Sent back" or
+     * "Finished" (P4:link-3: a decided request is not in flight any more).
+     * The server says which pile; a request that is gone or not mine to read
+     * is a notice, never a drawer over the wrong list (P4:link-4).
+     */
+    async locateFocused(focus) {
+        let where = null;
+        try {
+            where = await this.orm.call(
+                "pb.approval.inbox", "locate_request", [focus.id, focus.scope]);
+        } catch (error) {
+            this.notif.add(
+                (error.data && error.data.message)
+                || _t("This request could not be opened."), { type: "warning" });
+            return;
+        }
+        if (!where || !where.tab) {
+            this.notif.add(_t("This request could not be opened."),
+                           { type: "warning" });
+            return;
+        }
+        if (FOCUS_SCOPES.includes(where.scope)) { this.state.scope = where.scope; }
+        // the panel opens on the tab's view, so closing the drawer leaves the
+        // reader on the pile that lists the request
+        this.kit.initial = { filters: TAB_FILTERS[where.tab] || {}, viewKey: where.tab };
+        this.state.openId = where.id;
+    }
+
+    onEscape(ev) {
+        if (ev.key !== "Escape") { return; }
+        if (this.state.openId) { this.state.openId = 0; return; }
+        if (this.state.asking) { this.state.asking = false; return; }
+        // WDGAP QF1 — the confirm closes first, then the selection clears;
+        // only while the tray is showing and no drawer is open
+        if (this.state.checkOpen && !this.state.bulkBusy) {
+            this.state.checkOpen = false;
+            return;
+        }
+        if (this.state.confirming && !this.state.bulkBusy) {
+            this.state.confirming = false;
+            return;
+        }
+        if (this.state.bulkFailed.length) { this.state.bulkFailed = []; return; }
+        if (this.selCount && !this.state.bulkBusy) { this.clearSel(); }
+    }
+
+    // ============================================================== reading
+    /** What does not depend on the filters: who may look wider, the cover
+     *  notes, the areas. */
+    async load() {
+        this.state.loading = true;
+        this.state.failed = "";
+        try {
+            this.state.data = await this.orm.call(
+                "pb.approval.inbox", "get_inbox_head", [],
+                { context: { pbf_ctx: { scope: this.state.scope } } });
+            if (this.state.data && FOCUS_SCOPES.includes(this.state.data.scope)) {
+                this.state.scope = this.state.data.scope;
+            }
+        } catch (error) {
+            this.state.failed = (error.data && error.data.message)
+                || _t("Your approvals could not be read.");
+        } finally {
+            this.state.loading = false;
+        }
+    }
+
+    /** One page of cards for the panel's current filters, in this scope. */
+    async loadPage({ more = false } = {}) {
+        const q = this.kit.query;
+        const offset = more ? this.state.cards.length : 0;
+        if (more) { this.state.loadingMore = true; }
+        try {
+            const d = await this.orm.call("pb.approval.inbox", "get_inbox_page", [], {
+                filters: q.filters, search: q.search, sort: q.sort, offset, limit: PAGE,
+                context: { pbf_ctx: { scope: this.state.scope } },
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.cards = more ? [...this.state.cards, ...d.cards] : d.cards;
+            this.state.total = d.total;
+            if (!more) { this._pruneSel(); }
+            this.state.money = more ? this._mergeMoney(this.state.money, d.money) : (d.money || []);
+            this.state.listLoaded = true;
+            if (!more) { this.countAll(q); }
+        } catch (error) {
+            if (this.kit.isCurrent(q.seq)) {
+                this.notif.add((error.data && error.data.message)
+                    || _t("Your approvals could not be listed. Try again in a moment."),
+                    { type: "danger" });
+                this.state.listLoaded = true;
+            }
+        } finally {
+            this.state.loadingMore = false;
+        }
+    }
+
+    /** Amounts per currency, added within one currency only. */
+    _mergeMoney(a, b) {
+        const out = {};
+        for (const row of [...(a || []), ...(b || [])]) {
+            out[row.currency] = (out[row.currency] || 0) + row.amount;
+        }
+        return Object.entries(out).sort().map(([currency, amount]) => ({ currency, amount }));
+    }
+
+    loadMore() {
+        if (!this.state.loadingMore) { this.loadPage({ more: true }); }
+    }
+    get hasMore() { return this.state.cards.length < this.state.total; }
+    get nextPage() { return Math.min(PAGE, this.state.total - this.state.cards.length); }
+
+    get data() {
+        return this.state.data
+            || { areas: [], covering_for: [], covered_by: [] };
+    }
+
+    get cards() { return this.state.cards; }
+
+    /** Which of the four tabs is showing, when one is (exactly, unchanged). */
+    get tab() {
+        const key = this.kit.viewKey;
+        return TAB_FILTERS[key] && !this.kit.dirty ? key : "";
+    }
+
+    get filtered() {
+        return Boolean(this.kit.activeCount || this.kit.search);
+    }
+
+    get emptyCopy() {
+        const copy = {
+            mine: {
+                title: _t("Nothing is waiting for you"),
+                sub: _t("When a request reaches your step it lands here, with the facts and everything attached."),
+            },
+            all: {
+                title: _t("Nothing is in flight"),
+                sub: _t("Requests appear here from every part of the product as people send them in."),
+            },
+            returned: {
+                title: _t("Nothing has been sent back"),
+                sub: _t("Anything a decider returns for changes shows up here."),
+            },
+            done: {
+                title: _t("Nothing is finished yet"),
+                sub: _t("Approved, applied and turned-down requests are kept here."),
+            },
+        }[this.tab];
+        if (copy) { return copy; }
+        if (this.kit.search && !this.kit.chips.length) {
+            return {
+                title: _t("No request matches “%s”", this.kit.search),
+                sub: _t("Check the spelling, or search by what it is, who sent it in or the kind of request."),
+            };
+        }
+        return {
+            title: _t("No request matches these filters"),
+            sub: _t("Remove a filter above, or go back to what is waiting for you."),
+        };
+    }
+
+    get moneyLine() {
+        return (this.state.money || [])
+            .map((row) => money(row.amount, row.currency)).join(" · ");
+    }
+
+    // ============================================== WDGAP QF1 — selection
+    // Cloned from Ask HR's lens: the selection lives over the LOADED cards
+    // only, and a card the new filters hide is no longer selected. Which
+    // cards may be ticked is the server's answer (`can_bulk`), and
+    // `decide_many` asks it again on the press.
+
+    /** Keep only ticks on cards still shown and still approvable together.
+     *  INBOX-BULK-BANK: a selection made with "Select all N" also holds
+     *  requests that are not on a loaded page; it is kept while the filters
+     *  are the ones it was made for (only a loaded card that can no longer
+     *  be ticked leaves it) and cleared by any other filter. */
+    _pruneSel() {
+        const keepWide = this.state.selSig && this.state.selSig === this.querySig();
+        const loaded = new Set(this.state.cards.map((c) => c.id));
+        const here = new Set(this.state.cards.filter((c) => c.can_bulk).map((c) => c.id));
+        const sel = {};
+        for (const id of Object.keys(this.state.sel)) {
+            const n = Number(id);
+            if (here.has(n) || (keepWide && !loaded.has(n))) { sel[id] = true; }
+        }
+        this.state.sel = sel;
+        if (!keepWide) { this.state.selSig = ""; this.state.selRev = {}; }
+        if (!this.selCount) { this.state.confirming = false; this.state.selSig = ""; }
+    }
+
+    /** The panel's query and the queue, as one comparable string. */
+    querySig() {
+        const q = this.kit.query || {};
+        return JSON.stringify([this.state.scope, q.filters || {}, q.search || ""]);
+    }
+
+    /** How many I could approve together under these filters, when there is
+     *  more than the loaded page: the number on "Select all N". */
+    async countAll(q) {
+        const sig = this.querySig();
+        if (!(this.state.total > this.state.cards.length) || !this.showPick) {
+            this.state.bulkAll = null;
+            return;
+        }
+        try {
+            const d = await this.orm.call("pb.approval.inbox", "select_all_ids", [], {
+                filters: q.filters, search: q.search,
+                context: { pbf_ctx: { scope: this.state.scope } },
+            });
+            if (!this.kit.isCurrent(q.seq)) { return; }
+            this.state.bulkAll = { count: d.count, capped: d.capped, max: d.max, sig };
+        } catch {
+            this.state.bulkAll = null;
+        }
+    }
+
+    /** "Select all N" is offered when it reaches further than this page. */
+    get showSelectAll() {
+        const all = this.state.bulkAll;
+        return Boolean(all && all.sig === this.querySig()
+                       && all.count > this.pickable.length);
+    }
+
+    get selectAllWords() {
+        const all = this.state.bulkAll || { count: 0 };
+        return all.capped
+            ? _t("Select the first %s that I can approve", all.count)
+            : _t("Select all %s that I can approve", all.count);
+    }
+
+    get wideSel() { return Boolean(this.state.selSig); }
+
+    /** Tick every request under these filters that I can approve together,
+     *  including those on pages not loaded yet (read fresh from the server). */
+    async selectAll() {
+        if (this.state.bulkBusy || this.state.bulkAllBusy) { return; }
+        const q = this.kit.query;
+        const sig = this.querySig();
+        this.state.bulkAllBusy = true;
+        try {
+            const d = await this.orm.call("pb.approval.inbox", "select_all_ids", [], {
+                filters: q.filters, search: q.search,
+                context: { pbf_ctx: { scope: this.state.scope } },
+            });
+            if (sig !== this.querySig()) { return; }
+            const sel = {};
+            for (const id of d.ids || []) { sel[id] = true; }
+            this.state.sel = sel;
+            this.state.selRev = { ...(d.revisions || {}) };
+            this.state.selSig = d.ids && d.ids.length ? sig : "";
+            this.state.bulkAll = { count: d.count, capped: d.capped, max: d.max, sig };
+            this.state.bulkFailed = [];
+            this.state.confirming = false;
+        } catch (error) {
+            this.notif.add((error.data && error.data.message)
+                || _t("The list could not be read. Try again in a moment."),
+                { type: "danger" });
+        } finally {
+            this.state.bulkAllBusy = false;
+        }
+    }
+
+    /** Draw the tick-box column at all: some card here is my turn. */
+    get showPick() { return this.state.cards.some((c) => c.mine); }
+    get pickable() { return this.state.cards.filter((c) => c.can_bulk); }
+    get selIds() { return Object.keys(this.state.sel).map(Number); }
+    get selCount() { return this.selIds.length; }
+    get selCards() { return this.state.cards.filter((c) => this.state.sel[c.id]); }
+    isSel(card) { return Boolean(this.state.sel[card.id]); }
+
+    toggleSel(card) {
+        if (!card.can_bulk || this.state.bulkBusy) { return; }
+        const sel = { ...this.state.sel };
+        if (sel[card.id]) { delete sel[card.id]; } else { sel[card.id] = true; }
+        this.state.sel = sel;
+        this.state.bulkFailed = [];
+        if (!this.selCount) { this.state.confirming = false; this.state.selSig = ""; }
+    }
+
+    get allSel() {
+        const rows = this.pickable;
+        return rows.length > 0 && rows.every((c) => this.state.sel[c.id]);
+    }
+
+    /** Every card on the loaded pages that I can approve together. */
+    toggleAll() {
+        if (this.state.bulkBusy) { return; }
+        if (this.allSel) { this.clearSel(); return; }
+        const sel = {};
+        for (const c of this.pickable) { sel[c.id] = true; }
+        this.state.sel = sel;
+        this.state.selSig = "";
+        this.state.selRev = {};
+        this.state.bulkFailed = [];
+    }
+
+    clearSel() {
+        this.state.sel = {};
+        this.state.selSig = "";
+        this.state.selRev = {};
+        this.state.confirming = false;
+    }
+
+    get pickTip() { return _t("Tick to approve it with others"); }
+
+    get pickAllWords() {
+        return _t("Select all on this page that I can approve (%s)", this.pickable.length);
+    }
+
+    get selWords() {
+        if (this.wideSel) {
+            return this.selCount === 1 ? _t("1 selected")
+                : _t("%s selected", this.selCount);
+        }
+        return _t("%(n)s of %(total)s selected",
+                  { n: this.selCount, total: this.pickable.length });
+    }
+
+    /** "120 of 358 approved" while a big selection is being approved. */
+    get progressWords() {
+        const p = this.state.progress;
+        if (!p) { return ""; }
+        return _t("%(done)s of %(total)s approved", { done: p.done, total: p.total });
+    }
+
+    get progressFailedWords() {
+        const n = (this.state.progress || {}).failed || 0;
+        return n === 1 ? _t("· 1 could not be approved")
+            : _t("· %s could not be approved", n);
+    }
+
+    get progressPct() {
+        const p = this.state.progress;
+        return p && p.total ? Math.round(100 * p.seen / p.total) : 0;
+    }
+
+    stopApproving() {
+        if (this.state.progress) { this.state.progress.stopping = true; }
+    }
+
+    // ------------------------------------------ INBOX-BULK-BANK — the check
+    get summary() { return this.state.summary || { kinds: [], count: 0, confirm: 0 }; }
+
+    get otherNameWords() {
+        const n = this.summary.other_name;
+        if (n === null || n === undefined) { return ""; }
+        if (!n) { return _t("None of them is in another person's name."); }
+        return n === 1 ? _t("1 of them is in another person's name.")
+            : _t("%s of them are in another person's name.", n);
+    }
+
+    get payWords() {
+        const n = this.summary.pay || 0;
+        if (!n) { return ""; }
+        return n === 1 ? _t("1 of them also changes pay.")
+            : _t("%s of them also change pay.", n);
+    }
+
+    get usualWords() {
+        const n = (this.summary.count || 0) - (this.summary.confirm || 0);
+        if (n <= 0) { return ""; }
+        return n === 1 ? _t("1 other request is approved the usual way.")
+            : _t("%s other requests are approved the usual way.", n);
+    }
+
+    get chunkWords() {
+        const chunk = this.summary.chunk || BULK_CHUNK;
+        if (this.selCount <= chunk) { return ""; }
+        return _t("They are approved %s at a time, and you can stop at any point.", chunk);
+    }
+
+    /** Bank details in the selection: the check speaks about accounts. */
+    get checkIsBank() {
+        const s = this.state.summary;
+        return !s || (s.bank || 0) > 0;
+    }
+
+    get checkTitle() {
+        const n = this.selCount;
+        if (this.checkIsBank && this.summary.bank === n) {
+            return n === 1 ? _t("Approve 1 bank details change?")
+                : _t("Approve %s bank details changes together?", n);
+        }
+        return this.confirmTitle;
+    }
+
+    get checkTick() {
+        return this.checkIsBank ? _t("I have checked these bank details")
+            : _t("I have checked these requests");
+    }
+
+    toggleChecked() { this.state.checked = !this.state.checked; }
+
+    /** "Review the list": the check closes, the filters and the ticks stay. */
+    reviewList() {
+        this.state.checkOpen = false;
+        this.state.checked = false;
+        const root = this.navigationRoot.el;
+        if (root) { root.scrollTop = 0; }
+    }
+
+    closeCheck() {
+        if (this.state.bulkBusy) { return; }
+        this.state.checkOpen = false;
+        this.state.checked = false;
+    }
+
+    /** The kinds the extra check is about (one line each in the dialog). */
+    get checkKinds() {
+        return (this.summary.kinds || []).filter((k) => k.confirm);
+    }
+
+    /** "6 Leave · 3 Overtime" — what the press is about to approve. */
+    get selKinds() {
+        if (this.wideSel && this.state.summary) {
+            return (this.state.summary.kinds || [])
+                .map((k) => _t("%(n)s %(kind)s", { n: k.count, kind: k.name || _t("Other") }))
+                .join(" · ");
+        }
+        const counts = {};
+        for (const c of this.selCards) {
+            const name = c.process || _t("Other");
+            counts[name] = (counts[name] || 0) + 1;
+        }
+        return Object.entries(counts)
+            .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+            .map(([name, n]) => _t("%(n)s %(kind)s", { n, kind: name }))
+            .join(" · ");
+    }
+
+    get confirmTitle() {
+        return this.selCount === 1 ? _t("Approve 1 request?")
+            : _t("Approve %s requests?", this.selCount);
+    }
+
+    get confirmButton() {
+        return this.selCount === 1 ? _t("Approve 1")
+            : _t("Approve %s", this.selCount);
+    }
+
+    get failedTitle() {
+        const n = this.state.bulkFailed.length;
+        return n === 1 ? _t("1 request could not be approved")
+            : _t("%s requests could not be approved", n);
+    }
+
+    /** Space ticks the focused card, Enter opens it. */
+    onCardKey(ev, card) {
+        if (ev.target !== ev.currentTarget) { return; }
+        if (ev.key === " " || ev.key === "Spacebar") {
+            if (card.can_bulk) {
+                ev.preventDefault();
+                this.toggleSel(card);
+            }
+        } else if (ev.key === "Enter") {
+            ev.preventDefault();
+            this.open(card);
+        }
+    }
+
+    /** "Approve selected": the server says what the selection holds. A kind
+     *  that needs the extra check (bank details) opens the check dialog;
+     *  anything else gets the in-page confirm exactly as before. */
+    async askApproveSelected() {
+        if (!this.selCount || this.state.bulkBusy || this.state.summaryBusy) { return; }
+        this.state.bulkFailed = [];
+        this.state.summaryBusy = true;
+        let summary = null;
+        try {
+            summary = await this.orm.call("pb.approval.inbox", "bulk_summary", [this.selIds]);
+        } catch {
+            summary = null;
+        } finally {
+            this.state.summaryBusy = false;
+        }
+        const needsCheck = summary ? summary.confirm > 0
+            : this.selCards.some((c) => c.bulk_confirm) || this.wideSel;
+        this.state.summary = summary;
+        this.state.checked = false;
+        if (needsCheck) {
+            this.state.checkOpen = true;
+        } else {
+            this.state.confirming = true;
+        }
+    }
+
+    cancelApproveSelected() { this.state.confirming = false; }
+
+    /** Approve the selection, BULK_CHUNK at a time (one call each), with the
+     *  "120 of 358 approved" line and a Stop button between groups. Each
+     *  call is the same `decide_many` as before: the server asks again for
+     *  every request, and the extra check is sent only after the tick. */
+    async approveSelected(confirmed = false) {
+        const ids = this.selIds;
+        if (!ids.length || this.state.bulkBusy) { return; }
+        if (this.state.checkOpen && !this.state.checked) { return; }
+        const revisions = { ...this.state.selRev };
+        for (const c of this.state.cards) {
+            if (this.state.sel[c.id]) { revisions[c.id] = c.lock_revision; }
+        }
+        const total = ids.length;
+        this.state.bulkBusy = true;
+        // the check (or the in-page confirm) gives way to the progress line
+        this.state.checkOpen = false;
+        this.state.confirming = false;
+        this.state.progress = { done: 0, failed: 0, seen: 0, total, stopping: false };
+        const failed = [];
+        let done = 0;
+        let stopAt = -1;
+        let broke = "";
+        let errored = false;
+        try {
+            for (let i = 0; i < total; i += BULK_CHUNK) {
+                if (this.state.progress.stopping) { stopAt = i; break; }
+                const chunk = ids.slice(i, i + BULK_CHUNK);
+                const rev = {};
+                for (const id of chunk) {
+                    if (revisions[id] !== undefined) { rev[id] = revisions[id]; }
+                }
+                let answer = null;
+                try {
+                    answer = await this.orm.call("pb.approval.inbox", "decide_many",
+                        [chunk], { revisions: rev, confirmed: confirmed === true, batch_size: total });
+                } catch (error) {
+                    errored = true;
+                    broke = (error.data && error.data.message) || "";
+                    stopAt = i;
+                    break;
+                }
+                for (const row of (answer && answer.results) || []) {
+                    if (row.ok) {
+                        done += 1;
+                    } else {
+                        failed.push({ id: row.id, title: row.title || _t("A request"),
+                                      error: row.error || _t("This one could not be approved.") });
+                    }
+                }
+                this.state.progress.done = done;
+                this.state.progress.failed = failed.length;
+                this.state.progress.seen = Math.min(i + chunk.length, total);
+            }
+        } finally {
+            this.state.bulkBusy = false;
+            this.state.confirming = false;
+            this.state.checkOpen = false;
+            this.state.checked = false;
+            this.state.progress = null;
+        }
+        // failed ones and the ones not reached stay ticked; approved ones
+        // leave the list on refresh
+        const keep = new Set(failed.map((f) => f.id));
+        if (stopAt >= 0) { for (const id of ids.slice(stopAt)) { keep.add(id); } }
+        const sel = {};
+        const selRev = {};
+        for (const id of keep) {
+            sel[id] = true;
+            if (revisions[id] !== undefined) { selRev[id] = revisions[id]; }
+        }
+        this.state.sel = sel;
+        this.state.selRev = selRev;
+        if (!keep.size) { this.state.selSig = ""; }
+        this.state.bulkFailed = failed;
+        if (errored && broke) {
+            this.notif.add(_t("Approving stopped after %(done)s of %(total)s: %(why)s The rest are still selected.",
+                              { done, total, why: broke }), { type: "danger" });
+        } else if (errored) {
+            this.notif.add(_t("Approving stopped after %(done)s of %(total)s because the connection dropped. Nothing else was changed; press Approve selected to carry on.",
+                              { done, total }), { type: "danger" });
+        } else if (stopAt >= 0) {
+            this.notif.add(_t("Stopped after %(done)s of %(total)s were approved. Nothing else was changed; the rest are still selected.",
+                              { done, total }), { type: "warning" });
+        } else if (done) {
+            this.notif.add(done === 1 ? _t("1 approved.") : _t("%s approved.", done),
+                           { type: "success" });
+        }
+        await this.refresh();
+    }
+
+    closeFailed() { this.state.bulkFailed = []; }
+
+    // =============================================================== acting
+    async setScope(key) {
+        if (this.state.scope === key) { return; }
+        this.state.scope = key;
+        this.state.openId = 0;
+        this.state.listLoaded = false;
+        // the same view in the new queue: the panel recounts for it
+        const keep = { filters: this.kit.filters, search: this.kit.search, viewKey: this.kit.viewKey };
+        await Promise.all([
+            this.load(),
+            this.kit.reconfigure({ ctx: { scope: key }, initial: keep }),
+        ]);
+    }
+
+    get scopes() {
+        const data = this.data;
+        const rows = [{ key: "me", label: _t("Mine") }];
+        if (data.has_team || this.state.scope === "team") {
+            rows.push({ key: "team", label: _t("My team") });
+        }
+        if (data.can_org || this.state.scope === "org") {
+            rows.push({ key: "org", label: _t("Everyone") });
+        }
+        return rows.length > 1 ? rows : [];
+    }
+
+    /** Back to the start view (My approvals). */
+    showMine() { this.kit.useView("mine"); }
+
+    open(card) { this.state.openId = card.id; }
+    close() { this.state.openId = 0; }
+
+    async refresh() {
+        await Promise.all([this.load(), this.kit.refresh()]);
+    }
+
+    openMatrix() {
+        this.actionService.doAction(
+            "pb_approval_config.action_pb_approval_matrix");
+    }
+
+    // ------------------------------------------------- ask for a sign-off
+    async openAsk() {
+        this.state.asking = true;
+        this.state.ask = { name: "", description: "", amount: 0,
+                           area_key: "" };
+        if (!this.state.askOptions) {
+            try {
+                this.state.askOptions = await this.orm.call(
+                    "pb.approval.inbox", "ask_options", []);
+            } catch (error) {
+                this.state.askOptions = { areas: [], currency_name: "" };
+            }
+        }
+    }
+
+    closeAsk() { this.state.asking = false; }
+
+    setAsk(field, ev) {
+        const value = field === "amount"
+            ? Number(ev.target.value || 0) : ev.target.value;
+        this.state.ask[field] = value;
+    }
+
+    get canAsk() {
+        return this.state.ask.name.trim().length > 2;
+    }
+
+    async sendAsk() {
+        this.state.busy = true;
+        try {
+            const options = this.state.askOptions || { areas: [] };
+            const area = (options.areas || []).find(
+                (one) => one.key === this.state.ask.area_key);
+            const made = await this.orm.call("pb.approval.inbox", "ask", [{
+                name: this.state.ask.name,
+                description: this.state.ask.description,
+                amount: this.state.ask.amount,
+                area_key: this.state.ask.area_key || false,
+                area_label: area ? area.label : "",
+            }]);
+            this.state.asking = false;
+            await this.refresh();
+            if (made.request_id) { this.state.openId = made.request_id; }
+            this.notif.add(
+                _t("Sent. It is on its way to whoever decides this kind of request."),
+                { type: "success" });
+        } catch (error) {
+            this.notif.add(
+                (error.data && error.data.message)
+                || _t("That could not be sent."), { type: "danger" });
+        } finally {
+            this.state.busy = false;
+        }
+    }
+}
+
+registry.category("actions").add("pb_approval_inbox", PbInbox);

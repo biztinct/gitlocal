@@ -1,0 +1,61 @@
+<odoo>
+    <record id="contact_tree" model="ir.ui.view">
+        <field name="name">biztinct.contact.tree</field>
+        <field name="model">biztinct.contact</field>
+        <field name="arch" type="xml">
+            <tree create="false">
+                <field name="create_date"/>
+                <field name="name"/>
+                <field name="email"/>
+                <field name="company"/>
+                <field name="interest"/>
+                <field name="notification_queued"/>
+                <field name="notification_state"/>
+            </tree>
+        </field>
+    </record>
+    <record id="contact_form" model="ir.ui.view">
+        <field name="name">biztinct.contact.form</field>
+        <field name="model">biztinct.contact</field>
+        <field name="arch" type="xml">
+            <form create="false">
+                <sheet>
+                    <group><field name="name"/><field name="email"/><field name="company"/>
+                        <field name="phone"/><field name="interest"/><field name="website_id"/>
+                        <field name="create_date"/><field name="notification_queued"/>
+                        <field name="mail_id"/><field name="notification_state"/>
+                    </group>
+                    <field name="message"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="contact_action" model="ir.actions.act_window">
+        <field name="name">Website enquiries</field>
+        <field name="res_model">biztinct.contact</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem id="contact_menu" name="Biztinct enquiries" action="contact_action"
+              groups="base.group_system" sequence="90"/>
+    <record id="gmail_setup_help" model="ir.ui.view">
+        <field name="name">Biztinct Gmail setup guidance</field>
+        <field name="model">ir.mail_server</field>
+        <field name="inherit_id" ref="base.ir_mail_server_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='active']" position="after">
+                <field name="biztinct_contact_only" readonly="1"/>
+            </xpath>
+            <xpath expr="//sheet" position="inside">
+                <div class="alert alert-info" role="status" attrs="{'invisible': [('smtp_host', '!=', 'smtp.gmail.com')]}">
+                    <strong>Biztinct website email setup</strong><br/>
+                    Enter the 16-letter Google App Password generated while signed into ash@biztinct.com in the Password field (not your normal Gmail password).
+                    If that address is an alias, use the primary Google account address as the SMTP username.
+                    Save, click Test Connection, then switch Active on and save.
+                    Saved website enquiries are then queued automatically for ash@biztinct.com.
+                    This server is reserved for website enquiries and is excluded from automatic default-server selection.
+                    <br/><a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener noreferrer">Create an App Password in your Google account</a>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

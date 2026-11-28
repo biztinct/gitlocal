@@ -1,0 +1,10 @@
+// My Leave: the "earned so far / next" lines under a tile that builds up.
+// Scoped under .pbme (the My Work pages' root, not the home's .pbme-home).
+.pbme .pblk-earn {
+    display: flex; flex-direction: column; gap: 1px; margin-top: 6px;
+    padding-top: 6px; border-top: 1px dashed var(--pbim-line, #E2E8F0);
+    font-size: 12px; line-height: 1.35;
+    .pblk-earn-l { color: var(--pbim-muted, #64748B); }
+    .pblk-earn-n { color: var(--pbim-primary, #5A4BB0); font-weight: 600; }
+    .pblk-earn-a { color: #8A4B02; }
+}

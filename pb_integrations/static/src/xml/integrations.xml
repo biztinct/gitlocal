@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <!-- Section comments use `=` rules: a doubled hyphen inside an XML comment is
+       a parse error that takes the whole file down (W22), and the same trap
+       covers naming a CSS custom property, whose prefix is two hyphens (W72). -->
+  <t t-name="pb_integrations.PbIntegrations">
+    <div class="pbim itg pbim-page ppl-people itg-board">
+      <div t-if="!state.loaded" class="pbim-busy"><div class="pbim-spin"/><span>Loading integrations…</span></div>
+
+      <div t-else="" class="pbim-wrap">
+
+        <div class="ppl-head">
+          <div>
+            <!-- The return door, when a caller passed one (Import, the
+                 connector cockpit, the Settings hub). Above the title because
+                 that is where a user looks for "how do I get out". -->
+            <HubBackChip t-if="back" back="back" tone="'light'"/>
+            <h1 class="pbim-h1">Integrations</h1>
+            <p class="pbim-sub">External HR / payroll connectors, their sync status and everything they have pulled.</p>
+          </div>
+          <button class="pbim-btn primary itg-connect" data-coach="ig-connect" style="margin-left:auto;align-self:center" t-on-click="connectSystem">
+            <t t-out="ic('plug',16)"/> Connect a system
+          </button>
+        </div>
+
+        <!-- ==== the numbers: one quiet line (QUIET_BOARD_ROLLOUT) ====
+             Connected and Errors filter the connector list; the rest are
+             read-only. Feeds is ABSENT rather than zero on a database whose
+             upgrade has not run (count honesty, W79) and turns amber when a
+             feed is overdue. -->
+        <div data-coach="ig-kpis">
+          <t t-call="pb_import_kit.QuietGlance">
+            <t t-set="qGlance" t-value="glance"/>
+            <t t-set="qGlanceOn" t-value="glanceOn"/>
+          </t>
+        </div>
+
+        <!-- ==== the attendance machines (CLOCK-3) ====
+             One quiet row: grey when every machine is fine, a rose badge when
+             one is silent or its clock is off, and a chip per thing to fix.
+             The row and every chip open Workforce › Time › Time clocks. -->
+        <div t-if="state.timeClocks" class="itg-clocks">
+          <t t-set="tc" t-value="state.timeClocks"/>
+          <div class="ppl-card itg-clocks__card" role="button" tabindex="0"
+               t-att-class="'is-' + tc.status" t-on-click="openTimeClocks"
+               t-on-keydown="onTimeClocksKey">
+            <div class="ppl-av"><t t-out="ic('scan',20)"/></div>
+            <div class="ppl-id">
+              <div class="nm" t-esc="tc.name"/>
+              <div class="jb" t-esc="timeClocksLine"/>
+            </div>
+            <div class="itg-clocks__hints">
+              <span t-foreach="tc.hints" t-as="h" t-key="h.kind" class="itg-clocks__hint">
+                <span class="d"/><t t-esc="h.label"/>
+              </span>
+              <span t-if="!tc.hints.length and tc.status === 'connected'" class="itg-clocks__ok">
+                <t t-out="ic('checkCircle',13)"/> Every machine is calling in
+              </span>
+            </div>
+            <div class="ppl-meta">
+              <span t-attf-class="pbim-badge {{ tc.status_cls }}"><span class="d"/><t t-esc="tc.status_label"/></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==== the two views ====
+             Connectors is what you manage; Data is what they produced. The
+             three raw-list tiles that used to sit at the bottom of this page
+             are the second half of this control. -->
+        <div class="itg-views">
+          <button class="pbim-segbtn" t-att-class="{ 'on': state.view === 'connectors' }"
+                  t-on-click="() => this.setView('connectors')">
+            <t t-out="ic('plug',15)"/> Connectors
+          </button>
+          <button class="pbim-segbtn" t-att-class="{ 'on': state.view === 'data' }"
+                  t-on-click="() => this.setView('data')">
+            <t t-out="ic('database',15)"/> Data
+          </button>
+        </div>
+
+        <!-- ======================= connectors ======================= -->
+        <!-- ==== the shared filter panel over the connectors (FILTER W6) ====
+             data-coach="ig-filters" is drawn on the panel's bar. -->
+        <t t-if="state.view === 'connectors'">
+          <PbFilterLayout kit="ckit" coach="'ig-filters'" searchPlaceholder="'Search connectors…'">
+          <div t-if="state.crows.length" class="ppl-roster" data-coach="ig-roster">
+            <div t-foreach="state.crows" t-as="c" t-key="c.id" class="ppl-card" t-att-class="{ 'itg-archived': c.archived }" t-on-click="() => this.openConnector(c.id)">
+              <div class="ppl-av"><t t-out="ic(c.icon,20)"/></div>
+              <div class="ppl-id">
+                <div class="nm" t-esc="c.name"/>
+                <div class="jb"><t t-esc="c.type_label"/> · <t t-esc="syncLabel(c)"/></div>
+              </div>
+              <div class="ppl-period itg-counts">
+                <!-- the count IS the door (W5): it opens the Mapping Studio on
+                     this connector, so the board is where you go to change the
+                     number it prints -->
+                <button t-if="hasMapping" class="itg-maplink"
+                        title="Map this connector's fields onto a payroll scheme"
+                        t-on-click.stop="() => this.openMappingStudio(c)"
+                        t-esc="mappingsLabel(c)"/>
+                <span t-else="" t-esc="mappingsLabel(c)"/>
+                <span class="itg-counts__rest"> · <t t-esc="cardCounts(c)"/></span>
+              </div>
+              <div class="ppl-meta">
+                <span t-if="c.archived" class="pbim-badge muted"><span class="d"/>Archived</span>
+                <span t-else="" t-attf-class="pbim-badge {{ c.status_cls }}"><span class="d"/><t t-esc="c.status_label"/></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- still loading the first page -->
+          <div t-elif="!state.clistLoaded" class="ppl-roster itg-skel" aria-label="Loading">
+            <div t-foreach="[1,2,3,4]" t-as="i" t-key="i" class="ppl-card itg-card--ghost"><span/></div>
+          </div>
+
+          <!-- nothing to list: say why, and the way back -->
+          <div t-else="" class="pbim-panel itg-empty">
+            <span class="itg-empty-ic"><t t-out="ic(ckit.total ? 'search' : 'plug', 24)"/></span>
+            <p t-esc="connectorsEmptyText"/>
+            <button t-if="ckit.total" type="button" class="pbim-btn primary pbim-btn-sm" t-on-click="showAllConnectors">
+              <t t-out="ic('x', 14)"/> Show every connector
+            </button>
+            <button t-else="" type="button" class="pbim-btn primary pbim-btn-sm" t-on-click="connectSystem">
+              <t t-out="ic('plug', 14)"/> Connect a system
+            </button>
+          </div>
+
+          <div t-if="state.crows.length" class="itg-foot">
+            <span t-esc="connectorsFootLabel"/>
+            <button t-if="connectorsHasMore" type="button" class="pbim-btn outline pbim-btn-sm"
+                    t-att-disabled="state.cloadingMore" t-on-click="loadMoreConnectors">
+              <t t-if="state.cloadingMore">Loading…</t>
+              <t t-else="">Show <t t-esc="connectorsNextPage"/> more</t>
+            </button>
+          </div>
+          </PbFilterLayout>
+        </t>
+
+        <!-- The Data view is an explicit `t-if`, not a `t-else`: `t-else` binds
+             to the IMMEDIATELY preceding sibling, and the comment describing
+             the branch would break the pairing into a runtime template error
+             (W23). Two views, two conditions, no comment in between anything.
+             Data = the three tables that used to be raw list views; a row click
+             opens the drawer and nothing in it navigates. -->
+        <t t-if="state.view === 'data'">
+          <div class="pbim-panel itg-ledger" data-coach="ig-data">
+
+            <div class="itg-tabs">
+              <button t-foreach="ledgerTabs" t-as="t" t-key="t.id"
+                      class="itg-tab" t-att-class="{ 'is-on': state.kind === t.id }"
+                      t-att-aria-current="state.kind === t.id ? 'true' : false"
+                      t-on-click="() => this.setKind(t.id)">
+                <span class="itg-tab__ic" t-out="ic(t.icon, 14)"/>
+                <span t-esc="t.label"/>
+              </button>
+              <span class="itg-tabsub" t-if="state.ledger" t-esc="state.ledger.subtitle"/>
+              <!-- The trailing edge of the tab strip. A rule is the one thing in
+                   this view a manager CREATES, so it is the one place with a
+                   primary button; the flag is a group read, and the server's
+                   own save gate fails closed behind it. -->
+              <button t-if="state.kind === 'rule' and state.canEditRules"
+                      class="pbim-btn primary itg-newrule" t-on-click="newRule">
+                <t t-out="ic('plus',15)"/> New rule
+              </button>
+            </div>
+
+            <div t-if="state.ledgerLoading and !state.ledger" class="pbim-busy"><div class="pbim-spin"/><span>Loading…</span></div>
+
+            <!-- ==== the shared filter panel over the table (FILTER W6) ====
+                 A connector / feed deep link arrives as a chip on this panel
+                 (Connector, Feed, Data type) — visible, and dropped with its
+                 x; the server keeps it inside the connectors this reader may
+                 read. data-coach="ig-data-filters" is drawn on the bar. -->
+            <t t-elif="state.ledger">
+              <PbFilterLayout kit="dkit" coach="'ig-data-filters'" searchPlaceholder="state.ledger.search_ph">
+              <div t-if="state.lrows.length" class="pbim-tablewrap itg-tw">
+                <table class="pbim-table">
+                  <thead>
+                    <tr>
+                      <th t-foreach="state.ledger.columns" t-as="col" t-key="col_index"
+                          t-attf-class="{{ col.wide ? 'itg-th-wide' : '' }}" t-esc="col.label"/>
+                      <th class="itg-th-badge">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr t-foreach="state.lrows" t-as="r" t-key="r.id" class="click"
+                        t-on-click="() => this.openRow(r)">
+                      <td t-foreach="r.cells" t-as="cell" t-key="cell_index" t-esc="cell"/>
+                      <td class="itg-td-badge">
+                        <span t-attf-class="pbim-badge {{ r.badge.tone }}"><span class="d"/><t t-esc="r.badge.label"/></span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- still loading the first page -->
+              <div t-elif="!state.llistLoaded" class="itg-skel itg-skel--rows" aria-label="Loading">
+                <span t-foreach="[1,2,3,4,5]" t-as="i" t-key="i"/>
+              </div>
+
+              <!-- nothing to list: say why, and the way back -->
+              <div t-else="" class="itg-empty">
+                <span class="itg-empty-ic"><t t-out="ic(dkit.total ? 'search' : 'inbox', 24)"/></span>
+                <p t-esc="ledgerEmptyText"/>
+                <button t-if="dkit.total" type="button" class="pbim-btn primary pbim-btn-sm" t-on-click="showAllLedger">
+                  <t t-out="ic('x', 14)"/> Show the whole table
+                </button>
+              </div>
+
+              <div t-if="state.lrows.length" class="itg-foot">
+                <span t-esc="footLabel"/>
+                <button t-if="ledgerHasMore" type="button" class="pbim-btn outline pbim-btn-sm"
+                        t-att-disabled="state.lloadingMore" t-on-click="loadMoreLedger">
+                  <t t-if="state.lloadingMore">Loading…</t>
+                  <t t-else="">Show <t t-esc="ledgerNextPage"/> more</t>
+                </button>
+              </div>
+              </PbFilterLayout>
+            </t>
+
+            <div t-else="" class="pbim-empty">This table could not be loaded.</div>
+          </div>
+        </t>
+      </div>
+
+      <!-- ==== the row's whole story, in place ====
+           The kit's drawer (W6): 320px, absolute scrim inside THIS surface,
+           ESC and the X both close. -->
+      <WfDrawer t-if="state.drawer" title="state.drawer.title"
+                subtitle="state.drawer.subtitle" onClose="() => this.closeDrawer()">
+        <div class="itg-dr">
+          <div t-if="state.drawerLoading and !state.drawer.sections.length" class="itg-dr__load">
+            <span t-out="ic('loader', 20)"/><span>Loading…</span>
+          </div>
+          <div t-foreach="state.drawer.sections" t-as="sec" t-key="sec.label" class="itg-dr__sec">
+            <div class="itg-dr__h" t-esc="sec.label"/>
+            <div t-foreach="sec.fields" t-as="f" t-key="f.label"
+                 class="itg-dr__kv" t-att-class="{ 'is-wrap': f.wrap }">
+              <span class="k" t-esc="f.label"/>
+              <!-- ONE class attribute: a static `class` and a `t-attf-class`
+                   both compile to `class` and the last one written wins, so the
+                   tone would silently replace the `v` (W23). -->
+              <span t-attf-class="v {{ f.tone or '' }}" t-esc="f.value"/>
+            </div>
+          </div>
+        </div>
+      </WfDrawer>
+
+      <!-- ==== the rule, as a sentence you can change ====
+           A SIBLING of the drawer, not a child: the drawer is a 320px reading
+           panel and this is a builder with its own proof rail. The other three
+           ledger kinds still open the drawer above, unchanged. -->
+      <RuleComposer t-if="state.composer"
+                    connectorId="state.composer.connectorId"
+                    ruleId="state.composer.ruleId"
+                    connectors="composerConnectors"
+                    onClose="() => this.closeComposer()"
+                    onSaved="() => this.onRuleSaved()"/>
+    </div>
+  </t>
+
+</templates>

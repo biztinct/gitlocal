@@ -1,0 +1,608 @@
+<title>My Payobook Home</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: a review page (chrome) that holds three full-page mockups of the employee home,
+   switched by tabs. The mockups use the locked Payobook light design system; the chrome follows
+   the viewer's theme. */
+:root{
+  --bg:#F6F5FB; --fg:#1E1B2E; --muted:#5B5878; --line:#E2E0EE; --card:#FFFFFF;
+  --accent:#5A4BB0; --accent-soft:#EDEAF8; --accent-line:#CBC2EE;
+  --f-ui:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#14121F; --fg:#ECEAF6; --muted:#A5A1C2; --line:#2A2740; --card:#1D1A2C;
+  --accent:#A99BE8; --accent-soft:#272243; --accent-line:#3A3366; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#14121F; --fg:#ECEAF6; --muted:#A5A1C2; --line:#2A2740; --card:#1D1A2C;
+  --accent:#A99BE8; --accent-soft:#272243; --accent-line:#3A3366; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-ui);margin:0;
+  padding-block:28px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3,h4{margin:0;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+.wrap{max-width:1320px;margin:0 auto}
+
+/* ---------- review chrome ---------- */
+.intro{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:start;margin-bottom:22px}
+.intro h1{font-size:26px;font-weight:800;letter-spacing:-.01em}
+.intro .lead{color:var(--muted);font-size:14.5px;line-height:1.5;margin-top:8px;max-width:62ch}
+.reco{background:var(--card);border:1px solid var(--accent-line);border-radius:16px;padding:18px 20px}
+.reco .eyebrow{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.reco h2{font-size:17px;font-weight:800;margin-top:4px}
+.reco p{font-size:13.5px;line-height:1.5;color:var(--muted);margin-top:6px}
+.reco ul{margin:8px 0 0;padding-left:18px;font-size:13.5px;line-height:1.55;color:var(--fg)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px;position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:8px}
+.tabs{display:flex;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px}
+.tab{border:0;background:transparent;color:var(--muted);font:inherit;font-weight:700;font-size:13.5px;padding:9px 16px;border-radius:999px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.tab .n{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:800}
+.tab[aria-selected="true"]{background:var(--accent);color:#fff}
+.tab[aria-selected="true"] .n{background:rgba(255,255,255,.22);color:#fff}
+.tab:focus-visible,.toggle:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.toggle{display:flex;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px}
+.toggle button{border:0;background:transparent;color:var(--muted);font:inherit;font-weight:700;font-size:13px;padding:8px 14px;border-radius:999px;cursor:pointer}
+.toggle button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+.opt-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;flex-wrap:wrap;margin:6px 0 12px}
+.opt-head h2{font-size:19px;font-weight:800}
+.opt-head p{color:var(--muted);font-size:13.5px;max-width:70ch;line-height:1.5;margin-top:4px}
+.pros{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:14px 0 0}
+.pro{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.45}
+.pro b{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.panel[hidden]{display:none}
+
+/* ---------- the mock frame (fixed light product look) ---------- */
+.frame{
+  --p:#5A4BB0; --p-hover:#4A3D96; --p-dark:#241F52; --p-light:#CBC2EE; --p-soft:#EDEAF8;
+  --ink:#1E1B2E; --mut:#64748B; --ln:#E2E8F0; --ln2:#EEF1F6; --canvas:#F4F5FB; --surf:#FFFFFF;
+  --ok:#2E7D4F; --ok-soft:#E6F4EC; --info:#2563EB; --info-soft:#E8EFFD; --warn:#D97706; --warn-soft:#FDF1E1;
+  --err:#DC2668; --err-soft:#FCE7EF; --teal:#0F766E; --teal-soft:#E0F2F1; --pink:#BE185D; --pink-soft:#FCE7F3;
+  --sh:0 1px 2px rgba(30,27,46,.05),0 6px 18px rgba(30,27,46,.06);
+  --sh-lg:0 2px 4px rgba(30,27,46,.06),0 14px 34px rgba(30,27,46,.10);
+  background:var(--canvas);color:var(--ink);border:1px solid var(--line);border-radius:18px;overflow:hidden;
+  container-type:inline-size;margin:0 auto;transition:max-width .25s ease;font-family:var(--f-ui);color-scheme:light}
+.frame.phone{max-width:412px}
+.frame *{box-sizing:border-box}
+.ic{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* top nav as on the live portal */
+.nav{display:flex;align-items:center;gap:18px;background:var(--surf);border-bottom:1px solid var(--ln);padding:10px 22px;font-size:13px;color:var(--mut)}
+.nav .logo{font-weight:800;color:var(--p);font-size:16px;letter-spacing:-.02em}
+.nav .sp{flex:1}
+.nav .cta{background:var(--p);color:#fff;font-weight:700;padding:7px 14px;border-radius:9px;font-size:12.5px}
+.nav .av{width:28px;height:28px;border-radius:50%;background:var(--p-soft);color:var(--p);display:grid;place-items:center;font-size:11px;font-weight:800}
+@container (max-width:700px){ .nav .hide-m{display:none} }
+
+.pg{padding:22px 24px 36px;max-width:1240px;margin:0 auto}
+@container (max-width:700px){ .pg{padding:16px 16px 28px} }
+
+/* shared bits */
+.badge{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:11px;font-size:18px;flex:none}
+.badge.ind{background:var(--p-soft);color:var(--p)} .badge.grn{background:var(--ok-soft);color:var(--ok)}
+.badge.blu{background:var(--info-soft);color:var(--info)} .badge.amb{background:var(--warn-soft);color:var(--warn)}
+.badge.ros{background:var(--err-soft);color:var(--err)} .badge.tea{background:var(--teal-soft);color:var(--teal)}
+.badge.pnk{background:var(--pink-soft);color:var(--pink)} .badge.sla{background:#EEF2F7;color:var(--mut)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border-radius:10px;padding:9px 15px;font-size:13px;font-weight:700;border:1px solid var(--ln);background:var(--surf);color:var(--ink);text-decoration:none;cursor:pointer;white-space:nowrap}
+.btn.pri{background:var(--p);border-color:var(--p);color:#fff}
+.btn.out{color:var(--p);border-color:var(--p-light)}
+.btn.sm{padding:7px 12px;font-size:12.5px;border-radius:9px}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--p)}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:26px 0 12px}
+.sec-h h3{font-size:14px;font-weight:800;letter-spacing:.02em;text-transform:uppercase;color:var(--mut)}
+.sec-h span{font-size:12.5px;color:var(--mut)}
+.num{font-variant-numeric:tabular-nums}
+.card{background:var(--surf);border:1px solid var(--ln);border-radius:16px;box-shadow:var(--sh)}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px}
+.pill.amb{background:var(--warn-soft);color:var(--warn)} .pill.ros{background:var(--err-soft);color:var(--err)}
+.pill.grn{background:var(--ok-soft);color:var(--ok)} .pill.ind{background:var(--p-soft);color:var(--p)}
+.pill.blu{background:var(--info-soft);color:var(--info)}
+.sample{font-size:11px;color:var(--mut);text-align:right;margin-top:14px}
+
+/* tile used by options 1 and 2 */
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.tile{display:flex;align-items:center;gap:14px;background:var(--surf);border:1px solid var(--ln);border-radius:14px;padding:14px 16px;text-decoration:none;color:inherit;transition:transform .15s,box-shadow .15s,border-color .15s;min-width:0}
+.tile:hover{transform:translateY(-2px);box-shadow:var(--sh-lg);border-color:var(--p-light)}
+.tile .t{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+.tile .d{font-size:12.5px;color:var(--mut);margin-top:2px;line-height:1.4}
+.tile .body{flex:1;min-width:0}
+.tile .chev{color:var(--p-light);font-size:18px}
+.tile:hover .chev{color:var(--p)}
+.tile .cnt{font-size:11px;font-weight:800;background:var(--p-soft);color:var(--p);padding:2px 7px;border-radius:999px}
+.tile .cnt.amb{background:var(--warn-soft);color:var(--warn)}
+
+/* ======================= OPTION 1 — Glance ======================= */
+.o1-hero{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;background:var(--p-soft);border:1px solid var(--p-light);border-radius:20px;padding:26px 28px;align-items:center}
+.o1-id{display:flex;gap:18px;align-items:center;min-width:0}
+.o1-av{width:68px;height:68px;border-radius:50%;background:var(--surf);color:var(--p);display:grid;place-items:center;font-size:22px;font-weight:800;border:3px solid #fff;box-shadow:var(--sh);flex:none}
+.o1-id h1{font-size:28px;font-weight:800;letter-spacing:-.02em;margin-top:3px}
+.o1-id .sub{font-size:13.5px;color:#4B4770;margin-top:5px}
+.o1-id .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.o1-id .chip{display:inline-flex;align-items:center;gap:6px;background:var(--surf);color:var(--p-dark);font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;border:1px solid var(--p-light)}
+.o1-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.o1-stat{background:var(--surf);border:1px solid var(--p-light);border-radius:14px;padding:14px 14px 12px;min-width:0}
+.o1-stat .l{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);display:flex;align-items:center;gap:6px}
+.o1-stat .v{font-size:20px;font-weight:800;margin-top:6px;letter-spacing:-.01em;color:var(--p-dark)}
+.o1-stat .v.money{color:var(--ok)}
+.o1-stat .s{font-size:12px;color:var(--mut);margin-top:3px}
+.o1-attn{margin-top:16px;background:var(--surf);border:1px solid var(--ln);border-radius:16px;box-shadow:var(--sh);overflow:hidden}
+.o1-attn .hd{display:flex;align-items:center;gap:10px;padding:13px 18px;border-bottom:1px solid var(--ln2);font-weight:800;font-size:14px}
+.o1-attn .hd .ic{color:var(--warn)}
+.o1-attn .hd .pill{margin-left:auto}
+.o1-row{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--ln2);text-decoration:none;color:inherit}
+.o1-row:last-child{border-bottom:0}
+.o1-row:hover{background:#FAFAFE}
+.o1-row .body{flex:1;min-width:0}
+.o1-row .t{font-size:13.5px;font-weight:700}
+.o1-row .d{font-size:12.5px;color:var(--mut);margin-top:1px}
+@container (max-width:900px){ .o1-hero{grid-template-columns:1fr} .o1-stats{grid-template-columns:1fr 1fr 1fr} }
+@container (max-width:700px){ .o1-hero{padding:20px 18px} .o1-stats{grid-template-columns:1fr} .o1-id h1{font-size:23px} .o1-av{width:54px;height:54px;font-size:18px} .o1-row .btn{display:none} }
+
+/* ======================= OPTION 2 — Bento ======================= */
+.o2-top{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;flex-wrap:wrap;padding:8px 4px 20px}
+.o2-top h1{font-size:38px;font-weight:800;letter-spacing:-.03em;line-height:1.05}
+.o2-top h1 em{font-style:normal;color:var(--p)}
+.o2-top .line{font-size:15px;color:var(--mut);margin-top:10px;max-width:60ch;line-height:1.5}
+.o2-top .line b{color:var(--ink);font-weight:700}
+.o2-who{display:flex;align-items:center;gap:12px;background:var(--surf);border:1px solid var(--ln);border-radius:999px;padding:6px 16px 6px 6px;box-shadow:var(--sh)}
+.o2-who .av{width:36px;height:36px;border-radius:50%;background:var(--p-soft);color:var(--p);display:grid;place-items:center;font-weight:800;font-size:13px}
+.o2-who .n{font-size:13px;font-weight:700}
+.o2-who .r{font-size:11.5px;color:var(--mut)}
+.bento{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:minmax(84px,auto);gap:14px}
+.b{background:var(--surf);border:1px solid var(--ln);border-radius:20px;box-shadow:var(--sh);padding:20px;min-width:0;display:flex;flex-direction:column;position:relative}
+.b .lab{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);display:flex;align-items:center;gap:8px}
+.b .lab .ic{font-size:15px}
+.b-pay{grid-column:span 5;grid-row:span 3;background:var(--p-soft);border-color:var(--p-light)}
+.b-pay .lab{color:var(--p)}
+.b-pay .big{font-size:40px;font-weight:800;letter-spacing:-.03em;color:var(--p-dark);margin-top:10px;line-height:1}
+.b-pay .big small{font-size:16px;font-weight:700;color:var(--p);margin-right:4px;vertical-align:top}
+.b-pay .delta{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;color:var(--ok);margin-top:8px}
+.bars{display:flex;align-items:flex-end;gap:8px;height:64px;margin-top:18px}
+.bars i{flex:1;background:#fff;border:1px solid var(--p-light);border-radius:6px 6px 3px 3px;display:block;position:relative}
+.bars i.cur{background:var(--p);border-color:var(--p)}
+.bars-x{display:flex;gap:8px;margin-top:6px}
+.bars-x span{flex:1;text-align:center;font-size:10.5px;font-weight:700;color:var(--p)}
+.b-pay .foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding-top:16px;flex-wrap:wrap}
+.b-pay .next{font-size:13px;color:var(--p-dark)}
+.b-pay .next b{display:block;font-size:14px}
+.b-leave{grid-column:span 3;grid-row:span 2}
+.ring{width:96px;height:96px;border-radius:50%;background:conic-gradient(var(--ok) 0 171deg,var(--ok-soft) 171deg 360deg);display:grid;place-items:center;margin:14px auto 6px}
+.ring i{width:72px;height:72px;border-radius:50%;background:var(--surf);display:grid;place-items:center;font-style:normal;text-align:center;line-height:1}
+.ring b{font-size:22px;font-weight:800;color:var(--ok);display:block}
+.ring small{font-size:10.5px;color:var(--mut);font-weight:700}
+.b-leave .cap{text-align:center;font-size:12.5px;color:var(--mut)}
+.b-week{grid-column:span 4;grid-row:span 2}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:14px}
+.day{border-radius:10px;padding:8px 4px;text-align:center;border:1px solid var(--ln2);min-width:0}
+.day .d{font-size:10px;font-weight:800;color:var(--mut);text-transform:uppercase}
+.day .n{font-size:14px;font-weight:800;margin-top:2px}
+.day .s{font-size:9.5px;font-weight:700;margin-top:4px;padding:2px 3px;border-radius:5px;background:var(--p-soft);color:var(--p);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.day .s.todo{background:var(--warn-soft);color:var(--warn)}
+.day .s.off{background:transparent;color:#C7CBD6}
+.day.today{border-color:var(--p);background:#FBFAFE}
+.b-attn{grid-column:span 4;grid-row:span 1;padding:16px 18px}
+.b-attn .row{display:flex;align-items:center;gap:10px;font-size:13px;padding:7px 0;border-bottom:1px solid var(--ln2)}
+.b-attn .row:last-child{border-bottom:0}
+.b-attn .row .ic{font-size:16px}
+.b-attn .row b{font-weight:700}
+.b-attn .row span{color:var(--mut);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.b-me{grid-column:span 7;grid-row:span 1;padding:10px 12px;flex-direction:row;gap:6px;flex-wrap:wrap}
+.b-me a{flex:1;min-width:140px;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;text-decoration:none;color:inherit}
+.b-me a:hover{background:#FAFAFE}
+.b-me .t{font-size:13.5px;font-weight:700}
+.b-me .d{font-size:11.5px;color:var(--mut)}
+.o2-rows{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:4px 18px}
+.o2-row{display:flex;align-items:center;gap:12px;padding:10px 8px;border-radius:12px;text-decoration:none;color:inherit;min-width:0}
+.o2-row:hover{background:var(--surf);box-shadow:var(--sh)}
+.o2-row .badge{width:34px;height:34px;border-radius:10px;font-size:16px}
+.o2-row .t{font-size:13.5px;font-weight:700}
+.o2-row .d{font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.o2-row .body{min-width:0;flex:1}
+@container (max-width:1000px){ .b-pay{grid-column:span 6} .b-leave{grid-column:span 6} .b-week{grid-column:span 6} .b-attn{grid-column:span 6} .b-me{grid-column:span 12} }
+@container (max-width:700px){ .o2-top h1{font-size:30px} .bento{display:flex;flex-direction:column} .b-pay .big{font-size:34px} .week{gap:3px} .day .s{font-size:9px} }
+
+/* ======================= OPTION 3 — Launcher ======================= */
+.o3-hero{text-align:center;padding:26px 16px 6px}
+.o3-av{width:76px;height:76px;border-radius:50%;background:var(--p-soft);color:var(--p);display:grid;place-items:center;font-size:24px;font-weight:800;margin:0 auto 14px;border:4px solid #fff;box-shadow:var(--sh)}
+.o3-hero h1{font-size:30px;font-weight:800;letter-spacing:-.02em}
+.o3-hero .one{font-size:15px;color:var(--mut);margin-top:8px}
+.o3-hero .one b{color:var(--ink)}
+.o3-search{display:flex;align-items:center;gap:10px;max-width:560px;margin:20px auto 0;background:var(--surf);border:1px solid var(--ln);border-radius:14px;padding:12px 16px;box-shadow:var(--sh);color:var(--mut);font-size:14px}
+.o3-search .ic{font-size:18px;color:var(--p)}
+.o3-search kbd{margin-left:auto;font:inherit;font-size:11px;font-weight:700;border:1px solid var(--ln);border-radius:6px;padding:2px 6px;color:var(--mut)}
+.o3-today{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px}
+.o3-t{display:flex;gap:12px;align-items:center;padding:14px 16px;border-radius:16px;background:var(--surf);border:1px solid var(--ln);box-shadow:var(--sh);text-decoration:none;color:inherit;min-width:0}
+.o3-t .t{font-size:13.5px;font-weight:700}
+.o3-t .d{font-size:12px;color:var(--mut);margin-top:2px}
+.o3-t.warn{border-color:#F3D9B3;background:#FFFCF7}
+.o3-t.good{border-color:#BFE3CD;background:#F7FCF9}
+.o3-t.info{border-color:var(--p-light);background:#FBFAFE}
+.apps{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px}
+.app{display:flex;flex-direction:column;align-items:center;gap:9px;padding:16px 8px 13px;border-radius:16px;text-decoration:none;color:inherit;text-align:center;position:relative;border:1px solid transparent;transition:background .15s,border-color .15s,transform .15s}
+.app:hover{background:var(--surf);border-color:var(--ln);transform:translateY(-2px);box-shadow:var(--sh)}
+.app .badge{width:52px;height:52px;border-radius:16px;font-size:24px}
+.app .t{font-size:12.5px;font-weight:700;line-height:1.2}
+.app .k{position:absolute;top:10px;right:14px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--err);color:#fff;font-size:10.5px;font-weight:800;display:grid;place-items:center}
+.app .k.p{background:var(--p)}
+.o3-sec{margin-top:26px}
+.o3-sec .sec-h{margin:0 0 6px}
+@container (max-width:700px){ .o3-today{grid-template-columns:1fr} .apps{grid-template-columns:repeat(3,1fr)} .o3-hero h1{font-size:26px} .app .badge{width:46px;height:46px;font-size:21px} }
+
+@media (max-width:860px){ .intro{grid-template-columns:1fr} }
+@media (prefers-reduced-motion: reduce){ .tile,.app,.frame{transition:none} }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></symbol>
+  <symbol id="i-banknote" viewBox="0 0 24 24"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></symbol>
+  <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><path d="M14 2v5h5"/><path d="M16 13H8M16 17H8M10 9H8"/></symbol>
+  <symbol id="i-calc" viewBox="0 0 24 24"><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M8 6h8M8 10h8M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><path d="M8 2v4M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+  <symbol id="i-umbrella" viewBox="0 0 24 24"><path d="M22 12a10.06 10.06 1 0 0-20 0Z"/><path d="M12 12v8a2 2 0 0 0 4 0"/><path d="M12 2v1"/></symbol>
+  <symbol id="i-timer" viewBox="0 0 24 24"><path d="M10 2h4"/><path d="m12 14 3-3"/><circle cx="12" cy="14" r="8"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
+  <symbol id="i-laptop" viewBox="0 0 24 24"><path d="M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24"><path d="M22 7l-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/></symbol>
+  <symbol id="i-grad" viewBox="0 0 24 24"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-award" viewBox="0 0 24 24"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/></symbol>
+  <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></symbol>
+  <symbol id="i-usercheck" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m16 11 2 2 4-4"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+  <symbol id="i-userplus" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></symbol>
+  <symbol id="i-brief" viewBox="0 0 24 24"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M21.8 10A10 10 0 1 1 17 3.34"/><path d="m9 11 3 3L22 4"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+  <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></symbol>
+</svg>
+
+<div class="wrap">
+  <div class="intro">
+    <div>
+      <h1>My Payobook home, three directions</h1>
+      <p class="lead">The page an employee sees first. Today it is a stock portal page: mixed tiles, half with pictures and half without, and nothing personal above the fold. Each option below is the whole page at desktop width. Use the phone toggle to see it at phone width, which is where most employees will open it.</p>
+      <div class="pros">
+        <div class="pro"><b>Same for all three</b>Every tile gets a coloured Lucide icon, tiles are grouped by life area (Pay, Time, Me, Growth, People), and the finance-style tiles that do not belong to an employee (Invoices, Projects, Tasks) are hidden on employee accounts.</div>
+        <div class="pro"><b>Example figures</b>The money, dates and counts shown are sample values to judge the layout, not anyone's real pay.</div>
+      </div>
+    </div>
+    <aside class="reco">
+      <div class="eyebrow">Recommendation</div>
+      <h2>Option 2, the Bento, with the "Needs you" list from Option 1</h2>
+      <p>Employees open this page for three things: their money, their time off, and a document. Option 2 puts all three on screen with real numbers before a single click. That is the lasting impression. Options 1 and 3 are good pages, but their first screen is still a menu.</p>
+      <ul>
+        <li>Option 1 if you want the safest, quickest build.</li>
+        <li>Option 3 if the portal is used mostly on phones and rarely for pay.</li>
+      </ul>
+    </aside>
+  </div>
+
+  <div class="bar">
+    <div class="tabs" role="tablist" aria-label="Design options">
+      <button class="tab" role="tab" id="tab-1" aria-selected="true" aria-controls="opt-1"><span class="n">1</span>Glance</button>
+      <button class="tab" role="tab" id="tab-2" aria-selected="false" aria-controls="opt-2"><span class="n">2</span>Bento</button>
+      <button class="tab" role="tab" id="tab-3" aria-selected="false" aria-controls="opt-3"><span class="n">3</span>Launcher</button>
+    </div>
+    <div class="toggle" aria-label="Preview width">
+      <button type="button" id="w-desk" aria-pressed="true">Desktop</button>
+      <button type="button" id="w-phone" aria-pressed="false">Phone</button>
+    </div>
+  </div>
+
+  <!-- ======================= OPTION 1 ======================= -->
+  <section class="panel" id="opt-1" role="tabpanel" aria-labelledby="tab-1">
+    <div class="opt-head">
+      <div>
+        <h2>Option 1 · Glance</h2>
+        <p>A calm welcome strip with three numbers that matter, a short "Needs you" list, then every tile sorted into groups. Closest to the rest of the product today. The hero moment is the three stat cards.</p>
+      </div>
+    </div>
+    <div class="frame">
+      <div class="nav"><span class="logo">payobook</span><span class="hide-m">Courses</span><span class="sp"></span><span class="hide-m">+84 906198879</span><span class="hide-m">English (US)</span><span class="av">MA</span><span class="cta">Contact Us</span></div>
+      <div class="pg">
+        <section class="o1-hero">
+          <div class="o1-id">
+            <div class="o1-av">MA</div>
+            <div style="min-width:0">
+              <div class="eyebrow">My Payobook</div>
+              <h1>Good evening, Mitchell</h1>
+              <div class="sub">Wednesday 14 October · YourCompany · Scranton</div>
+              <div class="meta">
+                <span class="chip"><svg class="ic"><use href="#i-brief"/></svg>Operations Manager</span>
+                <span class="chip"><svg class="ic"><use href="#i-mail"/></svg>ash@biztinct.com</span>
+                <span class="chip"><svg class="ic"><use href="#i-user"/></svg>Edit my details</span>
+              </div>
+            </div>
+          </div>
+          <div class="o1-stats">
+            <div class="o1-stat"><div class="l"><svg class="ic"><use href="#i-banknote"/></svg>Last net pay</div><div class="v money num">₫28,450,000</div><div class="s">September · paid 30 Sep</div></div>
+            <div class="o1-stat"><div class="l"><svg class="ic"><use href="#i-cal"/></svg>Next pay day</div><div class="v">Fri 31 Oct</div><div class="s">in 17 days</div></div>
+            <div class="o1-stat"><div class="l"><svg class="ic"><use href="#i-umbrella"/></svg>Leave left</div><div class="v num">9.5 days</div><div class="s">of 20 this year</div></div>
+          </div>
+        </section>
+
+        <section class="o1-attn">
+          <div class="hd"><svg class="ic"><use href="#i-bell"/></svg>Needs you<span class="pill amb">3 things</span></div>
+          <a class="o1-row" href="#"><span class="badge ind"><svg class="ic"><use href="#i-cal"/></svg></span><div class="body"><div class="t">Confirm 3 shifts for next week</div><div class="d">Mon 20, Wed 22 and Sat 25 October</div></div><span class="btn sm out">Confirm</span></a>
+          <a class="o1-row" href="#"><span class="badge amb"><svg class="ic"><use href="#i-file"/></svg></span><div class="body"><div class="t">Your work permit expires in 24 days</div><div class="d">Upload the renewal so HR can verify it</div></div><span class="btn sm out">Upload</span></a>
+          <a class="o1-row" href="#"><span class="badge blu"><svg class="ic"><use href="#i-clock"/></svg></span><div class="body"><div class="t">2 days missing on your timesheet</div><div class="d">Thu 9 and Fri 10 October</div></div><span class="btn sm out">Fill in</span></a>
+        </section>
+
+        <div class="sec-h"><h3>Pay</h3><span>4 pages</span></div>
+        <div class="tiles">
+          <a class="tile" href="#"><span class="badge grn"><svg class="ic"><use href="#i-banknote"/></svg></span><div class="body"><div class="t">Payslips <span class="cnt">12</span></div><div class="d">Every pay period, with a PDF to download</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+          <a class="tile" href="#"><span class="badge ind"><svg class="ic"><use href="#i-wallet"/></svg></span><div class="body"><div class="t">Your pay, explained</div><div class="d">What you are paid, where it sits, and what last changed</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+          <a class="tile" href="#"><span class="badge pnk"><svg class="ic"><use href="#i-gift"/></svg></span><div class="body"><div class="t">My Pay Package</div><div class="d">What you are paid, what you are covered by, and what you have been awarded</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+          <a class="tile" href="#"><span class="badge sla"><svg class="ic"><use href="#i-calc"/></svg></span><div class="body"><div class="t">Tax Sheet</div><div class="d">Your personal income tax summary per period</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+        </div>
+
+        <div class="sec-h"><h3>Time</h3><span>5 pages</span></div>
+        <div class="tiles">
+          <a class="tile" href="#"><span class="badge ind"><svg class="ic"><use href="#i-cal"/></svg></span><div class="body"><div class="t">My Schedule <span class="cnt amb">3 to confirm</span></div><div class="d">Your shifts for this week and next</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+          <a class="tile" href="#"><span class="badge blu"><svg class="ic"><use href="#i-clock"/></svg></span><div class="body"><div class="t">My Timesheet</div><div class="d">Hours scheduled against hours worked, day by day</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+          <a class="tile" href="#"><span class="badge grn"><svg class="ic"><use href="#i-umbrella"/></svg></span><div class="body"><div class="t">My Leave</div><div class="d">Your balances, and a form to request time off</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+          <a class="tile" href="#"><span class="badge amb"><svg class="ic"><use href="#i-timer"/></svg></span><div class="body"><div class="t">My Overtime</div><div class="d">What was recorded, what was approved, and at which rate</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+          <a class="tile" href="#"><span class="badge tea"><svg class="ic"><use href="#i-sun"/></svg></span><div class="body"><div class="t">Public holidays</div><div class="d">Next: Fri 1 Nov · All Saints' Day</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+        </div>
+
+        <div class="sec-h"><h3>Me</h3><span>4 pages</span></div>
+        <div class="tiles">
+          <a class="tile" href="#"><span class="badge ind"><svg class="ic"><use href="#i-user"/></svg></span><div class="body"><div class="t">Profile</div><div class="d">View your details and request a change</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+          <a class="tile" href="#"><span class="badge amb"><svg class="ic"><use href="#i-file"/></svg></span><div class="body"><div class="t">Documents <span class="cnt amb">1 expiring</span></div><div class="d">Your certificates, IDs and permits</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+          <a class="tile" href="#"><span class="badge blu"><svg class="ic"><use href="#i-laptop"/></svg></span><div class="body"><div class="t">My Things</div><div class="d">The laptop, phone and accounts you have been given</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+          <a class="tile" href="#"><span class="badge sla"><svg class="ic"><use href="#i-shield"/></svg></span><div class="body"><div class="t">Sign-in &amp; security</div><div class="d">Password, devices and sessions</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+        </div>
+
+        <div class="sec-h"><h3>Growth</h3><span>5 pages</span></div>
+        <div class="tiles">
+          <a class="tile" href="#"><span class="badge ind"><svg class="ic"><use href="#i-target"/></svg></span><div class="body"><div class="t">My goals</div><div class="d">What you are working towards this year, and how far along each one is</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+          <a class="tile" href="#"><span class="badge grn"><svg class="ic"><use href="#i-trend"/></svg></span><div class="body"><div class="t">My Growth Plan</div><div class="d">What you and your manager agreed, and when you will look at it</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+          <a class="tile" href="#"><span class="badge blu"><svg class="ic"><use href="#i-grad"/></svg></span><div class="body"><div class="t">My training <span class="cnt">2 open</span></div><div class="d">The courses you are on, and the test at the end of each one</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+          <a class="tile" href="#"><span class="badge tea"><svg class="ic"><use href="#i-wallet"/></svg></span><div class="body"><div class="t">My training allowance</div><div class="d">What you may spend on a course of your own this year</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+          <a class="tile" href="#"><span class="badge pnk"><svg class="ic"><use href="#i-award"/></svg></span><div class="body"><div class="t">Recognition</div><div class="d">Say thank you to a colleague, and read what people have said</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+        </div>
+
+        <div class="sec-h"><h3>People</h3><span>6 pages</span></div>
+        <div class="tiles">
+          <a class="tile" href="#"><span class="badge ind"><svg class="ic"><use href="#i-users"/></svg></span><div class="body"><div class="t">Who's Who</div><div class="d">Find anyone and see how the teams fit together</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+          <a class="tile" href="#"><span class="badge grn"><svg class="ic"><use href="#i-usercheck"/></svg></span><div class="body"><div class="t">My Buddy</div><div class="d">The colleague showing you the ropes, and anyone you look after</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+          <a class="tile" href="#"><span class="badge blu"><svg class="ic"><use href="#i-route"/></svg></span><div class="body"><div class="t">My Journey</div><div class="d">Your first weeks, step by step</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+          <a class="tile" href="#"><span class="badge tea"><svg class="ic"><use href="#i-userplus"/></svg></span><div class="body"><div class="t">Refer someone</div><div class="d">Know somebody good? Put their name forward for a role</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+          <a class="tile" href="#"><span class="badge amb"><svg class="ic"><use href="#i-brief"/></svg></span><div class="body"><div class="t">My hiring</div><div class="d">The interviews you are sitting in, and the roles you asked for</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+          <a class="tile" href="#"><span class="badge pnk"><svg class="ic"><use href="#i-grad"/></svg></span><div class="body"><div class="t">My team's training</div><div class="d">Who in your team still has a course to finish</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+        </div>
+
+        <div class="sec-h"><h3>Leaving</h3></div>
+        <div class="tiles">
+          <a class="tile" href="#"><span class="badge sla"><svg class="ic"><use href="#i-logout"/></svg></span><div class="body"><div class="t">My Resignation</div><div class="d">Hand in your notice, and see what is left before your last day</div></div><svg class="ic chev"><use href="#i-chev"/></svg></a>
+        </div>
+        <p class="sample">Sample figures for layout review</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= OPTION 2 ======================= -->
+  <section class="panel" id="opt-2" role="tabpanel" aria-labelledby="tab-2" hidden>
+    <div class="opt-head">
+      <div>
+        <h2>Option 2 · Bento</h2>
+        <p>A big typographic welcome with one plain sentence, then a grid of live cards: last pay with a six-month trend, leave left as a ring, this week's shifts, and what needs you. Everything else is a tidy icon list underneath. The hero moment is seeing your own money and week before you click anything.</p>
+      </div>
+    </div>
+    <div class="frame">
+      <div class="nav"><span class="logo">payobook</span><span class="hide-m">Courses</span><span class="sp"></span><span class="hide-m">+84 906198879</span><span class="hide-m">English (US)</span><span class="av">MA</span><span class="cta">Contact Us</span></div>
+      <div class="pg">
+        <div class="o2-top">
+          <div style="min-width:0">
+            <div class="eyebrow">My Payobook · Wednesday 14 October</div>
+            <h1 style="margin-top:6px">Evening, <em>Mitchell.</em></h1>
+            <p class="line">Your next pay lands in <b>17 days</b>. <b>3 shifts</b> are waiting for your OK, and your work permit needs a renewal within the month.</p>
+          </div>
+          <div class="o2-who"><span class="av">MA</span><div><div class="n">Mitchell Admin</div><div class="r">Operations Manager · YourCompany</div></div></div>
+        </div>
+
+        <div class="bento">
+          <div class="b b-pay">
+            <div class="lab"><svg class="ic"><use href="#i-banknote"/></svg>Last pay · September</div>
+            <div class="big num"><small>₫</small>28,450,000</div>
+            <div class="delta"><svg class="ic"><use href="#i-trend"/></svg>+₫1,200,000 on August · overtime</div>
+            <div class="bars" aria-hidden="true"><i style="height:58%"></i><i style="height:60%"></i><i style="height:57%"></i><i style="height:61%"></i><i style="height:72%"></i><i class="cur" style="height:76%"></i></div>
+            <div class="bars-x"><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span></div>
+            <div class="foot">
+              <div class="next">Next pay<b>Friday 31 October</b></div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn sm out" href="#">Explain my pay</a><a class="btn sm pri" href="#"><svg class="ic"><use href="#i-download"/></svg>Payslip PDF</a></div>
+            </div>
+          </div>
+
+          <div class="b b-leave">
+            <div class="lab"><svg class="ic"><use href="#i-umbrella"/></svg>Leave</div>
+            <div class="ring"><i><span><b class="num">9.5</b><small>days left</small></span></i></div>
+            <div class="cap">of 20 this year · 2 days booked in December</div>
+            <a class="btn sm out" href="#" style="margin:14px auto 0">Request time off</a>
+          </div>
+
+          <div class="b b-week">
+            <div class="lab"><svg class="ic"><use href="#i-cal"/></svg>This week<span class="pill amb" style="margin-left:auto">3 to confirm</span></div>
+            <div class="week">
+              <div class="day"><div class="d">Mon</div><div class="n">13</div><div class="s">9–6</div></div>
+              <div class="day today"><div class="d">Tue</div><div class="n">14</div><div class="s">9–6</div></div>
+              <div class="day"><div class="d">Wed</div><div class="n">15</div><div class="s">9–6</div></div>
+              <div class="day"><div class="d">Thu</div><div class="n">16</div><div class="s todo">9–6</div></div>
+              <div class="day"><div class="d">Fri</div><div class="n">17</div><div class="s todo">1–9</div></div>
+              <div class="day"><div class="d">Sat</div><div class="n">18</div><div class="s todo">9–1</div></div>
+              <div class="day"><div class="d">Sun</div><div class="n">19</div><div class="s off">off</div></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:8px;flex-wrap:wrap"><span style="font-size:12.5px;color:var(--mut)">38 h scheduled · 16 h worked so far</span><a class="btn sm pri" href="#">Confirm shifts</a></div>
+          </div>
+
+          <div class="b b-attn">
+            <div class="lab"><svg class="ic"><use href="#i-bell"/></svg>Needs you</div>
+            <div style="margin-top:6px">
+              <div class="row"><svg class="ic" style="color:var(--warn)"><use href="#i-alert"/></svg><b>Work permit</b><span>expires in 24 days · upload renewal</span><svg class="ic" style="color:var(--p-light)"><use href="#i-chev"/></svg></div>
+              <div class="row"><svg class="ic" style="color:var(--info)"><use href="#i-clock"/></svg><b>Timesheet</b><span>2 days missing · Thu 9, Fri 10</span><svg class="ic" style="color:var(--p-light)"><use href="#i-chev"/></svg></div>
+              <div class="row"><svg class="ic" style="color:var(--ok)"><use href="#i-check"/></svg><b>Profile change</b><span>approved by HR yesterday</span><svg class="ic" style="color:var(--p-light)"><use href="#i-chev"/></svg></div>
+            </div>
+          </div>
+
+          <div class="b b-me">
+            <a href="#"><span class="badge ind"><svg class="ic"><use href="#i-user"/></svg></span><div><div class="t">Profile</div><div class="d">Details &amp; changes</div></div></a>
+            <a href="#"><span class="badge amb"><svg class="ic"><use href="#i-file"/></svg></span><div><div class="t">Documents</div><div class="d">1 expiring soon</div></div></a>
+            <a href="#"><span class="badge sla"><svg class="ic"><use href="#i-calc"/></svg></span><div><div class="t">Tax Sheet</div><div class="d">PIT by period</div></div></a>
+            <a href="#"><span class="badge blu"><svg class="ic"><use href="#i-laptop"/></svg></span><div><div class="t">My Things</div><div class="d">Laptop, phone, accounts</div></div></a>
+            <a href="#"><span class="badge pnk"><svg class="ic"><use href="#i-gift"/></svg></span><div><div class="t">My Pay Package</div><div class="d">Pay, cover, awards</div></div></a>
+          </div>
+        </div>
+
+        <div class="sec-h"><h3>Time</h3></div>
+        <div class="o2-rows">
+          <a class="o2-row" href="#"><span class="badge blu"><svg class="ic"><use href="#i-clock"/></svg></span><div class="body"><div class="t">My Timesheet</div><div class="d">Scheduled vs worked, day by day</div></div></a>
+          <a class="o2-row" href="#"><span class="badge amb"><svg class="ic"><use href="#i-timer"/></svg></span><div class="body"><div class="t">My Overtime</div><div class="d">Recorded, approved, and at which rate</div></div></a>
+          <a class="o2-row" href="#"><span class="badge tea"><svg class="ic"><use href="#i-sun"/></svg></span><div class="body"><div class="t">Public holidays</div><div class="d">Next: Fri 1 Nov · All Saints' Day</div></div></a>
+          <a class="o2-row" href="#"><span class="badge ind"><svg class="ic"><use href="#i-cal"/></svg></span><div class="body"><div class="t">My Schedule</div><div class="d">This week and next, in full</div></div></a>
+        </div>
+
+        <div class="sec-h"><h3>Growth</h3></div>
+        <div class="o2-rows">
+          <a class="o2-row" href="#"><span class="badge ind"><svg class="ic"><use href="#i-target"/></svg></span><div class="body"><div class="t">My goals</div><div class="d">3 of 5 on track this year</div></div></a>
+          <a class="o2-row" href="#"><span class="badge grn"><svg class="ic"><use href="#i-trend"/></svg></span><div class="body"><div class="t">My Growth Plan</div><div class="d">Next review 12 November</div></div></a>
+          <a class="o2-row" href="#"><span class="badge blu"><svg class="ic"><use href="#i-grad"/></svg></span><div class="body"><div class="t">My training</div><div class="d">2 courses open, 1 test due</div></div></a>
+          <a class="o2-row" href="#"><span class="badge tea"><svg class="ic"><use href="#i-wallet"/></svg></span><div class="body"><div class="t">My training allowance</div><div class="d">₫4,000,000 left this year</div></div></a>
+          <a class="o2-row" href="#"><span class="badge pnk"><svg class="ic"><use href="#i-award"/></svg></span><div class="body"><div class="t">Recognition</div><div class="d">Say thank you to a colleague</div></div></a>
+        </div>
+
+        <div class="sec-h"><h3>People</h3></div>
+        <div class="o2-rows">
+          <a class="o2-row" href="#"><span class="badge ind"><svg class="ic"><use href="#i-users"/></svg></span><div class="body"><div class="t">Who's Who</div><div class="d">Find anyone, see the teams</div></div></a>
+          <a class="o2-row" href="#"><span class="badge grn"><svg class="ic"><use href="#i-usercheck"/></svg></span><div class="body"><div class="t">My Buddy</div><div class="d">Who shows you the ropes</div></div></a>
+          <a class="o2-row" href="#"><span class="badge blu"><svg class="ic"><use href="#i-route"/></svg></span><div class="body"><div class="t">My Journey</div><div class="d">Your first weeks, step by step</div></div></a>
+          <a class="o2-row" href="#"><span class="badge tea"><svg class="ic"><use href="#i-userplus"/></svg></span><div class="body"><div class="t">Refer someone</div><div class="d">Put a name forward for a role</div></div></a>
+          <a class="o2-row" href="#"><span class="badge amb"><svg class="ic"><use href="#i-brief"/></svg></span><div class="body"><div class="t">My hiring</div><div class="d">Interviews and roles you asked for</div></div></a>
+          <a class="o2-row" href="#"><span class="badge pnk"><svg class="ic"><use href="#i-grad"/></svg></span><div class="body"><div class="t">My team's training</div><div class="d">Who still has a course to finish</div></div></a>
+          <a class="o2-row" href="#"><span class="badge sla"><svg class="ic"><use href="#i-shield"/></svg></span><div class="body"><div class="t">Sign-in &amp; security</div><div class="d">Password, devices, sessions</div></div></a>
+          <a class="o2-row" href="#"><span class="badge sla"><svg class="ic"><use href="#i-logout"/></svg></span><div class="body"><div class="t">My Resignation</div><div class="d">Hand in your notice</div></div></a>
+        </div>
+        <p class="sample">Sample figures for layout review</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= OPTION 3 ======================= -->
+  <section class="panel" id="opt-3" role="tabpanel" aria-labelledby="tab-3" hidden>
+    <div class="opt-head">
+      <div>
+        <h2>Option 3 · Launcher</h2>
+        <p>A phone-first home screen. A centred greeting with one sentence, a search box to jump anywhere, three "Today" cards, then every page as a uniform icon tile like an app grid. The hero moment is the one sentence and the search box; it feels like an app, not a website.</p>
+      </div>
+    </div>
+    <div class="frame">
+      <div class="nav"><span class="logo">payobook</span><span class="hide-m">Courses</span><span class="sp"></span><span class="hide-m">+84 906198879</span><span class="hide-m">English (US)</span><span class="av">MA</span><span class="cta">Contact Us</span></div>
+      <div class="pg">
+        <section class="o3-hero">
+          <div class="o3-av">MA</div>
+          <h1>Hi Mitchell.</h1>
+          <p class="one">Your next pay lands <b>Friday 31 October</b>. You have <b>9.5 days</b> of leave left.</p>
+          <div class="o3-search" role="search"><svg class="ic"><use href="#i-search"/></svg><span>Jump to a payslip, your leave, a colleague, a document…</span><kbd>/</kbd></div>
+        </section>
+
+        <div class="o3-today">
+          <a class="o3-t info" href="#"><span class="badge ind"><svg class="ic"><use href="#i-cal"/></svg></span><div><div class="t">3 shifts to confirm</div><div class="d">Thu, Fri and Sat this week</div></div></a>
+          <a class="o3-t warn" href="#"><span class="badge amb"><svg class="ic"><use href="#i-alert"/></svg></span><div><div class="t">Work permit expires in 24 days</div><div class="d">Upload the renewal for HR</div></div></a>
+          <a class="o3-t good" href="#"><span class="badge grn"><svg class="ic"><use href="#i-banknote"/></svg></span><div><div class="t">September payslip is ready</div><div class="d">₫28,450,000 paid on 30 Sep</div></div></a>
+        </div>
+
+        <div class="o3-sec">
+          <div class="sec-h"><h3>Pay</h3></div>
+          <div class="apps">
+            <a class="app" href="#"><span class="badge grn"><svg class="ic"><use href="#i-banknote"/></svg></span><span class="t">Payslips</span><span class="k p">12</span></a>
+            <a class="app" href="#"><span class="badge ind"><svg class="ic"><use href="#i-wallet"/></svg></span><span class="t">Your pay, explained</span></a>
+            <a class="app" href="#"><span class="badge pnk"><svg class="ic"><use href="#i-gift"/></svg></span><span class="t">My Pay Package</span></a>
+            <a class="app" href="#"><span class="badge sla"><svg class="ic"><use href="#i-calc"/></svg></span><span class="t">Tax Sheet</span></a>
+          </div>
+        </div>
+        <div class="o3-sec">
+          <div class="sec-h"><h3>Time</h3></div>
+          <div class="apps">
+            <a class="app" href="#"><span class="badge ind"><svg class="ic"><use href="#i-cal"/></svg></span><span class="t">My Schedule</span><span class="k">3</span></a>
+            <a class="app" href="#"><span class="badge blu"><svg class="ic"><use href="#i-clock"/></svg></span><span class="t">My Timesheet</span><span class="k">2</span></a>
+            <a class="app" href="#"><span class="badge grn"><svg class="ic"><use href="#i-umbrella"/></svg></span><span class="t">My Leave</span></a>
+            <a class="app" href="#"><span class="badge amb"><svg class="ic"><use href="#i-timer"/></svg></span><span class="t">My Overtime</span></a>
+            <a class="app" href="#"><span class="badge tea"><svg class="ic"><use href="#i-sun"/></svg></span><span class="t">Public holidays</span></a>
+          </div>
+        </div>
+        <div class="o3-sec">
+          <div class="sec-h"><h3>Me</h3></div>
+          <div class="apps">
+            <a class="app" href="#"><span class="badge ind"><svg class="ic"><use href="#i-user"/></svg></span><span class="t">Profile</span></a>
+            <a class="app" href="#"><span class="badge amb"><svg class="ic"><use href="#i-file"/></svg></span><span class="t">Documents</span><span class="k">1</span></a>
+            <a class="app" href="#"><span class="badge blu"><svg class="ic"><use href="#i-laptop"/></svg></span><span class="t">My Things</span></a>
+            <a class="app" href="#"><span class="badge sla"><svg class="ic"><use href="#i-shield"/></svg></span><span class="t">Sign-in &amp; security</span></a>
+            <a class="app" href="#"><span class="badge sla"><svg class="ic"><use href="#i-logout"/></svg></span><span class="t">My Resignation</span></a>
+          </div>
+        </div>
+        <div class="o3-sec">
+          <div class="sec-h"><h3>Growth</h3></div>
+          <div class="apps">
+            <a class="app" href="#"><span class="badge ind"><svg class="ic"><use href="#i-target"/></svg></span><span class="t">My goals</span></a>
+            <a class="app" href="#"><span class="badge grn"><svg class="ic"><use href="#i-trend"/></svg></span><span class="t">My Growth Plan</span></a>
+            <a class="app" href="#"><span class="badge blu"><svg class="ic"><use href="#i-grad"/></svg></span><span class="t">My training</span><span class="k p">2</span></a>
+            <a class="app" href="#"><span class="badge tea"><svg class="ic"><use href="#i-wallet"/></svg></span><span class="t">Training allowance</span></a>
+            <a class="app" href="#"><span class="badge pnk"><svg class="ic"><use href="#i-award"/></svg></span><span class="t">Recognition</span></a>
+          </div>
+        </div>
+        <div class="o3-sec">
+          <div class="sec-h"><h3>People</h3></div>
+          <div class="apps">
+            <a class="app" href="#"><span class="badge ind"><svg class="ic"><use href="#i-users"/></svg></span><span class="t">Who's Who</span></a>
+            <a class="app" href="#"><span class="badge grn"><svg class="ic"><use href="#i-usercheck"/></svg></span><span class="t">My Buddy</span></a>
+            <a class="app" href="#"><span class="badge blu"><svg class="ic"><use href="#i-route"/></svg></span><span class="t">My Journey</span></a>
+            <a class="app" href="#"><span class="badge tea"><svg class="ic"><use href="#i-userplus"/></svg></span><span class="t">Refer someone</span></a>
+            <a class="app" href="#"><span class="badge amb"><svg class="ic"><use href="#i-brief"/></svg></span><span class="t">My hiring</span></a>
+            <a class="app" href="#"><span class="badge pnk"><svg class="ic"><use href="#i-grad"/></svg></span><span class="t">Team training</span></a>
+          </div>
+        </div>
+        <p class="sample">Sample figures for layout review</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  var tabs=[].slice.call(document.querySelectorAll('.tab'));
+  var panels=[].slice.call(document.querySelectorAll('.panel'));
+  function show(id){
+    tabs.forEach(function(t){t.setAttribute('aria-selected',String(t.getAttribute('aria-controls')===id));});
+    panels.forEach(function(p){p.hidden=p.id!==id;});
+    try{localStorage.setItem('pbme-poc-tab',id);}catch(e){}
+  }
+  tabs.forEach(function(t){t.addEventListener('click',function(){show(t.getAttribute('aria-controls'));});});
+  var desk=document.getElementById('w-desk'),phone=document.getElementById('w-phone');
+  function width(p){
+    document.querySelectorAll('.frame').forEach(function(f){f.classList.toggle('phone',p);});
+    desk.setAttribute('aria-pressed',String(!p));phone.setAttribute('aria-pressed',String(p));
+    try{localStorage.setItem('pbme-poc-phone',p?'1':'0');}catch(e){}
+  }
+  desk.addEventListener('click',function(){width(false);});
+  phone.addEventListener('click',function(){width(true);});
+  var h=(location.hash||'').replace('#','');
+  if(/^opt-[123]$/.test(h)){show(h);}else{
+    try{var s=localStorage.getItem('pbme-poc-tab');if(s&&document.getElementById(s))show(s);}catch(e){}
+  }
+  try{if(localStorage.getItem('pbme-poc-phone')==='1')width(true);}catch(e){}
+})();
+</script>
