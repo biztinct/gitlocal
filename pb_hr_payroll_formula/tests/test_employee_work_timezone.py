@@ -86,6 +86,36 @@ class TestEmployeeWorkTimezone(TransactionCase):
             copied_local = pytz.utc.localize(closure[field]).astimezone(pytz.timezone('Asia/Ho_Chi_Minh'))
             self.assertEqual(original_local.replace(tzinfo=None), copied_local.replace(tzinfo=None))
 
+    def test_back_to_back_closures_out_of_id_order_copy_cleanly(self):
+        """Payobook 2026-11-27: a Singapore hire failed with "Two public holidays
+        cannot overlap" because the copy paired dates by position while the
+        originals were read in date order and the copies were made in id order."""
+        Leaves = self.env['resource.calendar.leaves']
+        # Created out of date order on purpose: the September row gets the lowest id.
+        rows = [('National Day', '2026-08-31 14:00:00', '2026-09-02 13:59:59'),
+                ('Reunification Day', '2026-04-29 14:00:00', '2026-04-30 13:59:59'),
+                ('Labour Day', '2026-04-30 14:00:00', '2026-05-01 13:59:59')]
+        sources = Leaves
+        for name, start, end in rows:
+            sources |= Leaves.create({'name': name, 'calendar_id': self.calendar.id,
+                                      'date_from': start, 'date_to': end})
+        for user_tz in ('Australia/Sydney', 'Asia/Singapore', 'UTC'):
+            self.env.user.tz = user_tz
+            company = self.env['res.company'].create({'name': 'Copy test %s' % user_tz})
+            calendar = self.calendar.sudo().copy({'company_id': company.id})
+            source = calendar.global_leave_ids
+            self.assertEqual(len(source), 3)
+            clone = calendar._pb_in_work_timezone('Asia/Singapore', company)
+            self.assertEqual(sorted(clone.global_leave_ids.mapped('name')), sorted(source.mapped('name')))
+            for original in source:
+                copied = clone.global_leave_ids.filtered(lambda l: l.name == original.name)
+                self.assertEqual(len(copied), 1)
+                for field in ('date_from', 'date_to'):
+                    want = pytz.utc.localize(original[field]).astimezone(pytz.timezone(calendar.tz))
+                    got = pytz.utc.localize(copied[field]).astimezone(pytz.timezone('Asia/Singapore'))
+                    self.assertEqual(want.replace(tzinfo=None), got.replace(tzinfo=None),
+                                     '%s %s (user tz %s)' % (original.name, field, user_tz))
+
     def test_full_day_is_two_half_days(self):
         employee = self.employee(payroll_country='VN')
         monday = employee.resource_calendar_id.attendance_ids.filtered(lambda a: a.dayofweek == '0')

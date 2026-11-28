@@ -1,5 +1,6 @@
 """Work timezone defaults. Nationality and the importing user's timezone are not work locations."""
 import pytz
+from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models
 
@@ -45,8 +46,13 @@ class WorkCalendar(models.Model):
             ('tz', '=', tz)], limit=1)
         if existing:
             return existing
+        # The ORM copies one2many lines in id order (models.copy_data sorts
+        # them), while global_leave_ids iterates in the model's date order.
+        # Pair copies with originals by id, never by the default order: two
+        # holidays out of id order (e.g. a National Day row created before a
+        # Labour Day row) otherwise swap dates and collide.
         original_closures = [(leave.date_from, leave.date_to)
-                             for leave in self.global_leave_ids]
+                             for leave in self.global_leave_ids.sorted('id')]
         clone = self.sudo().copy({'tz': tz, 'company_id': company.id,
                                  'pb_timezone_origin_id': self.id})
         clone.name = '%s · %s' % (self.name, tz)
@@ -55,11 +61,23 @@ class WorkCalendar(models.Model):
         old_zone, new_zone = pytz.timezone(self.tz), pytz.timezone(tz)
         # hr_holidays can already convert copied dates using the importing
         # user's timezone. Always derive from the original UTC dates instead.
-        for leave, dates in zip(clone.global_leave_ids.sorted('id'), original_closures):
+        targets = []
+        for dates in original_closures:
             values = {}
             for field, source_date in zip(('date_from', 'date_to'), dates):
                 wall = pytz.utc.localize(source_date).astimezone(old_zone).replace(tzinfo=None)
                 values[field] = new_zone.localize(wall).astimezone(pytz.utc).replace(tzinfo=None)
+            targets.append(values)
+        # hr_holidays checks "no two public holidays overlap" after every
+        # write, and touching ends count as overlap. Moving back-to-back
+        # holidays one at a time can pass through an overlap the final dates
+        # do not have. Park every copy far away first (the same shift for all,
+        # so they keep their spacing), then place each one.
+        copies = clone.global_leave_ids.sorted('id')
+        park = relativedelta(years=200)
+        for leave in copies:
+            leave.write({'date_from': leave.date_from + park, 'date_to': leave.date_to + park})
+        for leave, values in zip(copies, targets):
             leave.write(values)
         return clone
 
