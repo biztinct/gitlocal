@@ -1,7 +1,7 @@
 {
     'name': 'Pay Builder',
     'summary': 'Agree pay and see how the pay scheme works out a full month.',
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.2.1',
     'license': 'LGPL-3',
     'category': 'Human Resources',
     'author': 'Payobook',

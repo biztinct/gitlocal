@@ -39,6 +39,7 @@ from odoo import _, api, fields, models
 from odoo.exceptions import AccessError, UserError
 from odoo.tools.misc import format_date
 
+from odoo.addons.pb_hr_payroll_formula.models import pay_period
 from odoo.addons.pb_people_advanced.models.newhire_approval import NEWHIRE_WRITE
 from .studio import _advance_arg
 
@@ -299,7 +300,7 @@ class PbNewHireExample(models.AbstractModel):
         self.env.cr.execute("""
             SELECT count(*), max(write_date), md5(string_agg(concat_ws('|', id, code, column_type,
                    default_value, constant_value, excel_formula, net_role, net_role_detail,
-                   appears_on_payslip, sequence, value_kind, is_contract_component),
+                   appears_on_payslip, sequence, value_kind, is_contract_component, application_source_key),
                    ',' ORDER BY id))
               FROM hr_formula_rule WHERE config_id = %s""", (config.id,))
         count, newest, digest = self.env.cr.fetchone()
@@ -366,6 +367,10 @@ class PbNewHireExample(models.AbstractModel):
         slip = Slip.create(slip_vals)
         provenance = {}
         inputs = slip._get_formula_input_values(config, provenance=provenance)
+        # A new hire has no pay file yet. Only supply full-month day counts
+        # when the real reader found no answer. A resolved zero is an answer.
+        unresolved = {code for code, source in provenance.items() if source.get('src') == 'none'}
+        config.rule_ids._pbpb_fill_preview_days(inputs, unresolved, pay_period.default_standard_work_days(first, last))
         probe = env['hr.formula.sample.data'].new({'config_id': config.id})
         values = probe._evaluate_rules_with_dependencies(inputs, readonly=True, errors=errors)
         lines = self._example_lines(slip, config, values or {})

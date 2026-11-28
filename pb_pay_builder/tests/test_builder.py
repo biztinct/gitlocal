@@ -22,7 +22,7 @@ class TestPayBuilder(TransactionCase):
         cls.company = cls.env['res.company'].create({'name': 'DEMO Builder Test', 'country_id': cls.env.ref('base.vn').id})
         cls.builder = cls.env['pb.pay.builder'].with_company(cls.company)
         cls.schemes = {k: make_scheme(cls.builder.env, cls.company, k) for k in
-                       ('SIMPLE', 'WAGE', 'COMP', 'NONE', 'NONET', 'BROKEN', 'BIG')}
+                       ('SIMPLE', 'WAGE', 'COMP', 'COMP_DAYS', 'NONE', 'NONET', 'BROKEN', 'BIG')}
         cls.hr = new_test_user(cls.env, login='demo_pb_hr', name='DEMO Builder HR',
             groups='base.group_user,hr.group_hr_user,hr_contract.group_hr_contract_manager',
             company_id=cls.company.id, company_ids=[(6, 0, [cls.company.id])])
@@ -164,7 +164,7 @@ class TestPayBuilder(TransactionCase):
         if 'pb.new.hire' not in self.env:
             self.skipTest('Add employee supplies the real-records example')
         studio=self.env['pb.new.hire'].with_company(self.company)
-        for shape, values in [('WAGE',{'wage':30000000}),('COMP',{'INANNFIX':1200000}),('NONE',{'wage':50000})]:
+        for shape, values in [('WAGE',{'wage':30000000}),('COMP',{'INANNFIX':1200000}),('COMP_DAYS',{'INANNFIX':1200000}),('NONE',{'wage':50000})]:
             cfg=self.schemes[shape]
             team=self.env['hr.department'].create({'name':'DEMO '+shape+' team','company_id':self.company.id})
             self.env['hr.formula.scheme.assignment'].create({'config_id':cfg.id, 'department_id':team.id,
@@ -178,6 +178,17 @@ class TestPayBuilder(TransactionCase):
             totals=self.run_pay(shape,values)['totals']
             for k in ('gross','net','deductions'):
                 self.assertEqual(slip[k],totals[k],(shape,k))
+
+    def test_17b_full_month_uses_day_sources_with_any_component_code(self):
+        subject = self.subject('COMP_DAYS')
+        values = {'INANNFIX': 1200000}
+        answer = self.builder._answer(subject, values)
+        self.assertEqual(self.row(answer, 'BASIC')['amount'], 50000)
+        self.assertEqual(answer['totals']['net'], 95050)
+        rules = subject['config'].rule_ids
+        inputs = {'FULLPERIOD': 0, 'PAIDPERIOD': 0, 'INPT': 0}
+        rules._pbpb_fill_preview_days(inputs, {'FULLPERIOD', 'INPT'}, 23)
+        self.assertEqual(inputs, {'FULLPERIOD': 23, 'PAIDPERIOD': 0, 'INPT': 0})
 
     def test_18_warm_400(self):
         self.run_pay('BIG')
@@ -222,6 +233,17 @@ class TestPayBuilder(TransactionCase):
         self.assertEqual(e['result'],50000)
         self.assertTrue(any(p['t']=='fix' and '%' in p['text'] for p in e['parts']))
         self.assertIn('INANNFIX',[u['code'] for u in e['uses']])
+
+    def test_21b_imported_percentage_constant_keeps_its_unit(self):
+        rate = self.rule('COMP', 'BASICRATE')
+        self.change_rule(rate, name='DEMO Basic share %', value_kind='money', value_kind_source='auto')
+        def explanation():
+            return self.run_pay('COMP', {'INANNFIX': 1200000}, open_codes=['BASIC'])['explains']['BASIC']
+        automatic = explanation()
+        self.assertIn('50%', automatic['sentence'])
+        self.assertIn('50%', [p.get('text') for p in automatic['parts']])
+        self.change_rule(rate, value_kind_source='user')
+        self.assertNotIn('50%', [p.get('text') for p in explanation()['parts']])
 
     def test_22_cap_and_round(self):
         e=self.run_pay('COMP',{'INANNFIX':1200000},open_codes=['PFER'])['explains']['PFER']

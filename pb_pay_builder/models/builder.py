@@ -134,6 +134,7 @@ class PayBuilder(models.AbstractModel):
                 inputs[code] = std
             elif code.startswith('HOURS'):
                 inputs[code] = std * 8
+        rules._pbpb_fill_preview_days(inputs, unbound, std)
         wired = pay_period.fill_wired_inputs(inputs, unbound, rules.pay_run_wires(), first, last, std)
         pay_period.fill_period_inputs(inputs, unbound - {code for code, _key in wired}, first, last, std)
         return engine, layout, inputs, tentative, head_value, wage
