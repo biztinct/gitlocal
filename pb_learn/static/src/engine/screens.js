@@ -420,9 +420,24 @@ function newEmployeeHTML() {
                 "Điền sẵn từ quốc gia làm việc. Đây là chương trình lương riêng của người này; bạn có thể chọn một chương trình lương khác của Việt Nam.")))}${DOT}${esc(tx(B(
                 "Paid in ₫, the money of the country of work", "Trả bằng ₫, đồng tiền của quốc gia làm việc")))}</p>
             ${step(3, B("Contract and pay", "Hợp đồng và lương"))}
-            ${inputRow("rep-newemp-wage",
-                       B("Monthly wage, ₫", "Lương tháng, ₫"),
-                       B("For example 9,500,000", "Ví dụ 9.500.000"))}
+            <section class="lrn-panel" data-example-wage="9500000">
+                <h3>${ic("banknote")}${esc(tx(B("What you agree", "Mức lương thỏa thuận")))}</h3>
+                ${inputRow("rep-newemp-wage", B("Monthly wage, ₫", "Lương tháng, ₫"),
+                           B("For example 9,500,000", "Ví dụ 9.500.000"))}
+                <h3>${esc(tx(B("A month's pay, worked out", "Chi tiết lương một tháng")))}</h3>
+                <p class="lrn-note" data-wage-prompt>${esc(tx(B(
+                    "Type 9,500,000 to see this practice month.",
+                    "Nhập 9.500.000 để xem tháng lương trong bài thực hành.")))}</p>
+                <div data-wage-month hidden>
+                    ${[
+                        [B("Basic wage", "Lương cơ bản"), 9500000],
+                        [B("Lunch allowance", "Phụ cấp ăn trưa"), 730000],
+                        [B("Gross pay", "Tổng lương trước khấu trừ"), 10230000],
+                        [B("Total deductions", "Tổng khấu trừ"), 997500],
+                        [B("Take-home", "Thực nhận"), 9232500],
+                    ].map(([label, value]) => `<div class="lrn-kv2"><span>${esc(tx(label))}</span> <b>${esc(M(value))}</b></div>`).join("")}
+                </div>
+            </section>
             ${step(7, B("Check and add", "Kiểm tra và thêm"))}
             <div class="lrn-strip">
                 <button class="lrn-btn pri" data-coach="rep-newemp-send">${ic("send")}${

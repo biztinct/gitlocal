@@ -7808,8 +7808,8 @@ const LESSONS = {
                 "Tab Điều khoản: Lương hàng tháng, Cấu trúc lương và ngày tháng. Biểu tượng bút chì đánh dấu chỗ bạn được sửa."),
         means: B("Salary structure left empty means a pay scheme pays this person.",
                  "Cấu trúc lương để trống nghĩa là một chương trình lương trả cho người này."),
-        affects: B("The Monthly wage here is what the next pay run reads.",
-                   "Lương hàng tháng ở đây là con số đợt lương kế tiếp sẽ đọc."),
+        affects: B("The Monthly wage here is what the next pay run reads. Use Change pay to compare a raise and choose when it starts.",
+                   "Lương hàng tháng ở đây là con số đợt lương kế tiếp sẽ đọc. Dùng Thay đổi lương để so sánh mức tăng và chọn ngày áp dụng."),
       },
       {
         screen: "employees", anchor: "rep-cd-comps",
@@ -8840,8 +8840,8 @@ const LESSONS = {
                 "Cấu trúc lương trong Điều khoản hợp đồng của Mai. Ô này ghi —."),
         means: B("No structure is named, so her pay scheme pays her.",
                  "Không có cấu trúc nào được ghi, nên chương trình lương trả lương cho chị."),
-        affects: B("When a payslip does not follow the scheme you expected, check this field first.",
-                   "Khi một phiếu lương không theo chương trình bạn nghĩ, hãy xem trường này trước."),
+        affects: B("When a payslip does not follow the scheme you expected, check this field first. To change an agreed amount from a particular day, open Change pay.",
+                   "Khi một phiếu lương không theo chương trình bạn nghĩ, hãy xem trường này trước. Để đổi một khoản đã thỏa thuận kể từ một ngày cụ thể, hãy mở Thay đổi lương."),
       },
       {
         screen: "structures", anchor: "sr-kpis",
@@ -13590,7 +13590,7 @@ const PRACTICE_ANCHORS = {
   "rep-newemp-open": "The Add employee button on the Employees replica. In the product it opens the guided Add employee screen (pb_new_hire); here it is the step that takes the learner down to the practice copy of that screen.",
   "rep-newemp-name": "The practice Add employee screen's Full name box (step 1, Who is joining). A real input, declared in INPUT_ANCHORS as text, so tone marks are optional when it is checked.",
   "rep-newemp-team": "The practice Add employee screen's Team list (step 2, Role and place). A click target, not an input: the team is where the person works; their own pay scheme comes from the Country of work, as in the product.",
-  "rep-newemp-wage": "The practice Add employee screen's Monthly wage box (step 3, Contract and pay). A real input, declared in INPUT_ANCHORS as a number, so the reader's own thousands mark is accepted.",
+  "rep-newemp-wage": "The Monthly wage box in the practice Pay Builder. Entering the fixture wage reveals the month's earnings, deductions and take-home. It accepts the reader's own thousands separator.",
   "rep-newemp-send": "The practice Add employee screen's Send button (step 7, Check and add). It sends nothing — there is no server behind the replica — and the step that presses it is guarded for the same reason the real one would be.",
   "rep-watermark": "The practice-mode watermark. Says on every free-roam screen that none of this is real. Drawn unconditionally by the practice view builder; no product screen has one.",
   /* LEARN REFRESH step 3 — the payroll-setup replicas' own controls. */
@@ -14527,11 +14527,11 @@ const SCENARIOS = [
         say: {
           /* source: pb_learn/static/src/engine/screens.js · pb_new_hire step 3 (Contract and pay) */
           kicker: B("Step 4", "Bước 4"),
-          title: B("Type the monthly wage", "Nhập lương tháng"),
+          title: B("Type the monthly wage and see take-home", "Nhập lương tháng và xem số tiền thực nhận"),
           look: B("Step 3, Contract and pay. Type 9,500,000 in the Monthly wage box and press Enter.",
                   "Bước 3, Hợp đồng và lương. Gõ 9.500.000 vào ô Lương tháng rồi bấm Enter."),
-          means: B("The wage is in the pay scheme's own money. On your own Payobook a month's payslip example appears on the right.",
-                   "Lương tính bằng đồng tiền của chương trình lương. Trên Payobook của chính bạn, một phiếu lương mẫu của một tháng sẽ hiện ở bên phải."),
+          means: B("The Pay Builder works out earnings, deductions and take-home as you type. The payslip example on the right shows the same month.",
+                   "Bộ lập lương tính các khoản thu nhập, khấu trừ và thực nhận ngay khi bạn nhập. Phiếu lương mẫu bên phải hiển thị cùng tháng đó."),
           affects: B("That example is worked out by the real pay scheme, and nothing is saved while you look at it.",
                      "Phiếu mẫu đó do chính chương trình lương tính ra, và không có gì được lưu khi bạn xem."),
         },

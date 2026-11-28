@@ -1,10 +1,6 @@
 /** @odoo-module **/
-/**
- * Step 3 — Contract and pay (NEWHIRE P1). "Paid by" is read-only (D3: no
- * per-person scheme); the wage box writes itself in the country's money and
- * groups thousands as you type (never NaN or "" into the draft — WS18); the
- * band and the pay-scale line come from the server's own answers; the
- * scheme's usual answers can be changed for this one person.
+/** Step 3 hosts the shared Pay Builder for the selected scheme.
+ * Contract dates, band guidance and pay-scale choices belong to this step.
  */
 import { Component, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";

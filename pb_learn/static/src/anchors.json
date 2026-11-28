@@ -2226,7 +2226,13 @@
     "nh-step-pay": {
       "screen": "newhire",
       "file": "pb_new_hire/static/src/xml/new_hire_studio.xml",
-      "desc": "Step 3, Contract and pay: the kind of contract, the monthly wage in the scheme's money, the trial period and the scheme's usual answers for this person.",
+      "desc": "Step 3, Contract and pay. HR enters the amount agreed with the person. The pay scheme works out the month, alongside the contract kind and trial period.",
+      "reserved": true
+    },
+    "nh-pay-builder": {
+      "screen": "newhire",
+      "file": "pb_pay_builder/static/src/xml/pay_builder.xml",
+      "desc": "The Pay Builder in step 3. Enter the agreed pay, review earnings and deductions, and open a worked-out line to see its sum.",
       "reserved": true
     },
     "nh-step-sched": {
@@ -2549,7 +2555,7 @@
     "rep-newemp-open": "The Add employee button on the Employees replica. In the product it opens the guided Add employee screen (pb_new_hire); here it is the step that takes the learner down to the practice copy of that screen.",
     "rep-newemp-name": "The practice Add employee screen's Full name box (step 1, Who is joining). A real input, declared in INPUT_ANCHORS as text, so tone marks are optional when it is checked.",
     "rep-newemp-team": "The practice Add employee screen's Team list (step 2, Role and place). A click target, not an input: the team is where the person works; their own pay scheme comes from the Country of work, as in the product.",
-    "rep-newemp-wage": "The practice Add employee screen's Monthly wage box (step 3, Contract and pay). A real input, declared in INPUT_ANCHORS as a number, so the reader's own thousands mark is accepted.",
+    "rep-newemp-wage": "The Monthly wage box in the practice Pay Builder. Entering the fixture wage reveals the month's earnings, deductions and take-home. It accepts the reader's own thousands separator.",
     "rep-newemp-send": "The practice Add employee screen's Send button (step 7, Check and add). It sends nothing — there is no server behind the replica — and the step that presses it is guarded for the same reason the real one would be.",
     "rep-watermark": "The practice-mode watermark. Says on every free-roam screen that none of this is real. Drawn unconditionally by the practice view builder; no product screen has one.",
     "rep-bp-rules": "The guided setup's Pay rules list on the practice company, each component as a sentence with its formula.",

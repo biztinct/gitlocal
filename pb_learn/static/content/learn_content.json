@@ -15385,8 +15385,8 @@
             "vi": "Bước 3, Hợp đồng và lương. Gõ 9.500.000 vào ô Lương tháng rồi bấm Enter."
           },
           "means": {
-            "en": "The wage is in the pay scheme's own money. On your own Payobook a month's payslip example appears on the right.",
-            "vi": "Lương tính bằng đồng tiền của chương trình lương. Trên Payobook của chính bạn, một phiếu lương mẫu của một tháng sẽ hiện ở bên phải."
+            "en": "The Pay Builder works out earnings, deductions and take-home as you type. The payslip example on the right shows the same month.",
+            "vi": "Bộ lập lương tính các khoản thu nhập, khấu trừ và thực nhận ngay khi bạn nhập. Phiếu lương mẫu bên phải hiển thị cùng tháng đó."
           },
           "modes": [
             "try"
@@ -15396,8 +15396,8 @@
           "timeout": 0,
           "tip": "",
           "title": {
-            "en": "Type the monthly wage",
-            "vi": "Nhập lương tháng"
+            "en": "Type the monthly wage and see take-home",
+            "vi": "Nhập lương tháng và xem số tiền thực nhận"
           },
           "value": {
             "en": "9500000",
@@ -35995,8 +35995,8 @@
             },
             {
               "affects": {
-                "en": "The Monthly wage here is what the next pay run reads.",
-                "vi": "Lương hàng tháng ở đây là con số đợt lương kế tiếp sẽ đọc."
+                "en": "The Monthly wage here is what the next pay run reads. Use Change pay to compare a raise and choose when it starts.",
+                "vi": "Lương hàng tháng ở đây là con số đợt lương kế tiếp sẽ đọc. Dùng Thay đổi lương để so sánh mức tăng và chọn ngày áp dụng."
               },
               "anchor": "rep-cd-terms",
               "body": "",
@@ -38977,8 +38977,8 @@
             },
             {
               "affects": {
-                "en": "When a payslip does not follow the scheme you expected, check this field first.",
-                "vi": "Khi một phiếu lương không theo chương trình bạn nghĩ, hãy xem trường này trước."
+                "en": "When a payslip does not follow the scheme you expected, check this field first. To change an agreed amount from a particular day, open Change pay.",
+                "vi": "Khi một phiếu lương không theo chương trình bạn nghĩ, hãy xem trường này trước. Để đổi một khoản đã thỏa thuận kể từ một ngày cụ thể, hãy mở Thay đổi lương."
               },
               "anchor": "rep-cd-terms",
               "body": "",
@@ -44504,5 +44504,5 @@
       }
     }
   ],
-  "version": "56cc6991f9d3"
+  "version": "d421313584be"
 }

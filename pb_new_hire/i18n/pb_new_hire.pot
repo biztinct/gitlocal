@@ -1117,12 +1117,6 @@ msgstr ""
 
 #. module: pb_new_hire
 #. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid "Back to usual"
-msgstr ""
-
-#. module: pb_new_hire
-#. odoo-javascript
 #: code:addons/pb_new_hire/static/src/js/step_pay.js:0
 msgid "Band for %s"
 msgstr ""
@@ -1311,12 +1305,6 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_new_hire/static/src/js/step_docs.js:0
 msgid "Change what is asked in %s"
-msgstr ""
-
-#. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
-msgid "Changed for %s"
 msgstr ""
 
 #. module: pb_new_hire
@@ -2025,14 +2013,6 @@ msgid "Fill this on %s's record after the hire is added."
 msgstr ""
 
 #. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
-msgid ""
-"Filled in for you from %(scheme)s. Change only what is different for "
-"%(first)s."
-msgstr ""
-
-#. module: pb_new_hire
 #. odoo-python
 #: code:addons/pb_new_hire/models/studio_welcome.py:0
 msgid "Finance"
@@ -2675,12 +2655,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_new_hire/models/create_ext.py:0
 msgid "Monthly pay"
-msgstr ""
-
-#. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid "Monthly wage"
 msgstr ""
 
 #. module: pb_new_hire
@@ -4698,14 +4672,6 @@ msgid ""
 msgstr ""
 
 #. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid ""
-"The pay scheme and the currency come from step 2. Type the monthly wage, "
-"then check the scheme's usual answers."
-msgstr ""
-
-#. module: pb_new_hire
 #. odoo-python
 #: code:addons/pb_new_hire/models/create_ext.py:0
 msgid ""
@@ -4717,12 +4683,6 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
 msgid "The record so far"
-msgstr ""
-
-#. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid "The scheme's usual answers"
 msgstr ""
 
 #. module: pb_new_hire
@@ -4901,12 +4861,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/pb_new_hire/models/payslip_example.py:0
 msgid "This pay scheme has no take-home line, so take-home is not shown."
-msgstr ""
-
-#. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid "This pay scheme has no usual answers to check."
 msgstr ""
 
 #. module: pb_new_hire
@@ -5158,12 +5112,6 @@ msgstr ""
 
 #. module: pb_new_hire
 #. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid "Usual answer"
-msgstr ""
-
-#. module: pb_new_hire
-#. odoo-javascript
 #: code:addons/pb_new_hire/static/src/js/record_panel.js:0
 msgid "Usual hours"
 msgstr ""
@@ -5185,12 +5133,6 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_new_hire/static/src/js/step_docs.js:0
 msgid "Valid until (if it has a date)"
-msgstr ""
-
-#. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
-msgid "Wage needed"
 msgstr ""
 
 #. module: pb_new_hire
@@ -5649,12 +5591,6 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
 msgid "Your unsent hire was kept, so you can carry on where you left off."
-msgstr ""
-
-#. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
-msgid "a month"
 msgstr ""
 
 #. module: pb_new_hire
