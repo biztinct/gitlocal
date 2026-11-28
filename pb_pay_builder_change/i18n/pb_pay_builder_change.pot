@@ -1,0 +1,133 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid ""
+"A full month before and after. The month the change starts may mix both."
+msgstr ""
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid "Yearly review"
+msgstr ""
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid "Promotion"
+msgstr ""
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid "Correction"
+msgstr ""
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid "Other"
+msgstr ""
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid "You can look at this person but not at their pay."
+msgstr ""
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_pay_builder_change/models/change.py:0
+#: code:addons/pb_pay_builder_change/static/src/js/change_pay.js:0
+msgid "This contract is not available."
+msgstr ""
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid "Open the person's running contract to change their pay."
+msgstr ""
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid "Choose the reason and the day the new pay starts."
+msgstr ""
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid "Choose a pay scheme for this person first."
+msgstr ""
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid "Check the amounts and try again."
+msgstr ""
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid "The new pay could not be worked out. Check the amounts."
+msgstr ""
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid "Check the permitted amount for %s."
+msgstr ""
+
+#. module: pb_pay_builder_change
+#. odoo-javascript
+#: code:addons/pb_pay_builder_change/static/src/js/change_pay.js:0
+msgid "Change pay"
+msgstr ""
+
+#. module: pb_pay_builder_change
+#. odoo-javascript
+#: code:addons/pb_pay_builder_change/static/src/js/change_pay.js:0
+msgid "Save"
+msgstr ""
+
+#. module: pb_pay_builder_change
+#. odoo-javascript
+#: code:addons/pb_pay_builder_change/static/src/js/change_pay.js:0
+msgid "Send for approval"
+msgstr ""
+
+#. module: pb_pay_builder_change
+#. odoo-javascript
+#: code:addons/pb_pay_builder_change/static/src/js/change_pay.js:0
+msgid "The pay change could not be sent."
+msgstr ""
+
+#. module: pb_pay_builder_change
+#. odoo-javascript
+#: code:addons/pb_pay_builder_change/static/src/xml/change_pay.xml:0
+msgid "New pay starts from"
+msgstr ""
+
+#. module: pb_pay_builder_change
+#. odoo-javascript
+#: code:addons/pb_pay_builder_change/static/src/xml/change_pay.xml:0
+msgid "Reason"
+msgstr ""
+
+#. module: pb_pay_builder_change
+#. odoo-javascript
+#: code:addons/pb_pay_builder_change/static/src/xml/change_pay.xml:0
+msgid "Close"
+msgstr ""
+
+#. module: pb_pay_builder_change
+#. odoo-javascript
+#: code:addons/pb_pay_builder_change/static/src/js/change_pay.js:0
+msgid "Change pay for %s"
+msgstr ""

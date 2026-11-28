@@ -1,6 +1,6 @@
 # Pay Builder implementation report
 
-**Status**  The owner approved the annual headline on 2026-11-28. The Add employee candidate has been built and tested locally. The owner confirmed the person’s pay scheme takes priority and included Sudima in all releases. The corrected contract fill passed the person-priority checks in Chrome and through a real local payroll calculation. The Formula Studio switch passed its local checks. The offer and signed handoff passed local verification. Change pay, the public joining card, lessons and deployment are pending. This is an interim report.
+**Status**  All four homes have been exercised in local Chrome. The contract and joining changes passed their phase checks. Lessons and the five-database release follow. Production is still on its existing version. The owner confirmed the person's own scheme takes priority for ordinary pay and added Sudima to the standing release list.
 
 ## 1. Work completed
 
@@ -86,14 +86,16 @@ The other four baseline modules have no P1 changes. Their phase-specific checks 
 
 ## 3. Headline selection
 
-The specified headline order prefers any monthly wage mapping. The active India scheme has a hidden informational line mapped to the contract wage. Its annual fixed amount drives take-home. The documented order would pick monthly wage and fail the release walk. A local synthetic scheme with the same mapping shape confirmed this with the existing wage resolver and dependency graph.
+The original headline order preferred any monthly wage mapping. The active India scheme has a hidden informational line mapped to the contract wage. Its annual fixed amount drives take-home. The documented order would pick monthly wage and fail the release walk. A local synthetic scheme with the same mapping shape confirmed this with the existing wage resolver and dependency graph.
+
+The approved rule is tenant-specific. An explicit main amount configured on the scheme wins. Otherwise a genuine wage-driven scheme opens with Monthly wage. A scheme driven by per-person money uses its own main input and period. On the verified India scheme that is Annual fixed pay. A tenant with no applicable scheme can still enter the contract wage and sees why a monthly breakdown is unavailable.
 
 The owner authorized the supplied design pack to be committed verbatim.
 
 ## 4. Facts verified
 
 - Read-only queries confirmed the India scheme is active. Its annual fixed amount is a per-person money input with a zero usual amount. It feeds take-home. The separate wage-mapped line is hidden from the payslip and has no path to take-home.
-- On this installed module combination, Add employee handles the signed offer’s contract before the package module. In a rolled-back local probe, the originating hire returned the existing contract and called the package line writer zero times. An end-to-end test of the finished feature is still required.
+- On this installed module combination, Add employee handles the signed offer’s contract before the package module. In a rolled-back local probe, the originating hire returned the existing contract and called the package line writer zero times. T50 subsequently confirmed the real approval creates exactly one contract entry per code, including an explicit zero.
 - With the current contract proposal payload shape, the contract approval detail raised `KeyError` in a local probe. The inbox wrapper returned `None`. The probe used synthetic data. Individual live approvals were outside the probe.
 - The Add employee dependency tree contains Formula Studio, the formula engine, import kit and scheme map. Pay is installed across the five release targets but is outside that tree. Including it adds one custom module and zero standard ones. Change job would also add the organisation chart to a standalone Add employee installation.
 
@@ -129,9 +131,9 @@ The monthly screen showed ₫25,952,500 in English, Vietnamese and Indonesian. A
 | Every state gives HR a way forward | Meets on checked paths | The payroll discrepancy with an unassigned team was corrected. An unassigned team and a team with a different scheme both passed the Chrome and payroll checks. |
 | Motion with purpose | Locally checked | The regular-motion annual walk showed the amount changes. The reduced-motion walks recalculated at all five widths. |
 | Keyboard operation | Locally checked on the main interactions | Enter opened a formula, its chip focused the input, and HR could change and reset an allowance and return to the draft. |
-| Best in class across the four homes | Unverified | Only Add employee has been built. The large scheme also exceeded the 60 ms target. |
+| Best in class across the four homes | Unverified | The Add employee comparison covered the first phase. The large scheme also exceeded the 60 ms target. |
 
-The other three homes and all live walks are pending.
+The following phase entries record the other homes. W8 is the live check after deployment.
 
 ## 6. Release
 
@@ -181,3 +183,20 @@ The full suites for this phase ran 303 tests. Add employee passed 182 of 182, th
 On the monthly DEMO offer, a wage of ₫30,000,000 plus lunch and a ₫500,000 phone allowance produced ₫31,230,000 gross and ₫26,377,500 take-home. The gross-only and itemised letter views rendered in all three languages. Temporary overtime stayed out of the saved offer. After acceptance and signature, Add employee showed both the wage and the phone amount with their signed-offer labels. At 1440, 1180, 820, 600 and 400 px, the dialog fit without horizontal overflow. A side-by-side check with the offer prototype led to the 38 × 22 px letter switch, the heading for the itemised month and the desktop panel width.
 
 W4 captures at `docs/handovers/paybuilder/shots/p3-letter-{en_US,vi_VN,id_ID}.png` and the temporary prototype pair were removed after inspection under the repository cleanup rule.
+
+### Dated contract changes and the joining page
+
+**Change pay** opens from Terms and Components in the contract panel. The dialog names the person, starts at the first day of next month in the company's time zone, and shows the old and proposed amounts together. Its existing Change job approval route decides whether HR sees Save or Send for approval. A scheduled change uses the normal dated job and contract history. Missing contract lines count as zero, even when a new hire would receive a nonzero usual amount.
+
+**Your pay** appears on the joining hub or day-one page after HR approves the hire and the person enters their joining code. It uses their running contract, an approved draft contract tied to their hire, or their signed offer. The public page receives formatted earnings, deductions and take-home. The card is outside the progress calculation. Reference amounts use the unit of the referenced line, including rates and counts.
+
+- The new optional module `pb_pay_builder_change` is version 19.0.1.0.0. Its model extends the contract drawer and the shared pay facade, and calls Change job's existing preparation, send, approval and scheduled-apply methods. Its dialog and tests belong to the bridge. There are no source changes in `pb_job_change`.
+- In `pb_contracts`, the manifest advances from 19.0.1.17.0 to 19.0.1.17.1. The drawer's `static/src/js/contract_360.js` and `static/src/xml/contract_360.xml` add the optional door and its keyboard handling. The catalogue and both locales contain the button text.
+- In `pb_joining`, the manifest advances from 19.0.1.0.2 to 19.0.1.1.0 and declares the shared module. The controller and `models/pay_builder.py` require a verified session and the company's pay setting. The model initializer, `views/your_pay.xml`, phone stylesheet, catalogues, test initializer, `test_your_pay.py` and `test_builder_handoff.py` cover the card and the approved-offer fallback.
+- In `pb_pay_builder`, version 19.0.1.2.0 adds the contract baseline, per-line comparison, signed monthly differences and unit-aware explanation amounts. Its shared money formatter accepts unambiguous pasted whole amounts such as 31,000,000 in Vietnamese. The Chrome walk had exposed that the previous formatter could turn that paste into 31. The formatter test covers Western and Indian grouping as well as a genuine decimal amount.
+- W5 used Chrome's keyboard to open the dialog, changed the monthly wage from ₫30,000,000 to ₫31,000,000, and showed a ₫800,000 monthly take-home gain on this contract. A second user approved through the real inbox. The local check advanced the scheduled job's date to the first of next month. It wrote ₫31,000,000 once and the change was visible in contract History. A contract manager without permission to see pay had no button.
+- W7 used a 360 × 740 Chrome window. Entering the person's code opened their hub, and Enter on the basic-wage row opened the explanation. This contract's missing insurance answer was zero. The public take-home was ₫27,850,000. English, Vietnamese and Indonesian showed the same amount with their own number grouping. The phone comparison with the prototype led to the three line-kind icons and the disclosure arrow at the right.
+- The contract walk covered 1440, 1180, 820, 600 and 400 pixels with reduced motion. English, Vietnamese and Indonesian completed the approval and history walk with no page errors. The six captures were written under `docs/handovers/paybuilder/shots/P4-{en_US,vi_VN,id_ID}-{change,joining}.png`. They are removed after visual inspection as the repository instructions require.
+- T57 also ran separately on a database where both Pay Builder modules were uninstalled. Chrome opened the contract Terms and Components tabs with no Change pay button and no page error. With the existing approval and scheme modules available, 64 of 65 contract tests passed. The original exact-key assertion failed as on the pre-feature baseline. With a smaller module selection, 63 of 65 passed on both the original commit and the feature version. The additional original failure concerned missing component history.
+
+The final P4 results cover 230 distinct framework tests. Contracts passed 64/65, Change job 30/31 with one baseline skip, Joining 81/83 with its two baseline errors, Pay Builder 44/45 with its timing skip, and the new bridge 6/6. That is 225 passes, one known failure, two known errors and two skips. On the first combined run the static branding check also mistook the test library import for visible text. After exempting that exact technical import, the entire 45-test Pay Builder suite ran again. Its 400-rule quote took 322 ms with 150 ms in the existing totals operation. All new functional checks T51–T62 passed, including the independent install check. The additional signed-offer fallback test passed. The browser test runner also passed the shared formatter test. Chrome retained all digits for 31,000,000 and 12,00,000 on the Vietnamese screen and Escape returned to the contract drawer.

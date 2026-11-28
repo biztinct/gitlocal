@@ -8,6 +8,8 @@ from odoo.tools import format_date
 from odoo.addons.pb_formula_studio.models import take_home_solver as solver
 from odoo.addons.pb_hr_payroll_formula.models import pay_period
 
+from odoo.addons.pb_scheme_map.models.pb_scheme_map import MAIN_QUESTION
+
 from .formula_words import describe
 
 
@@ -52,6 +54,21 @@ class PayBuilder(models.AbstractModel):
                 'name': str(ref.get('name') or '').strip().partition(' ')[0],
                 'can_edit': self.env['hr.contract'].has_access('write'), 'can_open': self._can_open(),
                 'seat': studio._seat_refusal() if config else None}
+
+    def _contract_subject(self, contract, day):
+        """The host already checked this contract. Missing amounts are zero in payroll."""
+        contract.ensure_one()
+        emp = contract.employee_id
+        ladder = self.env['pb.scheme.map'].sudo().with_company(contract.company_id).with_context(**{MAIN_QUESTION: True})
+        mapped = ladder.resolve_many(emp.ids, emp._pb_main_cycle(contract.company_id.id), on_date=day)
+        cfg = self.env['hr.formula.config'].sudo().browse(mapped.get(emp.id, {}).get('config_id') or [])
+        if cfg and cfg.company_id and cfg.company_id != contract.company_id:
+            cfg = cfg.browse()
+        base = {line.advantage_template_id.code: line.amount for line in contract.advantages_ids}
+        base['wage'] = contract.wage
+        return {'contract': contract, 'config': cfg, 'currency': cfg.currency_id or contract.company_id.currency_id,
+                'base': base, 'existing': True, 'day': day, 'name': emp.name.partition(' ')[0],
+                'can_edit': False, 'can_open': False}
 
     def _can_open(self):
         return self.env.user.has_group('pb_hr_payroll_formula.group_formula_user')

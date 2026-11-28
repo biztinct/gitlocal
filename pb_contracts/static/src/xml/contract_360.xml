@@ -328,6 +328,8 @@
                                 t-on-click.stop="() => this.openBuildTotal(f)" t-on-keydown.stop="">
                           <t t-out="ic('package',13)"/> <span t-esc="buildTotalLabel"/>
                         </button>
+                        <button t-if="f.name === 'wage' and changePayDoor" type="button" class="pbc-field-link pbpb-change-door"
+                                t-on-click.stop="openChangePay" t-on-keydown.stop=""><t t-out="ic('pencil',13)"/> Change pay</button>
                         <span class="pbc-refuse" t-if="hasRefusal('term', f.name)">
                           <span class="pbc-dot"/><span t-esc="refusalFor('term', f.name)"/>
                         </span>
@@ -348,6 +350,8 @@
 
             <!-- ==================== COMPONENTS ==================== -->
             <t t-if="state.tab === 'components'">
+              <button t-if="changePayDoor" type="button" class="pbim-btn ghost pbpb-change-door" t-on-click="openChangePay">
+                <t t-out="ic('pencil',14)"/> Change pay</button>
 
               <!-- SCHEMECTX P2 — whose components these are. The strip is the
                    first thing read on the tab, because "why am I looking at

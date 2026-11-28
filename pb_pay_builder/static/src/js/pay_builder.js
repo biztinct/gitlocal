@@ -109,6 +109,10 @@ export class PayBuilder extends Component {
                                           : _t("That is %s a year.", this.money(this.head.annual));
     }
     get headValue() { return this.value(this.head, this.props.home === "studio" ? this.head.usual || null : this.head.value); }
+    askWas(row) {
+        if (row.control === "money") return this.money(row.was);
+        return row.options?.find(option => option.value === row.was)?.label ?? String(row.was);
+    }
     value(row, fallback) { return Object.hasOwn(this.props.values, row.code) ? this.props.values[row.code] : (fallback ?? null); }
     money(n) { return n == null ? "—" : money(n, this.cur); }
     queue(delay = 0) {

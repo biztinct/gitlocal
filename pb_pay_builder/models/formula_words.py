@@ -28,11 +28,11 @@ def describe(rule, results, failed, currency, studio):
 
     def ref_part(r):
         value = results.get(r.code, 0)
-        if r.column_type == 'constant':
-            text = (_("%s%%", number(value * 100)) if r.value_kind == 'rate'
+        text = (_("%s%%", number(value * 100)) if r.value_kind == 'rate'
                     else format_amount(env, value, currency) if r.value_kind == 'money' else number(value))
+        if r.column_type == 'constant':
             return {'t': 'fix', 'name': r._pbpb_name(), 'text': text}
-        val = {'code': r.code, 'name': r._pbpb_name(), 'amount': value, 'period': r._pbpb_period_guess()}
+        val = {'code': r.code, 'name': r._pbpb_name(), 'amount': value, 'text': text, 'period': r._pbpb_period_guess()}
         used[r.code] = val
         return dict(val, t='ref')
 

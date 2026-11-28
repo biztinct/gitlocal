@@ -3,3 +3,4 @@ from . import board_review
 from . import papers
 from . import studio
 from . import jobs
+from . import pay_builder

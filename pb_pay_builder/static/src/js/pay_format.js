@@ -61,7 +61,14 @@ export function groupTyped(text, cur) {
     const dp = localization.decimalPoint || ".";
     const ts = localization.thousandsSep || ",";
     const raw = String(text ?? "");
-    const cut = raw.indexOf(dp);
+    // A pasted integer can use the other locale's grouping. Two grouping
+    // marks cannot be a decimal fraction (31,000,000 or 12,00,000).
+    const groups = raw.trim().split(dp);
+    const pastedWhole = cur?.builder && groups.length > 2 && /^\d{1,3}$/.test(groups[0])
+        && /^\d{3}$/.test(groups.at(-1))
+        && (groups.slice(1, -1).every(g => /^\d{3}$/.test(g))
+            || groups.slice(1, -1).every(g => /^\d{2}$/.test(g)));
+    const cut = pastedWhole ? -1 : raw.indexOf(dp);
     const whole = (cut >= 0 ? raw.slice(0, cut) : raw).replace(/[^0-9]/g, "").replace(/^0+(?=\d)/, "");
     const decimals = cur && Number.isInteger(cur.decimals) ? cur.decimals : 2;
     const frac = cut >= 0 && decimals > 0 ? raw.slice(cut + 1).replace(/[^0-9]/g, "").slice(0, decimals) : null;

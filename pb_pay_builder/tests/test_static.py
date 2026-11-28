@@ -37,7 +37,7 @@ class TestBuilderStatic(TransactionCase):
 
     def test_s1_no_vendor_name_on_screen(self):
         bad = re.compile(r'odoo', re.I)
-        allowed = re.compile(r'@odoo-module|@odoo/owl|</?odoo[ >]|odoo-javascript|odoo-python|'
+        allowed = re.compile(r'@odoo-module|@odoo/owl|from "@odoo/hoot"|</?odoo[ >]|odoo-javascript|odoo-python|'
                              r'from odoo|import odoo|odoo\.|@web/')
         for root, name in _files('.js', '.xml', '.scss'):
             text = _src(root, name)

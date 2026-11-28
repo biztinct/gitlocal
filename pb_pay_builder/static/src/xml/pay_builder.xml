@@ -18,6 +18,7 @@
         <div t-if="readonly" class="pbpb-reading" t-esc="money(headValue)"/>
         <AmountBox t-else="" large="true" currency="cur" value="headValue" label="head.name" suffix="suffix"
           id="props.home === 'studio' and head.is_wage ? 'pbnh-f-wage' : props.home + '-pbpb-head'" step="cur.step" onInput="v => this.change(this.head.code, v)"/>
+        <del t-if="head.was != null" t-esc="money(head.was)"/>
         <div class="pbpb-helper"><span t-esc="headHelp"/><button t-if="!readonly and a?.has_net" type="button" class="pbpb-link" t-on-click="() => this.ui.back = !this.ui.back">
           <t t-if="ui.back">Close</t><t t-else="">Work back from take-home</t></button></div>
         <span t-if="props.fromOffer?.[head.code]" class="pbpb-chip"><t t-out="icon('sparkles',12)"/>From the signed offer</span>
@@ -32,7 +33,7 @@
       <div t-if="a?.asks.length" class="pbpb-asks">
         <div class="pbpb-lab">Also asked by this pay scheme</div>
         <div class="pbpb-ask" tabindex="-1" t-foreach="a.asks" t-as="row" t-key="row.code" t-att-data-line="row.code">
-          <div><strong t-esc="row.name"/><small t-if="row.hint" t-esc="row.hint"/>
+          <div><strong t-esc="row.name"/><del t-if="row.was != null" t-esc="askWas(row)"/><small t-if="row.hint" t-esc="row.hint"/>
             <span t-if="props.fromOffer?.[row.code]" class="pbpb-chip">From the signed offer</span></div>
           <span t-if="readonly" t-esc="row.control === 'money' ? money(row.value) : row.value"/>
           <button t-elif="row.control === 'toggle'" type="button" class="pbpb-toggle" t-att-aria-label="row.name"
@@ -74,7 +75,7 @@
                 <t t-if="e.failed"><p>Tell the person who looks after the pay scheme.</p></t>
                 <t t-else=""><div class="pbpb-chips">
                   <t t-if="e.long and !e.inline_ranges"><span>It uses:</span>
-                    <button t-foreach="e.uses" t-as="dep" t-key="dep.code" type="button" class="pbpb-token" t-on-click="() => this.focusLine(dep.code,true)"><t t-esc="dep.name"/> <b t-esc="money(dep.amount)"/></button></t>
+                    <button t-foreach="e.uses" t-as="dep" t-key="dep.code" type="button" class="pbpb-token" t-on-click="() => this.focusLine(dep.code,true)"><t t-esc="dep.name"/> <b t-esc="dep.text || money(dep.amount)"/></button></t>
                   <t t-else="" t-foreach="e.parts" t-as="p" t-key="p_index">
                     <details t-if="p.t === 'range'" class="pbpb-range">
                       <summary t-esc="p.text"/>
@@ -121,7 +122,7 @@
   </section>
 </div></t>
 <t t-name="pb_pay_builder.SumPart">
-  <button t-if="p.t === 'ref'" type="button" class="pbpb-token" t-on-click="() => this.focusLine(p.code,true)"><t t-esc="p.name"/> <b t-esc="money(p.amount)"/></button>
+  <button t-if="p.t === 'ref'" type="button" class="pbpb-token" t-on-click="() => this.focusLine(p.code,true)"><t t-esc="p.name"/> <b t-esc="p.text || money(p.amount)"/></button>
   <span t-elif="p.t === 'fix'" class="pbpb-token pbpb-fixed" title="Set by the pay scheme"><t t-out="icon('lock',12)"/><t t-esc="p.name"/> <b t-esc="p.text"/></span>
   <span t-else="" t-esc="p.text"/>
 </t>

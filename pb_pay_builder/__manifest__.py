@@ -1,7 +1,7 @@
 {
     'name': 'Pay Builder',
     'summary': 'Agree pay and see how the pay scheme works out a full month.',
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'license': 'LGPL-3',
     'category': 'Human Resources',
     'author': 'Payobook',
@@ -13,6 +13,6 @@
         'pb_pay_builder/static/src/xml/pay_builder.xml',
         'pb_pay_builder/static/src/xml/studio.xml',
         'pb_pay_builder/static/src/scss/pay_builder.scss',
-    ]},
+    ], 'web.assets_unit_tests': ['pb_pay_builder/static/tests/pay_format.test.js']},
     'installable': True,
 }

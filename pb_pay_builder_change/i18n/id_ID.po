@@ -1,0 +1,137 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: id_ID\n"
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid ""
+"A full month before and after. The month the change starts may mix both."
+msgstr ""
+"Satu bulan penuh sebelum dan sesudah perubahan. Pada bulan perubahan, kedua "
+"tarif dapat berlaku."
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid "Yearly review"
+msgstr "Tinjauan tahunan"
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid "Promotion"
+msgstr "Promosi"
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid "Correction"
+msgstr "Koreksi"
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid "Other"
+msgstr "Lainnya"
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid "You can look at this person but not at their pay."
+msgstr ""
+"Anda dapat melihat data orang ini, tetapi tidak dapat melihat gajinya."
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_pay_builder_change/models/change.py:0
+#: code:addons/pb_pay_builder_change/static/src/js/change_pay.js:0
+msgid "This contract is not available."
+msgstr "Kontrak ini tidak tersedia."
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid "Open the person's running contract to change their pay."
+msgstr "Buka kontrak aktif orang ini untuk mengubah gajinya."
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid "Choose the reason and the day the new pay starts."
+msgstr "Pilih alasan dan tanggal mulai berlakunya gaji baru."
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid "Choose a pay scheme for this person first."
+msgstr "Pilih skema gaji untuk orang ini terlebih dahulu."
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid "Check the amounts and try again."
+msgstr "Periksa jumlahnya dan coba lagi."
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid "The new pay could not be worked out. Check the amounts."
+msgstr "Gaji baru belum dapat dihitung. Periksa jumlahnya."
+
+#. module: pb_pay_builder_change
+#. odoo-python
+#: code:addons/pb_pay_builder_change/models/change.py:0
+msgid "Check the permitted amount for %s."
+msgstr "Periksa jumlah yang diizinkan untuk %s."
+
+#. module: pb_pay_builder_change
+#. odoo-javascript
+#: code:addons/pb_pay_builder_change/static/src/js/change_pay.js:0
+msgid "Change pay"
+msgstr "Ubah gaji"
+
+#. module: pb_pay_builder_change
+#. odoo-javascript
+#: code:addons/pb_pay_builder_change/static/src/js/change_pay.js:0
+msgid "Save"
+msgstr "Simpan"
+
+#. module: pb_pay_builder_change
+#. odoo-javascript
+#: code:addons/pb_pay_builder_change/static/src/js/change_pay.js:0
+msgid "Send for approval"
+msgstr "Kirim untuk persetujuan"
+
+#. module: pb_pay_builder_change
+#. odoo-javascript
+#: code:addons/pb_pay_builder_change/static/src/js/change_pay.js:0
+msgid "The pay change could not be sent."
+msgstr "Perubahan gaji belum dapat dikirim."
+
+#. module: pb_pay_builder_change
+#. odoo-javascript
+#: code:addons/pb_pay_builder_change/static/src/xml/change_pay.xml:0
+msgid "New pay starts from"
+msgstr "Gaji baru berlaku mulai"
+
+#. module: pb_pay_builder_change
+#. odoo-javascript
+#: code:addons/pb_pay_builder_change/static/src/xml/change_pay.xml:0
+msgid "Reason"
+msgstr "Alasan"
+
+#. module: pb_pay_builder_change
+#. odoo-javascript
+#: code:addons/pb_pay_builder_change/static/src/xml/change_pay.xml:0
+msgid "Close"
+msgstr "Tutup"
+
+#. module: pb_pay_builder_change
+#. odoo-javascript
+#: code:addons/pb_pay_builder_change/static/src/js/change_pay.js:0
+msgid "Change pay for %s"
+msgstr "Ubah gaji untuk %s"

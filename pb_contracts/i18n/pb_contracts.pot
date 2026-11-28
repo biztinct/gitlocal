@@ -1,0 +1,11 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contract_360.xml:0
+msgid "Change pay"
+msgstr ""

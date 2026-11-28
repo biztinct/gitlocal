@@ -5,6 +5,7 @@ from unittest import SkipTest
 from odoo import fields
 from odoo.tests import tagged
 from odoo.addons.pb_new_hire.tests.test_new_hire import NewHireCommon
+from ..models.pay_builder import _JOINING_PAY
 from odoo.addons.pb_pay_builder.tests.common import make_scheme
 
 
@@ -72,3 +73,18 @@ class TestOfferHandoff(NewHireCommon):
             match = lines.filtered(lambda line: line.advantage_template_id.code == code)
             self.assertEqual(len(match), 1)
             self.assertEqual(match.amount, value)
+
+    def test_58b_signed_offer_is_used_only_after_approval(self):
+        j = self.env['pb.joining'].sudo().search([('offer_id', '=', self.offer.id)], limit=1)
+        if not j:
+            j = self.env['pb.joining'].sudo().with_company(self.company).create({
+                'name': 'DEMO Signed Pay', 'offer_id': self.offer.id, 'origin': 'hiring',
+                'job_title': 'DEMO Analyst', 'first_day': self.offer.start_date, 'payroll_country': 'VN'})
+        self.assertFalse(self.builder._joining_card(j, _JOINING_PAY))
+        j.state = 'added'
+        card = self.builder._joining_card(j, _JOINING_PAY)
+        self.assertTrue(card)
+        self.assertIn('DEMO Phone allowance', [row['name'] for group in card['sections'] for row in group['rows']])
+        self.assertFalse(any(group['label'] == 'Paid by the company' for group in card['sections']))
+        self.offer.currency_id = self.env.ref('base.USD')
+        self.assertFalse(self.builder._joining_card(j, _JOINING_PAY))

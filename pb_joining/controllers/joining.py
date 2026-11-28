@@ -6,6 +6,7 @@ import traceback
 from threading import Lock
 from time import monotonic
 
+from ..models.pay_builder import _JOINING_PAY
 from odoo import fields, http
 from odoo.exceptions import UserError
 from odoo.http import request
@@ -107,7 +108,7 @@ class JoiningPages(http.Controller):
         _ = request.env._
         tx = self._words()
         values = dict(state=state, tx=tx, first='', base='', page_lang=request.env.lang or 'en_US',
-                      company='', logo='', sections=[], problem='', title=_('Before you join'), saved=False,
+                      company='', logo='', pay_card=None, sections=[], problem='', title=_('Before you join'), saved=False,
                       csrf=request.csrf_token(), languages=[], days=0, hr=_('HR'), masked='', mail_on=False,
                       code_error='', remaining=0, manager=False, note='', back=False)
         if j:
@@ -125,6 +126,8 @@ class JoiningPages(http.Controller):
                           returns=[r.return_note for r in j.item_ids if r.state == 'returned'],
                           languages=[(k, n) for k, n in [('en_US', 'English'), ('vi_VN', 'Tiếng Việt'),
                                      ('id_ID', 'Bahasa Indonesia')] if k in dict(request.env['res.lang'].sudo().get_installed())])
+        if j and state in ('hub', 'day_one') and j._remembered(request.session):
+            values['pay_card'] = j.env['pb.pay.builder']._joining_card(j, _JOINING_PAY)
         values.update(extra)
         response = request.render('pb_joining.phone', values)
         response.flatten()

@@ -2958,3 +2958,69 @@ msgstr "Nhắc hoàn tất hồ sơ tiếp nhận và xóa dữ liệu riêng t�
 #: code:addons/pb_joining/models/jobs.py:0
 msgid "Remind %(name)s — copy the message from the Joining board"
 msgstr "Nhắc %(name)s — sao chép lời nhắn từ bảng Tiếp nhận"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "Take-home"
+msgstr "Thực nhận"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "Your pay"
+msgstr "Lương của bạn"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "A full month, as agreed. Tap a line to see how it is worked out."
+msgstr "Lương cả tháng theo thỏa thuận. Chạm vào một dòng để xem cách tính."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "A full month, with each-month lines at their usual amount."
+msgstr "Đủ một tháng, với các khoản hằng tháng ở mức thông thường."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "You can look at this person but not at their pay."
+msgstr "Bạn có thể xem hồ sơ người này nhưng không có quyền xem lương."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "%(name)s %(value)s"
+msgstr "%(name)s %(value)s"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "Tap to see how"
+msgstr "Chạm để xem cách tính"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "Earnings"
+msgstr "Các khoản thu nhập"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "Deductions"
+msgstr "Các khoản khấu trừ"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "Changes each month"
+msgstr "Thay đổi mỗi tháng"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "As agreed"
+msgstr "Theo thỏa thuận"
