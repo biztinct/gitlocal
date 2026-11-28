@@ -40,6 +40,28 @@ class JoiningStudio(models.AbstractModel):
             raise UserError(_('Finish checking the joining before adding the employee.'))
         return j
 
+    @api.model
+    def _offer(self, offer_id):
+        """Owner ruling 2026-11-28: someone who may add employees may bring a
+        signed offer across when that offer has a joining in this company,
+        even without Hiring rights on the offer. Scoped to exactly that offer;
+        the "From Hiring" list itself still follows Hiring's own rights."""
+        offer = super()._offer(offer_id)
+        if offer or offer is None or not _int(offer_id) or not self._hiring_on():
+            return offer
+        joining = self.env['pb.joining'].sudo().search([
+            ('offer_id', '=', _int(offer_id)),
+            ('company_id', '=', self.env.company.id),
+            ('state', '!=', 'cancelled')], limit=1)
+        if not joining:
+            return offer
+        try:
+            self._gate()
+        except AccessError:
+            return offer
+        return self.env['pb.hiring.offer'].sudo().search(
+            self._offer_domain() + [('id', '=', _int(offer_id))], limit=1)
+
     def _offer_row(self, offer):
         row = super()._offer_row(offer)
         j = (
@@ -73,17 +95,6 @@ class JoiningStudio(models.AbstractModel):
         j = self._checked_joining(joining_id)
         result = self.offer_draft(j.offer_id.id) if j.offer_id else {'ok': True, 'draft': {}}
         if not result.get('ok'):
-            if (
-                j.offer_id
-                and j.offer_id.state == 'signed'
-                and j.offer_id.join_status in ('pending', 'changed', False)
-            ):
-                return {
-                    'ok': False,
-                    'message': _(
-                        'Ask an HR colleague who can open this signed offer in Hiring to add the employee.'
-                    ),
-                }
             return result
         d = result['draft']
         d.update(

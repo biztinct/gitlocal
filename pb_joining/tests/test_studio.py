@@ -315,3 +315,34 @@ class TestHiringDraft(JoiningCase):
         self.assertEqual(landed['draft']['items'][item.key], 'joining')
         self.assertTrue(landed['offer']['joining']['checked'])
         self.assertEqual(studio._offer_row(offer)['joining']['id'], j.id)
+
+    def test_hr_without_hiring_rights_brings_the_signed_wage(self):
+        """Owner ruling 2026-11-28: HR who may add employees bring the signed
+        offer across from a joining even without Hiring rights on the offer."""
+        from odoo.tests.common import new_test_user
+        self.req.country_id = self.env.ref('base.vn')
+        offer = self._signed()
+        j = self.env['pb.joining'].search([('offer_id', '=', offer.id)])
+        j.item_ids.write({'state': 'later'})
+        j.write({'state': 'to_check', 'submitted_at': fields.Datetime.now()})
+        hr = new_test_user(
+            self.env, login='demo.joining.hr.only', groups='base.group_user,hr.group_hr_manager',
+            company_id=self.company.id, company_ids=[(6, 0, [self.company.id])])
+        self.assertFalse(hr.has_group('pb_hiring.group_hiring_user'))
+        studio = self.env['pb.new.hire'].with_user(hr).with_company(self.company)
+        # Hiring's own rights still hide the offer everywhere else.
+        self.assertFalse(self.env['pb.hiring.offer'].with_user(hr).search([('id', '=', offer.id)]))
+        landed = studio.joining_draft(j.id)
+        self.assertTrue(landed.get('ok'), landed.get('message'))
+        self.assertEqual(landed['draft']['offer_id'], offer.id)
+        self.assertEqual(landed['draft'].get('wage'), studio.offer_draft(offer.id)['draft'].get('wage'))
+        self.assertIsNone(studio._validate(dict(landed['draft'])) and None)
+        self.assertEqual(studio._offer(offer.id), offer)
+        # Only an offer with a live joining in this company opens this way.
+        j.sudo().state = 'cancelled'
+        self.assertFalse(studio._offer(offer.id))
+        # Someone who may not add employees gets nothing.
+        plain = new_test_user(self.env, login='demo.joining.plain', groups='base.group_user',
+                              company_id=self.company.id, company_ids=[(6, 0, [self.company.id])])
+        j.sudo().state = 'to_check'
+        self.assertFalse(self.env['pb.new.hire'].with_user(plain).with_company(self.company)._offer(offer.id))

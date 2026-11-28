@@ -106,3 +106,14 @@ Every JOINING handover and report references this file. Append new entries; neve
 - J-21. The owner confirmed that the template stays private and that a successful retry closes the earlier failed attempt at the same operation. A failed attempt on its own still blocks release.
 - J-22. One active hostname accepts HTTP at the origin. Test private-link redaction on each configured listener. The other hosts also accept HTTPS at the origin.
 - J-23. A hire can be approved while employee creation is blocked. The existing studio then says “waiting for approval”. On payobook, copying the default Vietnam calendar into Singapore time for the demo hire raised the overlapping-holidays error while writing the copied closure dates one at a time. The original closures do not overlap. Keep the approved request and its checked Joining items for retry.
+- J-24. RESOLVES J-23 (2026-11-28, owner said fix it). Cause: `resource.calendar._pb_in_work_timezone`
+  (pb_hr_payroll_formula) read the original holidays in the model's date order but the ORM copies one2many
+  lines in id order (`copy_data` sorts by id). On payobook the Vietnam calendar's National Day row has a
+  lower id than Labour Day, so copies swapped dates; writing them one at a time put two copies on top of each
+  other. Any Singapore hire in that company would have failed, Joining or not. Fix: pair by id, and park all
+  copies 200 years out before placing each one (touching ends count as overlap in hr_holidays). Test
+  `test_back_to_back_closures_out_of_id_order_copy_cleanly` fails on the old code with the live message.
+- J-25. Owner ruling 2026-11-28 (answers report §7). Someone who may add employees brings a signed offer
+  across from a joining even without Hiring rights on that offer. Scoped in `pb.new.hire._offer` (pb_joining):
+  only an offer with a non-cancelled joining in the current company, only past the Add employee HR gate.
+  The "From Hiring" list in Add employee still follows Hiring's own rights.
