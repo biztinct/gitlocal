@@ -21,6 +21,8 @@ Every PAYBUILDER document references this file. Append; never rewrite history. I
 
 ## 2. Owner decisions (2026-11-28) — see DESIGN §2 (D1–D9). Do not re-ask.
 
+**D10 (owner, 2026-11-28).** An explicit main pay choice wins. When a per-person annual amount drives take-home and a separate wage mapping is only informational, HR enters the annual amount once and sees its monthly equivalent before deductions. Apply this for every tenant using the scheme's own rules.
+
 ## 3. Architect rulings (tell the owner at closeout, in plain words)
 
 | ID | Ruling | Why |
@@ -57,3 +59,4 @@ Every PAYBUILDER document references this file. Append; never rewrite history. I
 | PB16 | Public pages: plain values from Python, `[hidden]` rule, the website's `editable` name. | RC49, RC72, J-10 |
 | PB17 | Upgrading `pb_hr_payroll_formula` upgrades a very large tree: keep new fields in `pb_pay_builder`. | FACTS §K |
 | PB18 | The main checkout is ~180 commits behind `origin/19.1`: build only in a worktree from origin. | FACTS §K |
+| PB19 | A wage mapping can point to an informational line that does not feed take-home. When choosing between wage and a per-person headline, check which input feeds the take-home line. | D10, read-only scheme check and synthetic reproduction |
