@@ -23,7 +23,7 @@ See docs/handovers/docstudio/DOCSTUDIO_A1_REPORT.md.
 """,
     # 1.1.1: Learn anchors (data-coach) for the DOCSTUDIO lessons, no behaviour change.
     # 1.2.0: offer pay words vi/id + offer-letter names translated (close-out Z1/Z3); carries 1.1.1.
-    'version': '19.0.1.2.0',
+    'version': '19.0.1.2.1',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',

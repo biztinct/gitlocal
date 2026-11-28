@@ -559,3 +559,120 @@ msgid ""
 "Type the total package and split it into basic pay and allowances with the "
 "pay scheme"
 msgstr "Ketik total paket dan bagi menjadi gaji pokok dan tunjangan dengan skema gaji"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/js/offer_builder.js:0
+#: code:addons/pb_pay_package/static/src/xml/offer_builder.xml:0
+msgid "Pay Builder"
+msgstr "Penyusun gaji"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/offer_builder.xml:0
+msgid "Use these lines"
+msgstr "Gunakan rincian ini"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/offer_builder.xml:0
+msgid "Your pay"
+msgstr "Gaji Anda"
+
+#. module: pb_pay_package
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_pay_package/models/offer_builder.py:0
+#: code:addons/pb_pay_package/static/src/xml/offer_builder.xml:0
+msgid "Show the pay table in the offer letter"
+msgstr "Tampilkan tabel gaji dalam surat penawaran"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_builder.py:0
+msgid "Agreed pay amounts"
+msgstr "Jumlah gaji yang disepakati"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_builder.py:0
+msgid "Monthly take-home"
+msgstr "Gaji bersih per bulan"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_builder.py:0
+msgid "Has a take-home amount"
+msgstr "Ada jumlah gaji bersih"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_builder.py:0
+msgid "Monthly gross pay"
+msgstr "Gaji kotor per bulan"
+
+#. module: pb_pay_package
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_pay_package/models/offer_builder.py:0
+#: code:addons/pb_pay_package/static/src/js/offer_builder.js:0
+msgid "Gross pay of %s a month."
+msgstr "Gaji kotor sebesar %s per bulan."
+
+#. module: pb_pay_package
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_pay_package/models/offer_builder.py:0
+#: code:addons/pb_pay_package/static/src/js/offer_builder.js:0
+msgid "Take-home after the usual deductions is about %s a month."
+msgstr "Setelah potongan biasa, gaji bersih sekitar %s per bulan."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_builder.py:0
+msgid "This pay scheme is not available."
+msgstr "Skema gaji ini tidak tersedia."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_builder.py:0
+msgid "Choose a pay scheme first."
+msgstr "Pilih skema gaji terlebih dahulu."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_builder.py:0
+msgid "Check the amounts and try again."
+msgstr "Periksa jumlahnya dan coba lagi."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_builder.py:0
+msgid "This pay scheme has no monthly earnings to put on the offer."
+msgstr ""
+"Skema gaji ini tidak memiliki penghasilan bulanan yang dapat dimasukkan ke "
+"penawaran."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/js/offer_builder.js:0
+msgid "The offer could not be opened."
+msgstr "Penawaran tidak dapat dibuka."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/js/offer_builder.js:0
+msgid "The offer could not be saved. Try again."
+msgstr "Penawaran tidak dapat disimpan. Coba lagi."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/offer_builder.xml:0
+msgid "The candidate sees each line, not only one total."
+msgstr "Kandidat dapat melihat setiap rincian beserta jumlah totalnya."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/offer_builder.xml:0
+msgid "Your pay each month"
+msgstr "Gaji Anda setiap bulan"

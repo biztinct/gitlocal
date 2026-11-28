@@ -283,6 +283,7 @@ export class NewHireStudio extends Component {
             const nh = this.nh;
             sessionStorage.setItem(this.storeKey, JSON.stringify({
                 draft: nh.draft, auto: nh.auto, touched: nh.touched, seen: nh.seen, step: nh.step,
+                fromOffer: nh.fromOffer,
             }));
         } catch {
             // private window or blocked storage: the draft simply lives in memory
@@ -352,6 +353,7 @@ export class NewHireStudio extends Component {
             }
             if (kept && kept.draft && kept.draft.name !== undefined) {
                 Object.assign(draft, kept.draft);
+                nh.fromOffer = draft.offer_id ? kept.fromOffer || {} : {};
                 nh.auto = kept.auto || {};
                 nh.touched = kept.touched || {};
                 nh.seen = kept.seen || { who: true };
@@ -595,6 +597,7 @@ export class NewHireStudio extends Component {
         }
         this.setSource("hire");
         nh.offer = res.offer;
+        this.applyOfferPay(take);
         this.patch(take);
         if (name) {
             nh.draft.parent_name = name;
@@ -610,7 +613,17 @@ export class NewHireStudio extends Component {
                    { kind: res.wage_note ? "info" : "ok" });
         return true;
     }
+    applyOfferPay(draft) {
+        this.nh.fromOffer = draft.from_offer || {};
+        delete draft.from_offer;
+        if (draft.scheme_id) {
+            this.nh.paySchemeId = draft.scheme_id;
+            this.nh.payAnswer = null;
+            this.nh.payTries = {};
+        }
+    }
     dropOffer() {
+        this.nh.fromOffer = {};
         this.nh.offer = null;
         this.patch({ offer_id: false });
     }

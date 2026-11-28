@@ -108,3 +108,39 @@
     .pbpk-ask { border-right: 0; border-bottom: 1px solid var(--pk-line-soft); }
     .pbpk-tot { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+@media (min-width: 820px) {
+    .modal-dialog:has(.pbpb-offer) { max-width: 796px; }
+}
+.pbpb-offer {
+    background: var(--pbnh-soft, #FAFAFD);
+    font: 14px/1.5 Inter, sans-serif;
+    .pbpb-letter, .pbpb-scheme-label { margin: 12px 0; }
+    .pbpb-letter { border: 1px solid #E2E8F0; border-radius: 14px; background: white; padding: 16px 18px; }
+    .pbpb-letter-toggle { display: flex; justify-content: space-between; width: 100%; }
+    .pbpb-letter-toggle strong { font: 800 16px/1.35 Manrope, sans-serif; color: #241F52; }
+    .pbpb-letter-toggle small { display: block; font: 13px/1.5 Inter, sans-serif; color: #64748B; }
+    .pbpb-scheme-label { display: grid; gap: 5px; font-weight: 600; }
+    .pbpb-scheme-label select { padding: 7px 10px; border: 1px solid #E2E8F0; border-radius: 8px; background: white; }
+    .pbpb-letter-paper { margin-top: 10px; border: 1px solid #E2E8F0; border-radius: 12px; padding: 16px 18px; background: white; }
+    .pbpb-letter-paper h3 { font: 800 16px Manrope, sans-serif; color: #241F52; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    td, th { padding: 4px 0; }
+    td { border-bottom: 1px solid #EEF0F6; }
+    td:last-child, th:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+    th { border-top: 1px solid #E2E8F0; }
+    .pbpb-letter-paper p { margin: 8px 0 0; }
+    .pbpb-offer-error { background: #FDF1DD; padding: 10px 14px; border-radius: 8px; }
+}
+.pbpb-letter-toggle { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.pbpb-letter-toggle input {
+    appearance: none; flex: none; width: 38px; height: 22px; border: 0; border-radius: 12px;
+    padding: 3px; background: #E2E8F0; cursor: pointer; transition: background .2s;
+    &::after { content: ""; display: block; width: 16px; height: 16px; border-radius: 50%; background: white; transition: transform .2s; }
+    &:checked { background: var(--pbim-primary, #5A4BB0); }
+    &:checked::after { transform: translateX(16px); }
+    &:focus-visible { outline: 2px solid var(--pbim-primary, #5A4BB0); outline-offset: 2px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .pbpb-letter-toggle input, .pbpb-letter-toggle input::after { transition: none; }
+}

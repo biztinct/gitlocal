@@ -37,6 +37,7 @@ patch(NewHireStudio.prototype, {
         if (!res.ok) {this.toast(res.message,{kind:"error"});return false;}
         const d=res.draft;
         if (res.offer) {this.nh.offer=res.offer;this.setSource("hire");}
+        this.applyOfferPay(d);
         this.patch({...d,wage:d.wage || null});
         if (d.department_id) await this.pickTeam(d.department_id,{initial:true,keepCountry:true});
         const [docs, welcome] = await Promise.all([

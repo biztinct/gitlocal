@@ -1,6 +1,6 @@
 # Pay Builder implementation report
 
-**Status**  The owner approved the annual headline on 2026-11-28. The Add employee candidate has been built and tested locally. The owner confirmed the person’s pay scheme takes priority and included Sudima in all releases. The corrected contract fill passed the person-priority checks in Chrome and through a real local payroll calculation. The Formula Studio switch passed its local checks. The offer, Change pay, joining, lessons and deployment are pending. This is an interim report.
+**Status**  The owner approved the annual headline on 2026-11-28. The Add employee candidate has been built and tested locally. The owner confirmed the person’s pay scheme takes priority and included Sudima in all releases. The corrected contract fill passed the person-priority checks in Chrome and through a real local payroll calculation. The Formula Studio switch passed its local checks. The offer and signed handoff passed local verification. Change pay, the public joining card, lessons and deployment are pending. This is an interim report.
 
 ## 1. Work completed
 
@@ -160,3 +160,24 @@ The shared module advances from 19.0.1.0.0 to 19.0.1.1.0. Its server and compone
 The combined local suites ran 605 tests. Formula Studio had 547 passes, ten failures, one error and two skips across 560 tests, the same named results as its baseline. Pay Builder had 44 passes and one slow-machine skip across 45 tests. All eight numbered switch checks passed. The 400-rule run took 325 ms, including 146 ms for the existing totals operation alone. Chrome saved Year, reopened the component to verify it, restored Month and selected and cleared the scheme’s main pay amount as a manager with no journal access.
 
 W3 passed in Chrome in English, Vietnamese and Indonesian. The manager opened both warnings, expanded the affected names, kept the original source, then confirmed and saved each direction. Each language fit 1440, 1180, 820, 600 and 400 px with reduced motion. Keyboard Space and Enter operated the choices and confirmation. The captured panels at `docs/handovers/paybuilder/shots/p2-warning-{en_US,vi_VN,id_ID}.png` were inspected and removed under the repository cleanup rule. Reopening an editor while its previous save was refreshing could discard a fast click. The edit button now waits for that save to finish.
+
+### Hiring offer and signed handoff
+
+The offer editor opens the shared Pay Builder in a dialog and keeps the earlier Build from a total button. Use these lines recomputes the usual month on the server, writes positive monthly earnings, and retains separately entered items. It saves the entered values, including zero, and the month’s agreed gross pay and take-home under Hiring’s existing pay-field permissions. The letter preview and candidate letter can show the table and take-home or a single gross-pay sentence. Temporary amounts stay in the calculator.
+
+A signed offer can supply the wage, selected scheme and per-person values in Add employee or the Joining handoff. The scheme must still be available for the person's country and the offer must use the same currency. Applying the agreement through a local hire produced exactly one contract line for each entered code. The old offer importer did not run.
+
+Existing module edits in this phase are as follows.
+
+- `pb_pay_package` advances from 19.0.1.1.1 to 19.0.1.2.0. The manifest adds the shared module and the dialog assets. The offer extension owns saved money, validates access and persists earnings. The older total action clears the previous builder snapshot when chosen instead. The offer panel, letter preview, translations and T43–T46 are in this module.
+- `pb_new_hire` advances from 19.0.1.9.0 to 19.0.1.9.1. The Hiring draft reader brings eligible signed values across under its existing access check. The studio client keeps their origin through an unsent draft reload.
+- `pb_joining` advances from 19.0.1.0.1 to 19.0.1.0.2. Its checked-joining draft uses the joiner’s actual country when bringing across a signed offer. Its studio extension uses the same origin markers. T47–T50 include an HR officer who has no Hiring rights.
+- `pb_doc_studio_hiring` advances from 19.0.1.2.0 to 19.0.1.2.1. Its offer renderer applies the optional pay wording to its own translated table. Its additional baseline was 20 passes out of 20.
+
+T43–T50 passed together, eight out of eight. The server tests exercised the existing offer gate, replacement of a previous set, currency mismatch, both letter renderers, a mismatched or retired scheme, checked joining, and an actual hire through approval.
+
+The full suites for this phase ran 303 tests. Add employee passed 182 of 182, the offer package 24 of 24 and Document Studio's offer extension 20 of 20. Joining passed 75 of 77. Its two errors matched the named baseline cases above. The candidate's public Accept action and HR's signed-copy workflow completed in the local browser walk. The local machine lacks the PDF converter used by the server. Chrome printed the real offer letter table to a DEMO PDF for that walk. The production PDF converter remains a deployment check.
+
+On the monthly DEMO offer, a wage of ₫30,000,000 plus lunch and a ₫500,000 phone allowance produced ₫31,230,000 gross and ₫26,377,500 take-home. The gross-only and itemised letter views rendered in all three languages. Temporary overtime stayed out of the saved offer. After acceptance and signature, Add employee showed both the wage and the phone amount with their signed-offer labels. At 1440, 1180, 820, 600 and 400 px, the dialog fit without horizontal overflow. A side-by-side check with the offer prototype led to the 38 × 22 px letter switch, the heading for the itemised month and the desktop panel width.
+
+W4 captures at `docs/handovers/paybuilder/shots/p3-letter-{en_US,vi_VN,id_ID}.png` and the temporary prototype pair were removed after inspection under the repository cleanup rule.

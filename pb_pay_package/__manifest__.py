@@ -20,13 +20,14 @@ The same box is on a Hiring offer: the split becomes the offer's monthly pay
 lines, so the offer letter shows basic pay and allowances, and the contract
 starts with them when the person joins.
 """,
-    'version': '19.0.1.1.1',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
     'depends': [
         'pb_formula_studio',   # the W2-C engine and search, reused as-is
+        'pb_pay_builder',
         'pb_contracts',        # the contract drawer that opens the card
         'pb_hiring',           # WDGAP S8-D: the offer panel opens it too
     ],
@@ -36,8 +37,10 @@ starts with them when the person joins.
             'pb_pay_package/static/src/scss/build_total.scss',
             'pb_pay_package/static/src/js/build_total.js',
             'pb_pay_package/static/src/js/offer_total.js',
+            'pb_pay_package/static/src/js/offer_builder.js',
             'pb_pay_package/static/src/xml/build_total.xml',
             'pb_pay_package/static/src/xml/offer_total.xml',
+            'pb_pay_package/static/src/xml/offer_builder.xml',
         ],
     },
     'installable': True,

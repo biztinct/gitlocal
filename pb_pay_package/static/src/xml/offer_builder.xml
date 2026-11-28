@@ -1,0 +1,39 @@
+<templates xml:space="preserve">
+  <t t-inherit="pb_hiring.RoleDetails" t-inherit-mode="extension">
+    <xpath expr="//select[hasclass('pbhr-tpl')]" position="before">
+      <button t-if="pbpkCanBuild(offer)" type="button" class="pbim-btn primary" t-on-click="() => this.openOfferBuilder(offer)"><t t-out="ic('calculator',14)"/> Pay Builder</button>
+    </xpath>
+    <xpath expr="//select[hasclass('pbhr-tpl')]" position="after">
+      <label t-if="pbpkCanBuild(offer) and offer.pbpb_has_values" class="pbpb-letter-toggle"><input type="checkbox" role="switch" t-att-checked="offer.pbpb_letter_table" t-on-change="ev => this.setOfferPayTable(offer,ev)"/> Show the pay table in the offer letter</label>
+    </xpath>
+  </t>
+  <t t-name="pb_pay_package.OfferPayBuilder">
+    <Dialog title="title" size="'lg'" bodyClass="'pbpb-offer'">
+      <label t-if="ui.schemes.length > 1" class="pbpb-scheme-label">Pay scheme
+        <select t-on-change="choose"><option t-foreach="ui.schemes" t-as="scheme" t-key="scheme.id" t-att-value="scheme.id" t-att-selected="ui.scheme_id === scheme.id" t-esc="scheme.name"/></select>
+      </label>
+      <p t-if="ui.error" class="pbpb-offer-error" role="alert" t-esc="ui.error"/>
+      <PayBuilder t-key="ui.scheme_id" home="'offer'" variant="'slim'" reference="{offer_id:props.offerId, scheme_id:ui.scheme_id}"
+        values="ui.values" tries="ui.tries" onTries="map => this.ui.tries=map" onChange.bind="change" onAnswer.bind="readLetter"/>
+      <section class="pbpb-letter">
+        <label class="pbpb-letter-toggle"><span><strong>Show the pay table in the offer letter</strong>
+          <small>The candidate sees each line, not only one total.</small></span><input type="checkbox" role="switch" t-model="ui.letter_table"/></label>
+        <div t-if="ready" class="pbpb-letter-paper">
+          <h3 t-if="ui.letter_table">Your pay each month</h3><h3 t-else="">Your pay</h3>
+          <t t-if="ui.letter_table">
+            <table><tbody>
+              <tr t-foreach="earnings" t-as="line" t-key="line.code"><td t-esc="line.name"/><td t-esc="format(line.amount)"/></tr>
+              <tr><th>Gross pay</th><th t-esc="format(ui.answer.totals.gross)"/></tr>
+            </tbody></table>
+            <p t-if="ui.answer.totals.net != null" t-esc="netSentence"/>
+          </t>
+          <p t-else="" t-esc="grossSentence"/>
+        </div>
+      </section>
+      <t t-set-slot="footer">
+        <button class="pbim-btn primary" t-on-click="use" t-att-disabled="!ready or ui.saving">Use these lines</button>
+        <button class="pbim-btn ghost" t-on-click="props.close">Close</button>
+      </t>
+    </Dialog>
+  </t>
+</templates>
