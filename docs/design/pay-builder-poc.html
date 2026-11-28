@@ -1,0 +1,738 @@
+<meta charset="utf-8">
+<title>Pay Builder</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap">
+<style>
+/* Layout: the product's own three-column Add employee screen, with step 3 rebuilt around one block, the Pay Builder:
+   "what you agree" on top, "a month's pay, worked out" below, a take-home bar at the foot. The same block is then
+   shown in the three other places it lives. Single light look on purpose: it mirrors the product screen. */
+:root{
+  --ink:#1E1B2E; --muted:#64748B; --faint:#94A0B4; --line:#E2E8F0; --line2:#EEF0F6;
+  --canvas:#F4F5FB; --card:#FFFFFF; --soft:#FAFAFD; --rail:#10122E; --rail-ink:#A9AFD1;
+  --p:#5A4BB0; --p-h:#4A3D96; --p-soft:#EDEAF8; --p-light:#CBC2EE; --p-dark:#241F52;
+  --ok:#2E7D4F; --ok-soft:#E4F3EA; --warn:#B45309; --warn-soft:#FDF1DD; --err:#DC2668; --err-soft:#FCE7EF;
+  --teal:#0F8B8D; --teal-soft:#E0F2F2; --blue:#2563EB; --blue-soft:#E5EDFD;
+  --display:'Manrope','Inter',system-ui,sans-serif; --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --r:14px; --shadow:0 1px 2px rgba(30,27,46,.05),0 8px 24px rgba(30,27,46,.06);
+}
+*{box-sizing:border-box}
+body{background:var(--canvas);color:var(--ink);font:14px/1.5 var(--body);-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--p);outline-offset:2px;border-radius:6px}
+h1,h2,h3{font-family:var(--display);margin:0;letter-spacing:-.02em;text-wrap:balance}
+p{margin:0}
+.ic{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- design-review bar (not part of the product) ---------- */
+.review{background:var(--p-dark);color:#fff;padding-block:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;gap:14px 22px;align-items:center;flex-wrap:wrap}
+.review b{font:700 14px var(--display)}
+.review small{color:#B9B3E6;font-size:12px;display:block}
+.review .grp{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.review .lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#B9B3E6;font-weight:600}
+.pills{display:inline-flex;background:#35306B;border-radius:10px;padding:3px;flex-wrap:wrap}
+.pills button{border:0;background:transparent;color:#D8D4F3;border-radius:8px;padding:5px 11px;font-weight:600;font-size:12.5px}
+.pills button.on{background:#fff;color:var(--p-dark)}
+
+.wrap{padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.view[hidden]{display:none}
+
+/* ---------- product shell (as today) ---------- */
+.top{background:var(--card);border:1px solid var(--line);border-radius:var(--r);display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 16px;margin-bottom:16px}
+.crumb{color:var(--muted);font-size:13px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.crumb b{color:var(--ink);font-family:var(--display);font-size:15px}
+.sp{flex:1}
+.prog{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
+.prog b{color:var(--ink)}
+.prog .bar{width:110px;height:6px;border-radius:9px;background:var(--line2);overflow:hidden}
+.prog .bar i{display:block;height:100%;width:28%;background:var(--ok);border-radius:9px}
+.btn{display:inline-flex;align-items:center;gap:7px;border-radius:10px;border:1px solid var(--line);background:var(--card);padding:8px 14px;font-weight:600;font-size:13.5px;white-space:nowrap;transition:background .15s,border-color .15s}
+.btn:hover{border-color:var(--p-light);background:var(--p-soft)}
+.btn.pri{background:var(--p);border-color:var(--p);color:#fff}
+.btn.pri:hover{background:var(--p-h)}
+.btn.out{color:var(--p);border-color:var(--p-light)}
+.btn.sm{padding:5px 10px;font-size:12.5px;border-radius:8px}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn.ghost:hover{background:var(--line2);color:var(--ink)}
+.link{border:0;background:none;padding:0;color:var(--p);font-weight:600;text-decoration:underline;text-underline-offset:2px;font-size:12.5px}
+
+.work{display:grid;grid-template-columns:220px minmax(0,1fr) 300px;gap:20px;align-items:start}
+.steps{display:flex;flex-direction:column;gap:2px}
+.steps h3{font:600 11px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:10px 10px 6px}
+.steps h3:first-child{padding-top:0}
+.step{display:flex;gap:11px;align-items:flex-start;border-radius:12px;padding:9px 10px}
+.step.cur{background:var(--card);box-shadow:var(--shadow)}
+.step .dot{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;flex:none;font:700 12px var(--body);background:var(--line2);color:var(--muted);margin-top:1px}
+.step.cur .dot{background:var(--p);color:#fff}
+.step.done .dot{background:var(--ok-soft);color:var(--ok)}
+.step .dot .ic{width:14px;height:14px;stroke-width:3}
+.step b{display:block;font-weight:600;font-size:13.5px}
+.step small{display:block;color:var(--muted);font-size:12px;line-height:1.35}
+.step.done small{color:var(--ok)}
+.stage{min-width:0;display:flex;flex-direction:column;gap:16px}
+.eyebrow{font-size:12px;font-weight:600;color:var(--p);letter-spacing:.06em;text-transform:uppercase}
+.q h1{font-size:27px;font-weight:800;line-height:1.15;margin:2px 0 4px}
+.q p{color:var(--muted);max-width:62ch}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r)}
+.pad{padding:16px 18px}
+.card h3{font-size:15px;font-weight:700}
+.sub{color:var(--muted);font-size:13px}
+.lab{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.chip{display:inline-flex;align-items:center;gap:5px;border-radius:99px;padding:2px 9px;font-size:11.5px;font-weight:600;background:var(--line2);color:var(--muted);white-space:nowrap}
+.chip .ic{width:12px;height:12px}
+.chip.ok{background:var(--ok-soft);color:var(--ok)} .chip.warn{background:var(--warn-soft);color:var(--warn)} .chip.p{background:var(--p-soft);color:var(--p)} .chip.teal{background:var(--teal-soft);color:var(--teal)}
+.paidby{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.tile{width:34px;height:34px;border-radius:10px;background:var(--teal-soft);color:var(--teal);display:grid;place-items:center;flex:none}
+.nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.side{display:flex;flex-direction:column;gap:0}
+.side .who{display:flex;gap:12px;align-items:center;padding:16px;border-bottom:1px solid var(--line2)}
+.av{width:44px;height:44px;border-radius:50%;background:var(--p);color:#fff;display:grid;place-items:center;font:700 14px var(--display);flex:none}
+.kv{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:3px 0}
+.kv span{color:var(--muted)} .kv b{font-weight:600;text-align:right}
+.slip{border:1px dashed var(--line);border-radius:12px;padding:12px;background:var(--soft);display:flex;flex-direction:column;gap:4px}
+.slip .tot{border-top:1px solid var(--line);margin-top:4px;padding-top:6px}
+.slip .tot b{color:var(--ok);font:800 16px var(--display)}
+
+/* ================= THE PAY BUILDER ================= */
+.pb{display:flex;flex-direction:column;gap:16px;min-width:0}
+/* what you agree */
+.agree{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px 26px;align-items:start}
+.wage{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:12px;padding:6px 14px;background:var(--card);margin-top:6px}
+.wage:focus-within{border-color:var(--p);outline:2px solid var(--p-light)}
+.wage span{font:700 18px var(--display);color:var(--muted)}
+.wage input{border:0;outline:0;font:800 26px var(--display);width:100%;min-width:0;background:transparent;color:var(--ink)}
+.wage small{color:var(--muted);white-space:nowrap}
+.wage-sub{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px;font-size:12.5px;color:var(--muted)}
+.back{margin-top:10px;border:1px solid var(--p-light);background:var(--p-soft);border-radius:12px;padding:10px 12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--p-dark)}
+.mini{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:9px;padding:5px 9px;background:var(--card);min-width:0}
+.mini:focus-within{border-color:var(--p);outline:2px solid var(--p-light)}
+.mini i{font-style:normal;color:var(--faint);font-weight:600;font-size:12.5px}
+.mini input{border:0;outline:0;background:transparent;width:104px;min-width:0;text-align:right;font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}
+.mini.sm input{width:52px}
+.also{display:flex;flex-direction:column;gap:2px}
+.also .arow{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line2)}
+.also .arow:last-child{border-bottom:0}
+.also .arow b{font-weight:600;font-size:13.5px;display:block}
+.also .arow small{color:var(--muted);font-size:12px;display:block}
+.tog{width:38px;height:22px;border-radius:99px;border:0;background:var(--line);position:relative;flex:none;transition:background .2s}
+.tog::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .2s}
+.tog.on{background:var(--p)} .tog.on::after{left:19px}
+
+/* a month's pay */
+.cardh{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--line2)}
+.legend{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;gap:5px;align-items:center}
+.kind{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;flex:none}
+.kind .ic{width:14px;height:14px}
+.k-set .kind,.legend .ks{background:var(--p-soft);color:var(--p)}
+.k-calc .kind,.legend .kc{background:var(--teal-soft);color:var(--teal)}
+.k-each .kind,.legend .ke{background:var(--warn-soft);color:var(--warn)}
+.legend i{width:18px;height:18px;border-radius:6px;display:grid;place-items:center}
+.legend i .ic{width:11px;height:11px}
+.sec{padding:6px 0}
+.sec + .sec{border-top:1px solid var(--line2)}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;padding:10px 18px 4px}
+.row{border-radius:10px;margin:0 8px;transition:background .2s,box-shadow .2s}
+.rmain{display:grid;grid-template-columns:26px minmax(0,1fr) auto 18px;gap:10px;align-items:center;padding:7px 10px;width:100%;border:0;background:transparent;text-align:left;border-radius:10px}
+.pb.cmp .rmain{grid-template-columns:26px minmax(0,1fr) 96px auto 18px}
+button.rmain:hover{background:var(--soft)}
+.rn{min-width:0}
+.rn b{font-weight:600;font-size:13.5px;display:block;overflow-wrap:anywhere}
+.rn small{color:var(--muted);font-size:12px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.amt{font-weight:600;font-size:14px;text-align:right;min-width:104px;font-variant-numeric:tabular-nums}
+.k-calc .amt{color:var(--ink)}
+.k-each .amt{color:var(--muted);border-bottom:1.5px dotted var(--faint);min-width:0;justify-self:end}
+.was{font-size:12.5px;color:var(--faint);text-align:right;font-variant-numeric:tabular-nums;text-decoration:line-through}
+.chev{color:var(--faint);transition:transform .2s}
+.row.open .chev{transform:rotate(180deg)}
+.row.open{background:var(--soft);box-shadow:inset 0 0 0 1px var(--line)}
+.row.src{background:var(--p-soft);box-shadow:inset 3px 0 0 var(--p)}
+.row.flash{animation:flash 1s ease-out}
+@keyframes flash{0%{background:var(--ok-soft)}100%{background:transparent}}
+.why{padding:2px 14px 14px 46px;display:flex;flex-direction:column;gap:10px;animation:rise .2s ease-out}
+@keyframes rise{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.why p{font-size:13.5px;max-width:64ch}
+.eq{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:13px}
+.tk{display:inline-flex;gap:6px;align-items:center;border-radius:9px;padding:4px 9px;border:1px solid var(--line);background:var(--card);font-size:12.5px;color:var(--muted);font-weight:500}
+.tk b{color:var(--ink);font-variant-numeric:tabular-nums}
+button.tk:hover{border-color:var(--p);color:var(--p)}
+.tk.fix{background:var(--line2);border-color:transparent}
+.tk.fix .ic{width:11px;height:11px}
+.op{color:var(--faint);font-weight:700}
+.res{font:800 15px var(--display);color:var(--teal)}
+.lockline{display:flex;gap:7px;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.lockline .ic{width:13px;height:13px}
+.steps-t{border-collapse:collapse;font-size:12.5px;width:100%;max-width:440px}
+.steps-t td{padding:4px 8px;border-bottom:1px solid var(--line2)}
+.steps-t td:last-child,.steps-t td:nth-child(2){text-align:right;font-variant-numeric:tabular-nums}
+.steps-t tr.hit td{background:var(--teal-soft);font-weight:600}
+.steps-t tr.off td{color:var(--faint)}
+.tscroll{overflow-x:auto}
+.addbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:6px 18px 10px}
+.addchip{display:inline-flex;gap:5px;align-items:center;border:1px dashed var(--p-light);background:transparent;color:var(--p);border-radius:99px;padding:3px 10px;font-size:12.5px;font-weight:600}
+.addchip:hover{background:var(--p-soft);border-style:solid}
+.addchip .ic{width:12px;height:12px}
+.total{display:flex;justify-content:space-between;gap:10px;padding:8px 18px 10px;font-weight:700}
+.total span{font-size:13px}
+/* take-home bar */
+.foot{border-top:1px solid var(--line);background:var(--soft);border-radius:0 0 var(--r) var(--r);padding:14px 18px;display:flex;flex-direction:column;gap:12px}
+.split{display:flex;height:10px;border-radius:99px;overflow:hidden;background:var(--line2);gap:2px}
+.split i{display:block;height:100%;transition:flex-grow .45s ease}
+.split .s-net{background:var(--ok)} .split .s-ded{background:#E08AA8} .split .s-er{background:var(--p-light)}
+.tots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.tot small{display:flex;gap:5px;align-items:center;color:var(--muted);font-size:12px}
+.tot small i{width:8px;height:8px;border-radius:50%;flex:none}
+.tot b{display:block;font:800 18px var(--display);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.tot em{font-style:normal;color:var(--faint);font-size:12px;font-variant-numeric:tabular-nums}
+.tot.main b{font-size:24px;color:var(--ok)}
+.delta{font-size:11.5px;font-weight:700;color:var(--ok);background:var(--ok-soft);border-radius:99px;padding:1px 7px;margin-left:4px;white-space:nowrap}
+.delta.neg{color:var(--err);background:var(--err-soft)}
+.note{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--muted)}
+.note .ic{width:14px;height:14px;margin-top:2px}
+.empty{padding:26px 18px;text-align:center;color:var(--muted)}
+.empty b{display:block;color:var(--ink);font:700 15px var(--display);margin-bottom:2px}
+
+/* ---------- other homes ---------- */
+.panel{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.panel-h{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.f{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);font-weight:500;min-width:0}
+.f input,.f select{border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--card);font-size:14px;color:var(--ink);font-weight:500;width:100%;min-width:0}
+.letter{border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:var(--card);font-size:13px}
+.letter table{width:100%;border-collapse:collapse;margin-top:8px}
+.letter td{padding:4px 0;border-bottom:1px solid var(--line2)}
+.letter td:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.letter tr.t td{font-weight:700;border-bottom:0}
+.phone{width:min(390px,100%);margin:0 auto;border:8px solid var(--p-dark);border-radius:34px;background:var(--canvas);padding:16px 12px;display:flex;flex-direction:column;gap:12px}
+.phone .hello{padding:4px 6px}
+.phone .hello h2{font-size:20px}
+.pb.read .agree{display:none}
+.pb.read .tots{grid-template-columns:repeat(2,minmax(0,1fr))}
+.pb.slim .tots{grid-template-columns:repeat(2,minmax(0,1fr))}
+.pb.read .tot.er,.pb.read .s-er{display:none}
+
+.about{margin-top:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.about .card{padding:14px 16px}
+.about h3{font-size:14px;margin-bottom:6px}
+.about ul{margin:0;padding-left:18px;color:var(--muted);font-size:13px;display:flex;flex-direction:column;gap:4px}
+
+@media (max-width:1080px){.work{grid-template-columns:minmax(0,1fr)}.steps{display:none}}
+@media (max-width:620px){
+  .agree{grid-template-columns:minmax(0,1fr)}
+  .tots{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .amt{min-width:84px}
+  .why{padding-left:14px}
+  .q h1{font-size:22px}
+  .pb.cmp .rmain{grid-template-columns:26px minmax(0,1fr) auto 18px}
+  .pb.cmp .was{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+<symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+<symbol id="i-pencil" viewBox="0 0 24 24"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></symbol>
+<symbol id="i-calc" viewBox="0 0 24 24"><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M8 6h8M16 14v4M16 10h.01M12 10h.01M8 10h.01M12 14h.01M8 14h.01M12 18h.01M8 18h.01"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><path d="M8 2v4M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+<symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
+<symbol id="i-note" viewBox="0 0 24 24"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></symbol>
+<symbol id="i-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></symbol>
+<symbol id="i-left" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></symbol>
+<symbol id="i-spark" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+</defs></svg>
+
+<div class="review">
+  <div><b>Pay Builder · design for review</b><small>Example people and example pay schemes. Everything here can be clicked and typed into.</small></div>
+  <div class="grp"><span class="lbl">Where it appears</span>
+    <div class="pills" id="views">
+      <button data-view="studio" class="on">Add employee · step 3</button>
+      <button data-view="offer">Hiring · offer</button>
+      <button data-view="change">Employee record · change pay</button>
+      <button data-view="phone">What the new person sees</button>
+    </div>
+  </div>
+  <div class="grp"><span class="lbl">Example pay scheme</span>
+    <div class="pills" id="schemes">
+      <button data-scheme="india" class="on">India · yearly package</button>
+      <button data-scheme="vietnam">Vietnam · monthly wage</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- ============ 1. Add employee, step 3 ============ -->
+<div class="view" id="v-studio">
+  <div class="top">
+    <span class="btn out sm"><svg class="ic"><use href="#i-left"/></svg>Back to Employees</span>
+    <div class="crumb">People <span>›</span> Employees <span>›</span> <b>Add employee</b></div>
+    <span class="sp"></span>
+    <div class="prog"><b>2 of 7 steps done</b><span class="bar"><i></i></span></div>
+  </div>
+  <div class="work">
+    <div class="steps">
+      <h3>Required</h3>
+      <div class="step done"><span class="dot"><svg class="ic"><use href="#i-check"/></svg></span><div><b>Who is joining</b><small>DEMO Asha Rao, starts Sat, Dec 5</small></div></div>
+      <div class="step done"><span class="dot"><svg class="ic"><use href="#i-check"/></svg></span><div><b>Role and place</b><small data-bind="place">Content Specialist, India</small></div></div>
+      <div class="step cur"><span class="dot">3</span><div><b>Contract and pay</b><small data-bind="stepline">Pay worked out</small></div></div>
+      <h3>Optional, with defaults</h3>
+      <div class="step"><span class="dot">4</span><div><b>Schedule and time off</b><small>Team defaults are ready</small></div></div>
+      <div class="step"><span class="dot">5</span><div><b>Details and documents</b><small>7 for Asha, 0 with you</small></div></div>
+      <div class="step"><span class="dot">6</span><div><b>Welcome and first day</b><small>Checklist is ready</small></div></div>
+      <h3>Finish</h3>
+      <div class="step"><span class="dot">7</span><div><b>Check and add</b><small>Last step</small></div></div>
+    </div>
+
+    <div class="stage">
+      <div class="q">
+        <div class="eyebrow">Step 3 of 7 · Required</div>
+        <h1>What is the contract, and what does it pay?</h1>
+        <p>Type what you agreed with Asha. The pay scheme works out the rest of the month in front of you, and you can open any line to see how.</p>
+      </div>
+      <div class="card pad paidby">
+        <span class="tile"><svg class="ic"><use href="#i-note"/></svg></span>
+        <div style="flex:1;min-width:200px"><div class="lab">Paid by</div><h3 data-bind="scheme">DEMO India Payroll</h3><div class="sub" data-bind="schemewhy">The usual pay scheme for India. Wages are in INR.</div></div>
+        <span class="chip">Set in step 2</span>
+      </div>
+      <div id="pb-studio"></div>
+      <div class="card pad sub">Contract, start date, contract category and trial period stay here exactly as they are today.</div>
+      <div class="nav">
+        <span class="btn ghost"><svg class="ic"><use href="#i-left"/></svg>Role and place</span>
+        <span class="btn pri">Next: schedule and time off<svg class="ic"><use href="#i-right"/></svg></span>
+      </div>
+    </div>
+
+    <div class="card side">
+      <div class="who"><span class="av">AR</span><div><div class="lab" style="color:var(--p)">The record so far</div><h3>DEMO Asha Rao</h3><div class="sub">Content Specialist · Human Resources</div></div></div>
+      <div class="pad" style="display:flex;flex-direction:column;gap:12px">
+        <div>
+          <div class="kv"><span>First day</span><b>Sat, Dec 5</b></div>
+          <div class="kv"><span>Country of work</span><b data-bind="country">India</b></div>
+          <div class="kv"><span>Trial ends</span><b>Fri, Mar 5, 2027</b></div>
+        </div>
+        <div>
+          <div class="lab" style="margin-bottom:6px">A month's payslip · example</div>
+          <div class="slip" id="slip"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 2. Hiring offer ============ -->
+<div class="view" id="v-offer" hidden>
+  <div class="panel">
+    <div class="panel-h"><span class="av">AR</span><div style="flex:1;min-width:200px"><div class="eyebrow">Hiring · Offers</div><h2>Offer for DEMO Asha Rao</h2><div class="sub">The same Pay Builder, so the offer and the first payslip can never disagree.</div></div><span class="chip p">Draft offer</span></div>
+    <div id="pb-offer"></div>
+    <div class="card pad" style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+        <div><h3>Show the pay table in the offer letter</h3><div class="sub">The candidate sees each line, not only one total.</div></div>
+        <button class="tog on" id="letter-tog" aria-label="Show the pay table in the offer letter" aria-pressed="true"></button>
+      </div>
+      <div class="letter" id="letter"></div>
+    </div>
+    <div class="nav"><span class="sub">When Asha accepts, these numbers arrive in Add employee already filled in.</span><span class="btn pri">Send the offer<svg class="ic"><use href="#i-right"/></svg></span></div>
+  </div>
+</div>
+
+<!-- ============ 3. Change pay ============ -->
+<div class="view" id="v-change" hidden>
+  <div class="panel">
+    <div class="panel-h"><span class="av">AR</span><div style="flex:1;min-width:200px"><div class="eyebrow">Employee record · Contract</div><h2>Change pay for DEMO Asha Rao</h2><div class="sub">Type the new pay. Each line shows what it was and what it becomes.</div></div></div>
+    <div class="card pad fields">
+      <label class="f">New pay starts from<input id="chg-from" type="date" value="2027-04-01"></label>
+      <label class="f">Reason<select id="chg-why"><option>Yearly review</option><option>Promotion</option><option>Correction</option></select></label>
+    </div>
+    <div id="pb-change"></div>
+    <div class="nav"><span class="sub">Goes to the payroll manager for approval, as pay changes do today.</span><span class="btn pri">Send for approval<svg class="ic"><use href="#i-right"/></svg></span></div>
+  </div>
+</div>
+
+<!-- ============ 4. The new person ============ -->
+<div class="view" id="v-phone" hidden>
+  <div class="phone">
+    <div class="hello"><div class="eyebrow">Before your first day</div><h2>Your pay, Asha</h2><div class="sub">A full month, as agreed. Tap a line to see how it is worked out.</div></div>
+    <div id="pb-phone"></div>
+  </div>
+</div>
+
+<div class="about">
+  <div class="card"><h3>Three kinds of line</h3><ul><li><b>You set</b>: an amount for this person. Type over it. Saved on the contract.</li><li><b>Worked out</b>: follows the pay scheme's formula. Locked. Open it to read the sum in words with this person's numbers.</li><li><b>Each month</b>: arrives with every month's pay data, like tax. Shown with its usual amount; you can try a number, which is never saved.</li></ul></div>
+  <div class="card"><h3>Things to try</h3><ul><li>Change the big number and watch every line follow.</li><li>Point at a worked-out line: the lines it uses light up.</li><li>Open a worked-out line, then click a name inside the sum.</li><li>Add an allowance, change it, then press Back to usual.</li><li>Press Work back from take-home.</li><li>Empty the big number to see the waiting state.</li></ul></div>
+  <div class="card"><h3>One block, four homes</h3><ul><li>Add employee, step 3 (replaces Monthly wage and The scheme's usual answers).</li><li>Hiring offer, with the table in the letter.</li><li>Employee record, when pay changes: before and after.</li><li>The new person's joining page: read only.</li></ul></div>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const R = Math.round, MIN = Math.min, MAX = Math.max;
+const ic = (n) => '<svg class="ic"><use href="#i-' + n + '"/></svg>';
+
+/* ---------------- example pay schemes ---------------- */
+function vnTax(t){
+  const bands = [[5e6,.05],[10e6,.10],[18e6,.15],[32e6,.20],[52e6,.25],[80e6,.30],[Infinity,.35]];
+  let tax = 0, prev = 0; const rows = [];
+  for (const [cap, r] of bands){
+    const part = MAX(0, MIN(t, cap) - prev);
+    rows.push({from: prev, to: cap, rate: r, part: part, tax: part * r});
+    tax += part * r; prev = cap;
+  }
+  return {tax: R(tax), rows: rows};
+}
+const SCHEMES = {
+  india: {
+    name: 'DEMO India Payroll', cur: '₹', code: 'INR', country: 'India', place: 'Content Specialist, India',
+    why: 'The usual pay scheme for India. Wages are in INR.', step: 1000, start: 1200000, raise: 1320000,
+    K: { BR:{t:'50%',v:.5,n:'Basic share'}, HR:{t:'65%',v:.65,n:'House rent share'}, PF:{t:'12%',v:.12,n:'Provident fund rate'}, CAP:{t:'25,000',v:25000,n:'Provident fund ceiling', money:1} },
+    comps: [
+      {c:'CTC', n:'Annual fixed pay', g:'pkg', k:'set', per:'year', head:1},
+      {c:'VAR', n:'Variable pay for the year', hint:'Paid when it is approved, not every month', g:'pkg', k:'set', per:'year', usual:0, ctl:'money'},
+      {c:'BASIC', n:'Basic', g:'earn', k:'calc', f:(v,K)=>R(v.CTC*K.BR.v/12), words:'Half of the annual fixed pay, spread over 12 months.', eq:[['ref','CTC'],['op','×'],['k','BR'],['op','÷'],['txt','12 months']]},
+      {c:'HRA', n:'House rent allowance', g:'earn', k:'calc', f:(v,K)=>R(v.BASIC*K.HR.v), words:'65% of Basic.', eq:[['ref','BASIC'],['op','×'],['k','HR']]},
+      {c:'PFER', n:'Provident fund, paid by the company', g:'er', k:'calc', f:(v,K)=>R(MIN(v.BASIC,K.CAP.v)*K.PF.v), words:'12% of Basic. Basic above 25,000 a month is not counted.', eq:[['txt','the smaller of'],['ref','BASIC'],['txt','and'],['k','CAP'],['op','×'],['k','PF']]},
+      {c:'CONV', n:'Conveyance allowance', g:'earn', k:'calc', f:(v)=>MAX(0,R(v.CTC/12)-v.BASIC-v.HRA-v.PFER), words:'What is left of the monthly package after Basic, House rent allowance and the company\'s provident fund share.', eq:[['ref','CTC'],['op','÷'],['txt','12'],['op','−'],['ref','BASIC'],['op','−'],['ref','HRA'],['op','−'],['ref','PFER']]},
+      {c:'MED', n:'Medical reimbursement', g:'earn', k:'set', usual:1250},
+      {c:'TEL', n:'Telephone and internet', g:'earn', k:'set', usual:0},
+      {c:'BOOK', n:'Books and periodicals', g:'earn', k:'set', usual:0},
+      {c:'CAR', n:'Car maintenance and fuel', g:'earn', k:'set', usual:0},
+      {c:'UNI', n:'Uniform allowance', g:'earn', k:'set', usual:0},
+      {c:'ARR', n:'Approved arrears', g:'earn', k:'each', usual:0, from:'the pay data file'},
+      {c:'PFEE', n:'Provident fund, employee share', g:'ded', k:'calc', f:(v,K)=>R(MIN(v.BASIC,K.CAP.v)*K.PF.v), words:'12% of Basic. Basic above 25,000 a month is not counted.', eq:[['txt','the smaller of'],['ref','BASIC'],['txt','and'],['k','CAP'],['op','×'],['k','PF']]},
+      {c:'PT', n:'Profession tax', g:'ded', k:'each', usual:200, from:'the pay data file'},
+      {c:'TDS', n:'Income tax (TDS)', g:'ded', k:'each', usual:0, from:'the pay data file'}
+    ]
+  },
+  vietnam: {
+    name: 'DEMO Vietnam Payroll', cur: '₫', code: 'VND', country: 'Vietnam', place: 'Content Specialist, Vietnam',
+    why: 'The usual pay scheme for Vietnam. Wages are in VND.', step: 10000, start: 30000000, raise: 33000000,
+    K: { SI:{t:'8%',v:.08,n:'Social insurance rate'}, HI:{t:'1.5%',v:.015,n:'Health insurance rate'}, UI:{t:'1%',v:.01,n:'Unemployment insurance rate'},
+         CAP:{t:'46,800,000',v:46800000,n:'Insurance wage ceiling',money:1}, SELF:{t:'11,000,000',v:11000000,n:'Relief for the person',money:1}, DEPR:{t:'4,400,000',v:4400000,n:'Relief for each person supported',money:1},
+         LCAP:{t:'730,000',v:730000,n:'Tax-free lunch',money:1}, SIE:{t:'17.5%',v:.175,n:'Company social insurance rate'}, HIE:{t:'3%',v:.03,n:'Company health insurance rate'}, UIE:{t:'1%',v:.01,n:'Company unemployment insurance rate'} },
+    comps: [
+      {c:'WAGE', n:'Monthly wage', g:'pkg', k:'set', per:'month', head:1},
+      {c:'DEP', n:'People they support', hint:'Lowers the income tax', g:'pkg', k:'set', usual:0, ctl:'count'},
+      {c:'INS', n:'Pays social insurance', hint:'Usual answer: Yes', g:'pkg', k:'set', usual:1, ctl:'toggle'},
+      {c:'BASIC', n:'Basic wage', g:'earn', k:'calc', f:(v)=>R(v.WAGE), words:'The monthly wage, as typed above.', eq:[['ref','WAGE']]},
+      {c:'LUNCH', n:'Lunch allowance', g:'earn', k:'set', usual:730000},
+      {c:'PHONE', n:'Phone allowance', g:'earn', k:'set', usual:0},
+      {c:'RESP', n:'Responsibility allowance', g:'earn', k:'set', usual:0},
+      {c:'TRAV', n:'Travel allowance', g:'earn', k:'set', usual:0},
+      {c:'OT', n:'Overtime', g:'earn', k:'each', usual:0, from:'the timesheet'},
+      {c:'SI', n:'Social insurance', g:'ded', k:'calc', f:(v,K)=>v.INS?R(MIN(v.BASIC,K.CAP.v)*K.SI.v):0, words:'8% of the Basic wage. Wage above 46,800,000 a month is not counted. Nothing when the person does not pay social insurance.', eq:[['txt','the smaller of'],['ref','BASIC'],['txt','and'],['k','CAP'],['op','×'],['k','SI']]},
+      {c:'HI', n:'Health insurance', g:'ded', k:'calc', f:(v,K)=>v.INS?R(MIN(v.BASIC,K.CAP.v)*K.HI.v):0, words:'1.5% of the Basic wage, up to the same ceiling.', eq:[['txt','the smaller of'],['ref','BASIC'],['txt','and'],['k','CAP'],['op','×'],['k','HI']]},
+      {c:'UI', n:'Unemployment insurance', g:'ded', k:'calc', f:(v,K)=>v.INS?R(MIN(v.BASIC,K.CAP.v)*K.UI.v):0, words:'1% of the Basic wage, up to the same ceiling.', eq:[['txt','the smaller of'],['ref','BASIC'],['txt','and'],['k','CAP'],['op','×'],['k','UI']]},
+      {c:'PIT', n:'Personal income tax', g:'ded', k:'calc', uses:['BASIC','LUNCH','PHONE','RESP','TRAV','OT','SI','HI','UI','DEP'],
+        f:(v,K)=>vnTax(vnTaxable(v,K)).tax,
+        explain:(v,K,m)=>{
+          const t = vnTaxable(v,K), x = vnTax(t);
+          let h = '<p>Tax is charged on what is left of the month after the tax-free amounts, and it climbs in steps.</p>';
+          h += '<div class="eq"><span class="tk">Earnings <b>' + m(vnGross(v)) + '</b></span><span class="op">−</span><span class="tk fix">' + ic('lock') + 'Tax-free lunch <b>' + m(MIN(v.LUNCH,K.LCAP.v)) + '</b></span><span class="op">−</span><span class="tk">Insurance <b>' + m(v.SI+v.HI+v.UI) + '</b></span><span class="op">−</span><span class="tk fix">' + ic('lock') + 'Reliefs <b>' + m(K.SELF.v + v.DEP*K.DEPR.v) + '</b></span><span class="op">=</span><span class="tk">Taxed amount <b>' + m(t) + '</b></span></div>';
+          h += '<div class="tscroll"><table class="steps-t"><tbody>';
+          x.rows.forEach(r => { if (r.from > 52e6 && !r.part) return;
+            h += '<tr class="' + (r.part ? 'hit' : 'off') + '"><td>' + (r.to === Infinity ? 'Above ' + m(r.from) : m(r.from) + ' to ' + m(r.to)) + ' at ' + R(r.rate*100) + '%</td><td>' + (r.part ? m(r.part) : '') + '</td><td>' + (r.part ? m(R(r.tax)) : '') + '</td></tr>'; });
+          h += '</tbody></table></div>';
+          return h;
+        }},
+      {c:'SIER', n:'Social insurance, paid by the company', g:'er', k:'calc', f:(v,K)=>v.INS?R(MIN(v.BASIC,K.CAP.v)*K.SIE.v):0, words:'17.5% of the Basic wage, up to the ceiling.', eq:[['txt','the smaller of'],['ref','BASIC'],['txt','and'],['k','CAP'],['op','×'],['k','SIE']]},
+      {c:'HIER', n:'Health insurance, paid by the company', g:'er', k:'calc', f:(v,K)=>v.INS?R(MIN(v.BASIC,K.CAP.v)*K.HIE.v):0, words:'3% of the Basic wage, up to the ceiling.', eq:[['txt','the smaller of'],['ref','BASIC'],['txt','and'],['k','CAP'],['op','×'],['k','HIE']]},
+      {c:'UIER', n:'Unemployment insurance, paid by the company', g:'er', k:'calc', f:(v,K)=>v.INS?R(MIN(v.BASIC,K.CAP.v)*K.UIE.v):0, words:'1% of the Basic wage, up to the ceiling.', eq:[['txt','the smaller of'],['ref','BASIC'],['txt','and'],['k','CAP'],['op','×'],['k','UIE']]}
+    ]
+  }
+};
+function vnGross(v){ return v.BASIC + v.LUNCH + v.PHONE + v.RESP + v.TRAV + v.OT; }
+function vnTaxable(v,K){ return MAX(0, vnGross(v) - MIN(v.LUNCH,K.LCAP.v) - v.SI - v.HI - v.UI - K.SELF.v - v.DEP*K.DEPR.v); }
+
+const fmtN = (n) => R(n).toLocaleString('en-US');
+const parse = (s) => { const d = String(s).replace(/[^\d]/g,''); return d ? parseInt(d,10) : 0; };
+const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------------- the Pay Builder ---------------- */
+function PayBuilder(el, opt){
+  const self = this; opt = opt || {};
+  let S, vals, tries, added, open, base, backOpen, backMsg;
+  const m = (n) => S.cur + fmtN(n);
+  const comp = (c) => S.comps.find(x => x.c === c);
+  const head = () => S.comps.find(x => x.head);
+
+  function compute(vs, tr){
+    const v = {};
+    S.comps.forEach(c => {
+      if (c.k === 'set') v[c.c] = vs[c.c] != null ? vs[c.c] : (c.usual || 0);
+      else if (c.k === 'each') v[c.c] = (tr && tr[c.c] != null) ? tr[c.c] : (c.usual || 0);
+    });
+    S.comps.forEach(c => { if (c.k === 'calc') v[c.c] = c.f(v, S.K) || 0; });
+    const sum = (g) => S.comps.filter(c => c.g === g).reduce((a,c) => a + v[c.c], 0);
+    const t = {gross: sum('earn'), ded: sum('ded'), er: sum('er')};
+    t.net = t.gross - t.ded; t.cost = t.gross + t.er; t.ready = v[head().c] > 0;
+    return {v: v, t: t};
+  }
+  this.load = function(key){
+    S = SCHEMES[key]; vals = {}; tries = {}; added = new Set(); open = new Set(); backOpen = false; backMsg = '';
+    vals[head().c] = S.start;
+    base = opt.mode === 'cmp' ? compute(vals, {}) : null;
+    if (opt.mode === 'cmp') vals[head().c] = S.raise;
+    render();
+  };
+  this.result = () => compute(vals, tries);
+  this.scheme = () => S;
+
+  const shown = (c) => c.k !== 'set' || c.g === 'pkg' || (c.usual || 0) > 0 || (vals[c.c] || 0) > 0 || added.has(c.c);
+  const changed = (c) => c.k === 'set' && !c.head && vals[c.c] != null && vals[c.c] !== (c.usual || 0);
+  const KIND = {set:['pencil','You set'], calc:['calc','Worked out'], each:['cal','Each month']};
+
+  function rowHtml(c){
+    const read = opt.mode === 'read';
+    const k = KIND[c.k];
+    let sub = k[1];
+    if (c.k === 'each') sub = 'Each month, from ' + c.from;
+    if (read) sub = c.k === 'calc' ? 'Tap to see how' : (c.k === 'each' ? 'Changes each month' : 'As agreed');
+    let amount;
+    if (c.k === 'set' && !read){
+      amount = '<span class="mini"><i>' + S.cur + '</i><input id="' + opt.id + '-in-' + c.c + '" data-set="' + c.c + '" inputmode="numeric" autocomplete="off" aria-label="' + c.n + '" value="' + fmtN(vals[c.c] != null ? vals[c.c] : (c.usual||0)) + '"></span>';
+    } else if (c.k === 'each' && !read && tries[c.c] != null){
+      amount = '<span class="mini"><i>' + S.cur + '</i><input id="' + opt.id + '-try-' + c.c + '" data-try="' + c.c + '" inputmode="numeric" autocomplete="off" aria-label="Try an amount for ' + c.n + '" value="' + fmtN(tries[c.c]) + '"></span>';
+    } else {
+      amount = '<span class="amt num" data-v="' + c.c + '"></span>';
+    }
+    const was = opt.mode === 'cmp' ? '<span class="was" data-was="' + c.c + '"></span>' : '';
+    const isOpen = open.has(c.c);
+    const inner = '<span class="kind">' + ic(k[0]) + '</span><span class="rn"><b>' + c.n + '</b><small><span>' + sub + '</span><span data-extra="' + c.c + '"></span></small></span>' + was + amount +
+      (c.k === 'calc' ? '<svg class="ic chev"><use href="#i-chev"/></svg>' : '<span></span>');
+    const main = c.k === 'calc'
+      ? '<button type="button" class="rmain" data-open="' + c.c + '" aria-expanded="' + isOpen + '">' + inner + '</button>'
+      : '<div class="rmain">' + inner + '</div>';
+    return '<div class="row k-' + c.k + (isOpen ? ' open' : '') + '" data-row="' + c.c + '">' + main + (isOpen ? '<div class="why" data-why="' + c.c + '"></div>' : '') + '</div>';
+  }
+  function whyHtml(c, v){
+    let h;
+    if (c.explain) h = c.explain(v, S.K, m);
+    else {
+      h = '<p>' + c.words + '</p><div class="eq">';
+      c.eq.forEach(t => {
+        if (t[0] === 'ref'){ const r = comp(t[1]); h += '<button type="button" class="tk" data-go="' + r.c + '">' + r.n + ' <b>' + m(v[r.c]) + (r.per === 'year' ? ' a year' : '') + '</b></button>'; }
+        else if (t[0] === 'k'){ const k = S.K[t[1]]; h += '<span class="tk fix" title="Set by the pay scheme">' + ic('lock') + k.n + ' <b>' + (k.money ? S.cur : '') + k.t + '</b></span>'; }
+        else if (t[0] === 'op') h += '<span class="op">' + t[1] + '</span>';
+        else h += '<span>' + t[1] + '</span>';
+      });
+      h += '</div>';
+    }
+    h += '<div class="eq"><span class="op">=</span><span class="res num">' + m(v[c.c]) + ' a month</span></div>';
+    if (opt.mode !== 'read') h += '<div class="lockline">' + ic('lock') + '<span>This sum belongs to ' + S.name + ', so it cannot be changed for one person.</span><button type="button" class="link" data-studio>See it in Formula Studio</button></div>';
+    return h;
+  }
+  function section(g, title, totalLabel){
+    const list = S.comps.filter(c => c.g === g && shown(c));
+    const hidden = S.comps.filter(c => c.g === g && !shown(c));
+    let h = '<div class="sec"><div class="sec-h"><span class="lab">' + title + '</span></div>';
+    h += list.map(rowHtml).join('');
+    if (hidden.length && opt.mode !== 'read'){
+      h += '<div class="addbar"><span class="sub">Also in this scheme:</span>' + hidden.map(c => '<button type="button" class="addchip" data-add="' + c.c + '">' + ic('plus') + c.n + '</button>').join('') + '</div>';
+    }
+    h += '<div class="total"><span>' + totalLabel + '</span><span class="num" data-t="' + g + '"></span></div></div>';
+    return h;
+  }
+  function render(){
+    const H = head(), read = opt.mode === 'read';
+    const pk = S.comps.filter(c => c.g === 'pkg' && !c.head);
+    let h = '<div class="pb' + (opt.mode === 'cmp' ? ' cmp' : '') + (read ? ' read' : '') + (opt.slim ? ' slim' : '') + '">';
+    /* --- what you agree --- */
+    h += '<div class="card pad agree"><div>' +
+      '<label class="lab" for="' + opt.id + '-head">' + H.n + ' <span style="color:var(--err)">*</span></label>' +
+      '<div class="wage"><span>' + S.cur + '</span><input id="' + opt.id + '-head" data-set="' + H.c + '" inputmode="numeric" autocomplete="off" placeholder="0" value="' + (vals[H.c] ? fmtN(vals[H.c]) : '') + '"><small>' + S.code + (H.per === 'year' ? ' a year' : ' a month') + '</small></div>' +
+      '<div class="wage-sub"><span data-headsub></span><button type="button" class="link" data-back>' + (backOpen ? 'Close' : 'Work back from take-home') + '</button></div>' +
+      (backOpen ? '<div class="back">' + ic('target') + '<span>Take-home wanted each month</span><span class="mini"><i>' + S.cur + '</i><input id="' + opt.id + '-target" data-target inputmode="numeric" autocomplete="off" aria-label="Take-home wanted each month"></span><button type="button" class="btn pri sm" data-find>Find the pay</button><span data-backmsg style="flex-basis:100%">' + backMsg + '</span></div>' : '') +
+      '</div><div class="also"><div class="lab" style="margin-bottom:4px">Also asked by this pay scheme</div>';
+    pk.forEach(c => {
+      let ctl;
+      const val = vals[c.c] != null ? vals[c.c] : (c.usual || 0);
+      if (c.ctl === 'toggle') ctl = '<button type="button" class="tog' + (val ? ' on' : '') + '" data-tog="' + c.c + '" aria-pressed="' + !!val + '" aria-label="' + c.n + '"></button>';
+      else if (c.ctl === 'count') ctl = '<span class="mini sm"><input id="' + opt.id + '-in-' + c.c + '" data-set="' + c.c + '" inputmode="numeric" autocomplete="off" aria-label="' + c.n + '" value="' + val + '"></span>';
+      else ctl = '<span class="mini"><i>' + S.cur + '</i><input id="' + opt.id + '-in-' + c.c + '" data-set="' + c.c + '" inputmode="numeric" autocomplete="off" aria-label="' + c.n + '" value="' + fmtN(val) + '"></span>';
+      h += '<div class="arow" data-row="' + c.c + '"><div><b>' + c.n + '</b><small>' + (c.hint || '') + '</small></div>' + ctl + '</div>';
+    });
+    h += '</div></div>';
+    /* --- a month's pay --- */
+    h += '<div class="card"><div class="cardh"><div><h3>' + (read ? 'A full month' : 'A month\'s pay, worked out') + '</h3><div class="sub" data-monthsub></div></div>' +
+      (read ? '' : '<div class="legend"><span><i class="ks">' + ic('pencil') + '</i>You set</span><span><i class="kc">' + ic('calc') + '</i>Worked out, open to see how</span><span><i class="ke">' + ic('cal') + '</i>Comes each month</span></div>') + '</div>';
+    h += '<div data-body></div>';
+    h += '<div class="foot"><div class="split" aria-hidden="true"><i class="s-net"></i><i class="s-ded"></i><i class="s-er"></i></div><div class="tots">' +
+      '<div class="tot main"><small><i style="background:var(--ok)"></i>Take-home</small><b class="num" data-t="net"></b><em data-y="net"></em></div>' +
+      '<div class="tot"><small>Gross pay</small><b class="num" data-t="gross2"></b><em data-y="gross"></em></div>' +
+      '<div class="tot"><small><i style="background:#E08AA8"></i>Deductions</small><b class="num" data-t="ded2"></b><em data-y="ded"></em></div>' +
+      '<div class="tot er"><small><i style="background:var(--p-light)"></i>Cost to the company</small><b class="num" data-t="cost"></b><em data-y="cost"></em></div>' +
+      '</div><div class="note">' + ic('info') + '<span data-note></span></div></div></div></div>';
+    el.innerHTML = h;
+    body(); update(false);
+  }
+  function body(){
+    const b = el.querySelector('[data-body]');
+    const ready = compute(vals, tries).t.ready;
+    if (!ready){ b.innerHTML = '<div class="empty"><b>Type the ' + head().n.toLowerCase() + ' to see the month work out</b>Basic, allowances, deductions and take-home appear here the moment there is a number.</div>'; return; }
+    b.innerHTML = section('earn', 'Earnings', 'Gross pay') + section('ded', 'Deductions', 'Total deductions') +
+      (opt.mode === 'read' ? '' : section('er', 'Paid by the company on top', 'On top of gross pay'));
+  }
+  function setNum(node, n, text){
+    if (!node) return;
+    const from = node._n, to = n;
+    node._n = to;
+    if (from == null || from === to || reduce){ node.textContent = text(to); return; }
+    const t0 = performance.now();
+    (function tick(now){
+      const p = MIN(1, (now - t0) / 320), e = 1 - Math.pow(1 - p, 3);
+      if (node._n !== to) return;
+      node.textContent = text(from + (to - from) * e);
+      if (p < 1) requestAnimationFrame(tick);
+    })(t0);
+  }
+  function update(flash){
+    const r = compute(vals, tries), v = r.v, t = r.t, H = head();
+    const hadBody = !!el.querySelector('[data-row]:not(.arow)');
+    if (t.ready !== hadBody) body();
+    el.querySelectorAll('[data-v]').forEach(n => {
+      const c = n.dataset.v, before = n._n;
+      setNum(n, v[c], m);
+      if (flash && before != null && before !== v[c]){ const row = n.closest('.row'); row.classList.remove('flash'); void row.offsetWidth; row.classList.add('flash'); }
+    });
+    el.querySelectorAll('[data-extra]').forEach(n => {
+      const c = comp(n.dataset.extra); let x = '';
+      if (opt.mode === 'read') { n.innerHTML = ''; return; }
+      if (changed(c)) x = '<span class="chip warn">Changed</span><button type="button" class="link" data-usual="' + c.c + '">Back to usual ' + m(c.usual||0) + '</button>';
+      else if (c.k === 'set' && (c.usual||0) > 0) x = '<span class="chip teal">' + ic('spark') + 'Usual amount</span>';
+      else if (c.k === 'each' && tries[c.c] != null) x = '<span class="chip warn">Example only, not saved</span><button type="button" class="link" data-untry="' + c.c + '">Remove</button>';
+      else if (c.k === 'each') x = '<button type="button" class="link" data-tryit="' + c.c + '">Try an amount</button>';
+      if (n._x !== x){ n.innerHTML = x; n._x = x; }
+    });
+    if (base) el.querySelectorAll('[data-was]').forEach(n => { const c = n.dataset.was; n.textContent = base.v[c] !== v[c] ? m(base.v[c]) : ''; });
+    el.querySelectorAll('[data-why]').forEach(n => { n.innerHTML = whyHtml(comp(n.dataset.why), v); });
+    const T = {earn:t.gross, ded:t.ded, er:t.er, net:t.net, gross2:t.gross, ded2:t.ded, cost:t.cost};
+    el.querySelectorAll('[data-t]').forEach(n => {
+      const key = n.dataset.t;
+      if (!t.ready){ n.textContent = '—'; n._n = null; return; }
+      setNum(n, T[key], m);
+    });
+    el.querySelectorAll('[data-y]').forEach(n => {
+      const key = n.dataset.y;
+      if (!t.ready){ n.textContent = ''; return; }
+      let s = m(t[key] * 12) + ' a year';
+      if (base){ const d = t[key] - base.t[key]; if (d) s = '<span class="delta' + ((key === 'net' || key === 'gross') === (d > 0) ? '' : ' neg') + '">' + (d > 0 ? '+' : '−') + m(Math.abs(d)) + ' a month</span>'; n.innerHTML = s; return; }
+      n.textContent = s;
+    });
+    const sp = el.querySelector('.split');
+    if (sp){ const a = sp.children; a[0].style.flexGrow = t.ready ? MAX(t.net,0) : 0; a[1].style.flexGrow = t.ready ? t.ded : 0; a[2].style.flexGrow = t.ready ? t.er : 0; }
+    const hs = el.querySelector('[data-headsub]');
+    if (hs) hs.textContent = !t.ready ? 'Needed before this person can be paid.' : (H.per === 'year' ? 'That is ' + m(v[H.c] / 12) + ' a month before deductions.' : 'That is ' + m(v[H.c] * 12) + ' a year.');
+    const ms = el.querySelector('[data-monthsub]');
+    if (ms) ms.textContent = 'By ' + S.name + ', for a full December 2026.';
+    const nt = el.querySelector('[data-note]');
+    if (nt) nt.textContent = opt.mode === 'read' ? 'Lines marked "changes each month" are shown at their usual amount. Your first pay may be less if you start part-way through the month.'
+      : opt.mode === 'cmp' ? 'A full month before and after. The month the change starts may mix both.'
+      : 'A full month, with each-month lines at their usual amount. Asha starts on 5 December, so the first pay may be less.';
+    if (opt.onChange) opt.onChange(r, S);
+  }
+  function solve(target){
+    const H = head().c, keep = vals[H];
+    let lo = 0, hi = 1e11;
+    for (let i = 0; i < 70; i++){ const mid = (lo + hi) / 2; vals[H] = mid; if (compute(vals, tries).t.net >= target) hi = mid; else lo = mid; }
+    const ans = Math.ceil(hi / S.step) * S.step;
+    vals[H] = keep; return ans;
+  }
+  /* --- events --- */
+  el.addEventListener('input', (e) => {
+    const t = e.target;
+    if (t.dataset.set){
+      const c = comp(t.dataset.set), n = parse(t.value);
+      vals[c.c] = n;
+      if (c.ctl !== 'count') t.value = (c.head && !n) ? '' : fmtN(n);
+      update(true);
+    } else if (t.dataset.try){ tries[t.dataset.try] = parse(t.value); t.value = fmtN(tries[t.dataset.try]); update(true); }
+    else if (t.hasAttribute('data-target')) t.value = parse(t.value) ? fmtN(parse(t.value)) : '';
+  });
+  el.addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    const d = b.dataset;
+    if (d.open){ open.has(d.open) ? open.delete(d.open) : open.add(d.open); body(); update(false); const nb = el.querySelector('[data-open="' + d.open + '"]'); if (nb) nb.focus(); }
+    else if (d.go){ const row = el.querySelector('[data-row="' + d.go + '"]'); if (row){ row.scrollIntoView({block:'nearest', behavior: reduce ? 'auto' : 'smooth'}); row.classList.remove('flash'); void row.offsetWidth; row.classList.add('flash'); const i = row.querySelector('input'); if (i) i.focus(); } }
+    else if (d.add){ added.add(d.add); body(); update(false); const i = el.querySelector('[data-set="' + d.add + '"]'); if (i){ i.focus(); i.select(); } }
+    else if (d.usual){ const c = comp(d.usual); vals[c.c] = c.usual || 0; if (!c.usual) added.delete(c.c); body(); update(true); }
+    else if (d.tryit){ tries[d.tryit] = comp(d.tryit).usual || 0; body(); update(false); const i = el.querySelector('[data-try="' + d.tryit + '"]'); if (i){ i.focus(); i.select(); } }
+    else if (d.untry){ delete tries[d.untry]; body(); update(true); }
+    else if (d.tog){ vals[d.tog] = (vals[d.tog] != null ? vals[d.tog] : comp(d.tog).usual) ? 0 : 1; b.classList.toggle('on', !!vals[d.tog]); b.setAttribute('aria-pressed', !!vals[d.tog]); update(true); }
+    else if ('back' in d){ backOpen = !backOpen; backMsg = ''; render(); if (backOpen) el.querySelector('[data-target]').focus(); }
+    else if ('find' in d){
+      const target = parse(el.querySelector('[data-target]').value);
+      if (!target){ el.querySelector('[data-backmsg]').textContent = 'Type the take-home you want first.'; return; }
+      const H = head(); vals[H.c] = solve(target);
+      const net = compute(vals, tries).t.net;
+      backMsg = '<b>' + m(vals[H.c]) + (H.per === 'year' ? ' a year' : ' a month') + '</b> gives a take-home of ' + m(net) + ' a month. It is in the box above; change it if you like.';
+      el.querySelector('[data-backmsg]').innerHTML = backMsg;
+      el.querySelector('[data-set="' + H.c + '"]').value = fmtN(vals[H.c]);
+      update(true);
+    }
+    else if ('studio' in d){ b.textContent = 'Opens the scheme in Formula Studio (for people allowed to edit pay schemes)'; b.disabled = true; }
+  });
+  /* point at a worked-out line: what it uses lights up */
+  el.addEventListener('mouseover', (e) => {
+    const row = e.target.closest('.row.k-calc');
+    el.querySelectorAll('.src').forEach(n => n.classList.remove('src'));
+    if (!row) return;
+    const c = comp(row.dataset.row);
+    const uses = c.uses || (c.eq || []).filter(t => t[0] === 'ref').map(t => t[1]);
+    uses.forEach(u => { const r = el.querySelector('[data-row="' + u + '"]'); if (r && !r.classList.contains('arow')) r.classList.add('src'); });
+  });
+  el.addEventListener('mouseleave', () => el.querySelectorAll('.src').forEach(n => n.classList.remove('src')));
+}
+
+/* ---------------- wire the four homes ---------------- */
+const $ = (s) => document.querySelector(s);
+function slip(r, S){
+  const m = (n) => S.cur + fmtN(n), t = r.t, box = $('#slip');
+  if (!t.ready){ box.innerHTML = '<span class="sub">A month\'s payslip appears here once the pay is typed.</span>'; }
+  else box.innerHTML = '<div class="kv"><span>Gross pay</span><b class="num">' + m(t.gross) + '</b></div><div class="kv"><span>Deductions</span><b class="num">−' + m(t.ded) + '</b></div><div class="kv tot"><span>Take-home</span><b class="num">' + m(t.net) + '</b></div>';
+  document.querySelector('[data-bind="stepline"]').textContent = t.ready ? 'Take-home ' + m(t.net) + ' a month' : 'Pay needed';
+}
+function letter(r, S){
+  const m = (n) => S.cur + fmtN(n), box = $('#letter');
+  if (!$('#letter-tog').classList.contains('on')){ box.innerHTML = '<b>Your pay</b><p class="sub">Gross pay of ' + m(r.t.gross) + ' a month.</p>'; return; }
+  let h = '<b>Your pay each month</b><table><tbody>';
+  S.comps.filter(c => c.g === 'earn' && r.v[c.c] > 0).forEach(c => { h += '<tr><td>' + c.n + '</td><td>' + m(r.v[c.c]) + '</td></tr>'; });
+  h += '<tr class="t"><td>Gross pay</td><td>' + m(r.t.gross) + '</td></tr></tbody></table><p class="sub" style="margin-top:6px">Take-home after the usual deductions is about ' + m(r.t.net) + ' a month.</p>';
+  box.innerHTML = h;
+}
+const builders = {
+  studio: new PayBuilder($('#pb-studio'), {id:'st', onChange: slip}),
+  offer: new PayBuilder($('#pb-offer'), {id:'of', slim:true, onChange: letter}),
+  change: new PayBuilder($('#pb-change'), {id:'ch', mode:'cmp', slim:true}),
+  phone: new PayBuilder($('#pb-phone'), {id:'ph', mode:'read'})
+};
+function loadScheme(key){
+  const S = SCHEMES[key];
+  Object.values(builders).forEach(b => b.load(key));
+  document.querySelector('[data-bind="scheme"]').textContent = S.name;
+  document.querySelector('[data-bind="schemewhy"]').textContent = S.why;
+  document.querySelector('[data-bind="country"]').textContent = S.country;
+  document.querySelector('[data-bind="place"]').textContent = S.place;
+}
+$('#schemes').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  $('#schemes').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+  loadScheme(b.dataset.scheme);
+});
+$('#views').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  $('#views').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+  document.querySelectorAll('.view').forEach(v => { v.hidden = v.id !== 'v-' + b.dataset.view; });
+});
+$('#letter-tog').addEventListener('click', (e) => {
+  const b = e.currentTarget; b.classList.toggle('on'); b.setAttribute('aria-pressed', b.classList.contains('on'));
+  letter(builders.offer.result(), builders.offer.scheme());
+});
+loadScheme('india');
+})();
+</script>
