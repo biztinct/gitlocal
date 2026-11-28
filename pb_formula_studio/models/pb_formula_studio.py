@@ -13628,11 +13628,13 @@ class PbFormulaStudio(models.AbstractModel):
                                     for r in self.env[model].search([], **kw)]
         connectors = (comp('hr.integration.connector', order='name')
                       if 'hr.integration.connector' in self.env else [])
-        accts = self.env['account.account'].search(
-            [('company_ids', 'in', c.company_id.ids)] if 'company_ids' in self.env['account.account']._fields
-            else [], order='code', limit=400)
-        journals = self.env['account.journal'].search(
-            [('type', '=', 'general'), ('company_id', '=', c.company_id.id)], order='name')
+        accts = self.env['account.account']
+        journals = self.env['account.journal']
+        if accts.has_access('read'):
+            accts = accts.search([('company_ids', 'in', c.company_id.ids)] if 'company_ids' in accts._fields
+                                 else [], order='code', limit=400)
+        if journals.has_access('read'):
+            journals = journals.search([('type', '=', 'general'), ('company_id', '=', c.company_id.id)], order='name')
         return {
             'structures': comp('hr.payroll.structure', order='name'),
             'connectors': connectors,

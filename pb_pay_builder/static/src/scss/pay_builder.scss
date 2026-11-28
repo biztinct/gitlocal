@@ -128,3 +128,19 @@
 @keyframes pbpb-rise {from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
 @keyframes pbpb-pulse {from{opacity:.4;}to{opacity:1;}}
 @media(prefers-reduced-motion:reduce) {.pbpb-block *, .pbpb-block *::before {animation:none!important;transition:none!important;scroll-behavior:auto!important;}}
+
+.pbpb-source, .pbpb-period {
+    border: 0;
+    margin: 0 0 16px;
+    padding: 0;
+    legend { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+}
+.pbpb-source > label {
+    display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; cursor: pointer;
+    border: 1px solid var(--pbnh-line, #e5e3ee); border-radius: 10px; margin-bottom: 6px;
+    input { accent-color: var(--pbnh-p, #5A4BB0); margin-top: 4px; }
+    small { display: block; }
+    &:has(input:checked) { border-color: var(--pbnh-p, #5A4BB0); }
+}
+.pbpb-switch-warning { border-radius: 10px; padding: 12px; background: var(--pbnh-warn-soft, #FDF1DD); }
+.pbpb-period button[aria-pressed="true"] { color: var(--pbnh-p, #5A4BB0); border-color: currentColor; }

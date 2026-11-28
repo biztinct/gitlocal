@@ -731,3 +731,169 @@ msgstr ""
 #: code:addons/pb_pay_builder/models/formula_words.py:0
 msgid "Show the %s lines"
 msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid "Only a pay scheme manager can change this."
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid "This pay scheme is not available."
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Worked out by its formula — nobody types it."
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid ""
+"From now on Payobook reads this amount from each person's contract. %s "
+"people paid by this scheme have no amount there yet, so they get 0 for this "
+"line until someone types one."
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid ""
+"%(count)s people have this amount on their contract. It stays there but pay "
+"stops reading it; the amount will come from %(source)s each month."
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid "the monthly pay data"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Where does this amount come from?"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "The same for this person every month"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid ""
+"HR types it when hiring or changing pay. Kept on the person's contract."
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "It changes each month"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid ""
+"It arrives with the pay data file, the connected system or the timesheet."
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Show who"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Switch anyway"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Keep as it is"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Typed per"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Month"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Year"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Main pay amount"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Follow the pay scheme"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/studio.js:0
+msgid "The people affected could not be checked. Try again."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid ""
+"From now on Payobook reads this amount from each person's contract. One "
+"person paid by this scheme has no amount there yet, so they get 0 for this "
+"line until someone types one."
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid ""
+"One person has this amount on their contract. It stays there but pay stops "
+"reading it; the amount will come from %s each month."
+msgstr ""

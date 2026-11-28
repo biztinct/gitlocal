@@ -732,3 +732,182 @@ msgstr "thì"
 #: code:addons/pb_pay_builder/models/formula_words.py:0
 msgid "Show the %s lines"
 msgstr "Hiện %s dòng"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid "Only a pay scheme manager can change this."
+msgstr "Chỉ người quản lý chế độ lương mới có thể thay đổi mục này."
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid "This pay scheme is not available."
+msgstr "Chế độ lương này không khả dụng."
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Worked out by its formula — nobody types it."
+msgstr "Công thức tự tính khoản này — không ai phải nhập."
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid ""
+"From now on Payobook reads this amount from each person's contract. %s "
+"people paid by this scheme have no amount there yet, so they get 0 for this "
+"line until someone types one."
+msgstr ""
+"Từ nay Payobook lấy khoản này từ hợp đồng của từng người. Có %s người hưởng "
+"chế độ lương này chưa có khoản đó trong hợp đồng, nên họ sẽ nhận 0 ở dòng "
+"này cho đến khi có người nhập số tiền."
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid ""
+"%(count)s people have this amount on their contract. It stays there but pay "
+"stops reading it; the amount will come from %(source)s each month."
+msgstr ""
+"Có %(count)s người đã có khoản này trong hợp đồng. Số tiền vẫn được lưu ở "
+"đó. Từ nay bảng lương sẽ lấy khoản này từ %(source)s mỗi tháng."
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid "the monthly pay data"
+msgstr "dữ liệu lương hằng tháng"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Where does this amount come from?"
+msgstr "Khoản tiền này lấy từ đâu?"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "The same for this person every month"
+msgstr "Giữ nguyên cho người này mỗi tháng"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid ""
+"HR types it when hiring or changing pay. Kept on the person's contract."
+msgstr ""
+"Nhân sự nhập khi tuyển dụng hoặc đổi lương. Khoản này được lưu trong hợp "
+"đồng của người đó."
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "It changes each month"
+msgstr "Thay đổi mỗi tháng"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid ""
+"It arrives with the pay data file, the connected system or the timesheet."
+msgstr ""
+"Khoản này đến từ tệp dữ liệu lương, hệ thống kết nối hoặc bảng chấm công."
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Show who"
+msgstr "Xem danh sách"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Switch anyway"
+msgstr "Vẫn chuyển"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Keep as it is"
+msgstr "Giữ như hiện tại"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Typed per"
+msgstr "Nhập theo"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Month"
+msgstr "Tháng"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Year"
+msgstr "Năm"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Main pay amount"
+msgstr "Khoản lương chính"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Follow the pay scheme"
+msgstr "Theo chế độ lương"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/studio.js:0
+msgid "The people affected could not be checked. Try again."
+msgstr "Không thể kiểm tra danh sách người bị ảnh hưởng. Hãy thử lại."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid ""
+"From now on Payobook reads this amount from each person's contract. One "
+"person paid by this scheme has no amount there yet, so they get 0 for this "
+"line until someone types one."
+msgstr ""
+"Từ nay Payobook lấy khoản này từ hợp đồng của từng người. Một người hưởng "
+"chế độ lương này chưa có khoản đó trong hợp đồng và sẽ nhận 0 ở dòng này cho"
+" đến khi có người nhập số tiền."
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid ""
+"One person has this amount on their contract. It stays there but pay stops "
+"reading it; the amount will come from %s each month."
+msgstr ""
+"Một người có khoản này trong hợp đồng. Số tiền vẫn được lưu ở đó. Từ nay "
+"bảng lương sẽ lấy khoản này từ %s mỗi tháng."
