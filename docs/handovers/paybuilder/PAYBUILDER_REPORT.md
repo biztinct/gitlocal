@@ -1,6 +1,6 @@
 # Pay Builder implementation and release report
 
-**Released to all five databases.** Commit `c9afd099e` passed the release script, and all five databases retained their scheme and scheduled-job counts. W1–W7 passed in local Chrome. The Payobook live walkthrough added the authorised DEMO hire. The first Rize India preview exposed missing working-day inputs. Both results and the corrective work are recorded below.
+**Released to all five databases.** The initial feature release was `c9afd099e`. The live walkthrough added the authorised DEMO hire on Payobook and exposed two preview issues. Corrective release `9686d2ed2` passed the release script and the independent checks on all five databases. W1–W7 passed in local Chrome.
 
 ## 1. What was built
 
@@ -12,14 +12,15 @@
 | P3 | `60cb015ca` | Use the same builder on an offer, choose how the letter shows pay and carry the signed amounts into the hire. |
 | P4 | `6681a6a56` | Date a change from a contract, compare before and after, and send it down the existing approval route. After hire approval, the employee can view their own pay on the joining page. |
 | P5 | `360ac6ebe`, merged as `c9afd099e` | Practice entering a wage in Learn, with an example monthly breakdown. Updated the lesson text, checked translations and removed retired hire-card wording. |
+| W8 correction | `27ea52ecc`, merged as `9686d2ed2` | Both hire previews use the scheme’s full-month day inputs. A 10% allowance shows its percentage in the calculation. |
 
 The permanent release scope includes Sudima in `f8791a01b`. The engine, take-home search, pay-band totals and payroll input reader remain the existing payroll implementations. The hire approval now supplies the employee’s selected scheme when the existing fill prepares that new contract.
 
 | Module | Previous version | Feature version |
 |---|---|---|
-| pb_pay_builder | New | 19.0.1.2.0 |
+| pb_pay_builder | New | 19.0.1.2.1 |
 | pb_pay_builder_change | New | 19.0.1.0.0 |
-| pb_new_hire | 19.0.1.8.2 | 19.0.1.9.2 |
+| pb_new_hire | 19.0.1.8.2 | 19.0.1.9.3 |
 | pb_formula_studio | 19.0.1.217.0 | 19.0.1.218.1 |
 | pb_pay_package | 19.0.1.1.1 | 19.0.1.2.0 |
 | pb_contracts | 19.0.1.17.0 | 19.0.1.17.1 |
@@ -43,7 +44,7 @@ The canonical Learn authoring file is `docs/tutorial_poc/author/data.js`. Its ge
 
 Before modifying product code, all seven required suites ran from the release branch on an isolated local copy. Of 1,459 cases, 1,429 passed, 21 failed, five errored and four skipped. The extra Document Studio and Learn suites were baselined before their respective changes. The counts below follow the order **run / passed / failed / errors / skipped**.
 
-| Module | Before | Final |
+| Module | Before | At the end of P5 |
 |---|---|---|
 | pb_new_hire | 178 / 177 / 1 / 0 / 0 | 182 / 182 / 0 / 0 / 0 |
 | pb_formula_studio | 560 / 547 / 10 / 1 / 2 | 560 / 547 / 10 / 1 / 2 |
@@ -64,7 +65,7 @@ Before modifying product code, all seven required suites ran from the release br
 | P3 | T43–T50 passed, including both letter renderers and approval of an actual hire. | 303 / 301 / 0 / 2 / 0 |
 | P4 | T51–T62 passed. T57 included a separate installation with both builder modules absent. An additional signed-offer fallback case passed. | 230 / 225 / 1 / 2 / 2 |
 
-**Final suite totals.** 1,970 cases across eleven modules, 1,931 passed, 24 failed, 6 errored and 9 skipped. All failures and errors match the named baselines. Add employee passed every case in both its combined and final standalone suites. The standalone run used the final language catalogues.
+**P5 suite totals.** 1,970 cases across eleven modules, 1,931 passed, 24 failed, 6 errored and 9 skipped. All failures and errors match the named baselines. Add employee passed every case in both its combined and final standalone suites. The standalone run used the final language catalogues.
 
 **T18 performance.** The 400-visible-line fixture took 295 ms in the final P1 suite, 325 ms in P2, 322 ms in P4 and 321 ms in P5. The existing mandatory totals operation alone took 133, 146, 150 and 141 ms in those runs. Other warm quotes ranged from 290 to 526 ms. The 60 ms acceptance target was missed on this machine. The timing case is reported as skipped. On the browser fixture the screen initially showed twelve rows and could expand to 399.
 
@@ -168,6 +169,7 @@ Chrome opened all four prototype homes with both schemes. The local product walk
 | W7, employee joining | At 360 × 740 px the joiner entered their code and opened Your pay. Keyboard Enter disclosed Basic’s sum. This contract’s insurance answer was zero. Take-home was ₫27,850,000 in each of the three languages. Public output showed the employee’s earnings and deductions. | `P4-{locale}-joining.png` |
 | W8, live Payobook | Added **DEMO Pay Builder Live November** through the signed-in Add employee screen. A ₫30,000,000 wage produced ₫36,580,000 gross, ₫5,986,000 deductions and ₫30,594,000 take-home in both panels. A temporary ₫1,000,000 advance reduced take-home to ₫29,594,000. Removing it restored the original result. Working back from that result returned ₫30,000,000. The screen confirmed the hire, and a read-only check found one employee and an open contract at the agreed wage. No welcome link was sent. | `W8-payobook-month.png`, inspected and removed |
 | Rize India, first live preview | **Annual fixed pay** accepted ₹12,00,000 and showed ₹1,00,000 a month before deductions. Basic earnings divided by zero. The builder withheld gross and take-home, while the right-hand example showed ₹0 gross and −₹3,000 take-home. The draft was never submitted. A read-only check found zero employees with the preview name. | Chrome inspection |
+| After the corrective release | A read-only call to the deployed builder returned ₹82,500 gross, ₹3,000 deductions, ₹79,500 take-home and ₹3,000 employer contributions on Rize. On Payobook, it returned ₫30,594,000 take-home and the allowance explanation “10% of Basic Salary.” A second count found one saved Payobook DEMO hire and zero Rize preview employees. The Mac locked during the release. Repeating the two browser previews requires the signed-in desktop to be unlocked. | Deployed calculation checked directly. Final Chrome recheck pending. |
 
 The Learn practice card showed ₫10,230,000 gross, ₫997,500 in deductions and ₫9,232,500 take-home after entering ₫9,500,000. A different wage hid that fixed example. Checked in English and Vietnamese with the keyboard and reduced motion. Captures were taken as `P5-practice-{en_US,vi_VN}.png`.
 
@@ -184,7 +186,7 @@ Side-by-side comparisons led to a 26 px headline, a 38 × 22 px offer-letter swi
 
 ## 6. Release and verification
 
-The risky release of `c9afd099e751d3dcd52a46f53cb76b0fb089e41a` returned **OK** on 28 November 2026. The runner used the 27 November nightly backup on every target. Payobook, Rize and Sudima had zero active users in the preceding 15 minutes. The deploy notes had no open operation or hold. Service downtime was 430 seconds and the full release took 451 seconds. The production PDF converter is installed.
+The initial risky release of `c9afd099e751d3dcd52a46f53cb76b0fb089e41a` returned **OK** on 28 November 2026. The runner used the 27 November nightly backup on every target. Payobook, Rize and Sudima had zero active users in the preceding 15 minutes. The deploy notes had no open operation or hold. Service downtime was 430 seconds and the full release took 451 seconds. The production PDF converter is installed.
 
 | Database | Rules before → after | Per-person flags before → after | Active jobs before → after | All jobs before → after | Upgrade and login check |
 |---|---:|---:|---:|---:|---|
@@ -217,6 +219,24 @@ The following entry was appended to `/opt/deploy-notes.md` and verified by readi
 The active India scheme reads working days and paid days from the monthly file and labels both with the payroll system’s existing day-source keys. Their stored usual values are zero. The first example therefore divided by zero even though HR had entered the correct annual pay. The correction supplies the full month’s standard days for those two inputs when generating an example. The right-hand preview applies the same fallback only to inputs for which the real reader found no answer. The production payroll reader, contract, scheme data and right-hand layout are unchanged. A read-only calculation on the actual scheme with 21 days produced ₹50,000 Basic, ₹32,500 house rent allowance, ₹82,500 gross, ₹3,000 deductions and ₹79,500 take-home.
 
 On the Payobook demonstration scheme, the description of a 10% allowance displayed the multiplier as ₫0 because the imported constant had an automatic money classification. The explanation now recognises a fractional constant explicitly labelled with a percent sign and preserves a manually chosen unit. The three focused regression cases passed. Full suites for both edited modules then ran 229 cases. Add employee passed 182/182 and Pay Builder passed 46/47. The sole skip was the existing 400-line timing case at 552 ms, including 308 ms for pay-band totals. Twenty additional Hiring offer, Joining and contract-change integration cases passed. A separate local Chrome walkthrough showed matching ₹95,050 take-home values in both panels on the synthetic annual day-count fixture.
+
+### Corrective production release
+
+The risky release of `9686d2ed2118928a8f3788dd919ca185abca5947` upgraded Pay Builder and Add employee in all five databases. It used the prior night’s backups. Service downtime was 112 seconds and the release took 129 seconds. Every upgrade exited 0 with zero errors. Independent checks matched the 12 module trees to the commit and all ten checked installed versions to the manifests on each database. The rule, per-person flag and scheduled-job counts in the table above were identical before and after this release too. The five upgrade logs and the service log were clear of errors and tracebacks during the release.
+
+```text
+13:40:35 warm payobook 200
+13:40:37 warm payobook_template public 404 internal 200
+13:40:40 warm p0clone 200
+13:40:41 warm rize 200
+13:40:43 warm sudima 200
+13:40:44 STEP verify took 1s
+RESULT: OK
+```
+
+The server’s verified follow-up entry reads as follows.
+
+> 2026-11-28 13:41 UTC | Codex PAYBUILDER W8 | NOTE | pb_pay_builder,pb_new_hire | payobook,payobook_template,p0clone,rize,sudima | Verified 9686d2ed2. Release OK, 112s down and 129s total. All 12 module trees match and all 10 checked module versions match on every database. N8 rules/per-person unchanged 1667/48, 0/0, 0/0, 3254/202, 62/7. Active jobs unchanged 61/42/51/94/93. Four public logins 200 and template internal 200 with its approved public 404. Five upgrade logs and service log clear of ERROR, CRITICAL and Traceback. Nightly backups used. | /tmp/pbrel-20261128-133833-87392/run.log
 
 ## 7. Ledger additions
 
