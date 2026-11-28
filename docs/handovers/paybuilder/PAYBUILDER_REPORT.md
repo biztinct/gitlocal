@@ -1,6 +1,6 @@
 # Pay Builder implementation and release report
 
-**Released to all five databases.** Commit `c9afd099e` passed the release script, and all five databases retained their scheme and scheduled-job counts. W1–W7 passed in local Chrome. Both live W8 sites currently present their sign-in screens.
+**Released to all five databases.** Commit `c9afd099e` passed the release script, and all five databases retained their scheme and scheduled-job counts. W1–W7 passed in local Chrome. The Payobook live walkthrough added the authorised DEMO hire. The first Rize India preview exposed missing working-day inputs. Both results and the corrective work are recorded below.
 
 ## 1. What was built
 
@@ -166,11 +166,21 @@ Chrome opened all four prototype homes with both schemes. The local product walk
 | W5, Contracts | A monthly change from ₫30,000,000 to ₫31,000,000 showed a ₫800,000 take-home gain. A second user approved it. Advancing the local scheduled job to the effective date applied it once and added it to History. The restricted role had no Change pay button. On a standalone Contracts install, both Terms and Components opened without that button or a console error. | `P4-{locale}-change.png` |
 | W6, layout and keyboard | Add employee fit 1440, 1180, 820, 600 and 400 px in all three languages with reduced motion. Normal motion was exercised on the annual case. Enter, Escape, refocus through a chip and navigating to a folded line worked. Slow responses retained the last result and current input. | `p1-{locale}-{width}.png` |
 | W7, employee joining | At 360 × 740 px the joiner entered their code and opened Your pay. Keyboard Enter disclosed Basic’s sum. This contract’s insurance answer was zero. Take-home was ₫27,850,000 in each of the three languages. Public output showed the employee’s earnings and deductions. | `P4-{locale}-joining.png` |
-| W8, live | After deployment, Chrome opened Add employee on Payobook and Rize. Both redirected to sign-in. The owner has been asked to sign in. The live DEMO walkthrough on Payobook and the unsent India preview on Rize are pending. | No authenticated live capture yet. |
+| W8, live Payobook | Added **DEMO Pay Builder Live November** through the signed-in Add employee screen. A ₫30,000,000 wage produced ₫36,580,000 gross, ₫5,986,000 deductions and ₫30,594,000 take-home in both panels. A temporary ₫1,000,000 advance reduced take-home to ₫29,594,000. Removing it restored the original result. Working back from that result returned ₫30,000,000. The screen confirmed the hire, and a read-only check found one employee and an open contract at the agreed wage. No welcome link was sent. | `W8-payobook-month.png`, inspected and removed |
+| Rize India, first live preview | **Annual fixed pay** accepted ₹12,00,000 and showed ₹1,00,000 a month before deductions. Basic earnings divided by zero. The builder withheld gross and take-home, while the right-hand example showed ₹0 gross and −₹3,000 take-home. The draft was never submitted. A read-only check found zero employees with the preview name. | Chrome inspection |
 
 The Learn practice card showed ₫10,230,000 gross, ₫997,500 in deductions and ₫9,232,500 take-home after entering ₫9,500,000. A different wage hid that fixed example. Checked in English and Vietnamese with the keyboard and reduced motion. Captures were taken as `P5-practice-{en_US,vi_VN}.png`.
 
 Side-by-side comparisons led to a 26 px headline, a 38 × 22 px offer-letter switch, the person’s name in the contract dialog, and line-kind icons and disclosure arrows on the phone. A formative check of the approved design earns **8/10**. Entering one amount, following an explanation and returning to its source worked across the four homes. The failure, loading, no-scheme and restricted states offered a clear action or explanation. The largest scheme exceeded its response-time target. Comparative user testing against other products has not been conducted. The practice card’s final English and Vietnamese runs also checked that the row values lined up separately from their names.
+
+| Design criterion | Self-score | Basis |
+|---|---:|---|
+| Enter the agreed amount and see the month | 8/10 | On Payobook the reverse search returned the original wage, and the independently calculated payslip agreed to the đồng. The first India check exposed a real day-count omission. |
+| A way forward in each state | 8/10 | The empty, missing-scheme, permissions, slow-response and retry paths were walked. In India, Basic identified the zero divisor and provided a route to the scheme editor. |
+| Plain language and clear units | 8/10 | The annual equivalent and take-home are explicitly labelled. The live allowance explanation exposed an imported percentage showing as money. |
+| Motion with purpose | 8/10 | Normal and reduced-motion walks completed. The 400-line scheme exceeded the response-time target. |
+| Keyboard operation | 9/10 | Opening an explanation, following its input, returning to a folded row and closing a nested dialog retained focus. |
+| Best in class | Unrated | The prototype and product were compared side by side. No independent comparison with other payroll products was performed. |
 
 ## 6. Release and verification
 
@@ -184,7 +194,7 @@ The risky release of `c9afd099e751d3dcd52a46f53cb76b0fb089e41a` returned **OK** 
 | rize | 3,254 → 3,254 | 202 → 202 | 94 → 94 | 102 → 102 | Exit 0, zero errors, public 200 |
 | sudima | 62 → 62 | 7 → 7 | 93 → 93 | 102 → 102 | Exit 0, zero errors, public 200 |
 
-The nine shipped module trees matched the merged commit by SHA-256. The Hiring, Change job and scheme resolver trees matched as well. Installed versions matched the manifests across all five databases, including both new modules. An independent scan of all five upgrade logs and the service log from release start found zero ERROR, CRITICAL or Traceback entries. The live browser opened both requested sites after the release.
+The nine shipped module trees matched the merged commit by SHA-256. The Hiring, Change job and scheme resolver trees matched as well. Installed versions matched the manifests across all five databases, including both new modules. An independent scan of all five upgrade logs and the service log from release start found zero ERROR, CRITICAL or Traceback entries. The owner signed in to both sites for the live checks. Payobook’s console reported an existing application-icon size warning. The Pay Builder walkthrough completed.
 
 The server release log is `/tmp/pbrel-20261128-085930-13406/run.log`. Its final checks are shown below.
 
@@ -202,9 +212,15 @@ The following entry was appended to `/opt/deploy-notes.md` and verified by readi
 
 > 2026-11-28 09:07 UTC | Codex PAYBUILDER | NOTE | pb_pay_builder,pb_pay_builder_change,pb_new_hire,pb_formula_studio,pb_pay_package,pb_contracts,pb_joining,pb_doc_studio_hiring,pb_learn | payobook,payobook_template,p0clone,rize,sudima | Verified c9afd099e. Release OK, 430s down. All nine module trees and installed versions match on all five. Hiring, Change job and scheme resolver trees also match. N8 rules/per-person unchanged 1667/48, 0/0, 0/0, 3254/202, 62/7. Active jobs unchanged 61/42/51/94/93. Four public logins 200 and template internal 200 with its approved public 404. All five upgrade logs and the service log have zero ERROR, CRITICAL or Traceback since start. Nightly backups used. | /tmp/pbrel-20261128-085930-13406/run.log
 
+### Correction found during the live walkthrough
+
+The active India scheme reads working days and paid days from the monthly file and labels both with the payroll system’s existing day-source keys. Their stored usual values are zero. The first example therefore divided by zero even though HR had entered the correct annual pay. The correction supplies the full month’s standard days for those two inputs when generating an example. The right-hand preview applies the same fallback only to inputs for which the real reader found no answer. The production payroll reader, contract, scheme data and right-hand layout are unchanged. A read-only calculation on the actual scheme with 21 days produced ₹50,000 Basic, ₹32,500 house rent allowance, ₹82,500 gross, ₹3,000 deductions and ₹79,500 take-home.
+
+On the Payobook demonstration scheme, the description of a 10% allowance displayed the multiplier as ₫0 because the imported constant had an automatic money classification. The explanation now recognises a fractional constant explicitly labelled with a percent sign and preserves a manually chosen unit. The three focused regression cases passed. Full suites for both edited modules then ran 229 cases. Add employee passed 182/182 and Pay Builder passed 46/47. The sole skip was the existing 400-line timing case at 552 ms, including 308 ms for pay-band totals. Twenty additional Hiring offer, Joining and contract-change integration cases passed. A separate local Chrome walkthrough showed matching ₹95,050 take-home values in both panels on the synthetic annual day-count fixture.
+
 ## 7. Ledger additions
 
-D10 records the yearly headline, D11 the person’s scheme priority and D12 the five-database release scope including Sudima. PB19–PB23 cover hidden informational wage mappings, real-contract fill, timing, multiple schemes and keyboard focus on folded lines. PB24–PB27 record the Studio save payload, optional accounting rights, the two letter renderers and the single signed-offer importer. PB28–PB31 record the main-cycle scheme on existing contracts, keyboard ownership in a nested dialog, standalone Contracts installations and pasted amount grouping. PB32 records the lesson’s authoring and example amount.
+D10 records the yearly headline, D11 the person’s scheme priority and D12 the five-database release scope including Sudima. PB19–PB23 cover hidden informational wage mappings, real-contract fill, timing, multiple schemes and keyboard focus on folded lines. PB24–PB27 record the Studio save payload, optional accounting rights, the two letter renderers and the single signed-offer importer. PB28–PB31 record the main-cycle scheme on existing contracts, keyboard ownership in a nested dialog, standalone Contracts installations and pasted amount grouping. PB32 records the lesson’s authoring and example amount. PB33 and PB34 cover full-month day sources and imported percentage constants.
 
 ## 8. Questions for the owner
 

@@ -16,6 +16,13 @@ class PayBuilderRule(models.Model):
 
     pbpb_period = fields.Selection([('month', 'Month'), ('year', 'Year')], string='Typed per')
 
+    def _pbpb_fill_preview_days(self, inputs, unresolved, standard_days):
+        """A full-month example has a full month of standard and paid days."""
+        for rule in self:
+            if (rule.code in unresolved and rule.column_type == 'input' and not rule.is_contract_component
+                    and rule.application_source_key in ('period.standard_days', 'period.paid_day_equivalents')):
+                inputs[rule.code] = standard_days
+
     def _pbpb_name(self):
         self.ensure_one()
         if (self.name or '').strip().casefold() == 'annual fixed ctc':

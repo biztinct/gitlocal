@@ -7,7 +7,7 @@ from odoo.addons.pb_hr_payroll_formula.models.scheme_proposal import SCHEME_APPL
 
 def make_scheme(env, company, shape):
     env = env(context=dict(env.context, tracking_disable=True, **{SCHEME_APPLY_KEY: SCHEME_APPLY_TOKEN}))
-    country = 'IN' if shape == 'COMP' else 'VN'
+    country = 'IN' if shape in ('COMP', 'COMP_DAYS') else 'VN'
     scheme = env['hr.formula.config'].create({
         'name': 'DEMO Pay Builder ' + shape, 'code': 'DEMOPB' + shape,
         'company_id': company.id, 'country_code': country,
@@ -19,13 +19,15 @@ def make_scheme(env, company, shape):
     formulas = {}
 
     def line(code, label, role='info', *, usual=0, person=False, kind='money',
-             formula=None, constant=None, source=False, detail=False, labels=None):
+             formula=None, constant=None, source=False, detail=False, labels=None, application_key=None):
         vals = {
             'code': code, 'config_id': scheme.id, 'sequence': len(data) + 1,
             'name': 'DEMO ' + label, 'column_type': 'input', 'category_id': category.id,
             'appears_on_payslip': role != 'info', 'value_kind': kind, 'net_role': role,
             'net_role_detail': detail, 'default_value': usual, 'is_contract_component': person,
         }
+        if application_key:
+            vals['application_source_key'] = application_key
         if labels:
             vals['value_labels'] = labels
         if formula is not None:
@@ -63,7 +65,7 @@ def make_scheme(env, company, shape):
         else:
             net = '{BASIC}'
         line('TAKEHOME', 'Take-home', 'net', formula=net)
-    elif shape == 'COMP':
+    elif shape in ('COMP', 'COMP_DAYS'):
         line('INANNFIX', 'Annual fixed pay', person=True)
         line('INANNVAR', 'Variable pay for the year', person=True)
         line('BASICRATE', 'Basic share', constant=.5, kind='rate')
@@ -82,6 +84,12 @@ def make_scheme(env, company, shape):
         line('INPT', 'Profession tax', 'deduction', usual=200, source=True)
         line('PIT', 'Income tax', 'deduction', source=True)
         line('INNET', 'Take-home', 'net', formula='{INGROSS}-{PFEE}-{INPT}-{PIT}')
+        if shape == 'COMP_DAYS':
+            line('FULLPERIOD', 'Standard working days', kind='quantity', source=True,
+                 application_key='period.standard_days')
+            line('PAIDPERIOD', 'Paid days', kind='quantity', source=True,
+                 application_key='period.paid_day_equivalents')
+            formulas['BASIC'] = 'ROUND({INANNFIX}*{BASICRATE}/12/{FULLPERIOD}*{PAIDPERIOD},0)'
     elif shape == 'NONE':
         line('FILEPAY','Pay from the file','earning',usual=50000,source=True)
         line('FILENET','Take-home','net',formula='{FILEPAY}')

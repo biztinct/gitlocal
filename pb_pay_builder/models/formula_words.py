@@ -26,9 +26,17 @@ def describe(rule, results, failed, currency, studio):
         col = re.sub(r'\d+$', '', key)
         return by_code.get(key) or by_column.get(col) or by_code.get(key.removesuffix('1')) or by_code.get(col)
 
+    def is_rate(r):
+        # Older imported constants can retain the generic automatic money kind.
+        # A percent-labelled multiplier still needs to show its fractional value as a rate.
+        return (r.value_kind == 'rate' or
+                (r.column_type == 'constant' and r.value_kind_source == 'auto'
+                 and r.value_kind == 'money' and (r.name or '').strip().endswith('%')
+                 and abs(results.get(r.code, 0)) <= 1))
+
     def ref_part(r):
         value = results.get(r.code, 0)
-        text = (_("%s%%", number(value * 100)) if r.value_kind == 'rate'
+        text = (_("%s%%", number(value * 100)) if is_rate(r)
                     else format_amount(env, value, currency) if r.value_kind == 'money' else number(value))
         if r.column_type == 'constant':
             return {'t': 'fix', 'name': r._pbpb_name(), 'text': text}
@@ -153,7 +161,7 @@ def describe(rule, results, failed, currency, studio):
         if node.type == 'number':
             return node.value
         rule = reference(node)
-        if rule and rule.value_kind == 'rate' and rule.column_type == 'constant':
+        if rule and rule.column_type == 'constant' and is_rate(rule):
             return results.get(rule.code)
         return None
 
