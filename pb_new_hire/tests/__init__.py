@@ -11,3 +11,4 @@ from . import test_p7
 from . import test_p8
 from . import test_p8_more
 from . import test_pscheme
+from . import test_pay_builder

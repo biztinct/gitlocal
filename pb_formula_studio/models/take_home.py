@@ -72,7 +72,7 @@ class _Engine:
     its end.
     """
 
-    def __init__(self, env, config):
+    def __init__(self, env, config, *, line_specs=None):
         from odoo.addons.pb_hr_payroll_formula.models import formula_program
         self.env = env
         self.config = config
@@ -83,6 +83,10 @@ class _Engine:
         self.Slip = env['hr.payslip'].sudo()
         # The lines a real payslip gets — the same filter as
         # `_create_payslip_lines_from_formulas`: on the payslip, and a number.
+        if line_specs is not None:
+            self.specs = line_specs
+            self.net_specs = [s for s in line_specs if s['band'] == 'NET']
+            return
         specs = []
         for rule in self.rules.sorted(lambda r: (r.sequence, r.id)):
             if not rule.code or not rule.appears_on_payslip:

@@ -483,7 +483,7 @@
       <div class="pbnh-q-t">
         <div class="pbnh-eyebrow">Step 3 of 7 · required</div>
         <h1 tabindex="-1">What is the contract, and what does it pay?</h1>
-        <p>The pay scheme and the currency come from step 2. Type the monthly wage, then check the scheme's usual answers.</p>
+        <p>The pay scheme and the currency come from step 2. Type what you agreed to see how the month works out.</p>
       </div>
     </div>
 
@@ -519,14 +519,10 @@
         <span t-else="" class="pbnh-chip">Set by the team</span>
       </div>
 
-      <div class="pbnh-card pbnh-pad pbnh-col" style="gap:6px">
-        <label class="pbnh-lab" for="pbnh-f-wage" style="margin:0">Monthly wage <span style="color:var(--pbnh-err)">*</span></label>
-        <div t-att-class="'pbnh-wage' + (err('wage') ? ' is-bad' : '')">
-          <span class="pbnh-wage-cur" t-key="cur ? cur.name : ''" t-esc="cur ? cur.symbol : ''"/>
-          <input id="pbnh-f-wage" type="text" inputmode="decimal" autocomplete="off" placeholder="0"
-                 t-att-value="wageText" t-on-input="onWage" t-on-blur="onWageBlur" aria-label="Monthly wage"/>
-          <small t-esc="wageCode"/>
-        </div>
+      <PayBuilder t-key="scheme?.id || 0" home="'studio'" reference="payRef" values="payValues" tries="nh.payTries"
+        currency="cur" example="nh.example" fix="dec?.fix" onChange.bind="changePay" onAnswer.bind="acceptPay"
+        fromOffer="nh.fromOffer" onTries="map => this.nh.payTries=map">
+        <t t-set-slot="under-head">
         <t t-call="pb_new_hire.FieldErr"><t t-set="msg" t-value="err('wage')"/></t>
         <div t-if="scaleEmpty" class="pbnh-scale"><t t-out="icon('layers', 14)"/><span t-out="scaleEmpty"/></div>
         <div t-elif="scale and scale.found" class="pbnh-scale"><t t-out="icon('layers', 14)"/><span>From the pay scale: <b t-esc="scale.sentence"/></span></div>
@@ -548,7 +544,8 @@
           </div>
         </t>
         <div t-elif="bandNote" class="pbnh-scale" style="color:var(--pbnh-muted)"><t t-out="icon('info', 14)"/><span t-esc="bandNote"/></div>
-      </div>
+        </t>
+      </PayBuilder>
 
       <div class="pbnh-card pbnh-pad">
         <div class="pbnh-grid">
@@ -594,34 +591,7 @@
         </div>
       </div>
 
-      <div class="pbnh-card" t-if="scheme">
-        <div class="pbnh-cardh">
-          <div><h3>The scheme's usual answers</h3><p class="pbnh-sub" t-esc="usualIntro"/></div>
-        </div>
-        <t t-if="usual.rows === null or usual.busy">
-          <div class="pbnh-row"><span class="pbnh-skel" style="height:14px;flex:1"/></div>
-        </t>
-        <div t-elif="!usual.rows.length" class="pbnh-row"><span class="pbnh-empty" style="flex:1">This pay scheme has no usual answers to check.</span></div>
-        <t t-else="">
-          <div t-foreach="usual.rows" t-as="row" t-key="row.code" class="pbnh-row">
-            <button t-if="row.control === 'toggle'" type="button" t-att-class="'pbnh-tog' + (isOn(row) ? ' is-on' : '')" role="switch"
-                    t-att-aria-checked="isOn(row) ? 'true' : 'false'" t-att-aria-label="row.name" t-on-click="() => this.toggleRow(row)"/>
-            <div class="pbnh-row-t"><b t-esc="row.name"/></div>
-            <div class="pbnh-row-r">
-              <select t-if="row.control === 'choice'" t-att-aria-label="row.name" t-on-change="(ev) => this.onChoice(row, ev)">
-                <option t-foreach="row.options" t-as="o" t-key="o.value" t-att-value="o.value" t-att-selected="optSelected(row, o)" t-esc="o.label"/>
-              </select>
-              <input t-if="row.control === 'number'" type="text" inputmode="decimal" t-att-aria-label="row.name"
-                     t-att-value="numberText(row)" t-on-change="(ev) => this.onNumber(row, ev)"/>
-              <t t-if="changed(row)">
-                <span class="pbnh-chip pbnh-chip--p"><t t-out="icon('pencil', 13)"/><t t-esc="changedChip()"/></span>
-                <button type="button" class="pbnh-link" t-on-click="() => this.back(row)">Back to usual</button>
-              </t>
-              <span t-else="" class="pbnh-chip pbnh-chip--teal"><t t-out="icon('sparkles', 13)"/>Usual answer</span>
-            </div>
-          </div>
-        </t>
-      </div>
+
     </t>
   </div>
 </t>

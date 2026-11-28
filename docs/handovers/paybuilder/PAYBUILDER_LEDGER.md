@@ -19,6 +19,10 @@ Every PAYBUILDER document references this file. Append; never rewrite history. I
 | R11 | One pay-band rule: gross / deductions / take-home / employer cost are read from `pb_pay_totals()`, never summed in a screen. |
 | R12 | No total ever adds two currencies. |
 
+**D11 (owner, 2026-11-28).** The new contract and its preview use the pay scheme approved for the person. The team supplies a fallback when the person has no scheme. Preserve the existing resolver’s work-segment, advance and final-settlement rules.
+
+**D12 (owner, 2026-11-28).** Include Sudima in every release alongside payobook, payobook_template, p0clone and rize.
+
 ## 2. Owner decisions (2026-11-28) — see DESIGN §2 (D1–D9). Do not re-ask.
 
 **D10 (owner, 2026-11-28).** An explicit main pay choice wins. When a per-person annual amount drives take-home and a separate wage mapping is only informational, HR enters the annual amount once and sees its monthly equivalent before deductions. Apply this for every tenant using the scheme's own rules.

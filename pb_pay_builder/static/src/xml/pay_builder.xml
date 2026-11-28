@@ -1,0 +1,141 @@
+<templates xml:space="preserve">
+<t t-name="pb_pay_builder.AmountBox">
+  <span t-att-class="'pbpb-box' + (props.large ? ' pbpb-box--head' : '') + (props.numeric ? ' pbpb-box--short' : '')">
+    <span t-if="!props.numeric" t-esc="props.currency.symbol"/>
+    <input type="text" inputmode="decimal" autocomplete="off" t-att-id="props.id" t-att-aria-label="props.label" placeholder="0"
+      t-att-value="text" t-on-input="input" t-on-keydown="nudge" t-on-blur="() => this.ui.typing = null"/>
+    <small t-if="props.suffix" t-esc="props.suffix"/>
+  </span>
+</t>
+<t t-name="pb_pay_builder.PayFigure"><span class="pbpb-figure" t-ref="number"/></t>
+<t t-name="pb_pay_builder.PayBuilder">
+<div t-ref="root" t-att-class="'pbpb-block pbpb-' + (props.variant || 'full')" data-coach="nh-pay-builder">
+  <section class="pbpb-card pbpb-agree">
+    <div class="pbpb-agreement" t-att-class="{'pbpb-wide': !a?.asks.length}">
+      <div tabindex="-1" t-att-data-line="head.code">
+        <h3 class="pbpb-title">What you agree</h3>
+        <label class="pbpb-lab" t-att-for="props.home === 'studio' and head.is_wage ? 'pbnh-f-wage' : props.home + '-pbpb-head'" t-esc="head.name"/><span class="pbpb-required" aria-hidden="true"> *</span>
+        <div t-if="readonly" class="pbpb-reading" t-esc="money(headValue)"/>
+        <AmountBox t-else="" large="true" currency="cur" value="headValue" label="head.name" suffix="suffix"
+          id="props.home === 'studio' and head.is_wage ? 'pbnh-f-wage' : props.home + '-pbpb-head'" step="cur.step" onInput="v => this.change(this.head.code, v)"/>
+        <div class="pbpb-helper"><span t-esc="headHelp"/><button t-if="!readonly and a?.has_net" type="button" class="pbpb-link" t-on-click="() => this.ui.back = !this.ui.back">
+          <t t-if="ui.back">Close</t><t t-else="">Work back from take-home</t></button></div>
+        <span t-if="props.fromOffer?.[head.code]" class="pbpb-chip"><t t-out="icon('sparkles',12)"/>From the signed offer</span>
+        <div t-if="ui.back and !readonly" class="pbpb-back">
+          <t t-out="icon('target',17)"/><span>Take-home wanted each month</span>
+          <AmountBox currency="cur" label="targetLabel" value="ui.target" onInput="v => this.ui.target = v"/>
+          <button type="button" class="pbpb-find" t-on-click="solve" t-att-disabled="ui.solving">Find the pay</button>
+          <p t-if="ui.backMsg" role="status" t-esc="ui.backMsg"/>
+        </div>
+        <t t-if="head.is_wage" t-slot="under-head"/>
+      </div>
+      <div t-if="a?.asks.length" class="pbpb-asks">
+        <div class="pbpb-lab">Also asked by this pay scheme</div>
+        <div class="pbpb-ask" tabindex="-1" t-foreach="a.asks" t-as="row" t-key="row.code" t-att-data-line="row.code">
+          <div><strong t-esc="row.name"/><small t-if="row.hint" t-esc="row.hint"/>
+            <span t-if="props.fromOffer?.[row.code]" class="pbpb-chip">From the signed offer</span></div>
+          <span t-if="readonly" t-esc="row.control === 'money' ? money(row.value) : row.value"/>
+          <button t-elif="row.control === 'toggle'" type="button" class="pbpb-toggle" t-att-aria-label="row.name"
+            t-att-aria-pressed="value(row,row.value) ? 'true' : 'false'" t-on-click="() => this.change(row.code, this.value(row,row.value) ? 0 : 1)"><i/></button>
+          <select t-elif="row.control === 'choice'" t-att-aria-label="row.name" t-on-change="ev => this.change(row.code, +ev.target.value)">
+            <option t-foreach="row.options" t-as="o" t-key="o.value" t-att-value="o.value" t-att-selected="o.value === value(row,row.value)" t-esc="o.label"/>
+          </select>
+          <AmountBox t-else="" currency="cur" numeric="row.control !== 'money'" value="value(row,row.value)" label="row.name" onInput="v => this.change(row.code,v)"/>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="pbpb-card pbpb-month">
+    <header class="pbpb-header"><div><h3 class="pbpb-title">A month's pay, worked out</h3>
+      <p t-if="a?.scheme"><t t-esc="byline"/></p></div>
+      <div class="pbpb-legend"><span><t t-out="icon('pencil',13)"/>You set</span><span><t t-out="icon('calculator',13)"/>Worked out</span><span><t t-out="icon('calendar',13)"/>Each month</span></div>
+      <i t-if="ui.slow" class="pbpb-progress"/></header>
+    <div t-if="ui.failure" class="pbpb-notice" role="alert"><b t-esc="ui.failure"/><p t-esc="ui.fix"/>
+      <button class="pbpb-link" type="button" t-on-click="() => this.queue(0)">Try again</button></div>
+    <div t-elif="!a" class="pbpb-loading" aria-busy="true"><i t-foreach="[1,2,3,4,5]" t-as="i" t-key="i"/></div>
+    <div t-elif="a.state === 'no_scheme' or a.state === 'refused'" class="pbpb-notice"><p t-foreach="a.notes" t-as="n" t-key="n" t-esc="n"/><p t-if="props.fix" t-esc="props.fix"/></div>
+    <div t-elif="a.state === 'waiting'" class="pbpb-empty"><t t-out="icon('calculator',24)"/><strong t-esc="waiting"/>
+      <p>Basic, allowances, deductions and take-home appear here the moment there is a number.</p></div>
+    <div t-else="" t-att-class="{'pbpb-refresh':ui.working}">
+      <section t-foreach="sections" t-as="s" t-key="s.key" class="pbpb-section">
+        <h4 class="pbpb-lab" t-esc="s.title"/>
+        <div tabindex="-1" t-foreach="s.shown" t-as="row" t-key="row.code" t-att-data-line="row.code"
+          t-att-class="'pbpb-row pbpb-kind-' + row.kind + (row.failed ? ' pbpb-failed' : '') + (ui.open[row.code] ? ' pbpb-open' : '') + (row.detail ? ' pbpb-detail' : '') + (ui.hover.includes(row.code) ? ' pbpb-lit' : '')">
+          <t t-if="row.kind === 'calc' or row.kind === 'wage'">
+            <button type="button" class="pbpb-main" t-att-aria-expanded="ui.open[row.code] ? 'true' : 'false'" t-on-click="() => this.toggle(row.code)"
+              t-on-keydown="ev => this.escape(ev,row.code)" t-on-focus="() => this.ui.hover=row.uses" t-on-blur="() => this.ui.hover=[]"
+              t-on-mouseenter="() => this.ui.hover=row.uses" t-on-mouseleave="() => this.ui.hover=[]">
+              <t t-call="pb_pay_builder.RowName"/>
+              <del t-if="row.was != null" t-esc="money(row.was)"/><PayFigure value="row.amount" currency="cur"/><span class="pbpb-chevron"><t t-out="icon('chevronDown',16)"/></span>
+            </button>
+            <div t-if="ui.open[row.code]" class="pbpb-why" t-on-keydown="ev => this.escape(ev,row.code)">
+              <t t-set="e" t-value="a.explains[row.code]"/>
+              <t t-if="e"><p t-esc="e.failed ? e.failed_words : e.sentence"/>
+                <t t-if="e.failed"><p>Tell the person who looks after the pay scheme.</p></t>
+                <t t-else=""><div class="pbpb-chips">
+                  <t t-if="e.long and !e.inline_ranges"><span>It uses:</span>
+                    <button t-foreach="e.uses" t-as="dep" t-key="dep.code" type="button" class="pbpb-token" t-on-click="() => this.focusLine(dep.code,true)"><t t-esc="dep.name"/> <b t-esc="money(dep.amount)"/></button></t>
+                  <t t-else="" t-foreach="e.parts" t-as="p" t-key="p_index">
+                    <details t-if="p.t === 'range'" class="pbpb-range">
+                      <summary t-esc="p.text"/>
+                      <div class="pbpb-chips"><t t-foreach="p.members" t-as="p" t-key="p_index" t-call="pb_pay_builder.SumPart"/></div>
+                    </details>
+                    <t t-else="" t-call="pb_pay_builder.SumPart"/>
+                  </t>
+                </div>
+                <table t-if="e.ladder" class="pbpb-ladder"><tbody><tr t-foreach="e.ladder" t-as="band" t-key="band_index" t-att-class="{'pbpb-hit':band.hit}">
+                  <td><t t-esc="money(band.from)"/> – <t t-esc="band.to == null ? '∞' : money(band.to)"/> · <t t-esc="band.rate"/>%</td>
+                  <td t-esc="money(band.part)"/><td t-esc="money(band.amount)"/></tr></tbody></table>
+                <div class="pbpb-result">= <t t-esc="perMonth(e.result)"/></div></t>
+                <div class="pbpb-lock"><t t-out="icon('lock',13)"/><span t-esc="lockLine"/>
+                  <button t-if="e.studio.can_open" class="pbpb-link" type="button" t-on-click="() => this.action.doAction(e.studio.action)">See it in Formula Studio</button></div>
+              </t><div t-else="" class="pbpb-loading"><i/></div>
+            </div>
+          </t>
+          <div t-else="" class="pbpb-main">
+            <t t-call="pb_pay_builder.RowName"/>
+            <del t-if="row.was != null" t-esc="money(row.was)"/>
+            <AmountBox t-if="!readonly and row.kind === 'set'" currency="cur" value="value(row,row.amount)" label="row.name" onInput="v => this.change(row.code,v)"/>
+            <AmountBox t-elif="!readonly and trials[row.code] != null" currency="cur" value="trials[row.code]" label="row.name" onInput="v => this.trial(row.code,v)"/>
+            <PayFigure t-else="" value="row.amount" currency="cur"/><span/>
+          </div>
+        </div>
+        <div t-if="!readonly and s.bar.length" class="pbpb-addbar"><span>Also in this scheme:</span>
+          <button type="button" t-foreach="s.bar" t-as="row" t-key="row.code" t-on-click="() => this.add(row)"><t t-out="icon('plus',12)"/><t t-esc="row.name"/></button></div>
+        <button t-if="s.zeros" type="button" class="pbpb-link pbpb-show" t-on-click="() => this.ui.zero[s.key]=!this.ui.zero[s.key]" t-esc="zeroLabel(s)"/>
+        <button t-if="s.truncated" type="button" class="pbpb-link pbpb-show" t-on-click="() => this.ui.all[s.key]=!this.ui.all[s.key]" t-esc="allLabel(s)"/>
+        <div class="pbpb-total"><b t-esc="s.total_name"/><PayFigure currency="cur" value="s.total"/></div>
+      </section>
+    </div>
+    <footer t-if="a and a.state !== 'no_scheme' and a.state !== 'refused' and !ui.failure" class="pbpb-foot">
+      <div class="pbpb-split" aria-hidden="true"><i t-foreach="['net','deductions','employer_cost']" t-as="k" t-key="k" t-att-style="'flex-grow:'+ (a.totals[k] > 0 ? a.totals[k] : 0)"/></div>
+      <div class="pbpb-tiles"><div t-foreach="tiles" t-as="tile" t-key="tile[0]" t-att-class="'pbpb-tile pbpb-'+tile[0]">
+        <span t-esc="tile[1]"/><strong><PayFigure currency="cur" value="a.totals[tile[0]]"/></strong>
+        <small t-if="tile[0] === 'net' and !a.has_net">This pay scheme has no take-home line.</small>
+        <small t-elif="a.annual[tile[0]] != null" t-esc="perYear(a.annual[tile[0]])"/>
+        <small t-if="a.deltas?.[tile[0]]" t-att-class="a.deltas[tile[0]].gain ? 'pbpb-gain' : 'pbpb-loss'" t-esc="signedMonth(a.deltas[tile[0]].amount)"/>
+      </div></div>
+      <span class="pbpb-sr" role="status" aria-live="polite" t-esc="settled"/>
+      <div class="pbpb-note" t-if="notes.length"><t t-out="icon('info',15)"/><div><p t-foreach="notes" t-as="n" t-key="n" t-esc="n"/></div></div>
+    </footer>
+  </section>
+</div></t>
+<t t-name="pb_pay_builder.SumPart">
+  <button t-if="p.t === 'ref'" type="button" class="pbpb-token" t-on-click="() => this.focusLine(p.code,true)"><t t-esc="p.name"/> <b t-esc="money(p.amount)"/></button>
+  <span t-elif="p.t === 'fix'" class="pbpb-token pbpb-fixed" title="Set by the pay scheme"><t t-out="icon('lock',12)"/><t t-esc="p.name"/> <b t-esc="p.text"/></span>
+  <span t-else="" t-esc="p.text"/>
+</t>
+<t t-name="pb_pay_builder.RowName">
+  <span class="pbpb-kind"><t t-out="icon(kindIcon(row),14)"/></span>
+  <span class="pbpb-rname"><strong t-esc="row.name"/><small><span t-esc="kindText(row)"/>
+    <t t-if="row.kind === 'set'">
+      <span t-if="props.fromOffer?.[row.code]" class="pbpb-chip">From the signed offer</span>
+      <t t-if="row.changed"><span class="pbpb-chip pbpb-amber">Changed</span>
+        <button t-if="!readonly" class="pbpb-link" type="button" t-on-click="() => this.reset(row)" t-esc="usualLabel(row)"/></t>
+      <span t-elif="row.usual" class="pbpb-chip"><t t-out="icon('sparkles',11)"/>Usual amount</span></t>
+    <t t-if="row.kind === 'each' and !readonly"><t t-if="trials[row.code] != null"><span class="pbpb-chip pbpb-amber">Example only, not saved</span>
+      <button type="button" class="pbpb-link" t-on-click="() => this.trial(row.code,null,true)">Remove</button></t>
+      <button t-else="" type="button" class="pbpb-link" t-on-click="() => this.trial(row.code,row.amount)">Try an amount</button></t>
+  </small></span>
+</t>
+</templates>

@@ -153,8 +153,11 @@ class PbNewHireExample(models.AbstractModel):
             return self._no(_("Choose the team to see an example."), '', 'role')
         if d.get('payroll_country') not in dict(self._countries()):
             return self._no(_("Choose the country of work to see an example."), '', 'role')
-        wage = self._num_or_none(d.get('wage'))
-        if (wage is None or wage <= 0) and not self._scale_amount(d):
+        config, main, wage = self._pbpb_pay(d)
+        if main and (wage is None or wage <= 0):
+            name = config._pbpb_layout()['head']['name']
+            return self._no(_("Type the %s.", name[:1].lower() + name[1:]), '', 'pay')
+        if not main and (wage is None or wage <= 0) and not self._scale_amount(d):
             return self._no(_("Type the monthly wage to see an example."), '', 'pay')
         if (d.get('contract_kind') or 'permanent') == 'fixed':
             end = self._day(d.get('date_end'))

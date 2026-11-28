@@ -46,12 +46,13 @@ Callers that do not send them are untouched.
 The old door (`pb_onboard_wizard` tag) opens this studio wherever this module
 is installed (`static/src/js/takeover.js`).
 """,
-    'version': '19.0.1.8.2',
+    'version': '19.0.1.9.0',
     'category': 'Human Resources',
     'license': 'LGPL-3',
     'author': 'Payobook',
     'website': 'https://www.payobook.com',
     'depends': [
+        'pb_pay_builder',
         'pb_people_advanced',       # create_employee / create_contract, the new-hire approval
         'pb_hub',                   # HubBackChip / hubBack
         'pb_import_kit',            # pbim tokens + the shared Lucide ic() registry

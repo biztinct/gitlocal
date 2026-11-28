@@ -144,7 +144,7 @@ export class NewHireStudio extends Component {
             places: null,       // P7: step 2's lists for the Country of work (`places()`)
             placeNotice: null,  // P7: "Team cleared — …" with Undo
             countryWhy: "",     // P7: where the starting country came from
-            usual: { configId: 0, rows: null, busy: false },
+            paySchemeId: 0, payAnswer: null, payTries: {}, fromOffer: {},
             hint: null,
             dup: null,
             cats: null,         // step 3: contract categories
@@ -178,7 +178,7 @@ export class NewHireStudio extends Component {
             pickAdvance: (id) => this.pickAdvance(id),
             openMapping: (focus) => this.openMapping(focus),
             setUsual: (code, amount) => this.setUsual(code, amount),
-            resetUsual: (code) => this.resetUsual(code),
+            acceptPay: (answer) => this.acceptPay(answer),
             findPeople: (q) => this.orm.call(MODEL, "find_people", [q, 20]),
             findBuddies: (q) => this.orm.call(MODEL, "find_buddies", [q, 12]),
             setOwn: (name, value) => this.setOwn(name, value),
@@ -460,7 +460,7 @@ export class NewHireStudio extends Component {
     get exampleReady() {
         const d = this.nh.draft;
         return Boolean(String(d.name || "").trim() && d.date_start && d.department_id && d.payroll_country
-            && ((d.wage !== null && d.wage > 0) || this.scaleFound)
+            && this.headlineReady
             && (d.contract_kind !== "fixed" || (d.date_end && d.date_end > d.date_start)));
     }
     get exampleDraft() {
@@ -677,7 +677,10 @@ export class NewHireStudio extends Component {
         nh.seen = { who: true };
         nh.fieldErr = {};
         nh.decides = null;
-        nh.usual = { configId: 0, rows: null, busy: false };
+        nh.paySchemeId = 0;
+        nh.payAnswer = null;
+        nh.payTries = {};
+        nh.fromOffer = {};
         nh.draft = Object.assign(blankDraft(nh.data.today), choice.data);
         for (const k of ["department_id", "job_id", "job_title", "parent_id"]) {
             if (choice.data[k]) {
@@ -938,7 +941,7 @@ export class NewHireStudio extends Component {
             }
             this.nh.decides = res;
             const scheme = res && res.scheme;
-            this.loadUsual(scheme ? scheme.id : 0);
+            this.syncPayScheme(scheme ? scheme.id : 0);
         });
     }
 
@@ -984,7 +987,7 @@ export class NewHireStudio extends Component {
                 nh.decidesBusy = false;
                 nh.decides = res.decides || null;
                 const scheme = res.decides && res.decides.scheme;
-                this.loadUsual(scheme ? scheme.id : 0);
+                this.syncPayScheme(scheme ? scheme.id : 0);
             }
         });
     }
@@ -1011,26 +1014,35 @@ export class NewHireStudio extends Component {
         this.pickTeam(notice.undo.department_id, { initial: true, keepCountry: true });
     }
 
-    loadUsual(configId) {
-        const u = this.nh.usual;
-        if (configId === u.configId && u.rows) {
-            return;
+    async syncPayScheme(configId) {
+        const nh = this.nh;
+        if (configId === nh.paySchemeId) return;
+        if (nh.paySchemeId) {
+            nh.draft.usual = {};
+            nh.payTries = {};
+            nh.fromOffer = {};
         }
-        if (configId !== u.configId && u.configId) {
-            // another scheme has other usual answers: the choices made for the
-            // old one do not carry over
-            this.nh.draft.usual = {};
-        }
-        u.configId = configId;
-        if (!configId) {
-            u.rows = [];
-            return;
-        }
-        u.busy = true;
-        return this.ask("usual", "usual_answers", [configId], (rows) => {
-            u.busy = false;
-            u.rows = rows || [];
-        });
+        nh.paySchemeId = configId;
+        nh.payAnswer = null;
+        if (!configId || nh.step === "pay") return;
+        const d = nh.draft;
+        try {
+            const answer = await this.orm.call("pb.pay.builder", "work_out", ["studio",
+                { scheme_id: configId, country:d.payroll_country, date_start:d.date_start, name:d.name },
+                { ...d.usual, wage:d.wage }]);
+            if (nh.paySchemeId === configId && !nh.payAnswer && answer.ok) this.acceptPay(answer);
+        } catch { /* The pay step has a retry door. */ }
+    }
+    acceptPay(answer) {
+        if ((answer.scheme?.id || 0) !== this.nh.paySchemeId) return;
+        const wasReady = this.exampleReady;
+        this.nh.payAnswer = answer;
+        if (!wasReady && this.exampleReady) this.refreshExample();
+    }
+    get headlineReady() {
+        const head = this.nh.payAnswer?.head;
+        if (head && !head.is_wage) return (this.nh.draft.usual?.[head.code] ?? head.usual ?? 0) > 0;
+        return (this.nh.draft.wage > 0 || this.scaleFound);
     }
 
     refreshHint() {
@@ -1188,21 +1200,14 @@ export class NewHireStudio extends Component {
     }
 
     setUsual(code, amount) {
-        const row = (this.nh.usual.rows || []).find((r) => r.code === code);
-        if (!row) {
-            return;
-        }
+        const answer = this.nh.payAnswer;
+        if (!answer?.typed_codes?.includes(code)) return;
+        const row = [...answer.asks, ...answer.sections.flatMap(s => s.lines)].find(r => r.code === code);
         const usual = { ...this.nh.draft.usual };
-        if (amount === null || Math.abs(Number(amount) - row.value) < 1e-9) {
-            delete usual[code];
-        } else {
-            usual[code] = Number(amount);
-        }
-        this.patch({ usual });
-    }
-    resetUsual(code) {
-        const usual = { ...this.nh.draft.usual };
-        delete usual[code];
+        const usualAmount = row?.usual ?? (code === answer.head.code ? answer.head.usual : undefined);
+        if (amount === null || amount === usualAmount) delete usual[code];
+        else usual[code] = amount;
+        delete this.nh.fromOffer[code];
         this.patch({ usual });
     }
 
@@ -1267,7 +1272,7 @@ export class NewHireStudio extends Component {
     }
     get payReady() {
         const d = this.nh.draft;
-        const wageOk = (d.wage !== null && d.wage > 0) || this.scaleFound;
+        const wageOk = this.headlineReady;
         const endOk = d.contract_kind !== "fixed" || (d.date_end && d.date_end > d.date_start);
         return Boolean(wageOk && endOk);
     }
@@ -1293,10 +1298,14 @@ export class NewHireStudio extends Component {
         }
         if (key === "pay") {
             if (!this.payReady) {
-                return { state: "warn", text: d.contract_kind === "fixed" && !d.date_end && (d.wage > 0 || this.scaleFound)
-                    ? _t("End date needed") : _t("Wage needed") };
+                return { state: "warn", text: d.contract_kind === "fixed" && !d.date_end && this.headlineReady
+                    ? _t("End date needed") : _t("Pay needed") };
             }
-            const wage = d.wage > 0 ? _t("%s a month", money(d.wage, this.currency)) : _t("From the pay scale");
+            const answer = nh.payAnswer;
+            const wage = answer?.has_failed ? _t("Pay typed · check the scheme")
+                : answer?.totals.net != null ? _t("Take-home %s a month", money(answer.totals.net, this.currency))
+                : d.wage > 0 || answer?.head?.monthly ? _t("%s a month", money(answer?.head?.monthly || d.wage, this.currency))
+                : _t("From the pay scale");
             return nh.seen.pay ? { state: "done", text: wage } : { state: "todo", text: _t("Suggested. Check it") };
         }
         if (key === "sched") {
@@ -1558,7 +1567,10 @@ export class NewHireStudio extends Component {
         nh.teamScheme = null;
         nh.hint = null;
         nh.dup = null;
-        nh.usual = { configId: 0, rows: null, busy: false };
+        nh.paySchemeId = 0;
+        nh.payAnswer = null;
+        nh.payTries = {};
+        nh.fromOffer = {};
         nh.welcome = null;
         nh.clockCheck = null;
         nh.files = {};

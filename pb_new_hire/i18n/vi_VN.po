@@ -6579,3 +6579,46 @@ msgid ""
 "Four things are enough to begin. The Country of work you pick next works out"
 " the pay scheme, the currency and the trial period for you."
 msgstr "Chỉ cần bốn thông tin để bắt đầu. Quốc gia làm việc bạn chọn tiếp theo sẽ tự xác định chương trình lương, tiền tệ và thời gian thử việc cho bạn."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "%(name)s must be between %(low)s and %(high)s."
+msgstr "%(name)s phải nằm trong khoảng từ %(low)s đến %(high)s."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "%(wage)s a year, %(kind)s"
+msgstr "%(wage)s mỗi năm, %(kind)s"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Pay needed"
+msgstr "Cần nhập lương"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Pay typed · check the scheme"
+msgstr "Đã nhập lương · kiểm tra chế độ"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Take-home %s a month"
+msgstr "Thực nhận %s mỗi tháng"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "The pay scheme and the currency come from step 2. Type what you agreed to see how the month works out."
+msgstr "Chế độ lương và tiền tệ được lấy từ bước 2. Nhập mức lương đã thỏa thuận để xem chi tiết lương tháng."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Type the %s."
+msgstr "Nhập %s."

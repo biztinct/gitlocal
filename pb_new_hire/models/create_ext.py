@@ -107,9 +107,15 @@ class PbOnboardWizardNewHire(models.AbstractModel):
         for key in EMPLOYEE_EXTRA:
             if values.get(key) not in (None, '', False):
                 employee[key] = values[key]
+        Config = self.env['hr.formula.config'].sudo()
+        main_id = _int(values.get('pb_nh_own_scheme_id'))
+        advance_id = _int(values.get('pb_nh_advance_scheme_id'))
         return {
             'name': ' '.join(str(values.get('name') or '').split()),
             'employee': employee,
+            # These are trusted records for this call only. A JSON draft or
+            # an older approval payload cannot supply an ORM recordset.
+            'personal_pay': (Config.browse(main_id).exists(), Config.browse(advance_id).exists()) if main_id else None,
             'contract': {
                 'payroll_country': values.get('payroll_country') or False,
                 'usual': [{'code': str(u.get('code') or ''), 'amount': float(u.get('amount') or 0.0)}
@@ -225,6 +231,12 @@ class PbContractWizardNewHire(models.AbstractModel):
         contract = self.env['hr.contract'].sudo().browse(int(res['contract_id']))
         self._pb_nh_lines(contract, cextra)
         self.env.flush_all()                    # NH4: the map reads teams with raw SQL
+        choice = extra.get('personal_pay')
+        if isinstance(choice, tuple) and all(isinstance(item, models.BaseModel) for item in choice):
+            main, advance = choice
+            self.env['pb.scheme.board']._person_check(contract.employee_id, main, advance)
+            contract = contract.with_context(_pb_nh_fill_contract=contract.id,
+                                             _pb_nh_fill_schemes=main | advance)
         contract._pb_fill_in_defaults()
         return res
 
@@ -242,7 +254,7 @@ class PbContractWizardNewHire(models.AbstractModel):
                 "The pay scheme chosen for the usual answers was removed before approval, "
                 "so they were filled in as usual."))
             return 0
-        rules = {(r.code or '').strip(): r for r in config._pb_usual_answer_rules()}
+        rules = {(r.code or '').strip(): r for r in config._pbpb_person_rules()}
         Template = self.env['hr.contract.advantage.template'].sudo()
         Line = self.env['hr.contract.advantage'].sudo()
         Change = self.env['hr.contract.advantage.change'].sudo() \
@@ -289,6 +301,16 @@ class HrEmployeeNewHire(models.Model):
 
 class HrContractNewHire(models.Model):
     _inherit = 'hr.contract'
+
+    def _pb_fill_schemes(self, employee):
+        # The approved person's assignment starts on the hire date, which
+        # can still be in the future. The preview has no persistent person.
+        schemes = self.env.context.get('_pb_nh_fill_schemes')
+        if (isinstance(schemes, models.BaseModel) and schemes._name == 'hr.formula.config'
+                and self.ids == [self.env.context.get('_pb_nh_fill_contract')]
+                and self.employee_id == employee):
+            return schemes
+        return super()._pb_fill_schemes(employee)
 
     @api.model_create_multi
     def create(self, vals_list):

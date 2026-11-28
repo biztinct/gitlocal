@@ -62,13 +62,23 @@ export class StepCheck extends Component {
             out.push({ key: "role", cls: "is-bad", icon: "alert", b: _t("Team, job or country is missing"), s: _t("Step 2"), go: "role", field: "department_id" });
         }
         if (api.status("pay").state !== "warn") {
-            const wage = d.wage > 0 ? money(d.wage, api.currency) : _t("Pay from the pay scale");
-            const kind = d.contract_kind === "fixed"
-                ? _t("fixed term to %s", fmtDay(d.date_end)) : _t("permanent");
+            const answer = this.nh.payAnswer;
+            const head = answer?.head;
+            const annual = head && !head.is_wage && head.period === "year";
+            const amount = head && !head.is_wage ? d.usual?.[head.code] ?? head.usual : d.wage;
+            const wage = amount > 0 ? money(amount, api.currency) : _t("Pay from the pay scale");
+            const kind = d.contract_kind === "fixed" ? _t("fixed term to %s", fmtDay(d.date_end)) : _t("permanent");
             const trial = this.trialEnds ? _t("trial to %s", fmtDay(this.trialEnds)) : _t("no trial period");
-            const scheme = this.dec && this.dec.scheme ? _t("Paid by %s", this.dec.scheme.name) : _t("No pay scheme yet");
-            out.push({ key: "pay", cls: "", icon: "check", b: d.wage > 0 ? _t("%(wage)s a month, %(kind)s", { wage, kind }) : _t("%(wage)s, %(kind)s", { wage, kind }),
-                       s: `${scheme} · ${trial}`, go: "pay", field: "wage" });
+            const scheme = this.dec?.scheme ? _t("Paid by %s", this.dec.scheme.name) : _t("No pay scheme yet");
+            const title = annual ? _t("%(wage)s a year, %(kind)s", { wage, kind })
+                : amount > 0 ? _t("%(wage)s a month, %(kind)s", { wage, kind }) : _t("%(wage)s, %(kind)s", { wage, kind });
+            const terms = [...(answer?.asks || []), ...(answer?.sections || []).flatMap(section => section.lines)];
+            const changes = terms.filter(row => row.kind === "set" && Object.hasOwn(d.usual, row.code)).map(row => {
+                const value = d.usual[row.code];
+                return row.name + " " + (row.control === "money" ? money(value, api.currency) : value);
+            });
+            out.push({ key: "pay", cls: "", icon: "check", b: title, s: [scheme, trial, ...changes].join(" · "),
+                       go: "pay", field: "wage" });
         } else {
             out.push({ key: "pay", cls: "is-bad", icon: "alert", b: _t("The wage is missing"), s: _t("Step 3"), go: "pay", field: "wage" });
         }

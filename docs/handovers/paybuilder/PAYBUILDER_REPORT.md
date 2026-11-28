@@ -1,6 +1,6 @@
 # Pay Builder implementation report
 
-**Status**  The owner approved the annual headline on 2026-11-28. The Add employee candidate has been built and tested locally. P1 is awaiting a decision about hires whose team has no scheme assignment. P2–P5 and deployment are pending. This is an interim report.
+**Status**  The owner approved the annual headline on 2026-11-28. The Add employee candidate has been built and tested locally. The owner confirmed the person’s pay scheme takes priority and included Sudima in all releases. The corrected contract fill passed the person-priority checks in Chrome and through a real local payroll calculation. P2–P5 and deployment are pending. This is an interim report.
 
 ## 1. Work completed
 
@@ -14,7 +14,7 @@ Created a fresh worktree from the fetched release branch. The owner confirmed th
 
 The following existing files changed during P1.
 
-- In `pb_new_hire`, the manifest adds the shared module. `models/studio.py` validates the headline and component bounds, derives the monthly wage, and prepares numeric contract answers including zero-usual amounts. `models/create_ext.py` replays the accepted answers. `models/payslip_example.py` checks the same headline before creating its temporary example.
+- In `pb_new_hire`, the manifest adds the shared module. `models/studio.py` validates the headline and component bounds, derives the monthly wage, and prepares numeric contract answers including zero-usual amounts. `models/create_ext.py` replays the accepted answers and passes the approved personal scheme and its own advance to the existing automatic fill for this contract only. Old payloads still follow their existing fallback. `models/payslip_example.py` checks the same headline before creating its temporary example.
 - In the same module, `static/src/js/new_hire_studio.js` connects the draft, readiness and example to the shared block. `step_pay.js` hosts it. `step_check.js` shows the agreed period and typed lines. `studio_util.js` reuses the shared money and icon helpers. `static/src/xml/new_hire_studio.xml` replaces the two old cards and retains the pay-scale slot. `i18n/pb_new_hire.pot`, `vi_VN.po` and `id_ID.po` carry the new words. `tests/test_pay_builder.py` and `tests/__init__.py` cover approval, bounds and agreement with payroll.
 - In `pb_formula_studio`, `models/take_home.py` accepts optional preclassified lines. Existing engine callers keep their original path. `static/src/js/formula_studio.js` selects the component on arrival. The manifest records the version.
 
@@ -67,16 +67,20 @@ Runner output — 21 failed, 5 error(s) of 1459 tests when loading database 'pb_
 
 ### P1 candidate checks
 
-The product worktree ran 41 feature and static checks. Thirty-nine passed, one failed and one used the permitted slow-machine skip. All numbered functional cases T1–T34 passed apart from T18’s timing target. The additional T33b test failed and reproduces the real contract discrepancy described below. T34 checked the normal refusal delivered to HR before any proposal was created. The 400-line measurement for this run was 514 ms, with 256 ms in the existing pay-band totals operation alone. Earlier runs measured 549 ms and 564 ms.
+Before the person-priority correction, the product worktree ran 41 feature and static checks. Thirty-nine passed, one failed and one used the permitted slow-machine skip. All numbered functional cases T1–T34 passed apart from T18’s timing target. The additional T33b test failed and reproduces the real contract discrepancy described below. T34 checked the normal refusal delivered to HR before any proposal was created. The 400-line measurement for this run was 514 ms, with 256 ms in the existing pay-band totals operation alone. Earlier runs measured 549 ms and 564 ms.
 
-The full run of the three touched modules finished with 778 tests. It recorded 764 passes, ten failures, one error and three skips. The ten failures and one error were all present in the Formula Studio baseline. The existing Add employee performance case passed on this run. The additional contract discrepancy test was added after this runner loaded its test list. The final 41-case run from the product worktree included it and reran the entire new module after the long-range explanation and keyboard-focus changes.
+The earlier full run of the three touched modules finished with 778 tests. It recorded 764 passes, ten failures, one error and three skips. The ten failures and one error were all present in the Formula Studio baseline. The existing Add employee performance case passed on this run. The additional contract discrepancy test was added after this runner loaded its test list. The final 41-case run from the product worktree included it and reran the entire new module after the long-range explanation and keyboard-focus changes.
 
 | Module | Distinct candidate tests | Passed | Failed | Errors | Skipped |
 |---|---:|---:|---:|---:|---:|
-| pb_new_hire | 182 | 181 | 1 | 0 | 0 |
+| pb_new_hire | 182 | 182 | 0 | 0 | 0 |
 | pb_formula_studio | 560 | 547 | 10 | 1 | 2 |
 | pb_pay_builder | 37 | 36 | 0 | 0 | 1 |
-| **Total across both runs** | **779** | **764** | **11** | **1** | **3** |
+| **Final P1 full-suite run** | **779** | **765** | **10** | **1** | **3** |
+
+Following the owner’s confirmation, a 48-case run combined all 41 feature checks, six existing hire/assignment tests and the existing dated scheme priority test. It had 47 passes, zero failures, zero errors and one performance skip (290 ms, of which the existing totals operation took 134 ms). The corrected candidate covered both ordinary approval and the direct approved-hire route. The real payroll reader returned lunch 730,000 and insurance enabled. The builder, preview and actual payslip all returned ₫25,952,500. The same answer held with a different active scheme assigned to the team. An old approval carrying no personal choice retained the team fallback. In Chrome, the quoted take-home matched the right-hand payslip for both an unmapped team and a team with a different scheme.
+
+After the correction, the full run of all three touched modules executed 779 tests in one run. All 182 Add employee cases passed. The 10 failures and one error were already present in Formula Studio. Of three skips, two were in its baseline. The new 400-line timing was 295 ms in this run, including 133 ms for the mandatory existing totals operation.
 
 The other four baseline modules have no P1 changes. Their phase-specific checks remain with the phases that change them.
 
@@ -122,7 +126,7 @@ The monthly screen showed ₫25,952,500 in English, Vietnamese and Indonesian. A
 |---|---|---|
 | Type the agreed amount and see the month | Meets on mapped teams | One annual entry updated the pay lines and take-home. The right-hand example agreed. |
 | Plain language | Meets on the screens walked | The headline, monthly equivalent, allowance labels and tax steps were readable in the selected language. Scheme-supplied line names kept the wording of their scheme. |
-| Every state gives HR a way forward | Falls short | When a team has no scheme assignment and HR chooses among several schemes, real payroll can differ from the quote. |
+| Every state gives HR a way forward | Meets on checked paths | The payroll discrepancy with an unassigned team was corrected. An unassigned team and a team with a different scheme both passed the Chrome and payroll checks. |
 | Motion with purpose | Locally checked | The regular-motion annual walk showed the amount changes. The reduced-motion walks recalculated at all five widths. |
 | Keyboard operation | Locally checked on the main interactions | Enter opened a formula, its chip focused the input, and HR could change and reset an allowance and return to the draft. |
 | Best in class across the four homes | Unverified | Only Add employee has been built. The large scheme also exceeded the 60 ms target. |
@@ -141,8 +145,8 @@ New findings are listed above. The ledger records D10 and PB19–PB23.
 
 On the agreed annual scheme, HR enters ₹12,00,000 in **Annual fixed pay**. Payobook shows ₹1,00,000 a month before deductions and works out the monthly breakdown. That example has ₹95,050 take-home. A new company’s first box follows the selected scheme. Its explicit main pay choice takes priority. A scheme driven by monthly wages shows **Monthly wage**. A company with no scheme yet can enter the wage and gets an explanation.
 
-### Decisions needed before release
+### Person’s scheme and active release scope
 
 - On an unmapped team in a DEMO company with two active schemes, HR selected the one with a ₫730,000 lunch allowance and insurance. For a ₫30,000,000 wage the block showed ₫25,952,500 take-home. The preview showed ₫27,850,000. A second, independently created hire through the real send path saved an empty set of contract amounts. The real payroll input reader returned zero for lunch and insurance and calculated ₫27,850,000. With only one active scheme, both usual amounts reached the contract. All records in these probes were local and rolled back.
-- The recommended decision is to use HR’s selected scheme when filling the new contract in this situation. This needs a narrowly scoped exception to the automatic-fill rule. The other option is to require a team assignment before this hire can be sent. P1 is awaiting that decision.
-- The feature handover and release script include Sudima. The supplied repository instructions list four active databases and omit Sudima. Production scope needs confirmation.
+- The owner confirmed the existing person-first priority. For ordinary pay, a dated work segment with its own scheme takes priority, followed by the person’s active assignment, then the team when there is no personal assignment. Final settlement has its own rules. When the person has their own scheme, a team cannot supply an unassigned mid-month advance. Commit `5a31a6fcf` introduced the person priority on 2026-11-26. The production resolver file matched the repository byte for byte on verification.
+- The owner included Sudima in every release. Commit `f8791a01b` updated the standing instructions on `19.1`. The release runner already defaults to payobook, payobook_template, p0clone, rize and sudima.

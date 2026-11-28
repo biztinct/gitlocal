@@ -6576,3 +6576,46 @@ msgid ""
 "Four things are enough to begin. The Country of work you pick next works out"
 " the pay scheme, the currency and the trial period for you."
 msgstr "Empat hal sudah cukup untuk memulai. Negara kerja yang Anda pilih berikutnya akan menentukan skema gaji, mata uang, dan masa percobaan untuk Anda."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "%(name)s must be between %(low)s and %(high)s."
+msgstr "%(name)s harus berada di antara %(low)s dan %(high)s."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "%(wage)s a year, %(kind)s"
+msgstr "%(wage)s per tahun, %(kind)s"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Pay needed"
+msgstr "Gaji perlu diisi"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Pay typed · check the scheme"
+msgstr "Gaji sudah diisi · periksa skemanya"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Take-home %s a month"
+msgstr "Gaji bersih %s per bulan"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "The pay scheme and the currency come from step 2. Type what you agreed to see how the month works out."
+msgstr "Skema gaji dan mata uang berasal dari langkah 2. Masukkan gaji yang disepakati untuk melihat rincian bulanan."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Type the %s."
+msgstr "Masukkan %s."

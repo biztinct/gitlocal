@@ -27,6 +27,7 @@ the company is read with sudo AFTER that gate (WFSETUP WS2), and every search
 is scoped to the current company.
 """
 import logging
+import math
 import re
 
 from odoo import _, api, fields, models
@@ -770,6 +771,45 @@ class PbNewHire(models.AbstractModel):
         return {'ok': False, 'step': step, 'field': field, 'message': message}
 
     @api.model
+    def _pbpb_pay(self, d, config=None):
+        if config is None:
+            config = self._scheme_for(d)['config']
+        main = config._pbpb_head_rule() if config else None
+        chosen = d.get('usual') or {}
+        if isinstance(chosen, list):
+            chosen = {r.get('code'): r.get('amount') for r in chosen if isinstance(r, dict)}
+        if not isinstance(chosen, dict):
+            chosen = {}
+        if not main:
+            return config, main, _float(d.get('wage'))
+        head = _float(chosen.get(main.code, main.default_value))
+        wage = (head or 0) / 12 if main._pbpb_period_guess() == 'year' else head or 0
+        return config, main, config.currency_id.round(wage) if math.isfinite(wage) else None
+
+    @api.model
+    def _pbpb_pay_refusal(self, d):
+        config, main, wage = self._pbpb_pay(d)
+        if main and (wage is None or wage <= 0):
+            name = config._pbpb_layout()['head']['name']
+            return self._refuse('pay', 'wage', _("Type the %s.", name[:1].lower() + name[1:]))
+        if not main:
+            given = d.get('wage')
+            if given is not None and given is not False and given != '' and (wage is None or not math.isfinite(wage) or wage < 0):
+                return self._refuse('pay', 'wage', _("The wage must be a number above zero."))
+            if not wage and not self._scale_amount(d):
+                return self._refuse('pay', 'wage', _("Type the monthly wage."))
+        choices = self._usual_choices(d, config)
+        codes = [row['code'] for row in choices]
+        templates = self.env['hr.contract.advantage.template'].sudo().search([('code', 'in', codes)])
+        bounds = {t.code: (t.lower_bound, t.upper_bound) for t in templates}
+        for row in choices:
+            low, high = bounds.get(row['code'], (0, 0))
+            if row['amount'] and (low or high) and not low <= row['amount'] <= high:
+                return self._refuse('pay', 'wage', _("%(name)s must be between %(low)s and %(high)s.",
+                    name=row['name'], low=formatLang(self.env, low), high=formatLang(self.env, high)))
+        return None
+
+    @api.model
     def _validate(self, d):
         """`None` when the draft can be sent, else where and what to fix."""
         if not (d.get('name') or '').strip():
@@ -800,12 +840,9 @@ class PbNewHire(models.AbstractModel):
         if _int(d.get('work_location_id')) and not self._site(d.get('work_location_id')):
             return self._refuse('role', 'work_location_id',
                                 _("That work site is no longer here. Choose another one."))
-        wage = _float(d.get('wage'))
-        given = d.get('wage')
-        if given is not None and given is not False and given != '' and (wage is None or wage < 0):
-            return self._refuse('pay', 'wage', _("The wage must be a number above zero."))
-        if not wage and not self._scale_amount(d):
-            return self._refuse('pay', 'wage', _("Type the monthly wage."))
+        pay_refusal = self._pbpb_pay_refusal(d)
+        if pay_refusal:
+            return pay_refusal
         if (d.get('contract_kind') or 'permanent') == 'fixed':
             end = self._day(d.get('date_end'))
             if not end:
@@ -833,21 +870,21 @@ class PbNewHire(models.AbstractModel):
         — only codes of the scheme's usual answers, only values that differ."""
         if not config:
             return []
-        rows = {r['code']: r for r in self.usual_answers(config.id)}
+        rules = {r.code: r for r in config._pbpb_person_rules()}
         out = []
-        given = d.get('usual') or []
-        if isinstance(given, dict):
-            given = [{'code': k, 'amount': v} for k, v in given.items()]
-        for item in given[:MAX_USUAL]:
-            if not isinstance(item, dict):
+        given = d.get('usual') or {}
+        if isinstance(given, list):
+            given = {str(row.get('code') or '').strip(): row.get('amount')
+                     for row in given if isinstance(row, dict)}
+        if not isinstance(given, dict):
+            return out
+        for code, value in given.items():
+            amount = _float(value)
+            rule = rules.get(code)
+            if not rule or amount is None or not math.isfinite(amount) or abs(amount - rule.default_value) < 1e-9:
                 continue
-            code = str(item.get('code') or '').strip()
-            amount = _float(item.get('amount'))
-            row = rows.get(code)
-            if not row or amount is None or abs(amount - (row['value'] or 0.0)) < 1e-9:
-                continue
-            word = next((o['label'] for o in row['options'] if abs(o['value'] - amount) < 1e-9), '')
-            out.append({'code': code, 'amount': amount, 'name': row['name'],
+            word = rule.value_label_for(amount)
+            out.append({'code': code, 'amount': amount, 'name': rule._pbpb_name(),
                         'text': word or formatLang(self.env, amount, digits=2)})
         return out
 
@@ -872,7 +909,7 @@ class PbNewHire(models.AbstractModel):
         advance = self._scheme((scheme.get('advance') or {}).get('id')) if own else self._scheme(False)
         nationality = self.env['res.country'].sudo().browse(_int(d.get('country_id'))).exists() \
             or self._country_record(code)
-        wage = _float(d.get('wage'))
+        _config, main, wage = self._pbpb_pay(d, config)
         personal = (d.get('personal') or '').strip()
         trial = decided.get('trial') if d.get('trial_on', True) else False
         vals = {
