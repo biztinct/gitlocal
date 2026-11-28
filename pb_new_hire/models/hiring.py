@@ -269,6 +269,9 @@ class PbNewHireHiring(models.AbstractModel):
         """"Bring across": the draft values an offer gives (A.1). The wage
         comes only when the offer's money is the money of the team's country
         of work; otherwise the screen says so and asks for it."""
+        return self._offer_draft(offer_id)
+
+    def _offer_draft(self, offer_id, joining_country=None):
         self._gate()
         offer = self._offer(offer_id)
         if not offer:
@@ -301,6 +304,8 @@ class PbNewHireHiring(models.AbstractModel):
         if buddy and self._person(buddy.id):
             draft['buddy_id'] = buddy.id
             draft['buddy_name'] = buddy.name or ''
+        if joining_country:
+            draft['payroll_country'] = joining_country
         note = ''
         if row['wage'] > 0:
             code = draft.get('payroll_country') or ''
@@ -310,6 +315,19 @@ class PbNewHireHiring(models.AbstractModel):
                          theirs=row['wage_currency']['name'], mine=mine.get('name') or '')
             else:
                 draft['wage'] = row['wage']
+        saved = self.env['pb.pay.builder']._pbpb_offer_values(o)
+        if saved and o.state == 'signed':
+            country = draft.get('payroll_country') or o.requisition_id.country_id.code or self._company().country_id.code or ''
+            currency = self._currency_for(country) if country else self._company_currency()
+            scheme = saved['scheme']
+            allowed = [opt['id'] for opt in self._scheme_options(country)]
+            if scheme.id in allowed and saved['currency'] == scheme.currency_id and saved['currency'].name == currency.get('name'):
+                values = saved['values']
+                valid = set(scheme._pbpb_person_rules().mapped('code'))
+                usual = {code: v for code, v in values.items() if code in valid}
+                draft.update(scheme_id=scheme.id, payroll_country=country, usual=usual, wage=values['wage'],
+                             from_offer={code: True for code in [*usual, 'wage']})
+                note = ''
         return {'ok': True, 'draft': draft, 'offer': row, 'wage_note': note}
 
     # ============================================================ step 5: received

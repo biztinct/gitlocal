@@ -1143,12 +1143,6 @@ msgstr "Kembali ke daftar standar untuk %s."
 
 #. module: pb_new_hire
 #. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid "Back to usual"
-msgstr "Kembali ke biasa"
-
-#. module: pb_new_hire
-#. odoo-javascript
 #: code:addons/pb_new_hire/static/src/js/step_pay.js:0
 msgid "Band for %s"
 msgstr "Rentang gaji untuk %s"
@@ -1338,12 +1332,6 @@ msgstr "Ubah akun masuk di langkah 6"
 #: code:addons/pb_new_hire/static/src/js/step_docs.js:0
 msgid "Change what is asked in %s"
 msgstr "Ubah yang diminta di %s"
-
-#. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
-msgid "Changed for %s"
-msgstr "Diubah untuk %s"
 
 #. module: pb_new_hire
 #. odoo-python
@@ -2051,14 +2039,6 @@ msgid "Fill this on %s's record after the hire is added."
 msgstr "Isi ini di data %s setelah karyawan ditambahkan."
 
 #. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
-msgid ""
-"Filled in for you from %(scheme)s. Change only what is different for "
-"%(first)s."
-msgstr "Sudah diisi untuk Anda dari %(scheme)s. Ubah hanya yang berbeda untuk %(first)s."
-
-#. module: pb_new_hire
 #. odoo-python
 #: code:addons/pb_new_hire/models/studio_welcome.py:0
 msgid "Finance"
@@ -2701,12 +2681,6 @@ msgstr "Banyak sekaligus"
 #. odoo-python
 #: code:addons/pb_new_hire/models/create_ext.py:0
 msgid "Monthly pay"
-msgstr "Gaji bulanan"
-
-#. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid "Monthly wage"
 msgstr "Gaji bulanan"
 
 #. module: pb_new_hire
@@ -4724,14 +4698,6 @@ msgid ""
 msgstr "Rentang gaji untuk jabatan ini dalam %(theirs)s, jadi tidak ditampilkan untuk gaji dalam %(mine)s."
 
 #. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid ""
-"The pay scheme and the currency come from step 2. Type the monthly wage, "
-"then check the scheme's usual answers."
-msgstr "Skema gaji dan mata uang berasal dari langkah 2. Ketik gaji bulanan, lalu periksa jawaban standar skema."
-
-#. module: pb_new_hire
 #. odoo-python
 #: code:addons/pb_new_hire/models/create_ext.py:0
 msgid ""
@@ -4744,12 +4710,6 @@ msgstr "Skema gaji yang dipilih untuk jawaban standar dihapus sebelum persetujua
 #: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
 msgid "The record so far"
 msgstr "Data sejauh ini"
-
-#. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid "The scheme's usual answers"
-msgstr "Jawaban standar skema"
 
 #. module: pb_new_hire
 #. odoo-javascript
@@ -4928,12 +4888,6 @@ msgstr "Ini tidak bisa dilakukan untuk item ini."
 #: code:addons/pb_new_hire/models/payslip_example.py:0
 msgid "This pay scheme has no take-home line, so take-home is not shown."
 msgstr "Skema gaji ini tidak memiliki baris gaji bersih, jadi gaji bersih tidak ditampilkan."
-
-#. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid "This pay scheme has no usual answers to check."
-msgstr "Skema gaji ini tidak punya jawaban standar untuk diperiksa."
 
 #. module: pb_new_hire
 #. odoo-javascript
@@ -5184,12 +5138,6 @@ msgstr "Dipakai untuk mengirim tautan sambutan sebelum hari pertama."
 
 #. module: pb_new_hire
 #. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid "Usual answer"
-msgstr "Jawaban standar"
-
-#. module: pb_new_hire
-#. odoo-javascript
 #: code:addons/pb_new_hire/static/src/js/record_panel.js:0
 msgid "Usual hours"
 msgstr "Jam kerja standar"
@@ -5212,12 +5160,6 @@ msgstr "Berlaku sampai"
 #: code:addons/pb_new_hire/static/src/js/step_docs.js:0
 msgid "Valid until (if it has a date)"
 msgstr "Berlaku sampai (jika ada tanggalnya)"
-
-#. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
-msgid "Wage needed"
-msgstr "Gaji diperlukan"
 
 #. module: pb_new_hire
 #. odoo-javascript
@@ -5676,12 +5618,6 @@ msgstr "Kolom milik Anda sendiri tidak dapat disimpan: %s Isi di data karyawan."
 #: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
 msgid "Your unsent hire was kept, so you can carry on where you left off."
 msgstr "Karyawan baru yang belum dikirim tetap disimpan, jadi Anda bisa melanjutkan dari bagian terakhir."
-
-#. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
-msgid "a month"
-msgstr "per bulan"
 
 #. module: pb_new_hire
 #. odoo-python
@@ -6576,3 +6512,46 @@ msgid ""
 "Four things are enough to begin. The Country of work you pick next works out"
 " the pay scheme, the currency and the trial period for you."
 msgstr "Empat hal sudah cukup untuk memulai. Negara kerja yang Anda pilih berikutnya akan menentukan skema gaji, mata uang, dan masa percobaan untuk Anda."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "%(name)s must be between %(low)s and %(high)s."
+msgstr "%(name)s harus berada di antara %(low)s dan %(high)s."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "%(wage)s a year, %(kind)s"
+msgstr "%(wage)s per tahun, %(kind)s"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Pay needed"
+msgstr "Gaji perlu diisi"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Pay typed · check the scheme"
+msgstr "Gaji sudah diisi · periksa skemanya"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Take-home %s a month"
+msgstr "Gaji bersih %s per bulan"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "The pay scheme and the currency come from step 2. Type what you agreed to see how the month works out."
+msgstr "Skema gaji dan mata uang berasal dari langkah 2. Masukkan gaji yang disepakati untuk melihat rincian bulanan."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Type the %s."
+msgstr "Masukkan %s."

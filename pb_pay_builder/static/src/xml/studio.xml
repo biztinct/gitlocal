@@ -1,0 +1,44 @@
+<templates xml:space="preserve">
+  <t t-inherit="pb_formula_studio.PbFormulaStudio" t-inherit-mode="extension">
+    <xpath expr="//button[@title='Edit this component']" position="attributes">
+      <attribute name="t-att-disabled">state.editBusy</attribute>
+    </xpath>
+    <xpath expr="//button[@t-on-click='saveComponent']" position="attributes">
+      <attribute name="t-att-disabled">state.editBusy or state.paySwitch</attribute>
+    </xpath>
+    <xpath expr="//label[input[@t-att-checked='state.draft.is_contract_component']]" position="replace"/>
+    <xpath expr="//t[@t-elif=&quot;draftType === 'input'&quot;]/div[1]" position="before">
+      <fieldset class="pbpb-source">
+        <legend>Where does this amount come from?</legend>
+        <label><input type="radio" name="pbpb-source" t-att-checked="state.draft.is_contract_component" t-on-click.prevent="() => this.choosePaySource(true)"/>
+          <span><strong>The same for this person every month</strong><small>HR types it when hiring or changing pay. Kept on the person's contract.</small></span></label>
+        <label><input type="radio" name="pbpb-source" t-att-checked="!state.draft.is_contract_component" t-on-click.prevent="() => this.choosePaySource(false)"/>
+          <span><strong>It changes each month</strong><small>It arrives with the pay data file, the connected system or the timesheet.</small></span></label>
+        <div t-if="state.paySwitch?.warning" class="pbpb-switch-warning" role="alert">
+          <p t-esc="state.paySwitch.warning"/>
+          <button t-if="state.paySwitch.names.length" type="button" class="pbfs-btn ghost sm" t-att-aria-expanded="state.paySwitch.showNames ? 'true' : 'false'" t-on-click="() => this.state.paySwitch.showNames = !this.state.paySwitch.showNames">Show who</button>
+          <ul t-if="state.paySwitch.showNames"><li t-foreach="state.paySwitch.names" t-as="name" t-key="name_index" t-esc="name"/></ul>
+          <div><button type="button" class="pbfs-btn sm" t-on-click="acceptPaySource">Switch anyway</button>
+            <button type="button" class="pbfs-btn ghost sm" t-on-click="keepPaySource">Keep as it is</button></div>
+        </div>
+      </fieldset>
+      <fieldset t-if="state.draft.is_contract_component and state.draft.value_kind === 'money'" class="pbpb-period">
+        <legend>Typed per</legend>
+        <button type="button" class="pbfs-btn sm" t-att-aria-pressed="(state.draft.pbpb_period || state.draft.pbpb_guess) === 'month' ? 'true' : 'false'" t-on-click="() => this.state.draft.pbpb_period = 'month'">Month</button>
+        <button type="button" class="pbfs-btn sm" t-att-aria-pressed="(state.draft.pbpb_period || state.draft.pbpb_guess) === 'year' ? 'true' : 'false'" t-on-click="() => this.state.draft.pbpb_period = 'year'">Year</button>
+      </fieldset>
+    </xpath>
+    <xpath expr="//t[@t-if=&quot;draftType === 'formula'&quot;]" position="before">
+      <p t-if="draftType !== 'input'" class="ce-help pbpb-worked">Worked out by its formula — nobody types it.</p>
+    </xpath>
+    <xpath expr="//div[hasclass('pbcfg-body')]/div[hasclass('pbfs-taxyear')]" position="after">
+      <div t-if="state.settings?.pbpb_choices" class="ce-sec ce-field pbpb-setting">
+        <label for="pbpb-main-pay">Main pay amount</label>
+        <select id="pbpb-main-pay" class="ce-input" t-on-change="chooseMainPay" t-att-disabled="!state.canEdit or state.payMainBusy">
+          <option value="" t-att-selected="!state.settings.values.pbpb_main_rule_id">Follow the pay scheme</option>
+          <option t-foreach="state.settings.pbpb_choices" t-as="choice" t-key="choice.id" t-att-value="choice.id" t-att-selected="choice.id === state.settings.values.pbpb_main_rule_id" t-esc="choice.name"/>
+        </select>
+      </div>
+    </xpath>
+  </t>
+</templates>

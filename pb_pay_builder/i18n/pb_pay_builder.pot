@@ -1,0 +1,899 @@
+# Translation of Payobook.
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%(first)s plus %(second)s."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "%(first)s starts on %(day)s, so the first pay may be less."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%(line)s less %(others)s."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "%(pay)s gives a take-home of %(net)s a month. It is in the box above; change it if you like."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%(rate)s%% of %(line)s, counted up to %(cap)s."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%(rate)s%% of %(line)s, spread over 12 months."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%(rate)s%% of %(line)s."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "%s a month"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "%s a year"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%s lines"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%s spread over 12 months."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%s%%"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "A full month, including the example amounts you are trying."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "A full month, with each-month lines at their usual amount."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "A month's pay, worked out"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Also asked by this pay scheme"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Also in this scheme:"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/scheme_ext.py:0
+msgid "Annual fixed pay"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Ask a payroll manager."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Back to usual %s"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Basic, allowances, deductions and take-home appear here the moment there is a number."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "By %(scheme)s, for a full %(month)s."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Changed"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Check the amounts and the first day, then try again."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Check the connection and try again."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/scheme_ext.py:0
+msgid "Choose a per-person money amount from this pay scheme."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Choose a worked-out line."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Close"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Cost to the company"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Could not be worked out"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Deductions"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "Depends on %s."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Each month"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Each month, from %s"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Earnings"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Example only, not saved"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Find the pay"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "From the signed offer"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Gross pay"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Hide lines at zero"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "It uses:"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+#: code:addons/pb_pay_builder/models/builder.py:0
+#: code:addons/pb_pay_builder/models/scheme_ext.py:0
+msgid "Monthly wage"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Needed before this person can be paid."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "No"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "No pay gives that take-home on this scheme. The closest is %s."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "No pay scheme pays this person yet, so the month cannot be worked out."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "On top of gross pay"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Paid by the company on top"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Remove"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "See it in Formula Studio"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Set by the pay scheme"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "Set by the pay scheme."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Show %s lines at zero"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Show all %s lines"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Show fewer lines"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Some values on this scheme come from the connected system; the example uses the usual ones."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Some values on this scheme come from the monthly pay data file; the example uses the usual ones."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Take-home"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Take-home %s a month"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Take-home wanted each month"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Tell the person who looks after the pay scheme."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "That is %s a month before deductions."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "That is %s a year."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "The formula for %s divides by zero."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "The month could not be worked out."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "The monthly wage, as typed above."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "The payslip example on the right also reads this person's working days and records, so it can differ slightly."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "The rate rises in steps as %s grows."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "The sum for %s could not be read."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "The sum for %s could not be worked out."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "The total of %s lines."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "This line has no sum to show."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "This pay scheme could not work out take-home."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "This pay scheme has no take-home line, so it cannot be worked back."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "This pay scheme has no take-home line."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "This pay scheme takes its amounts from the pay data file each month."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "This person"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "This sum belongs to %s, so it cannot be changed for one person."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Total deductions"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Try again"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Try an amount"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Type the %s to see the month work out"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Type the take-home you want first."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Usual amount"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/scheme_ext.py:0
+msgid "Usual answer: %s"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "What you agree"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Work back from take-home"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Worked out"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "Worked out from %s."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Working back took too long. Type the pay and adjust it instead."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "Yes"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "You can look at this person but not at their pay."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "You can look at this person but not change their pay."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "You set"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "and"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "if"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "in steps, using"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "is"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "is at least"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "is at most"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "is greater than"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "is less than"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "is not"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "or"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "otherwise"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "rounded"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "rounded down"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "rounded up"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "the absolute value of"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "the average of"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "the connected system"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "the larger of"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "the opposite of"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "the pay data file"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "the smaller of"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "the timesheet"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "the total of"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "then"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "Show the %s lines"
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid "Only a pay scheme manager can change this."
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid "This pay scheme is not available."
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Worked out by its formula — nobody types it."
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid ""
+"From now on Payobook reads this amount from each person's contract. %s "
+"people paid by this scheme have no amount there yet, so they get 0 for this "
+"line until someone types one."
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid ""
+"%(count)s people have this amount on their contract. It stays there but pay "
+"stops reading it; the amount will come from %(source)s each month."
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid "the monthly pay data"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Where does this amount come from?"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "The same for this person every month"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid ""
+"HR types it when hiring or changing pay. Kept on the person's contract."
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "It changes each month"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid ""
+"It arrives with the pay data file, the connected system or the timesheet."
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Show who"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Switch anyway"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Keep as it is"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Typed per"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Month"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Year"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Main pay amount"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Follow the pay scheme"
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/studio.js:0
+msgid "The people affected could not be checked. Try again."
+msgstr ""
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid ""
+"From now on Payobook reads this amount from each person's contract. One "
+"person paid by this scheme has no amount there yet, so they get 0 for this "
+"line until someone types one."
+msgstr ""
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid ""
+"One person has this amount on their contract. It stays there but pay stops "
+"reading it; the amount will come from %s each month."
+msgstr ""

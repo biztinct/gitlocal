@@ -207,7 +207,10 @@ class PbHiringOfferDocStudio(models.Model):
         self.ensure_one()
         local = self.with_context(lang=lang)
         values = dict(local._placeholder_values())
-        values['lines'] = str(local._pbds_lines_table(lang))
+        table = local._pbds_lines_table(lang)
+        if hasattr(local, '_pbpb_letter'):
+            table = local._pbpb_letter(table)
+        values['lines'] = str(table)
         return values
 
     def _pbds_offer_render(self, tmpl, body, lang, rules=None, ghost=False,

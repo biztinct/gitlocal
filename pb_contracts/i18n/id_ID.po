@@ -23,3 +23,9 @@ msgstr "Ubah skema gaji"
 #: code:addons/pb_contracts/static/src/js/contract_360.js:0
 msgid "Waiting for approval: %(scheme)s from %(date)s"
 msgstr "Menunggu persetujuan: %(scheme)s mulai %(date)s"
+
+#. module: pb_contracts
+#. odoo-javascript
+#: code:addons/pb_contracts/static/src/xml/contract_360.xml:0
+msgid "Change pay"
+msgstr "Ubah gaji"

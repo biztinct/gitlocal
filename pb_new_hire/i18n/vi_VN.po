@@ -1143,12 +1143,6 @@ msgstr "Quay lại danh sách thường dùng cho %s."
 
 #. module: pb_new_hire
 #. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid "Back to usual"
-msgstr "Quay lại như thường"
-
-#. module: pb_new_hire
-#. odoo-javascript
 #: code:addons/pb_new_hire/static/src/js/step_pay.js:0
 msgid "Band for %s"
 msgstr "Khung lương cho %s"
@@ -1338,12 +1332,6 @@ msgstr "Đổi tài khoản đăng nhập ở bước 6"
 #: code:addons/pb_new_hire/static/src/js/step_docs.js:0
 msgid "Change what is asked in %s"
 msgstr "Đổi những gì được hỏi ở %s"
-
-#. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
-msgid "Changed for %s"
-msgstr "Đã đổi cho %s"
 
 #. module: pb_new_hire
 #. odoo-python
@@ -2051,14 +2039,6 @@ msgid "Fill this on %s's record after the hire is added."
 msgstr "Điền mục này trên hồ sơ của %s sau khi nhân viên mới được thêm."
 
 #. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
-msgid ""
-"Filled in for you from %(scheme)s. Change only what is different for "
-"%(first)s."
-msgstr "Đã điền sẵn cho bạn từ %(scheme)s. Chỉ sửa những gì khác đối với %(first)s."
-
-#. module: pb_new_hire
 #. odoo-python
 #: code:addons/pb_new_hire/models/studio_welcome.py:0
 msgid "Finance"
@@ -2701,12 +2681,6 @@ msgstr "Nhiều người cùng lúc"
 #. odoo-python
 #: code:addons/pb_new_hire/models/create_ext.py:0
 msgid "Monthly pay"
-msgstr "Lương tháng"
-
-#. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid "Monthly wage"
 msgstr "Lương tháng"
 
 #. module: pb_new_hire
@@ -4724,14 +4698,6 @@ msgid ""
 msgstr "Khung lương của công việc này tính bằng %(theirs)s, nên không được so với mức lương bằng %(mine)s."
 
 #. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid ""
-"The pay scheme and the currency come from step 2. Type the monthly wage, "
-"then check the scheme's usual answers."
-msgstr "Chương trình lương và tiền tệ lấy từ bước 2. Nhập lương tháng, rồi kiểm tra câu trả lời thường dùng của chương trình."
-
-#. module: pb_new_hire
 #. odoo-python
 #: code:addons/pb_new_hire/models/create_ext.py:0
 msgid ""
@@ -4744,12 +4710,6 @@ msgstr "Chương trình lương được chọn cho câu trả lời thường d
 #: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
 msgid "The record so far"
 msgstr "Hồ sơ đến lúc này"
-
-#. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid "The scheme's usual answers"
-msgstr "Câu trả lời thường dùng của chương trình"
 
 #. module: pb_new_hire
 #. odoo-javascript
@@ -4928,12 +4888,6 @@ msgstr "Không thể làm vậy với mục này."
 #: code:addons/pb_new_hire/models/payslip_example.py:0
 msgid "This pay scheme has no take-home line, so take-home is not shown."
 msgstr "Chương trình lương này không có dòng thực nhận, nên không hiển thị số thực nhận."
-
-#. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid "This pay scheme has no usual answers to check."
-msgstr "Chương trình lương này không có câu trả lời thường dùng nào để kiểm tra."
 
 #. module: pb_new_hire
 #. odoo-javascript
@@ -5184,12 +5138,6 @@ msgstr "Dùng để gửi đường dẫn chào mừng trước ngày đầu ti�
 
 #. module: pb_new_hire
 #. odoo-javascript
-#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
-msgid "Usual answer"
-msgstr "Câu trả lời thường dùng"
-
-#. module: pb_new_hire
-#. odoo-javascript
 #: code:addons/pb_new_hire/static/src/js/record_panel.js:0
 msgid "Usual hours"
 msgstr "Giờ làm thông thường"
@@ -5212,12 +5160,6 @@ msgstr "Có giá trị đến"
 #: code:addons/pb_new_hire/static/src/js/step_docs.js:0
 msgid "Valid until (if it has a date)"
 msgstr "Có giá trị đến (nếu có ngày)"
-
-#. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
-msgid "Wage needed"
-msgstr "Cần mức lương"
 
 #. module: pb_new_hire
 #. odoo-javascript
@@ -5676,12 +5618,6 @@ msgstr "Không lưu được các trường riêng của bạn: %s Hãy điền 
 #: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
 msgid "Your unsent hire was kept, so you can carry on where you left off."
 msgstr "Hồ sơ nhân viên mới chưa gửi của bạn đã được giữ lại, bạn có thể tiếp tục từ chỗ đã dừng."
-
-#. module: pb_new_hire
-#. odoo-javascript
-#: code:addons/pb_new_hire/static/src/js/step_pay.js:0
-msgid "a month"
-msgstr "một tháng"
 
 #. module: pb_new_hire
 #. odoo-python
@@ -6579,3 +6515,46 @@ msgid ""
 "Four things are enough to begin. The Country of work you pick next works out"
 " the pay scheme, the currency and the trial period for you."
 msgstr "Chỉ cần bốn thông tin để bắt đầu. Quốc gia làm việc bạn chọn tiếp theo sẽ tự xác định chương trình lương, tiền tệ và thời gian thử việc cho bạn."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "%(name)s must be between %(low)s and %(high)s."
+msgstr "%(name)s phải nằm trong khoảng từ %(low)s đến %(high)s."
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/step_check.js:0
+msgid "%(wage)s a year, %(kind)s"
+msgstr "%(wage)s mỗi năm, %(kind)s"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Pay needed"
+msgstr "Cần nhập lương"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Pay typed · check the scheme"
+msgstr "Đã nhập lương · kiểm tra chế độ"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/js/new_hire_studio.js:0
+msgid "Take-home %s a month"
+msgstr "Thực nhận %s mỗi tháng"
+
+#. module: pb_new_hire
+#. odoo-javascript
+#: code:addons/pb_new_hire/static/src/xml/new_hire_studio.xml:0
+msgid "The pay scheme and the currency come from step 2. Type what you agreed to see how the month works out."
+msgstr "Chế độ lương và tiền tệ được lấy từ bước 2. Nhập mức lương đã thỏa thuận để xem chi tiết lương tháng."
+
+#. module: pb_new_hire
+#. odoo-python
+#: code:addons/pb_new_hire/models/payslip_example.py:0
+#: code:addons/pb_new_hire/models/studio.py:0
+msgid "Type the %s."
+msgstr "Nhập %s."

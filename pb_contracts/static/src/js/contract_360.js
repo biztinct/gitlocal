@@ -660,7 +660,7 @@ export class Contract360Drawer extends Component {
      * that guard, dismissing "Leave them?" would immediately ask it again.
      */
     onKey(ev) {
-        if (this.state.asking || this.state.takeHome) { return; }
+        if (this.state.asking || this.state.takeHome || this.state.changePayOpen) { return; }
         if ((ev.key === "Enter") && (ev.metaKey || ev.ctrlKey)) {
             if (!this.canWrite) { return; }
             ev.preventDefault();
@@ -906,6 +906,17 @@ export class Contract360Drawer extends Component {
     // "Use these figures" STAGES the wage and the pay lines in this open
     // form; nothing is written until Save, which follows the contract's
     // normal approval (money terms through the contract proposal).
+    get changePayDoor() {
+        return this.d.may_change_pay && registry.category("pb_change_pay").get("open", null);
+    }
+    openChangePay() {
+        if (!this.changePayDoor || this.state.changePayOpen) return;
+        this.state.changePayOpen = true;
+        this.changePayDoor(this.dialog, {
+            contractId: Number(this.props.contractId),
+            afterSend: async () => { await this.load(); this.props.onChanged?.(); },
+        }, () => { this.state.changePayOpen = false; });
+    }
     get buildTotalDoor() {
         return registry.category("pb_build_total").get("open", null);
     }

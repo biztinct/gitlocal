@@ -59,7 +59,7 @@ const MISSION_HOME = {
 const LINE_ORDER = ["overview", "payrun", "setup", "people", "lifecycle", "workforce", "insights", "compliance"];
 import { SCREENS, practiceShellHTML, shellHTML } from "../engine/screens";
 import { INPUT_ANCHORS } from "../engine/fixture";
-import { looseMatch } from "../engine/input_match";
+import { foldNumber, looseMatch } from "../engine/input_match";
 import { playableSteps } from "../scenario/scenario_service";
 import { LiveState } from "../live/live_state";
 import { canOpen, lensReachable, openScreen, placeLabel, reachable, resolveLensReach, setReach,
@@ -1763,6 +1763,15 @@ export class LearnJourney extends Component {
     }
 
     onInput(ev) {
+        const field = ev.target;
+        if (field.dataset?.coach === "rep-newemp-wage") {
+            const card = field.closest("[data-example-wage]");
+            if (card) {
+                const matches = foldNumber(field.value) === card.dataset.exampleWage;
+                card.querySelector("[data-wage-month]").hidden = !matches;
+                card.querySelector("[data-wage-prompt]").hidden = matches;
+            }
+        }
         // LEARNREV P3 — the one search. Not reactive state: the results list
         // is redrawn in place and the box keeps its caret.
         const el = ev.target.closest && ev.target.closest("[data-lib-q]");

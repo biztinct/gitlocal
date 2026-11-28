@@ -1,0 +1,28 @@
+<odoo>
+  <template id="your_pay_line">
+    <span t-attf-class="pbjp-pay-kind pbjp-pay-#{line['icon']}"><t t-call="pb_joining.icon"><t t-set="icon" t-value="line['icon']"/></t></span>
+    <span class="pbjp-pay-name"><strong t-out="line['name']"/><small t-out="line['hint']"/></span>
+    <b t-out="line['amount']"/>
+  </template>
+  <template id="your_pay" name="Your pay">
+    <article t-if="pay_card" class="pbjp-card pbjp-pay">
+      <h2><t t-call="pb_joining.icon"><t t-set="icon" t-value="'banknote'"/></t><t t-out="pay_card['title']"/></h2>
+      <p t-out="pay_card['intro']"/>
+      <section t-foreach="pay_card['sections']" t-as="group">
+        <h3 t-out="group['label']"/>
+        <t t-foreach="group['rows']" t-as="line">
+          <details t-if="line['expand']"><summary><t t-call="pb_joining.your_pay_line"/><t t-call="pb_joining.icon"><t t-set="icon" t-value="'right'"/></t></summary>
+            <div class="pbjp-pay-sum"><p t-out="line['sentence']"/><span t-foreach="line['chips']" t-as="chip" t-out="chip"/></div></details>
+          <div t-else="" class="pbjp-pay-line"><t t-call="pb_joining.your_pay_line"/></div>
+        </t>
+        <div class="pbjp-pay-total"><span t-out="group['total_name']"/><b t-out="group['total']"/></div>
+      </section>
+      <div class="pbjp-pay-net"><strong t-out="pay_card['net_label']"/><b t-out="pay_card['net']"/></div>
+      <p t-out="pay_card['note']"/>
+    </article>
+  </template>
+  <template id="phone_your_pay" inherit_id="pb_joining.phone">
+    <xpath expr="//t[@t-if=&quot;state=='hub'&quot;]/div[hasclass('pbjp-progress')]" position="after"><t t-call="pb_joining.your_pay"/></xpath>
+    <xpath expr="//t[@t-if=&quot;state in ('sent','day_one')&quot;]/section" position="after"><t t-if="state == 'day_one'" t-call="pb_joining.your_pay"/></xpath>
+  </template>
+</odoo>

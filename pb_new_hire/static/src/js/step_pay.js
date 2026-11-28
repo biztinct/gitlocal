@@ -1,23 +1,20 @@
 /** @odoo-module **/
-/**
- * Step 3 — Contract and pay (NEWHIRE P1). "Paid by" is read-only (D3: no
- * per-person scheme); the wage box writes itself in the country's money and
- * groups thousands as you type (never NaN or "" into the draft — WS18); the
- * band and the pay-scale line come from the server's own answers; the
- * scheme's usual answers can be changed for this one person.
+/** Step 3 hosts the shared Pay Builder for the selected scheme.
+ * Contract dates, band guidance and pay-scale choices belong to this step.
  */
 import { Component, useState } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
-import { icon, fmtDay, money, moneyNumber, parseMoney, groupTyped, rich } from "./studio_util";
+import { PayBuilder } from "@pb_pay_builder/js/pay_builder";
+import { icon, fmtDay, money, rich } from "./studio_util";
 
 export class StepPay extends Component {
     static template = "pb_new_hire.StepPay";
     static props = { api: Object };
+    static components = { PayBuilder };
 
     setup() {
         this.icon = icon;
         this.nh = useState(this.props.api.nh);
-        this.ui = useState({ typing: null });
     }
 
     get d() { return this.nh.draft; }
@@ -36,26 +33,19 @@ export class StepPay extends Component {
         return this.cur ? rich(_t("Wages are in %(code)s."), { code: this.cur.name }) : "";
     }
 
-    // ------------------------------------------------------------ the wage
-    get wageText() {
-        if (this.ui.typing !== null) {
-            return this.ui.typing;
-        }
-        return this.d.wage === null || this.d.wage === undefined ? "" : moneyNumber(this.d.wage, this.cur);
+    get payRef() {
+        return { scheme_id: this.scheme?.id || false, country: this.d.payroll_country,
+                 date_start: this.d.date_start, name: this.d.name };
     }
-    onWage(ev) {
-        const el = ev.target;
-        const shown = groupTyped(el.value, this.cur);
-        if (shown !== el.value) {
-            el.value = shown;
-            el.setSelectionRange?.(shown.length, shown.length);
-        }
-        this.ui.typing = shown;
-        const n = parseMoney(shown);
-        this.api.set("wage", n === null ? null : n);
+    get payValues() {
+        const suggested = this.scale?.found ? this.scale.amount : null;
+        return { ...this.d.usual, wage: this.d.wage ?? suggested };
     }
-    onWageBlur() { this.ui.typing = null; }
-    get wageCode() { return this.cur ? _t("%s a month", this.cur.name) : _t("a month"); }
+    changePay(code, value) {
+        if (code === "wage") this.api.set("wage", value);
+        else this.api.setUsual(code, value);
+    }
+    acceptPay(answer) { this.api.acceptPay(answer); }
 
     // ------------------------------------------------------------ band and scale
     get band() { return this.nh.hint && this.nh.hint.band; }
@@ -102,7 +92,6 @@ export class StepPay extends Component {
     useScale() {
         const s = this.scale;
         if (s && s.found) {
-            this.ui.typing = null;
             this.api.patch({ wage: s.amount, pb_scale_pin_reason: "" });
         }
     }
@@ -149,32 +138,4 @@ export class StepPay extends Component {
     }
     toggleTrial() { this.api.set("trial_on", !this.d.trial_on); }
 
-    // ------------------------------------------------------------ usual answers
-    get usual() { return this.nh.usual; }
-    get usualIntro() {
-        const s = this.scheme;
-        return _t("Filled in for you from %(scheme)s. Change only what is different for %(first)s.",
-                  { scheme: s ? s.name : "", first: this.first });
-    }
-    value(row) {
-        const u = this.d.usual || {};
-        return row.code in u ? u[row.code] : row.value;
-    }
-    changed(row) { return row.code in (this.d.usual || {}); }
-    changedChip() { return _t("Changed for %s", this.first); }
-    toggleRow(row) {
-        const on = Number(this.value(row)) >= 0.5;
-        this.api.setUsual(row.code, on ? 0 : 1);
-    }
-    isOn(row) { return Number(this.value(row)) >= 0.5; }
-    onChoice(row, ev) { this.api.setUsual(row.code, Number(ev.target.value)); }
-    onNumber(row, ev) {
-        const n = parseMoney(ev.target.value);
-        if (n !== null) {
-            this.api.setUsual(row.code, n);
-        }
-    }
-    numberText(row) { return moneyNumber(this.value(row), { decimals: 2 }).replace(/([.,]00)$/, ""); }
-    optSelected(row, opt) { return Math.abs(Number(this.value(row)) - opt.value) < 1e-9; }
-    back(row) { this.api.resetUsual(row.code); }
 }

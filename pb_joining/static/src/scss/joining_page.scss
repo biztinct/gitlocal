@@ -66,3 +66,28 @@
 
 .pbjp .pbjp-sign canvas { background:white; width:100%; height:180px; touch-action:none; border:1px dashed #b4b0cf; border-radius:12px; }
 .pbjp .pbjp-sign { display:grid; gap:12px; }
+
+.pbjp .pbjp-pay {
+    min-width: 0;
+    h2 { display: flex; align-items: center; gap: 8px; margin: 0; font: 800 20px/1.3 Manrope, sans-serif; }
+    h3 { margin: 16px 0 4px; font: 600 11px/1.4 Inter, sans-serif; color: #64748B; text-transform: uppercase; letter-spacing: .08em; }
+    summary, .pbjp-pay-line, .pbjp-pay-total, .pbjp-pay-net { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 0; }
+    summary { cursor: pointer; }
+    summary:focus-visible { outline: 2px solid #5A4BB0; outline-offset: 2px; }
+    summary > [data-joining-icon] { width: 16px; flex: none; color: #5A4BB0; }
+    .pbjp-pay-name { flex: 1; min-width: 0; }
+    .pbjp-pay-kind { display: grid; place-items: center; flex: none; width: 26px; height: 26px; border-radius: 8px; }
+    .pbjp-pay-kind svg, summary > [data-joining-icon] svg { width: 14px; height: 14px; }
+    .pbjp-pay-calculator { color: var(--pbnh-teal, #0F8B8D); background: var(--pbnh-teal-soft, #E0F2F2); }
+    .pbjp-pay-calendar { color: var(--pbnh-warn, #B45309); background: var(--pbnh-warn-soft, #FDF1DD); }
+    .pbjp-pay-pencil { color: var(--pbnh-p, #5A4BB0); background: var(--pbnh-p-soft, #EDEAF8); }
+    .pbjp-pay-line { padding-right: 24px; }
+    details[open] summary > [data-joining-icon] { transform: rotate(90deg); }
+    small { display: block; font-size: 11px; color: #64748B; }
+    b { white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .pbjp-pay-total { border-top: 1px solid #E2E8F0; font-weight: 700; }
+    .pbjp-pay-net { margin-top: 10px; padding: 12px; border-radius: 10px; background: #E4F3EA; color: #2E7D4F; }
+    .pbjp-pay-sum { padding: 10px; border-radius: 8px; background: #FAFAFD; overflow-wrap: anywhere; }
+    .pbjp-pay-sum span { display: inline-block; border: 1px solid #E2E8F0; border-radius: 7px; padding: 1px 6px; margin: 2px; }
+    [hidden] { display: none !important; }
+}

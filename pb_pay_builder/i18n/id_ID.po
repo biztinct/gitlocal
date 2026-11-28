@@ -1,0 +1,915 @@
+# Translation of Payobook.
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: id_ID\n"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%(first)s plus %(second)s."
+msgstr "%(first)s ditambah %(second)s."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "%(first)s starts on %(day)s, so the first pay may be less."
+msgstr "%(first)s mulai bekerja pada %(day)s sehingga gaji pertama mungkin lebih kecil."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%(line)s less %(others)s."
+msgstr "%(line)s dikurangi %(others)s."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "%(pay)s gives a take-home of %(net)s a month. It is in the box above; change it if you like."
+msgstr "Dengan gaji %(pay)s, gaji bersih per bulan adalah %(net)s. Anda bisa mengubah nominal di kotak atas."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%(rate)s%% of %(line)s, counted up to %(cap)s."
+msgstr "%(rate)s%% dari %(line)s, dengan dasar perhitungan maksimal %(cap)s."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%(rate)s%% of %(line)s, spread over 12 months."
+msgstr "%(rate)s%% dari %(line)s, dibagi rata selama 12 bulan."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%(rate)s%% of %(line)s."
+msgstr "%(rate)s%% dari %(line)s."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "%s a month"
+msgstr "%s per bulan"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "%s a year"
+msgstr "%s per tahun"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%s lines"
+msgstr "%s baris"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%s spread over 12 months."
+msgstr "%s dibagi rata selama 12 bulan."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%s%%"
+msgstr "%s%%"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "A full month, including the example amounts you are trying."
+msgstr "Satu bulan penuh, termasuk nominal yang sedang Anda coba."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "A full month, with each-month lines at their usual amount."
+msgstr "Satu bulan penuh, dengan nominal biasa untuk setiap komponen bulanan."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "A month's pay, worked out"
+msgstr "Rincian gaji sebulan"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Also asked by this pay scheme"
+msgstr "Informasi lain yang diperlukan skema ini"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Also in this scheme:"
+msgstr "Komponen lain dalam skema ini:"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/scheme_ext.py:0
+msgid "Annual fixed pay"
+msgstr "Gaji tetap tahunan"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Ask a payroll manager."
+msgstr "Hubungi pengelola penggajian."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Back to usual %s"
+msgstr "Kembali ke nominal biasa %s"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Basic, allowances, deductions and take-home appear here the moment there is a number."
+msgstr "Masukkan nominal untuk melihat gaji pokok, tunjangan, potongan, dan gaji bersih."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "By %(scheme)s, for a full %(month)s."
+msgstr "Menurut %(scheme)s, untuk sebulan penuh pada %(month)s."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Changed"
+msgstr "Diubah"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Check the amounts and the first day, then try again."
+msgstr "Periksa nominal dan tanggal mulai, lalu coba lagi."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Check the connection and try again."
+msgstr "Periksa koneksi lalu coba lagi."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/scheme_ext.py:0
+msgid "Choose a per-person money amount from this pay scheme."
+msgstr "Pilih komponen uang yang diisi per orang dalam skema ini."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Choose a worked-out line."
+msgstr "Pilih komponen yang dihitung."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Close"
+msgstr "Tutup"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Cost to the company"
+msgstr "Biaya perusahaan"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Could not be worked out"
+msgstr "Tidak dapat dihitung"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Deductions"
+msgstr "Potongan"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "Depends on %s."
+msgstr "Bergantung pada %s."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Each month"
+msgstr "Setiap bulan"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Each month, from %s"
+msgstr "Setiap bulan, dari %s"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Earnings"
+msgstr "Penghasilan"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Example only, not saved"
+msgstr "Hanya simulasi, tidak disimpan"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Find the pay"
+msgstr "Cari nominal gaji"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "From the signed offer"
+msgstr "Dari surat penawaran yang sudah ditandatangani"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Gross pay"
+msgstr "Gaji kotor"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Hide lines at zero"
+msgstr "Sembunyikan baris bernilai nol"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "It uses:"
+msgstr "Komponen yang digunakan:"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+#: code:addons/pb_pay_builder/models/builder.py:0
+#: code:addons/pb_pay_builder/models/scheme_ext.py:0
+msgid "Monthly wage"
+msgstr "Gaji bulanan"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Needed before this person can be paid."
+msgstr "Wajib diisi sebelum orang ini dapat digaji."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "No"
+msgstr "Tidak"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "No pay gives that take-home on this scheme. The closest is %s."
+msgstr "Tidak ada gaji dalam skema ini yang menghasilkan nominal bersih tersebut. Nominal terdekat adalah %s."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "No pay scheme pays this person yet, so the month cannot be worked out."
+msgstr "Orang ini belum memiliki skema gaji sehingga gaji bulanan belum dapat dihitung."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "On top of gross pay"
+msgstr "Di luar gaji bruto"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Paid by the company on top"
+msgstr "Dibayar sebagai tambahan oleh perusahaan"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Remove"
+msgstr "Hapus"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "See it in Formula Studio"
+msgstr "Lihat di Formula Studio"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Set by the pay scheme"
+msgstr "Ditetapkan oleh skema gaji"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "Set by the pay scheme."
+msgstr "Ditetapkan oleh skema gaji."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Show %s lines at zero"
+msgstr "Tampilkan %s baris bernilai nol"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Show all %s lines"
+msgstr "Tampilkan semua %s baris"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Show fewer lines"
+msgstr "Tampilkan lebih sedikit baris"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Some values on this scheme come from the connected system; the example uses the usual ones."
+msgstr "Beberapa nilai pada skema ini berasal dari sistem yang terhubung; contoh ini memakai nilai standar."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Some values on this scheme come from the monthly pay data file; the example uses the usual ones."
+msgstr "Beberapa nilai pada skema ini berasal dari file data gaji bulanan; contoh ini memakai nilai standar."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Take-home"
+msgstr "Gaji bersih"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Take-home %s a month"
+msgstr "Gaji bersih %s per bulan"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Take-home wanted each month"
+msgstr "Gaji bersih yang diinginkan per bulan"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Tell the person who looks after the pay scheme."
+msgstr "Beri tahu pengelola skema gaji."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "That is %s a month before deductions."
+msgstr "Setara dengan %s per bulan sebelum potongan."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "That is %s a year."
+msgstr "Setara dengan %s per tahun."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "The formula for %s divides by zero."
+msgstr "Rumus untuk %s membagi dengan nol."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "The month could not be worked out."
+msgstr "Gaji bulanan tidak dapat dihitung."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "The monthly wage, as typed above."
+msgstr "Gaji bulanan yang diisi di atas."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "The payslip example on the right also reads this person's working days and records, so it can differ slightly."
+msgstr "Contoh slip gaji di sebelah kanan juga menggunakan hari kerja dan data orang ini sehingga angkanya mungkin sedikit berbeda."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "The rate rises in steps as %s grows."
+msgstr "Tarif naik bertahap saat %s meningkat."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "The sum for %s could not be read."
+msgstr "Perhitungan untuk %s tidak dapat dibaca."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "The sum for %s could not be worked out."
+msgstr "Komponen %s tidak dapat dihitung."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "The total of %s lines."
+msgstr "Jumlah dari %s baris."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "This line has no sum to show."
+msgstr "Komponen ini tidak memiliki perhitungan untuk ditampilkan."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "This pay scheme could not work out take-home."
+msgstr "Skema gaji ini tidak dapat menghitung gaji bersih."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "This pay scheme has no take-home line, so it cannot be worked back."
+msgstr "Skema ini tidak memiliki komponen gaji bersih sehingga gaji tidak dapat dihitung balik."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "This pay scheme has no take-home line."
+msgstr "Skema ini tidak memiliki komponen gaji bersih."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "This pay scheme takes its amounts from the pay data file each month."
+msgstr "Skema ini mengambil nominal dari berkas data gaji setiap bulan."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "This person"
+msgstr "Orang ini"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "This sum belongs to %s, so it cannot be changed for one person."
+msgstr "Perhitungan ini ditetapkan oleh %s sehingga tidak dapat diubah untuk satu orang saja."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Total deductions"
+msgstr "Total potongan"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Try again"
+msgstr "Coba lagi"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Try an amount"
+msgstr "Coba nominal"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Type the %s to see the month work out"
+msgstr "Masukkan %s untuk melihat rincian gaji bulanan"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Type the take-home you want first."
+msgstr "Masukkan dahulu gaji bersih yang diinginkan."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Usual amount"
+msgstr "Nominal biasa"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/scheme_ext.py:0
+msgid "Usual answer: %s"
+msgstr "Jawaban biasa: %s"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "What you agree"
+msgstr "Gaji yang disepakati"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Work back from take-home"
+msgstr "Hitung balik dari gaji bersih"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Worked out"
+msgstr "Dihitung"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "Worked out from %s."
+msgstr "Dihitung dari %s."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Working back took too long. Type the pay and adjust it instead."
+msgstr "Perhitungan balik memakan waktu terlalu lama. Masukkan gaji lalu sesuaikan."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "Yes"
+msgstr "Ya"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "You can look at this person but not at their pay."
+msgstr "Anda dapat melihat data orang ini, tetapi tidak dapat melihat gajinya."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "You can look at this person but not change their pay."
+msgstr "Anda dapat melihat data orang ini, tetapi tidak dapat mengubah gajinya."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "You set"
+msgstr "Anda isi"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "and"
+msgstr "dan"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "if"
+msgstr "jika"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "in steps, using"
+msgstr "secara bertahap, menggunakan"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "is"
+msgstr "sama dengan"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "is at least"
+msgstr "setidaknya"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "is at most"
+msgstr "paling banyak"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "is greater than"
+msgstr "lebih besar dari"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "is less than"
+msgstr "lebih kecil dari"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "is not"
+msgstr "berbeda dari"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "or"
+msgstr "atau"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "otherwise"
+msgstr "jika tidak"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "rounded"
+msgstr "dibulatkan"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "rounded down"
+msgstr "dibulatkan ke bawah"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "rounded up"
+msgstr "dibulatkan ke atas"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "the absolute value of"
+msgstr "nilai absolut dari"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "the average of"
+msgstr "rata-rata dari"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "the connected system"
+msgstr "sistem terhubung"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "the larger of"
+msgstr "nilai terbesar dari"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "the opposite of"
+msgstr "kebalikan dari"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "the pay data file"
+msgstr "berkas data gaji"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "the smaller of"
+msgstr "nilai terkecil dari"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "the timesheet"
+msgstr "lembar waktu kerja"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "the total of"
+msgstr "jumlah dari"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "then"
+msgstr "maka"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "Show the %s lines"
+msgstr "Tampilkan %s baris"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid "Only a pay scheme manager can change this."
+msgstr "Hanya pengelola skema gaji yang dapat mengubahnya."
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid "This pay scheme is not available."
+msgstr "Skema gaji ini tidak tersedia."
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Worked out by its formula — nobody types it."
+msgstr "Dihitung dengan rumusnya — tidak perlu diisi."
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid ""
+"From now on Payobook reads this amount from each person's contract. %s "
+"people paid by this scheme have no amount there yet, so they get 0 for this "
+"line until someone types one."
+msgstr ""
+"Mulai sekarang Payobook mengambil jumlah ini dari kontrak masing-masing "
+"orang. Ada %s orang dalam skema ini yang belum memiliki jumlah tersebut di "
+"kontraknya. Mereka akan menerima 0 pada baris ini sampai jumlahnya diisi."
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid ""
+"%(count)s people have this amount on their contract. It stays there but pay "
+"stops reading it; the amount will come from %(source)s each month."
+msgstr ""
+"Ada %(count)s orang yang sudah memiliki jumlah ini di kontraknya. Jumlah itu"
+" tetap tersimpan. Setiap bulan penggajian akan mengambil jumlahnya dari "
+"%(source)s."
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid "the monthly pay data"
+msgstr "data gaji bulanan"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Where does this amount come from?"
+msgstr "Dari mana jumlah ini berasal?"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "The same for this person every month"
+msgstr "Tetap untuk orang ini setiap bulan"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid ""
+"HR types it when hiring or changing pay. Kept on the person's contract."
+msgstr ""
+"HR mengisinya saat merekrut atau mengubah gaji. Jumlahnya disimpan dalam "
+"kontrak orang tersebut."
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "It changes each month"
+msgstr "Berubah setiap bulan"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid ""
+"It arrives with the pay data file, the connected system or the timesheet."
+msgstr ""
+"Jumlahnya berasal dari berkas data gaji, sistem yang terhubung, atau lembar "
+"waktu kerja."
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Show who"
+msgstr "Lihat siapa saja"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Switch anyway"
+msgstr "Tetap ubah"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Keep as it is"
+msgstr "Pertahankan pilihan saat ini"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Typed per"
+msgstr "Diisi per"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Month"
+msgstr "Bulan"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Year"
+msgstr "Tahun"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Main pay amount"
+msgstr "Jumlah gaji utama"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Follow the pay scheme"
+msgstr "Ikuti skema gaji"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/studio.js:0
+msgid "The people affected could not be checked. Try again."
+msgstr "Orang yang terdampak belum dapat diperiksa. Coba lagi."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid ""
+"From now on Payobook reads this amount from each person's contract. One "
+"person paid by this scheme has no amount there yet, so they get 0 for this "
+"line until someone types one."
+msgstr ""
+"Mulai sekarang Payobook mengambil jumlah ini dari kontrak masing-masing "
+"orang. Satu orang dalam skema ini belum memiliki jumlah tersebut di "
+"kontraknya dan akan menerima 0 sampai jumlahnya diisi."
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid ""
+"One person has this amount on their contract. It stays there but pay stops "
+"reading it; the amount will come from %s each month."
+msgstr ""
+"Satu orang sudah memiliki jumlah ini di kontraknya. Jumlah itu tetap "
+"tersimpan. Setiap bulan penggajian akan mengambil jumlahnya dari %s."

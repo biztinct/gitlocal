@@ -93,7 +93,7 @@ class JoiningStudio(models.AbstractModel):
     @api.model
     def joining_draft(self, joining_id):
         j = self._checked_joining(joining_id)
-        result = self.offer_draft(j.offer_id.id) if j.offer_id else {'ok': True, 'draft': {}}
+        result = self._offer_draft(j.offer_id.id, j.payroll_country) if j.offer_id else {'ok': True, 'draft': {}}
         if not result.get('ok'):
             return result
         d = result['draft']

@@ -2938,3 +2938,69 @@ msgstr ""
 #: code:addons/pb_joining/static/src/xml/joining_board.xml:0
 msgid "· works for 48 hours, once"
 msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "Take-home"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "Your pay"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "A full month, as agreed. Tap a line to see how it is worked out."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "A full month, with each-month lines at their usual amount."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "You can look at this person but not at their pay."
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "%(name)s %(value)s"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "Tap to see how"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "Earnings"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "Deductions"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "Changes each month"
+msgstr ""
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "As agreed"
+msgstr ""

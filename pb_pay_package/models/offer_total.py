@@ -369,7 +369,8 @@ class PbPayPackageOffer(models.AbstractModel):
                  year=money(out['target_year'], out['currency']),
                  month=money(out['target'], out['currency']),
                  scheme=config.display_name or config.name or '')
-        offer.write({'pb_total_config_id': config.id, 'pb_total_note': note})
+        offer.write({'pb_total_config_id': config.id, 'pb_total_note': note, 'pbpb_values': False,
+                     'pbpb_has_net': False, 'pbpb_net': 0, 'pbpb_gross': 0})
         offer.invalidate_recordset(['monthly_total', 'annual_total'])
         offer.message_post(body=note)
         return {'ok': True, 'note': note, 'lines': len(new_lines)}

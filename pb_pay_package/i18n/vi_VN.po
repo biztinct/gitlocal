@@ -559,3 +559,120 @@ msgid ""
 "Type the total package and split it into basic pay and allowances with the "
 "pay scheme"
 msgstr "Nhập tổng thu nhập và chia thành lương cơ bản và phụ cấp theo bảng lương"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/js/offer_builder.js:0
+#: code:addons/pb_pay_package/static/src/xml/offer_builder.xml:0
+msgid "Pay Builder"
+msgstr "Bộ lập lương"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/offer_builder.xml:0
+msgid "Use these lines"
+msgstr "Dùng các dòng này"
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/offer_builder.xml:0
+msgid "Your pay"
+msgstr "Lương của bạn"
+
+#. module: pb_pay_package
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_pay_package/models/offer_builder.py:0
+#: code:addons/pb_pay_package/static/src/xml/offer_builder.xml:0
+msgid "Show the pay table in the offer letter"
+msgstr "Hiển thị bảng lương trong thư mời làm việc"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_builder.py:0
+msgid "Agreed pay amounts"
+msgstr "Các khoản lương đã thỏa thuận"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_builder.py:0
+msgid "Monthly take-home"
+msgstr "Thực nhận hằng tháng"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_builder.py:0
+msgid "Has a take-home amount"
+msgstr "Có số tiền thực nhận"
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_builder.py:0
+msgid "Monthly gross pay"
+msgstr "Tổng lương hằng tháng trước khấu trừ"
+
+#. module: pb_pay_package
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_pay_package/models/offer_builder.py:0
+#: code:addons/pb_pay_package/static/src/js/offer_builder.js:0
+msgid "Gross pay of %s a month."
+msgstr "Tổng lương trước khấu trừ là %s mỗi tháng."
+
+#. module: pb_pay_package
+#. odoo-python
+#. odoo-javascript
+#: code:addons/pb_pay_package/models/offer_builder.py:0
+#: code:addons/pb_pay_package/static/src/js/offer_builder.js:0
+msgid "Take-home after the usual deductions is about %s a month."
+msgstr ""
+"Sau các khoản khấu trừ thông thường, số tiền thực nhận khoảng %s mỗi tháng."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_builder.py:0
+msgid "This pay scheme is not available."
+msgstr "Chế độ lương này hiện không khả dụng."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_builder.py:0
+msgid "Choose a pay scheme first."
+msgstr "Hãy chọn chế độ lương trước."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_builder.py:0
+msgid "Check the amounts and try again."
+msgstr "Kiểm tra các khoản tiền rồi thử lại."
+
+#. module: pb_pay_package
+#. odoo-python
+#: code:addons/pb_pay_package/models/offer_builder.py:0
+msgid "This pay scheme has no monthly earnings to put on the offer."
+msgstr ""
+"Chế độ lương này không có khoản thu nhập hằng tháng để đưa vào thư mời."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/js/offer_builder.js:0
+msgid "The offer could not be opened."
+msgstr "Không mở được thư mời làm việc."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/js/offer_builder.js:0
+msgid "The offer could not be saved. Try again."
+msgstr "Không lưu được thư mời làm việc. Hãy thử lại."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/offer_builder.xml:0
+msgid "The candidate sees each line, not only one total."
+msgstr "Ứng viên xem được từng khoản cùng với tổng số tiền."
+
+#. module: pb_pay_package
+#. odoo-javascript
+#: code:addons/pb_pay_package/static/src/xml/offer_builder.xml:0
+msgid "Your pay each month"
+msgstr "Lương của bạn mỗi tháng"

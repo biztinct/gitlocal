@@ -2962,3 +2962,72 @@ msgstr "Pengingat persiapan bergabung dan penghapusan data pribadi"
 #: code:addons/pb_joining/models/jobs.py:0
 msgid "Remind %(name)s — copy the message from the Joining board"
 msgstr "Ingatkan %(name)s — salin pesan dari papan Persiapan bergabung"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "Take-home"
+msgstr "Gaji bersih"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "Your pay"
+msgstr "Gaji Anda"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "A full month, as agreed. Tap a line to see how it is worked out."
+msgstr ""
+"Gaji sebulan penuh sesuai kesepakatan. Ketuk sebuah rincian untuk melihat "
+"cara menghitungnya."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "A full month, with each-month lines at their usual amount."
+msgstr "Satu bulan penuh, dengan nominal biasa untuk setiap komponen bulanan."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "You can look at this person but not at their pay."
+msgstr ""
+"Anda dapat melihat data orang ini, tetapi tidak dapat melihat gajinya."
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "%(name)s %(value)s"
+msgstr "%(name)s %(value)s"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "Tap to see how"
+msgstr "Ketuk untuk melihat perhitungannya"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "Earnings"
+msgstr "Penghasilan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "Deductions"
+msgstr "Potongan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "Changes each month"
+msgstr "Berubah setiap bulan"
+
+#. module: pb_joining
+#. odoo-python
+#: code:addons/pb_joining/models/pay_builder.py:0
+msgid "As agreed"
+msgstr "Sesuai kesepakatan"

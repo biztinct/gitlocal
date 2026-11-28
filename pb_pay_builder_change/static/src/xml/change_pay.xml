@@ -1,0 +1,13 @@
+<templates xml:space="preserve">
+  <t t-name="pb_pay_builder_change.ChangePay">
+    <Dialog title="title" size="'lg'" bodyClass="'pbpb-change'">
+      <div class="pbpb-change-fields"><label>New pay starts from<input type="date" required="required" t-model="ui.date"/></label>
+        <label>Reason<select t-model="ui.reason"><option t-foreach="ui.reasons" t-as="r" t-key="r.key" t-att-value="r.key" t-esc="r.name"/></select></label></div>
+      <p t-if="ui.error" class="pbpb-change-error" role="alert" t-esc="ui.error"/>
+      <PayBuilder t-if="ui.date" home="'change'" variant="'compare'" reference="{contract_id:props.contractId, effective_date:ui.date}"
+        values="ui.values" onChange.bind="change" onAnswer="a => this.ui.answer=a"/>
+      <t t-set-slot="footer"><button type="button" class="pbim-btn primary" t-att-disabled="!ready or ui.busy" t-on-click="send" t-esc="saveLabel"/>
+        <button type="button" class="pbim-btn ghost" t-on-click="props.close">Close</button></t>
+    </Dialog>
+  </t>
+</templates>

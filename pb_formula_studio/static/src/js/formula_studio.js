@@ -615,6 +615,11 @@ export class PbFormulaStudio extends Component {
                 if ((a.params && a.params.open_settings) || (a.context && a.context.open_settings)) {
                     await this.openSettings();
                 }
+                const ruleId = Number(a.params?.pbpb_show_component);
+                if (ruleId && this.state.components.some(component => component.id === ruleId)) {
+                    this.state.view = "cards";
+                    this.selectComponent(ruleId);
+                }
                 if (peopleSignal && this.state.config) this.openMapping("employee");
                 // BLUEPRINT B4 — arriving from the guided setup's Connect step:
                 // open the payslip designer straight away on this scheme, and

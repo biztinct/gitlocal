@@ -1,0 +1,913 @@
+# Translation of Payobook.
+msgid ""
+msgstr ""
+"Project-Id-Version: Payobook 19.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: vi_VN\n"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%(first)s plus %(second)s."
+msgstr "%(first)s cộng %(second)s."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "%(first)s starts on %(day)s, so the first pay may be less."
+msgstr "%(first)s bắt đầu làm việc ngày %(day)s nên kỳ lương đầu có thể thấp hơn."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%(line)s less %(others)s."
+msgstr "%(line)s trừ %(others)s."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "%(pay)s gives a take-home of %(net)s a month. It is in the box above; change it if you like."
+msgstr "Với mức %(pay)s, lương thực nhận mỗi tháng là %(net)s. Bạn có thể điều chỉnh mức lương trong ô phía trên."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%(rate)s%% of %(line)s, counted up to %(cap)s."
+msgstr "%(rate)s%% của %(line)s, với mức tính tối đa là %(cap)s."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%(rate)s%% of %(line)s, spread over 12 months."
+msgstr "%(rate)s%% của %(line)s, chia đều cho 12 tháng."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%(rate)s%% of %(line)s."
+msgstr "%(rate)s%% của %(line)s."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "%s a month"
+msgstr "%s một tháng"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "%s a year"
+msgstr "%s mỗi năm"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%s lines"
+msgstr "%s khoản"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%s spread over 12 months."
+msgstr "%s chia đều cho 12 tháng."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "%s%%"
+msgstr "%s%%"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "A full month, including the example amounts you are trying."
+msgstr "Đủ một tháng, bao gồm các khoản bạn đang tính thử."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "A full month, with each-month lines at their usual amount."
+msgstr "Đủ một tháng, với các khoản hằng tháng ở mức thông thường."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "A month's pay, worked out"
+msgstr "Chi tiết lương một tháng"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Also asked by this pay scheme"
+msgstr "Thông tin chế độ lương này cần thêm"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Also in this scheme:"
+msgstr "Các khoản khác trong chế độ này:"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/scheme_ext.py:0
+msgid "Annual fixed pay"
+msgstr "Lương cố định hằng năm"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Ask a payroll manager."
+msgstr "Hãy hỏi người quản lý tiền lương."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Back to usual %s"
+msgstr "Trở về mức thông thường %s"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Basic, allowances, deductions and take-home appear here the moment there is a number."
+msgstr "Nhập số tiền để xem lương cơ bản, phụ cấp, các khoản khấu trừ và lương thực nhận."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "By %(scheme)s, for a full %(month)s."
+msgstr "Theo %(scheme)s, cho cả tháng %(month)s."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Changed"
+msgstr "Đã thay đổi"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Check the amounts and the first day, then try again."
+msgstr "Kiểm tra số tiền và ngày bắt đầu rồi thử lại."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Check the connection and try again."
+msgstr "Kiểm tra kết nối rồi thử lại."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/scheme_ext.py:0
+msgid "Choose a per-person money amount from this pay scheme."
+msgstr "Chọn một khoản tiền nhập riêng cho từng người trong chế độ lương này."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Choose a worked-out line."
+msgstr "Chọn một khoản được tính tự động."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Close"
+msgstr "Đóng"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Cost to the company"
+msgstr "Chi phí của công ty"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Could not be worked out"
+msgstr "Không tính được"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Deductions"
+msgstr "Các khoản khấu trừ"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "Depends on %s."
+msgstr "Phụ thuộc vào %s."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Each month"
+msgstr "Hằng tháng"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Each month, from %s"
+msgstr "Hằng tháng, lấy từ %s"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Earnings"
+msgstr "Các khoản thu nhập"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Example only, not saved"
+msgstr "Chỉ tính thử, không lưu"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Find the pay"
+msgstr "Tìm mức lương"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "From the signed offer"
+msgstr "Từ thư mời làm việc đã ký"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Gross pay"
+msgstr "Tổng thu nhập"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Hide lines at zero"
+msgstr "Ẩn các khoản bằng không"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "It uses:"
+msgstr "Các khoản dùng để tính:"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+#: code:addons/pb_pay_builder/models/builder.py:0
+#: code:addons/pb_pay_builder/models/scheme_ext.py:0
+msgid "Monthly wage"
+msgstr "Lương tháng"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Needed before this person can be paid."
+msgstr "Cần nhập trước khi trả lương cho người này."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "No"
+msgstr "Không"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "No pay gives that take-home on this scheme. The closest is %s."
+msgstr "Không có mức lương nào trong chế độ này cho số thực nhận đã nhập. Mức gần nhất là %s."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "No pay scheme pays this person yet, so the month cannot be worked out."
+msgstr "Người này chưa có chế độ lương nên chưa thể tính lương tháng."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "On top of gross pay"
+msgstr "Ngoài tổng lương trước khấu trừ"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Paid by the company on top"
+msgstr "Công ty trả thêm"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Remove"
+msgstr "Xóa"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "See it in Formula Studio"
+msgstr "Xem trong Formula Studio"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Set by the pay scheme"
+msgstr "Do chế độ lương quy định"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "Set by the pay scheme."
+msgstr "Do chế độ lương quy định."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Show %s lines at zero"
+msgstr "Hiện %s khoản bằng không"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Show all %s lines"
+msgstr "Hiện tất cả %s khoản"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Show fewer lines"
+msgstr "Thu gọn danh sách"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Some values on this scheme come from the connected system; the example uses the usual ones."
+msgstr "Một số giá trị của chương trình này lấy từ hệ thống được kết nối; ví dụ dùng các giá trị thông thường."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Some values on this scheme come from the monthly pay data file; the example uses the usual ones."
+msgstr "Một số giá trị của chương trình này lấy từ tệp dữ liệu lương hằng tháng; ví dụ dùng các giá trị thông thường."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Take-home"
+msgstr "Thực nhận"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Take-home %s a month"
+msgstr "Thực nhận %s mỗi tháng"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Take-home wanted each month"
+msgstr "Lương thực nhận mong muốn mỗi tháng"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Tell the person who looks after the pay scheme."
+msgstr "Báo cho người phụ trách chế độ lương."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "That is %s a month before deductions."
+msgstr "Tương đương %s mỗi tháng trước khi khấu trừ."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "That is %s a year."
+msgstr "Tương đương %s mỗi năm."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "The formula for %s divides by zero."
+msgstr "Công thức của %s có phép chia cho 0."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "The month could not be worked out."
+msgstr "Không tính được lương tháng."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "The monthly wage, as typed above."
+msgstr "Mức lương tháng đã nhập ở trên."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "The payslip example on the right also reads this person's working days and records, so it can differ slightly."
+msgstr "Phiếu lương minh họa bên phải còn dùng ngày công và hồ sơ của người này nên có thể chênh lệch đôi chút."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "The rate rises in steps as %s grows."
+msgstr "Tỷ lệ tăng theo bậc khi %s tăng."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "The sum for %s could not be read."
+msgstr "Không đọc được phép tính của %s."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "The sum for %s could not be worked out."
+msgstr "Không tính được khoản %s."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "The total of %s lines."
+msgstr "Tổng của %s khoản."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "This line has no sum to show."
+msgstr "Khoản này không có phép tính để hiển thị."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "This pay scheme could not work out take-home."
+msgstr "Chế độ lương này không tính được lương thực nhận."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "This pay scheme has no take-home line, so it cannot be worked back."
+msgstr "Chế độ lương này không có khoản thực nhận nên không thể tính ngược."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "This pay scheme has no take-home line."
+msgstr "Chế độ lương này không có khoản thực nhận."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "This pay scheme takes its amounts from the pay data file each month."
+msgstr "Chế độ lương này lấy số tiền từ tệp dữ liệu lương mỗi tháng."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "This person"
+msgstr "Người này"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "This sum belongs to %s, so it cannot be changed for one person."
+msgstr "Cách tính này thuộc về %s nên không thể thay đổi cho riêng một người."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Total deductions"
+msgstr "Tổng khấu trừ"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Try again"
+msgstr "Thử lại"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Try an amount"
+msgstr "Tính thử"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+msgid "Type the %s to see the month work out"
+msgstr "Nhập %s để xem chi tiết lương tháng"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#. odoo-python
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Type the take-home you want first."
+msgstr "Trước tiên hãy nhập mức thực nhận mong muốn."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Usual amount"
+msgstr "Mức thông thường"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/scheme_ext.py:0
+msgid "Usual answer: %s"
+msgstr "Câu trả lời thông thường: %s"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "What you agree"
+msgstr "Mức lương thỏa thuận"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Work back from take-home"
+msgstr "Tính ngược từ lương thực nhận"
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "Worked out"
+msgstr "Được tính tự động"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "Worked out from %s."
+msgstr "Tính từ %s."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "Working back took too long. Type the pay and adjust it instead."
+msgstr "Tính ngược mất quá nhiều thời gian. Hãy nhập mức lương rồi điều chỉnh."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "Yes"
+msgstr "Có"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "You can look at this person but not at their pay."
+msgstr "Bạn có thể xem hồ sơ người này nhưng không có quyền xem lương."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "You can look at this person but not change their pay."
+msgstr "Bạn có thể xem hồ sơ người này nhưng không có quyền thay đổi lương."
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/pay_builder.js:0
+#: code:addons/pb_pay_builder/static/src/xml/pay_builder.xml:0
+msgid "You set"
+msgstr "Bạn nhập"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "and"
+msgstr "và"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "if"
+msgstr "nếu"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "in steps, using"
+msgstr "theo từng bậc, dựa trên"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "is"
+msgstr "bằng"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "is at least"
+msgstr "ít nhất là"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "is at most"
+msgstr "tối đa là"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "is greater than"
+msgstr "lớn hơn"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "is less than"
+msgstr "nhỏ hơn"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "is not"
+msgstr "khác"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "or"
+msgstr "hoặc"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "otherwise"
+msgstr "nếu không"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "rounded"
+msgstr "làm tròn"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "rounded down"
+msgstr "làm tròn xuống"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "rounded up"
+msgstr "làm tròn lên"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "the absolute value of"
+msgstr "giá trị tuyệt đối của"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "the average of"
+msgstr "trung bình của"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "the connected system"
+msgstr "hệ thống kết nối"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "the larger of"
+msgstr "giá trị lớn hơn giữa"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "the opposite of"
+msgstr "giá trị ngược lại của"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "the pay data file"
+msgstr "tệp dữ liệu lương"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "the smaller of"
+msgstr "giá trị nhỏ hơn giữa"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/builder.py:0
+msgid "the timesheet"
+msgstr "bảng chấm công"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "the total of"
+msgstr "tổng của"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "then"
+msgstr "thì"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/formula_words.py:0
+msgid "Show the %s lines"
+msgstr "Hiện %s dòng"
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid "Only a pay scheme manager can change this."
+msgstr "Chỉ người quản lý chế độ lương mới có thể thay đổi mục này."
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid "This pay scheme is not available."
+msgstr "Chế độ lương này không khả dụng."
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Worked out by its formula — nobody types it."
+msgstr "Công thức tự tính khoản này — không ai phải nhập."
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid ""
+"From now on Payobook reads this amount from each person's contract. %s "
+"people paid by this scheme have no amount there yet, so they get 0 for this "
+"line until someone types one."
+msgstr ""
+"Từ nay Payobook lấy khoản này từ hợp đồng của từng người. Có %s người hưởng "
+"chế độ lương này chưa có khoản đó trong hợp đồng, nên họ sẽ nhận 0 ở dòng "
+"này cho đến khi có người nhập số tiền."
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid ""
+"%(count)s people have this amount on their contract. It stays there but pay "
+"stops reading it; the amount will come from %(source)s each month."
+msgstr ""
+"Có %(count)s người đã có khoản này trong hợp đồng. Số tiền vẫn được lưu ở "
+"đó. Từ nay bảng lương sẽ lấy khoản này từ %(source)s mỗi tháng."
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid "the monthly pay data"
+msgstr "dữ liệu lương hằng tháng"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Where does this amount come from?"
+msgstr "Khoản tiền này lấy từ đâu?"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "The same for this person every month"
+msgstr "Giữ nguyên cho người này mỗi tháng"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid ""
+"HR types it when hiring or changing pay. Kept on the person's contract."
+msgstr ""
+"Nhân sự nhập khi tuyển dụng hoặc đổi lương. Khoản này được lưu trong hợp "
+"đồng của người đó."
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "It changes each month"
+msgstr "Thay đổi mỗi tháng"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid ""
+"It arrives with the pay data file, the connected system or the timesheet."
+msgstr ""
+"Khoản này đến từ tệp dữ liệu lương, hệ thống kết nối hoặc bảng chấm công."
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Show who"
+msgstr "Xem danh sách"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Switch anyway"
+msgstr "Vẫn chuyển"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Keep as it is"
+msgstr "Giữ như hiện tại"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Typed per"
+msgstr "Nhập theo"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Month"
+msgstr "Tháng"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Year"
+msgstr "Năm"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Main pay amount"
+msgstr "Khoản lương chính"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/xml/studio.xml:0
+msgid "Follow the pay scheme"
+msgstr "Theo chế độ lương"
+
+
+#. module: pb_pay_builder
+#. odoo-javascript
+#: code:addons/pb_pay_builder/static/src/js/studio.js:0
+msgid "The people affected could not be checked. Try again."
+msgstr "Không thể kiểm tra danh sách người bị ảnh hưởng. Hãy thử lại."
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid ""
+"From now on Payobook reads this amount from each person's contract. One "
+"person paid by this scheme has no amount there yet, so they get 0 for this "
+"line until someone types one."
+msgstr ""
+"Từ nay Payobook lấy khoản này từ hợp đồng của từng người. Một người hưởng "
+"chế độ lương này chưa có khoản đó trong hợp đồng và sẽ nhận 0 ở dòng này cho"
+" đến khi có người nhập số tiền."
+
+
+#. module: pb_pay_builder
+#. odoo-python
+#: code:addons/pb_pay_builder/models/studio.py:0
+msgid ""
+"One person has this amount on their contract. It stays there but pay stops "
+"reading it; the amount will come from %s each month."
+msgstr ""
+"Một người có khoản này trong hợp đồng. Số tiền vẫn được lưu ở đó. Từ nay "
+"bảng lương sẽ lấy khoản này từ %s mỗi tháng."
